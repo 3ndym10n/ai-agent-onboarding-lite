@@ -1,0 +1,39 @@
+{
+  "basic": {
+    "min_completeness_pct": 80,
+    "status_thresholds": {
+      "completed_pct": 100,
+      "in_progress_pct": 50
+    }
+  },
+  "ui": {
+    "issue_penalty_pct": 10,
+    "valid_min_confidence_pct": 70,
+    "completed_min_confidence_pct": 90,
+    "runtime_timeout_s": 10,
+    "require_streamlit_import": true,
+    "layout_keywords": ["70/30", "columns", "st.columns"],
+    "require_error_handling": true,
+    "require_data_integration_keywords": ["signal", "data", "websocket"]
+  },
+  "analytics": {
+    "issue_penalty_pct": 8,
+    "valid_min_confidence_pct": 60,
+    "completed_min_confidence_pct": 85,
+    "import_timeout_s": 5,
+    "require_numeric_libs": ["numpy", "pandas", "math"]
+  },
+  "data": {
+    "issue_penalty_pct": 8,
+    "valid_min_confidence_pct": 65,
+    "completed_min_confidence_pct": 90,
+    "import_timeout_s": 5,
+    "require_async": true,
+    "require_connection_keywords": ["connect", "client", "websocket"]
+  },
+  "generic": {
+    "issue_penalty_pct": 15,
+    "valid_min_confidence_pct": 70,
+    "import_timeout_s": 5
+  }
+}
