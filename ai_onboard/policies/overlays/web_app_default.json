@@ -1,0 +1,5 @@
+{
+  "rules": [
+    { "id": "NODE_ROUTE_HINT", "severity": "info", "weight": 1 }
+  ]
+}

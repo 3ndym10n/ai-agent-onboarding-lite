@@ -1,0 +1,5 @@
+{
+  "rules": [
+    { "id": "TRADING_STREAMLIT_LAYOUT", "severity": "info", "weight": 1 }
+  ]
+}

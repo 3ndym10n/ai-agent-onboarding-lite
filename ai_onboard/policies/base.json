@@ -1,11 +1,39 @@
 {
   "rules": [
     {
+      "id": "NODE_SCRIPTS_DEFINED",
+      "target": { "language": "node_ts", "component_type": "ui_frontend" },
+      "severity": "warn",
+      "weight": 3
+    },
+    {
       "id": "PY_PROJECT_META",
-      "severity": "warn"
+      "target": { "language": "python", "component_type": "library_module" },
+      "severity": "warn",
+      "weight": 2
+    },
+    {
+      "id": "NAMING_PY_SNAKE_CASE",
+      "target": { "language": "python", "component_type": "library_module" },
+      "severity": "warn",
+      "weight": 2
+    },
+    {
+      "id": "NAMING_TS_KEBAB_CASE",
+      "target": { "language": "node_ts", "component_type": "ui_frontend" },
+      "severity": "warn",
+      "weight": 2
     }
   ],
   "scoring": {
-    "pass_threshold": 0.7
+    "pass_threshold": 0.7,
+    "weights": { "error": 1.0, "warn": 0.4, "info": 0.1 }
+  },
+  "conventions": {
+    "python_filenames": "snake_case",
+    "ts_filenames": "kebab-case"
+  },
+  "artifacts": {
+    "version_reports": true
   }
 }
