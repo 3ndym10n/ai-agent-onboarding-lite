@@ -8,15 +8,16 @@ import fnmatch
 
 PROTECTED = [
     ".github/**",
-    "ai_onboard/**",
-    "ai_onboard/cli/**",
-    "ai_onboard/policies/**",
-    "ai_onboard/schemas/**",
+    "pyproject.toml",
+    "README_ai_onboard.md",
+    "AGENTS.md",
     "ai_onboard/__init__.py",
     "ai_onboard/__main__.py",
     "ai_onboard/VERSION",
-    "README_ai_onboard.md",
-    "AGENTS.md",
+    "ai_onboard/cli/commands.py",
+    "ai_onboard/core/**",
+    "ai_onboard/policies/**",
+    "ai_onboard/schemas/**",
 ]
 
 

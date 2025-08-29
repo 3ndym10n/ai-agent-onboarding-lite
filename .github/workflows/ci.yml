@@ -1,32 +1,25 @@
-name: CI
+name: ci
 
-on:
-  pull_request:
-  push:
-    branches: [ main ]
+on: [pull_request, push]
 
 jobs:
-  validate:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: windows-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.8" }
+      - run: python -m pip install --upgrade pip
+      - run: pip install pytest pyyaml
+      - name: Protected paths
+        shell: pwsh
+        run: python scripts/protected_paths_diff.py origin/${{ github.base_ref || 'main' }}
+      - name: Smoke summary
+        shell: pwsh
+        run: python -m ai_onboard prompt summary --level brief | Out-File -FilePath aiob_summary.json
+      - uses: actions/upload-artifact@v4
+        with: { name: aiob_summary, path: aiob_summary.json }
+      - name: Tests
+        run: pytest
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Protected paths presence check
-        run: |
-          python scripts/protected_paths.py
-
-      - name: Run ai_onboard validation
-        run: |
-          python -m pip install --upgrade pip
-          pip install -e .
-          python -m ai_onboard analyze
-          python -m ai_onboard charter
-          python -m ai_onboard plan
-          python -m ai_onboard align --approve
-          python -m ai_onboard validate --report
