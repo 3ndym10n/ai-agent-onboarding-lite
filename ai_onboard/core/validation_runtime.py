@@ -1,12 +1,17 @@
 from pathlib import Path
 from typing import Dict, Any, List
-from . import policy_engine, registry, utils, cache, scheduler, error_resolver, optimizer_state, profiler
+from . import policy_engine, registry, utils, cache, scheduler, error_resolver, optimizer_state, profiler, schema_validate
 
 def run(root: Path) -> Dict[str, Any]:
     manifest = utils.read_json(root / "ai_onboard.json", default=None)
     if not manifest:
         raise SystemExit("Missing ai_onboard.json. Run: python -m ai_onboard analyze")
     policy = policy_engine.load(root)
+    # Validate effective policy against minimal schema (non-invasive)
+    try:
+        schema_validate.validate_policy(policy)
+    except Exception as e:
+        raise SystemExit(f"Policy validation failed: {e}")
     components = manifest.get("components", [])
     idx = cache.load(root)
     changed = cache.changed_files(root, idx)

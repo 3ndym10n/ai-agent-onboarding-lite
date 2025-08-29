@@ -316,3 +316,7 @@ def main(argv=None):
     except state.StateError as e:
         print(e)
         return
+    except Exception as e:
+        # Catch-all to avoid stack traces surfacing to users for known flows
+        print(e)
+        return
