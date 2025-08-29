@@ -138,7 +138,7 @@ If tags/releases are used, document release notes, highlight compatibility, and 
 9.4 Agent Gates (Stop/Go)
 - Gate A (Pre-edit): emit a brief summary and attach to PR: `python -m ai_onboard prompt summary --level brief`.
 - Gate B (Safety): checkpoint if `files>10` OR `lines>500`: `python -m ai_onboard checkpoint create --scope "." --reason "pre-change"`.
-- Gate C (Guard): propose planned action; require `allow` or `confirm` only: `python -m ai_onboard prompt propose --diff '{"files_changed":[],"lines_deleted":0}'`. Any `deny` fails CI.
+- Gate C (Guard): propose planned action and evaluate; require non-blocking decision (e.g., `allow` or `warn`): `python -m ai_onboard prompt propose --diff '{"files_changed":[],"lines_deleted":0}'`. Any `block` fails CI.
 - Gate D (Post-op): run validation and log hints: `python -m ai_onboard validate --report`; block merge if high‑risk issues are detected.
 
 10. Security and Compliance
@@ -185,7 +185,7 @@ A.3 Emergency Rollback
 
 Appendix B: Glossary
 - Protected Paths: Files/directories guarded by scripts and CI.
-- Baseline Policy: Canonical policy constraints in `ai_onboard/policies/base.json`.
+- Baseline Policy: Canonical policy constraints in `ai_onboard/policies/base.yaml`.
 - Minimal Diff: Small, targeted change that addresses a specific root cause.
 
 End of Document.
@@ -344,10 +344,6 @@ C.11 PR Template Cue (to include in description)
 - Risk and rollback plan
 - Docs updated: yes/no (files)
 
-10.3 Telemetry JSONL (per action)
-Agents and humans should read the same JSONL facts for decisions and audits.
-```
-{"ts":"2025-08-29T10:22:11Z","agent":"cursor:gpt-4o","cmd":"guard","decision":"warn","rules":["big-change-requires-approval"],"files":12,"lines":680}
 ```
 
 
@@ -441,10 +437,10 @@ Appendix E: Policy Schema Example (JSON Schema)
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "level"],
+        "required": ["id", "action"],
         "properties": {
           "id": {"type": "string", "minLength": 1},
-          "level": {"type": "string", "enum": ["info", "warn", "error"]},
+          "action": {"type": "string", "enum": ["allow", "warn", "require_approval", "block"]},
           "message": {"type": "string"}
         },
         "additionalProperties": true
@@ -545,4 +541,10 @@ function Save-DependencySnapshot {
     if (-not (Test-Path '.ai_onboard')) { New-Item -ItemType Directory -Path '.ai_onboard' | Out-Null }
     pip freeze | Set-Content -Encoding UTF8 $Path
 }
+```
+
+10.3 Telemetry JSONL (per action)
+Agents and humans should read the same JSONL facts for decisions and audits.
+```
+{"ts":"2025-08-29T10:22:11Z","agent":"cursor:gpt-4o","cmd":"guard","decision":"warn","rules":["big-change-requires-approval"],"files":12,"lines":680}
 ```

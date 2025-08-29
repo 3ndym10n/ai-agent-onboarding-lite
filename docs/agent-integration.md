@@ -17,7 +17,7 @@ Canonical layout and responsibilities:
   - `cli/` — CLI entrypoints
   - `core/` — runtime modules
   - `plugins/` — validation plugins
-  - `policies/` — versioned, canonical policies (JSON)
+  - `policies/` — versioned, canonical policies (YAML)
   - `schemas/` — JSON Schemas (reserved)
 - `.ai_onboard/` — artifacts (never committed)
   - `checkpoints/` — snapshots + index
@@ -122,10 +122,10 @@ Examples:
 
 Implementation approach:
 - Extend existing policy engine with a new category `agent_behavior`.
-- Each rule returns a severity and recommended action: `allow|warn|pause|block`.
+- Each rule returns a severity and recommended action: `allow|warn|require_approval|block`.
 
 Policy format:
-- Canonical policies are JSON under `ai_onboard/policies/` (e.g., `base.json`).
+- Canonical policies are YAML under `ai_onboard/policies/` (e.g., `base.yaml`).
 - Schemas live under `ai_onboard/schemas/` (reserved for future use).
 
 ## 6) Minimal Implementation Plan (non-breaking)
@@ -159,7 +159,7 @@ Controlled via `ai_onboard.json` (all default to true for backward compatibility
 ## 7) Upgrade Gates (Agent Stop/Go)
 
 - Gate A (pre-change): emit summary (brief) and attach to PR.
-- Gate B (pre-merge): create checkpoint; policies and intent checks should return `allow` or `confirm` only.
+- Gate B (pre-merge): create checkpoint; policies and intent checks should return non-blocking decisions (e.g., `allow` or `warn`).
 - Gate C (post-merge smoke): run validations/tests; emit hints; fail if high-risk issues detected.
 
 See CI example in Appendix for a minimal implementation.
@@ -179,3 +179,4 @@ Agents and humans read the same JSONL records:
 ## Appendix: CI Gates
 
 See `.github/workflows/agentops.yml` for a paste-ready workflow. It checks protected paths, emits a brief summary artifact, and runs validation/report steps.
+
