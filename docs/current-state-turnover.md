@@ -20,51 +20,20 @@ The `ai-onboard` system is a **drop-in project coach** that provides charter + p
 ## 1. Current Implementation Status
 
 ### 1.1 Package Structure (ACTUAL)
-```
-ai_onboard/
-├── __init__.py (v0.2.0)
-├── __main__.py (CLI entry point)
-├── VERSION (7 bytes)
-├── cli/
-│   ├── __init__.py
-│   └── commands.py (318 lines, 12+ subcommands)
-├── core/ (25 modules)
-│   ├── __init__.py
-│   ├── alignment.py (63 lines)
-│   ├── cache.py (37 lines)
-│   ├── charter.py (32 lines)
-│   ├── checkpoints.py (108 lines)
-│   ├── cleanup.py (220 lines)
-│   ├── discovery.py (21 lines)
-│   ├── error_resolver.py (50 lines)
-│   ├── intent_checks.py (24 lines)
-│   ├── issue.py (15 lines)
-│   ├── meta_policy.py (90 lines)
-│   ├── methodology.py (14 lines)
-│   ├── optimizer.py (26 lines)
-│   ├── optimizer_state.py (52 lines)
-│   ├── planning.py (26 lines)
-│   ├── policy_engine.py (24 lines)
-│   ├── profiler.py (8 lines)
-│   ├── progress_tracker.py (34 lines)
-│   ├── prompt_bridge.py (58 lines)
-│   ├── registry.py (12 lines)
-│   ├── scheduler.py (13 lines)
-│   ├── state.py (35 lines)
-│   ├── summarizer.py (40 lines)
-│   ├── telemetry.py (86 lines)
-│   ├── utils.py (17 lines)
-│   ├── validation_runtime.py (87 lines)
-│   └── versioning.py (23 lines)
-├── policies/
-│   ├── __init__.py
-│   ├── │   ├── base.yaml (751 bytes, 3 rules)
-│   └── overlays/
-└── plugins/
-└── schemas/
-```
 
-### 1.2 CLI Commands (IMPLEMENTED)
+- ai_onboard/
+  - __init__.py (v0.2.0)
+  - __main__.py (CLI entry point)
+  - VERSION
+  - cli/ (commands and subcommands)
+  - core/ (alignment, cache, charter, checkpoints, cleanup, discovery, error_resolver, intent_checks, issue, meta_policy, methodology, optimizer, optimizer_state, planning, policy_engine, profiler, progress_tracker, prompt_bridge, registry, scheduler, state, summarizer, telemetry, utils, validation_runtime, versioning, schema_validate)
+  - policies/
+    - base.yaml (canonical policy)
+  - plugins/
+    - example_policy.py (example plugin)
+    - conventions/, library_module/, ui_frontend/
+  - schemas/
+    - policy.schema.json### 1.2 CLI Commands (IMPLEMENTED)
 ```bash
 # Core workflow commands
 python -m ai_onboard analyze [--allowExec]
@@ -340,4 +309,5 @@ python -m ai_onboard validate --report
 **Document Status**: Current as of 2024-12-19  
 **Maintainer**: [Your Name]  
 **Next Review**: [Date]
+
 
