@@ -15,6 +15,7 @@ from ..core import (
     cleanup,
     prompt_bridge,
 )
+from ..plugins import example_policy  # ensure example plugin registers on import
 
 
 def main(argv=None):

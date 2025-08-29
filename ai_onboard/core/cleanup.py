@@ -98,7 +98,7 @@ NON_CRITICAL_PATTERNS = {
 def is_critical(path: Path, root: Path) -> bool:
     """Check if a path is critical and should never be deleted."""
     rel_path = path.relative_to(root)
-    rel_str = str(rel_path)
+    rel_str = str(rel_path).replace("\\", "/")
     
     # Check exact matches first
     if rel_str in CRITICAL_PATTERNS:
@@ -120,7 +120,7 @@ def is_critical(path: Path, root: Path) -> bool:
 def is_non_critical(path: Path, root: Path) -> bool:
     """Check if a path matches non-critical patterns that can be safely removed."""
     rel_path = path.relative_to(root)
-    rel_str = str(rel_path)
+    rel_str = str(rel_path).replace("\\", "/")
     
     for pattern in NON_CRITICAL_PATTERNS:
         if pattern.endswith("/"):
