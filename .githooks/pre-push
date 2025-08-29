@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Optional local guard. Enable with:
+#   git config core.hooksPath .githooks
+
+BASE=${1:-origin/main}
+python scripts/protected_paths_diff.py "$BASE"
+

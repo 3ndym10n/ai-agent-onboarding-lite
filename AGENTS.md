@@ -30,6 +30,12 @@ CI enforces presence via `scripts/protected_paths.py`. If a cleanup removes any 
 the above, CI fails. For local bulk changes, keep deletions restricted to caches
 and build artifacts (e.g., `.ai_onboard/`, `__pycache__/`, `*.egg-info/`, `dist/`, `build/`).
 
+Additional guard (diff-based): `scripts/protected_paths_diff.py` fails if a PR touches sensitive paths. Wired in `.github/workflows/agentops.yml`. For local use, enable the sample pre-push hook:
+
+```
+git config core.hooksPath .githooks
+```
+
 ### Local Protection (pre-commit)
 
 Enable the local hook to block accidental deletion of protected files:

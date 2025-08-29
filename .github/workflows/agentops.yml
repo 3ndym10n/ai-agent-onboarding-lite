@@ -1,0 +1,41 @@
+name: AgentOps Gates
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  gates:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.8'
+      - name: Install minimal deps
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+      - name: Protected paths check (diff)
+        shell: pwsh
+        run: |
+          python scripts/protected_paths_diff.py origin/${{ github.base_ref }}
+      - name: Agent summary (artifact)
+        shell: pwsh
+        run: |
+          python -m ai_onboard prompt summary --level brief | Out-File -FilePath aiob_summary.json -Encoding utf8
+      - uses: actions/upload-artifact@v4
+        with:
+          name: aiob_summary
+          path: aiob_summary.json
+      - name: Validation report
+        shell: pwsh
+        run: |
+          python -m ai_onboard analyze
+          python -m ai_onboard align --approve --checkpoint CI
+          python -m ai_onboard validate --report
+      - uses: actions/upload-artifact@v4
+        with:
+          name: aiob_report
+          path: .ai_onboard/report.md
+

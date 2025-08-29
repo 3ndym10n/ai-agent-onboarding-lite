@@ -9,6 +9,21 @@ Goals:
 - Cross-agent telemetry and context summarization
 - Thin APIs with small surface area and no new deps
 
+## Directory Model
+
+Canonical layout and responsibilities:
+
+- `ai_onboard/` — package code (runtime, CLI, plugins, policies, schemas)
+  - `cli/` — CLI entrypoints
+  - `core/` — runtime modules
+  - `plugins/` — validation plugins
+  - `policies/` — versioned, canonical policies (JSON)
+  - `schemas/` — JSON Schemas (reserved)
+- `.ai_onboard/` — artifacts (never committed)
+  - `checkpoints/` — snapshots + index
+  - `metrics.jsonl`, `agents.jsonl` — telemetry streams
+  - `report.md`, `cache_index.json` — reports + caches
+
 ## 1) Prompt-Level API (thin surface)
 
 Expose just enough for agents to self-serve context and guardrails. Two modes are useful: CLI and Python.
@@ -109,6 +124,10 @@ Implementation approach:
 - Extend existing policy engine with a new category `agent_behavior`.
 - Each rule returns a severity and recommended action: `allow|warn|pause|block`.
 
+Policy format:
+- Canonical policies are JSON under `ai_onboard/policies/` (e.g., `base.json`).
+- Schemas live under `ai_onboard/schemas/` (reserved for future use).
+
 ## 6) Minimal Implementation Plan (non-breaking)
 
 1. Add CLI `prompt` group with `state|rules|summary` commands (thin wrappers)
@@ -136,3 +155,27 @@ Controlled via `ai_onboard.json` (all default to true for backward compatibility
   }
 }
 ```
+
+## 7) Upgrade Gates (Agent Stop/Go)
+
+- Gate A (pre-change): emit summary (brief) and attach to PR.
+- Gate B (pre-merge): create checkpoint; policies and intent checks should return `allow` or `confirm` only.
+- Gate C (post-merge smoke): run validations/tests; emit hints; fail if high-risk issues detected.
+
+See CI example in Appendix for a minimal implementation.
+
+## 8) Observability (Telemetry Fields)
+
+Agents and humans read the same JSONL records:
+```
+{"ts":"2025-08-29T10:22:11Z","agent":"cursor:gpt-4o","cmd":"guard","decision":"warn","rules":["MAX_REFACTOR_FILES"],"files":12,"lines":680}
+```
+
+## 9) Rollback Steps
+
+- Take a checkpoint label before risky changes: `python -m ai_onboard checkpoint create --scope "src/**" --reason "pre-upgrade"`
+- If regression: `python -m ai_onboard checkpoint restore --id <ckpt>`
+
+## Appendix: CI Gates
+
+See `.github/workflows/agentops.yml` for a paste-ready workflow. It checks protected paths, emits a brief summary artifact, and runs validation/report steps.
