@@ -1,4 +1,3 @@
-
 # AI Onboard (Drop-in)
 
 Run:
@@ -16,7 +15,7 @@ Run:
 
 ## Safe Cleanup
 
-The `cleanup` command safely removes non-critical files while **never** touching:
+The `cleanup` command safely removes non-critical files while never touching:
 - `ai_onboard/` directory (the system itself)
 - `.ai_onboard/` directory (project data)
 - `.git/` directory (version control)
@@ -24,8 +23,8 @@ The `cleanup` command safely removes non-critical files while **never** touching
 - Documentation (`README*`, `AGENTS.md`, etc.)
 - CI/CD files (`.github/`, etc.)
 
-**Usage:**
-```bash
+Usage:
+```
 # See what would be deleted (safe)
 python -m ai_onboard cleanup --dry-run
 
@@ -52,7 +51,7 @@ This project can act as a meta-tool for AI coding agents (Cursor, Codex, GPTs, e
   - Kaizen: Plan/Do/Check/Act loop scaffolds self-correction instead of blind retries.
 
 - Gaps to close for agents:
-  - Intent checks: Meta-policy for “should the agent do this task now?”.
+  - Intent checks: Meta-policy for "should the agent do this task now?".
   - Prompt feedback: Feed telemetry/state back into agent prompts, not just logs.
   - Nonlinear work: Lightweight checkpoints/rollback and branch comparison for approaches.
   - Cross-model context: Shared memory usable by different models/context windows.
@@ -62,7 +61,7 @@ This project can act as a meta-tool for AI coding agents (Cursor, Codex, GPTs, e
   - Checkpoints: Snapshot/rollback hooks with simple metadata and safety triggers.
   - Cross-agent telemetry: Unified JSONL schema with `agent_id`, `model`, `task`, `outcome`.
   - Summarization: Brief vs. full context views for small/large context models.
-  - Meta-policy: Rules like “pause if touching >N files” or “require tests for big diffs”.
+  - Meta-policy: Rules like 'pause if touching >N files' or 'require tests for big diffs'.
 
 See `docs/agent-integration.md` for a concrete proposal with schemas and suggested commands.
 
@@ -72,7 +71,32 @@ Quick examples:
 - Propose an action and get decision: `python -m ai_onboard prompt propose --diff "{\"files_changed\":[\"a.py\",\"b.py\"],\"lines_deleted\":200,\"has_tests\":false,\"subsystems\":[\"core\",\"ui\"]}"`
 - Create scoped checkpoint: `python -m ai_onboard checkpoint create --scope "src/**/*.py" --reason "pre-refactor"`
 
+PowerShell tip: assign JSON to a variable to avoid quoting issues.
+```
+$diff = '{"files_changed":["a.py","b.py"],"lines_deleted":200,"has_tests":false,"subsystems":["core","ui"]}'
+python -m ai_onboard prompt propose --diff $diff
+```
+
+### Feature Flags
+
+Set in `ai_onboard.json` (defaults are true):
+```
+{
+  "features": {"prompt_bridge": true, "intent_checks": true, "checkpoints": true},
+  "metaPolicies": {"MAX_DELETE_LINES": 200, "MAX_REFACTOR_FILES": 12, "REQUIRES_TEST_COVERAGE": true}
+}
+```
+
 ## Changelog
+
+- v0.2.0
+  - feat(agent): Prompt bridge (state|rules|summary|propose)
+  - feat(agent): Intent checks + meta-policy thresholds
+  - feat(agent): Checkpoints (create/list/restore)
+  - feat(agent): Cross-agent telemetry stream
+  - feat(agent): Model-aware summarization outputs
+  - fix(cli): Cleanup output readability
+  - docs: Agent integration design + examples
 
 - v0.1.3
   - feat(kaizen): Learn per-rule fault yield and average time from telemetry
@@ -92,3 +116,4 @@ Quick examples:
 
 - v0.1.0
   - Initial version
+
