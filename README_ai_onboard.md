@@ -9,10 +9,41 @@ Run:
     python -m ai_onboard validate
     python -m ai_onboard kaizen
     python -m ai_onboard metrics
+    python -m ai_onboard cleanup --dry-run
+
+## Safe Cleanup
+
+The `cleanup` command safely removes non-critical files while **never** touching:
+- `ai_onboard/` directory (the system itself)
+- `.ai_onboard/` directory (project data)
+- `.git/` directory (version control)
+- Configuration files (`pyproject.toml`, `requirements.txt`, etc.)
+- Documentation (`README*`, `AGENTS.md`, etc.)
+- CI/CD files (`.github/`, etc.)
+
+**Usage:**
+```bash
+# See what would be deleted (safe)
+python -m ai_onboard cleanup --dry-run
+
+# Actually clean up (with confirmation)
+python -m ai_onboard cleanup
+
+# Force cleanup without confirmation
+python -m ai_onboard cleanup --force
+
+# Create backup before cleanup
+python -m ai_onboard cleanup --backup
+```
 
 Guidance for AI coding agents: see `AGENTS.md`.
 
 ## Changelog
+
+- v0.1.2
+  - feat(cleanup): Add safe cleanup system that never deletes critical files
+  - feat(cleanup): Add dry-run mode and backup capabilities
+  - feat(cleanup): Comprehensive protection of ai_onboard system and project files
 
 - v0.1.1
   - feat(core): Harden telemetry, add readers, wire optimizer to metrics

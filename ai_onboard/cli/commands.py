@@ -12,6 +12,7 @@ from ..core import (
     telemetry,
     optimizer,
     versioning,
+    cleanup,
 )
 
 
@@ -52,6 +53,11 @@ def main(argv=None):
     s_ver.add_argument("--set", help="Set explicit version (e.g., 1.2.3)")
 
     sub.add_parser("metrics", help="Show last validation run summary from telemetry")
+
+    s_clean = sub.add_parser("cleanup", help="Safely remove non-critical files (build artifacts, cache, etc.)")
+    s_clean.add_argument("--dry-run", action="store_true", help="Show what would be deleted without actually deleting")
+    s_clean.add_argument("--force", action="store_true", help="Skip confirmation prompts")
+    s_clean.add_argument("--backup", action="store_true", help="Create backup before cleanup")
 
     args = p.parse_args(argv)
     root = Path.cwd()
@@ -136,6 +142,54 @@ def main(argv=None):
             print("- components:")
             for line in comp_lines:
                 print(line)
+            return
+
+        if args.cmd == "cleanup":
+            print("🔍 Scanning for files to clean up...")
+            
+            # Always start with dry-run to show what would be deleted
+            result = cleanup.safe_cleanup(root, dry_run=True)
+            
+            print(f"\n📊 Scan Results:")
+            print(f"  🛡️  Protected (critical): {result['protected']} files")
+            print(f"  🗑️  Would delete: {result['would_delete']} files")
+            print(f"  ❓ Unknown: {result['unknown']} files")
+            
+            if result['would_delete'] == 0:
+                print("\n✨ No files to clean up!")
+                return
+            
+            if args.dry_run:
+                print("\n🔍 DRY RUN MODE - No files will be deleted")
+                print("Files that would be deleted:")
+                for path in result['scan_result']['non_critical'][:10]:  # Show first 10
+                    print(f"  - {path.relative_to(root)}")
+                if len(result['scan_result']['non_critical']) > 10:
+                    print(f"  ... and {len(result['scan_result']['non_critical']) - 10} more")
+                return
+            
+            # Real cleanup mode
+            if not args.force:
+                response = input(f"\n⚠️  Are you sure you want to delete {result['would_delete']} files? (y/N): ")
+                if response.lower() != 'y':
+                    print("❌ Cleanup cancelled.")
+                    return
+            
+            # Create backup if requested
+            if args.backup:
+                print("💾 Creating backup...")
+                backup_dir = cleanup.create_backup(root)
+                print(f"✅ Backup created at: {backup_dir}")
+            
+            print("🧹 Performing cleanup...")
+            result = cleanup.safe_cleanup(root, dry_run=False)
+            
+            print(f"\n✅ Cleanup completed!")
+            print(f"  🗑️  Deleted: {result['deleted_count']} files")
+            if result['errors']:
+                print(f"  ⚠️  Errors: {len(result['errors'])} files failed to delete")
+                for error in result['errors'][:5]:
+                    print(f"    - {error}")
             return
     except state.StateError as e:
         print(e)

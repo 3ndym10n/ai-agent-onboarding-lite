@@ -19,3 +19,13 @@ Acknowledgement checklist for human authors and agents:
 - [ ] I kept the scope minimal and documented changes.
 - [ ] I considered backward compatibility and tests.
 
+## Protected Paths
+
+This repo protects critical directories/files from bulk deletions or "cleanup" runs:
+
+- Directories: `.github/`, `ai_onboard/`, `ai_onboard/core/`, `ai_onboard/plugins/`
+- Files: `pyproject.toml`, `README_ai_onboard.md`, `AGENTS.md`, key core modules
+
+CI enforces presence via `scripts/protected_paths.py`. If a cleanup removes any of
+the above, CI fails. For local bulk changes, keep deletions restricted to caches
+and build artifacts (e.g., `.ai_onboard/`, `__pycache__/`, `*.egg-info/`, `dist/`, `build/`).
