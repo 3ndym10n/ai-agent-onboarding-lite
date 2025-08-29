@@ -40,6 +40,11 @@ Guidance for AI coding agents: see `AGENTS.md`.
 
 ## Changelog
 
+- v0.1.3
+  - feat(kaizen): Learn per-rule fault yield and average time from telemetry
+  - feat(kaizen): Use learned stats to order rules and skip stable ones
+  - docs: Document Kaizen learning behavior
+
 - v0.1.2
   - feat(cleanup): Add safe cleanup system that never deletes critical files
   - feat(cleanup): Add dry-run mode and backup capabilities

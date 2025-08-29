@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Dict, Any, List
-from . import policy_engine, registry, utils, cache, scheduler, error_resolver
+from . import policy_engine, registry, utils, cache, scheduler, error_resolver, optimizer_state, profiler
 
 def run(root: Path) -> Dict[str, Any]:
     manifest = utils.read_json(root / "ai_onboard.json", default=None)
@@ -22,8 +22,18 @@ def run(root: Path) -> Dict[str, Any]:
 
         # Create pseudo-rule list from plugin names for scheduler ordering
         rules = [{"id": getattr(p, "name", p.__class__.__name__)} for p in plugins]
-        hist = {}      # placeholder for rule history (extend later)
-        prof = {}      # placeholder for rule timing profiles
+        # Load optimizer state to inform scheduling (fault_yield/avg_time)
+        opt_state = optimizer_state.load(root)
+        # Build dynamic history/profiler views from state
+        hist = {}
+        prof = {}
+        for r in rules:
+            rid = r["id"]
+            hist[rid] = {
+                "fault_yield": optimizer_state.fault_yield(opt_state, rid),
+                "passes_in_row": optimizer_state.passes_in_row(opt_state, rid),
+            }
+            prof[rid] = {"p50_time": optimizer_state.avg_time(opt_state, rid)}
         ordered = scheduler.order_rules(rules, hist, prof)
 
         issues = []
@@ -35,13 +45,22 @@ def run(root: Path) -> Dict[str, Any]:
             if not plugin:
                 continue
             try:
-                issues.extend(plugin.run(comp_files, ctx))
+                with profiler.timer() as elapsed:
+                    before_count = len(issues)
+                    issues.extend(plugin.run(comp_files, ctx))
+                    duration_s = elapsed()
+                    found = len(issues) - before_count
+                    # Update optimizer state per rule
+                    optimizer_state.update_rule_stats(opt_state, r["id"], duration_s, found)
             except Exception as e:
                 # Convert runtime exceptions into issues, and fingerprint them
                 msg = f"Plugin crash: {e}"
                 fp = error_resolver.fingerprint(msg, r["id"])
                 error_resolver.record_kb(root, fp, "plugin_run", "crash")
                 issues.append(error_resolver.issue_from_fp(fp, r["id"], msg))
+
+        # Persist updated optimizer state after processing this component
+        optimizer_state.save(root, opt_state)
 
         # Post-process issues: fingerprint & create ask-cards if repeated
         for i in list(issues):
