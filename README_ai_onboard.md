@@ -10,6 +10,9 @@ Run:
     python -m ai_onboard kaizen
     python -m ai_onboard metrics
     python -m ai_onboard cleanup --dry-run
+    # Agent-facing (feature-flagged):
+    python -m ai_onboard prompt state|rules|summary|propose
+    python -m ai_onboard checkpoint create|list|restore
 
 ## Safe Cleanup
 
@@ -37,6 +40,37 @@ python -m ai_onboard cleanup --backup
 ```
 
 Guidance for AI coding agents: see `AGENTS.md`.
+
+## AI Agents: Fit & Roadmap
+
+This project can act as a meta-tool for AI coding agents (Cursor, Codex, GPTs, etc.) by providing shared context, safety rails, and a structured improvement loop.
+
+- Where it fits well:
+  - Memory: `ai_onboard.json` + JSONL telemetry gives agents persistent state across runs.
+  - Safety: Protected paths + safe cleanup reduce destructive actions.
+  - Guardrails: Policy engine + validation runtime enforce pre-flight sanity checks.
+  - Kaizen: Plan/Do/Check/Act loop scaffolds self-correction instead of blind retries.
+
+- Gaps to close for agents:
+  - Intent checks: Meta-policy for “should the agent do this task now?”.
+  - Prompt feedback: Feed telemetry/state back into agent prompts, not just logs.
+  - Nonlinear work: Lightweight checkpoints/rollback and branch comparison for approaches.
+  - Cross-model context: Shared memory usable by different models/context windows.
+
+- Roadmap highlights:
+  - Prompt API: Thin interface to query current state and preflight rules before edits.
+  - Checkpoints: Snapshot/rollback hooks with simple metadata and safety triggers.
+  - Cross-agent telemetry: Unified JSONL schema with `agent_id`, `model`, `task`, `outcome`.
+  - Summarization: Brief vs. full context views for small/large context models.
+  - Meta-policy: Rules like “pause if touching >N files” or “require tests for big diffs”.
+
+See `docs/agent-integration.md` for a concrete proposal with schemas and suggested commands.
+
+Quick examples:
+- Get state JSON for prompts: `python -m ai_onboard prompt state`
+- Preflight rules for a path: `python -m ai_onboard prompt rules --path src/ --change "{\"lines_deleted\":120}"`
+- Propose an action and get decision: `python -m ai_onboard prompt propose --diff "{\"files_changed\":[\"a.py\",\"b.py\"],\"lines_deleted\":200,\"has_tests\":false,\"subsystems\":[\"core\",\"ui\"]}"`
+- Create scoped checkpoint: `python -m ai_onboard checkpoint create --scope "src/**/*.py" --reason "pre-refactor"`
 
 ## Changelog
 

@@ -13,6 +13,7 @@ from ..core import (
     optimizer,
     versioning,
     cleanup,
+    prompt_bridge,
 )
 
 
@@ -58,6 +59,28 @@ def main(argv=None):
     s_clean.add_argument("--dry-run", action="store_true", help="Show what would be deleted without actually deleting")
     s_clean.add_argument("--force", action="store_true", help="Skip confirmation prompts")
     s_clean.add_argument("--backup", action="store_true", help="Create backup before cleanup")
+
+    # Checkpoints (agent-aware snapshots)
+    s_ck = sub.add_parser("checkpoint", help="Manage lightweight checkpoints")
+    ck_sub = s_ck.add_subparsers(dest="ck_cmd", required=True)
+    ck_create = ck_sub.add_parser("create", help="Create checkpoint for given scope globs")
+    ck_create.add_argument("--scope", nargs="+", default=["."])
+    ck_create.add_argument("--reason", default="")
+    ck_sub.add_parser("list", help="List checkpoints")
+    ck_restore = ck_sub.add_parser("restore", help="Restore by id")
+    ck_restore.add_argument("--id", required=True)
+
+    # Agent-facing prompt bridge (read-mostly, feature-flagged)
+    s_prompt = sub.add_parser("prompt", help="Agent context APIs: state|rules|summary|propose")
+    sp = s_prompt.add_subparsers(dest="prompt_cmd", required=True)
+    sp.add_parser("state", help="Emit compact project state JSON")
+    sp_rules = sp.add_parser("rules", help="Applicable meta-policy rules for a target path")
+    sp_rules.add_argument("--path", default=".")
+    sp_rules.add_argument("--change", default="", help="Optional change summary (free-text or JSON)")
+    sp_summary = sp.add_parser("summary", help="Model-aware summary: brief|full")
+    sp_summary.add_argument("--level", choices=["brief","full"], default="brief")
+    sp_propose = sp.add_parser("propose", help="Propose action; returns decision and rationale")
+    sp_propose.add_argument("--diff", default="", help="JSON {files_changed, lines_deleted, has_tests, subsystems}")
 
     args = p.parse_args(argv)
     root = Path.cwd()
@@ -142,6 +165,104 @@ def main(argv=None):
             print("- components:")
             for line in comp_lines:
                 print(line)
+            return
+
+        # Clean, early handler for cleanup to avoid legacy garbled prints below
+        if args.cmd == "cleanup":
+            print("Scanning for files to clean up...")
+
+            # Always start with dry-run to show what would be deleted
+            result = cleanup.safe_cleanup(root, dry_run=True)
+
+            print("\nScan Results:")
+            print(f"  Protected (critical): {result['protected']} files")
+            print(f"  Would delete: {result['would_delete']} files")
+            print(f"  Unknown: {result['unknown']} files")
+
+            if result['would_delete'] == 0:
+                print("\nNo files to clean up!")
+                return
+
+            if args.dry_run:
+                print("\nDRY RUN MODE - No files will be deleted")
+                print("Files that would be deleted:")
+                for path in result['scan_result']['non_critical'][:10]:  # Show first 10
+                    print(f"  - {path.relative_to(root)}")
+                if len(result['scan_result']['non_critical']) > 10:
+                    print(f"  ... and {len(result['scan_result']['non_critical']) - 10} more")
+                return
+
+            # Real cleanup mode
+            if not args.force:
+                response = input(f"\nAre you sure you want to delete {result['would_delete']} files? (y/N): ")
+                if response.lower() != 'y':
+                    print("Cleanup cancelled.")
+                    return
+
+            # Create backup if requested
+            if args.backup:
+                print("Creating backup...")
+                backup_dir = cleanup.create_backup(root)
+                print(f"Backup created at: {backup_dir}")
+
+            print("Performing cleanup...")
+            result = cleanup.safe_cleanup(root, dry_run=False)
+
+            print("\nCleanup completed!")
+            print(f"  Deleted: {result['deleted_count']} files")
+            if result['errors']:
+                print(f"  Errors: {len(result['errors'])} files failed to delete")
+                for error in result['errors'][:5]:
+                    print(f"    - {error}")
+            return
+
+        if args.cmd == "checkpoint":
+            manifest = utils.read_json(root / "ai_onboard.json", default={}) or {}
+            ff = (manifest.get("features") or {})
+            if ff.get("checkpoints", True) is False:
+                print("{\"error\":\"checkpoints disabled\"}")
+                return
+            subcmd = getattr(args, "ck_cmd", None)
+            from ..core import checkpoints
+            if subcmd == "create":
+                rec = checkpoints.create(root, scope=args.scope, reason=args.reason)
+                print(prompt_bridge.dumps_json({"created": rec}))
+                return
+            if subcmd == "list":
+                items = checkpoints.list(root)
+                print(prompt_bridge.dumps_json({"items": items}))
+                return
+            if subcmd == "restore":
+                res = checkpoints.restore(root, ckpt_id=args.id)
+                print(prompt_bridge.dumps_json(res))
+                return
+            print("{\"error\":\"unknown checkpoint subcommand\"}")
+            return
+
+        if args.cmd == "prompt":
+            manifest = utils.read_json(root / "ai_onboard.json", default={}) or {}
+            ff = (manifest.get("features") or {})
+            if ff.get("prompt_bridge", True) is False:
+                print("{\"error\":\"prompt_bridge disabled\"}")
+                return
+            pcmd = getattr(args, "prompt_cmd", None)
+            if pcmd == "state":
+                out = prompt_bridge.get_project_state(root)
+                print(prompt_bridge.dumps_json(out))
+                return
+            if pcmd == "rules":
+                out = prompt_bridge.get_applicable_rules(root, target_path=args.path, change_summary=args.change)
+                print(prompt_bridge.dumps_json(out))
+                return
+            if pcmd == "summary":
+                out = prompt_bridge.summary(root, level=args.level)
+                print(prompt_bridge.dumps_json(out))
+                return
+            if pcmd == "propose":
+                out = prompt_bridge.propose_action(root, diff_json=args.diff)
+                print(prompt_bridge.dumps_json(out))
+                return
+            print("{\"error\":\"unknown prompt subcommand\"}")
             return
 
         if args.cmd == "cleanup":
