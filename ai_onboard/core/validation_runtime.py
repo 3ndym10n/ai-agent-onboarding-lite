@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Dict, Any, List
-from . import policy_engine, registry, utils, cache, scheduler, error_resolver, optimizer_state, profiler, schema_validate
+from . import policy_engine, registry, utils, cache, scheduler, error_resolver, optimizer_state, profiler, schema_validate, telemetry
 
 def run(root: Path) -> Dict[str, Any]:
     manifest = utils.read_json(root / "ai_onboard.json", default=None)
@@ -10,7 +10,9 @@ def run(root: Path) -> Dict[str, Any]:
     # Validate effective policy against minimal schema (non-invasive)
     try:
         schema_validate.validate_policy(policy)
+        telemetry.log_event("policy_validation", decision="ok", rules=len(policy.get("rules", []) or []))
     except Exception as e:
+        telemetry.log_event("policy_validation", decision="fail", error=str(e))
         raise SystemExit(f"Policy validation failed: {e}")
     components = manifest.get("components", [])
     idx = cache.load(root)

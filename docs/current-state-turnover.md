@@ -1,7 +1,7 @@
 # Current System State: Technical Turnover Document
 
 **Repository**: `ai-agent-onboarding/ai-agent-onboarding`  
-**Version**: 0.1.1 (pyproject.toml) / 0.1.0 (ai_onboard/__init__.py)  
+**Version**: 0.2.0 (pyproject.toml) / 0.2.0 (ai_onboard/__init__.py)  
 **Analysis Date**: 2024-12-19  
 **Status**: Alpha Development (Development Status :: 3 - Alpha)
 
@@ -22,7 +22,7 @@ The `ai-onboard` system is a **drop-in project coach** that provides charter + p
 ### 1.1 Package Structure (ACTUAL)
 ```
 ai_onboard/
-├── __init__.py (v0.1.0)
+├── __init__.py (v0.2.0)
 ├── __main__.py (CLI entry point)
 ├── VERSION (7 bytes)
 ├── cli/
@@ -58,11 +58,10 @@ ai_onboard/
 │   └── versioning.py (23 lines)
 ├── policies/
 │   ├── __init__.py
-│   ├── base.json (984 bytes)
-│   ├── base.yaml (751 bytes, 3 rules)
+│   ├── │   ├── base.yaml (751 bytes, 3 rules)
 │   └── overlays/
-└── plugins/ (empty)
-└── schemas/ (empty)
+└── plugins/
+└── schemas/
 ```
 
 ### 1.2 CLI Commands (IMPLEMENTED)
@@ -172,8 +171,7 @@ REQUIRED_FILES = [
     "ai_onboard/core/registry.py",
 
     # Policies (baseline)
-    "ai_onboard/policies/base.json",
-]
+    "ai_onboard/policies/]
 ```
 
 ### 3.2 Required Directories
@@ -342,3 +340,4 @@ python -m ai_onboard validate --report
 **Document Status**: Current as of 2024-12-19  
 **Maintainer**: [Your Name]  
 **Next Review**: [Date]
+
