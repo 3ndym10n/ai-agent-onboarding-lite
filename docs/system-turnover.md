@@ -398,9 +398,9 @@ Base (`ai_onboard/policies/base.yaml`):
 ```yaml
 rules:
   - id: no-large-diff
-    level: warn
+    action: warn
   - id: keep-protected-paths
-    level: error
+    action: block
 thresholds:
   max_files: 10
 ```
@@ -409,7 +409,7 @@ Overlay (`.ai_onboard/overlays/policy.yaml`):
 ```yaml
 rules:
   - id: no-large-diff
-    level: error
+    action: block
 thresholds:
   max_files: 5
 ```
@@ -418,9 +418,9 @@ Merged (effective policy):
 ```yaml
 rules:
   - id: no-large-diff
-    level: error
+    action: block
   - id: keep-protected-paths
-    level: error
+    action: block
 thresholds:
   max_files: 5
 ```
@@ -482,21 +482,21 @@ def test_rules_dedupe_by_id():
     base = yaml.safe_load("""
 rules:
   - id: a
-    level: warn
+    action: warn
   - id: b
-    level: error
+    action: block
 """)
     overlay = yaml.safe_load("""
 rules:
   - id: a
-    level: error
+    action: block
   - id: c
-    level: info
+    action: allow
 """)
     merged = deep_merge(base, overlay)
     ids = [r["id"] for r in merged["rules"]]
     assert ids == ["a", "b", "c"]
-    assert next(r for r in merged["rules"] if r["id"] == "a")["level"] == "error"
+    assert next(r for r in merged["rules"] if r["id"] == "a")["action"] == "block"
 ```
 
 
