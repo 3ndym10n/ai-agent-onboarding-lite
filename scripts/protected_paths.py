@@ -8,21 +8,46 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 # Minimal set of paths that must exist in any valid repo state
 REQUIRED_FILES = [
+    # Top-level project metadata
     "pyproject.toml",
     "README_ai_onboard.md",
     "AGENTS.md",
+    
+    # Package identity
+    "ai_onboard/__init__.py",
     "ai_onboard/__main__.py",
+    "ai_onboard/VERSION",
+
+    # CLI entry
+    "ai_onboard/cli/__init__.py",
     "ai_onboard/cli/commands.py",
-    "ai_onboard/core/validation_runtime.py",
-    "ai_onboard/core/telemetry.py",
+
+    # Core runtime (minimum viable)
+    "ai_onboard/core/__init__.py",
+    "ai_onboard/core/utils.py",
     "ai_onboard/core/state.py",
+    "ai_onboard/core/telemetry.py",
+    "ai_onboard/core/validation_runtime.py",
+    "ai_onboard/core/policy_engine.py",
+    "ai_onboard/core/registry.py",
+
+    # Policies (baseline)
+    "ai_onboard/policies/base.json",
 ]
 
 REQUIRED_DIRS = [
     ".github",
+    ".github/workflows",
     "ai_onboard",
+    "ai_onboard/cli",
     "ai_onboard/core",
     "ai_onboard/plugins",
+    "ai_onboard/plugins/conventions",
+    "ai_onboard/plugins/library_module",
+    "ai_onboard/plugins/ui_frontend",
+    "ai_onboard/policies",
+    "ai_onboard/policies/overlays",
+    "ai_onboard/schemas",
 ]
 
 
@@ -49,4 +74,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-
