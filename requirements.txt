@@ -1,0 +1,9 @@
+# Core dependencies for ai_onboard
+# This project primarily uses Python standard library modules
+# Additional dependencies may be added as the project grows
+
+# Development dependencies (optional)
+pytest>=7.0.0
+black>=22.0.0
+flake8>=5.0.0
+mypy>=1.0.0

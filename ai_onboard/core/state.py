@@ -1,6 +1,10 @@
 from pathlib import Path
 from . import utils
 
+
+class StateError(Exception):
+    """Raised when an action requires a higher project state."""
+
 ORDER = ["unchartered", "chartered", "planned", "aligned", "executing", "kaizen_cycle"]
 
 def load(root: Path) -> dict:
@@ -19,4 +23,6 @@ def advance(root: Path, st: dict, target: str) -> None:
 def require_gate(root: Path, needed: str) -> None:
     st = load(root)
     if ORDER.index(st.get("state", "unchartered")) < ORDER.index(needed):
-        raise SystemExit(f"Blocked: state must be ≥ {needed} (current: {st.get('state')})")
+        raise StateError(
+            f"Blocked: state must be ≥ {needed} (current: {st.get('state')})"
+        )

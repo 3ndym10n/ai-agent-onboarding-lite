@@ -42,64 +42,68 @@ def main(argv=None):
     root = Path.cwd()
     st = state.load(root)
 
-    if args.cmd == "analyze":
-        manifest = discovery.run(root, allow_exec=args.allowExec)
-        utils.write_json(root / "ai_onboard.json", manifest)
-        print("Wrote ai_onboard.json (draft).")
-        return
-
-    if args.cmd == "charter":
-        charter.ensure(root, interactive=args.interactive)
-        state.advance(root, st, "chartered")
-        print("Charter ready at .ai_onboard/charter.json")
-        return
-
-    if args.cmd == "plan":
-        charter.require_gate(root, "chartered")
-        planning.build(root)
-        state.advance(root, st, "planned")
-        print("Plan ready at .ai_onboard/plan.json")
-        return
-
-    if args.cmd == "align":
-        cp = args.checkpoint
-        if args.approve:
-            alignment.record_decision(root, "ALIGN", cp, True, args.note)
-            state.advance(root, st, "aligned")
-            print(f"Alignment approved for {cp}.")
-        else:
-            alignment.open_checkpoint(root, cp)
-            print(f"Opened alignment checkpoint {cp}.")
-        return
-
-    if args.cmd == "validate":
-        alignment.require_state(root, "aligned")
-        res = validation_runtime.run(root)
-        if args.report:
-            progress_tracker.write_report(root, res)
-            print("Wrote .ai_onboard/report.md (+ versioned copy).")
-        telemetry.record_run(root, res)
-        return
-
-    if args.cmd == "kaizen":
-        print("Kaizen: ingesting telemetry and nudging schedules/bounds (lightweight).")
-        optimizer.nudge_from_metrics(root)
-        return
-
-    if args.cmd == "optimize":
-        optimizer.quick_optimize(root, args.budget)
-        return
-
-    if args.cmd == "version":
-        if args.set:
-            versioning.set_version(root, args.set)
-            print(f"Version set to {args.set}")
+    try:
+        if args.cmd == "analyze":
+            manifest = discovery.run(root, allow_exec=args.allowExec)
+            utils.write_json(root / "ai_onboard.json", manifest)
+            print("Wrote ai_onboard.json (draft).")
             return
-        if args.bump:
-            current = versioning.get_version(root)
-            newv = versioning.bump(current, args.bump)
-            versioning.set_version(root, newv)
-            print(f"Bumped {args.bump}: {current} → {newv}")
+
+        if args.cmd == "charter":
+            charter.ensure(root, interactive=args.interactive)
+            state.advance(root, st, "chartered")
+            print("Charter ready at .ai_onboard/charter.json")
             return
-        print(versioning.get_version(root))
+
+        if args.cmd == "plan":
+            charter.require_gate(root, "chartered")
+            planning.build(root)
+            state.advance(root, st, "planned")
+            print("Plan ready at .ai_onboard/plan.json")
+            return
+
+        if args.cmd == "align":
+            cp = args.checkpoint
+            if args.approve:
+                alignment.record_decision(root, "ALIGN", cp, True, args.note)
+                state.advance(root, st, "aligned")
+                print(f"Alignment approved for {cp}.")
+            else:
+                alignment.open_checkpoint(root, cp)
+                print(f"Opened alignment checkpoint {cp}.")
+            return
+
+        if args.cmd == "validate":
+            alignment.require_state(root, "aligned")
+            res = validation_runtime.run(root)
+            if args.report:
+                progress_tracker.write_report(root, res)
+                print("Wrote .ai_onboard/report.md (+ versioned copy).")
+            telemetry.record_run(root, res)
+            return
+
+        if args.cmd == "kaizen":
+            print("Kaizen: ingesting telemetry and nudging schedules/bounds (lightweight).")
+            optimizer.nudge_from_metrics(root)
+            return
+
+        if args.cmd == "optimize":
+            optimizer.quick_optimize(root, args.budget)
+            return
+
+        if args.cmd == "version":
+            if args.set:
+                versioning.set_version(root, args.set)
+                print(f"Version set to {args.set}")
+                return
+            if args.bump:
+                current = versioning.get_version(root)
+                newv = versioning.bump(current, args.bump)
+                versioning.set_version(root, newv)
+                print(f"Bumped {args.bump}: {current} → {newv}")
+                return
+            print(versioning.get_version(root))
+            return
+    except state.StateError as e:
+        print(e)
         return

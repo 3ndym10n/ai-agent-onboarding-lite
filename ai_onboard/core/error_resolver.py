@@ -11,7 +11,7 @@ def record_kb(root: Path, fp: str, move: str, outcome: str) -> None:
     kb = root / ".ai_onboard" / "error_kb.jsonl"
     utils.ensure_dir(kb.parent)
     with open(kb, "a", encoding="utf-8") as f:
-        f.write(f'{{"ts":"{utils.now_iso()}","fp":"{fp}","move":"{move}","outcome":"{outcome}"}}\\n')
+        f.write(f'{{"ts":"{utils.now_iso()}","fp":"{fp}","move":"{move}","outcome":"{outcome}"}}\n')
 
 def touch_fp(root: Path, fp: str) -> None:
     meta = utils.read_json(root / ".ai_onboard" / "error_meta.json", default={})
