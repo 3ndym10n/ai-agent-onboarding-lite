@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ai-onboard"
-version = "0.2.0"
+version = "0.2.1"
 description = "AI Onboard: drop-in project coach (charter + plan + align + validate + kaizen)"
 readme = "README_ai_onboard.md"
 requires-python = ">=3.8"
