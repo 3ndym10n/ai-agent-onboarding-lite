@@ -51,6 +51,8 @@ def main(argv=None):
     s_ver.add_argument("--bump", choices=["major", "minor", "patch"])
     s_ver.add_argument("--set", help="Set explicit version (e.g., 1.2.3)")
 
+    sub.add_parser("metrics", help="Show last validation run summary from telemetry")
+
     args = p.parse_args(argv)
     root = Path.cwd()
     st = state.load(root)
@@ -117,7 +119,24 @@ def main(argv=None):
                 return
             print(versioning.get_version(root))
             return
+
+        if args.cmd == "metrics":
+            last = telemetry.last_run(root)
+            if not last:
+                print("No telemetry yet. Run: python -m ai_onboard validate --report")
+                return
+            comps = last.get("components", [])
+            comp_lines = [
+                f"- {c.get('name','?')}: score={c.get('score','n/a')} issues={c.get('issue_count',0)}"
+                for c in comps
+            ]
+            print("Last validation run:")
+            print(f"- ts: {last.get('ts')}")
+            print(f"- pass: {last.get('pass')}")
+            print("- components:")
+            for line in comp_lines:
+                print(line)
+            return
     except state.StateError as e:
         print(e)
         return
-
