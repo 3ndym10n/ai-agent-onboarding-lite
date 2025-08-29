@@ -349,3 +349,200 @@ Agents and humans should read the same JSONL facts for decisions and audits.
 ```
 {"ts":"2025-08-29T10:22:11Z","agent":"cursor:gpt-4o","cmd":"guard","decision":"warn","rules":["big-change-requires-approval"],"files":12,"lines":680}
 ```
+
+
+Appendix D: Overlay Merge Algorithm (Reference)
+
+D.1 Goals
+- Deterministic, minimal-diff merges of `.ai_onboard/overlays/policy.yaml` onto `ai_onboard/policies/base.yaml`.
+- Overlay wins on scalar/object keys. For `rules` arrays, concatenate, then de-duplicate by `id` with overlay taking precedence.
+
+D.2 Pseudocode
+```python
+from __future__ import annotations
+from typing import Dict, Any, List
+
+def deep_merge(base: Dict[str, Any], overlay: Dict[str, Any]) -> Dict[str, Any]:
+    result = dict(base)
+    for key, overlay_value in overlay.items():
+        if key == "rules" and isinstance(overlay_value, list):
+            result[key] = merge_rules(base.get("rules", []), overlay_value)
+        elif isinstance(overlay_value, dict) and isinstance(base.get(key), dict):
+            result[key] = deep_merge(base[key], overlay_value)
+        else:
+            result[key] = overlay_value
+    return result
+
+def merge_rules(base_rules: List[Dict[str, Any]], overlay_rules: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    by_id: Dict[str, Dict[str, Any]] = {}
+    for rule in base_rules:
+        rule_id = rule.get("id")
+        if rule_id is not None:
+            by_id[rule_id] = rule
+    for rule in overlay_rules:
+        rule_id = rule.get("id")
+        if rule_id is not None:
+            by_id[rule_id] = rule  # overlay wins
+    # Preserve stable order: base ids first then overlay-only
+    seen = set()
+    merged: List[Dict[str, Any]] = []
+    for rule in base_rules:
+        rid = rule.get("id")
+        if rid is not None and rid in by_id and rid not in seen:
+            merged.append(by_id[rid]); seen.add(rid)
+    for rule in overlay_rules:
+        rid = rule.get("id")
+        if rid is not None and rid not in seen:
+            merged.append(by_id[rid]); seen.add(rid)
+    return merged
+```
+
+D.3 Example
+Base (`ai_onboard/policies/base.yaml`):
+```yaml
+rules:
+  - id: no-large-diff
+    level: warn
+  - id: keep-protected-paths
+    level: error
+thresholds:
+  max_files: 10
+```
+
+Overlay (`.ai_onboard/overlays/policy.yaml`):
+```yaml
+rules:
+  - id: no-large-diff
+    level: error
+thresholds:
+  max_files: 5
+```
+
+Merged (effective policy):
+```yaml
+rules:
+  - id: no-large-diff
+    level: error
+  - id: keep-protected-paths
+    level: error
+thresholds:
+  max_files: 5
+```
+
+
+Appendix E: Policy Schema Example (JSON Schema)
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ai_onboard/schemas/policy.schema.json",
+  "type": "object",
+  "properties": {
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "level"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "level": {"type": "string", "enum": ["info", "warn", "error"]},
+          "message": {"type": "string"}
+        },
+        "additionalProperties": true
+      }
+    },
+    "thresholds": {
+      "type": "object",
+      "properties": {
+        "max_files": {"type": "integer", "minimum": 0},
+        "max_lines": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}
+```
+
+
+Appendix F: Pytest Examples
+`tests/test_policy_merge.py`
+```python
+import yaml
+from your_module.merge import deep_merge  # adapt import
+
+def test_overlay_wins_scalar():
+    base = yaml.safe_load("""
+thresholds:
+  max_files: 10
+""")
+    overlay = yaml.safe_load("""
+thresholds:
+  max_files: 5
+""")
+    merged = deep_merge(base, overlay)
+    assert merged["thresholds"]["max_files"] == 5
+
+def test_rules_dedupe_by_id():
+    base = yaml.safe_load("""
+rules:
+  - id: a
+    level: warn
+  - id: b
+    level: error
+""")
+    overlay = yaml.safe_load("""
+rules:
+  - id: a
+    level: error
+  - id: c
+    level: info
+""")
+    merged = deep_merge(base, overlay)
+    ids = [r["id"] for r in merged["rules"]]
+    assert ids == ["a", "b", "c"]
+    assert next(r for r in merged["rules"] if r["id"] == "a")["level"] == "error"
+```
+
+
+Appendix G: GitHub Actions CI Snippet (Policy Guard)
+`.github/workflows/policy-guard.yml`
+```yaml
+name: policy-guard
+on:
+  pull_request:
+    branches: [ main ]
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt || true
+      - name: Run agent gates
+        run: |
+          python -m ai_onboard prompt summary --level brief || true
+          python -m ai_onboard validate --report
+```
+
+
+Appendix H: PowerShell Helpers (Windows)
+`scripts/utils.ps1`
+```powershell
+function Invoke-WithoutPager {
+    param([Parameter(Mandatory=$true)][string]$Command)
+    $env:LESS = 'FRX'
+    $env:PAGER = ''
+    Invoke-Expression $Command | Out-Host
+}
+
+function Save-DependencySnapshot {
+    param([string]$Path = '.ai_onboard/baseline_freeze.txt')
+    if (-not (Test-Path '.ai_onboard')) { New-Item -ItemType Directory -Path '.ai_onboard' | Out-Null }
+    pip freeze | Set-Content -Encoding UTF8 $Path
+}
+```
