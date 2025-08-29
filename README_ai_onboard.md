@@ -10,6 +10,8 @@ Run:
     python -m ai_onboard kaizen
     python -m ai_onboard metrics
 
+Guidance for AI coding agents: see `AGENTS.md`.
+
 ## Changelog
 
 - v0.1.1

@@ -1,0 +1,5 @@
+# Require owners to review changes to policy/CI/docs critical to agents
+* @3ndym10n
+/.github/ @3ndym10n
+/AGENTS.md @3ndym10n
+/.ai_onboard/ @3ndym10n
