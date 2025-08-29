@@ -48,3 +48,12 @@ If you must override for a particular commit:
 
 - Set `BYPASS_PROTECTED_HOOK=1` in the environment for that commit, or
 - Use `git commit --no-verify` (note CI and CODEOWNERS may still block the change).
+
+## Agent Gates (Stop/Go)
+
+Agents should follow these gates to stay aligned and safe:
+
+- Gate A (Pre-edit): `python -m ai_onboard prompt summary --level brief` and attach to PR context.
+- Gate B (Safety): `python -m ai_onboard checkpoint create --scope "." --reason "pre-change"` when `files>10` or `lines>500`.
+- Gate C (Guard): `python -m ai_onboard prompt propose --diff '<json>'` must return `allow` or `confirm`. Any `deny` → stop and request review.
+- Gate D (Post-op): `python -m ai_onboard validate --report` and address high-risk findings before merge.

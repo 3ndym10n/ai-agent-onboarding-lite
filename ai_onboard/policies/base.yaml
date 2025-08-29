@@ -1,0 +1,30 @@
+rules:
+  - id: risky-env-delete
+    conditions:
+      any:
+        - deletes_globs: ["**/.env", "**/*.env", "**/secrets/**", "**/*.pem", "**/id_rsa*"]
+    action: block
+    message: "Deleting env/secret/credential files is blocked."
+
+  - id: big-change-requires-approval
+    conditions:
+      any:
+        - files_gt: 10
+        - lines_gt: 500
+    action: require_approval
+    message: "Large refactor detected. Take checkpoint and run tests."
+
+  - id: refactor-needs-tests
+    conditions:
+      all:
+        - touches_lang_any: ["py", "ts", "tsx", "js"]
+        - files_gt: 3
+    action: warn
+    message: "Run tests before/after multi-file refactor."
+
+approvals:
+  mode: console
+
+defaults:
+  require_checkpoint_when: ["require_approval", "block"]
+
