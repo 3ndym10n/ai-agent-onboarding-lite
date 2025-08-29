@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Allow bypass via env var or passing --no-verify to git commit
+if [[ "${BYPASS_PROTECTED_HOOK:-}" == "1" ]]; then
+  echo "[pre-commit] Bypass enabled via BYPASS_PROTECTED_HOOK=1"
+  exit 0
+fi
+
+python scripts/check_protected_deletions.py

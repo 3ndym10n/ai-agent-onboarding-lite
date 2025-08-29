@@ -29,3 +29,16 @@ This repo protects critical directories/files from bulk deletions or "cleanup" r
 CI enforces presence via `scripts/protected_paths.py`. If a cleanup removes any of
 the above, CI fails. For local bulk changes, keep deletions restricted to caches
 and build artifacts (e.g., `.ai_onboard/`, `__pycache__/`, `*.egg-info/`, `dist/`, `build/`).
+
+### Local Protection (pre-commit)
+
+Enable the local hook to block accidental deletion of protected files:
+
+```
+git config core.hooksPath .githooks
+```
+
+If you must override for a particular commit:
+
+- Set `BYPASS_PROTECTED_HOOK=1` in the environment for that commit, or
+- Use `git commit --no-verify` (note CI and CODEOWNERS may still block the change).
