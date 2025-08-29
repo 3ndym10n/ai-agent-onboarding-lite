@@ -1,14 +1,27 @@
 import argparse
 from pathlib import Path
 from ..core import (
-    charter, planning, discovery, alignment, state, utils,
-    validation_runtime, progress_tracker, telemetry, optimizer, versioning
+    charter,
+    planning,
+    discovery,
+    alignment,
+    state,
+    utils,
+    validation_runtime,
+    progress_tracker,
+    telemetry,
+    optimizer,
+    versioning,
 )
+
 
 def main(argv=None):
     p = argparse.ArgumentParser(
         prog="ai_onboard",
-        description="AI Onboard — drop-in project coach (charter → plan → align → validate → kaizen)"
+        description=(
+            "AI Onboard: drop-in project coach "
+            "(charter + plan + align + validate + kaizen)"
+        ),
     )
     sub = p.add_subparsers(dest="cmd", required=True)
 
@@ -35,7 +48,7 @@ def main(argv=None):
     s_o.add_argument("--budget", default="5m", help="Time budget (e.g., 5m)")
 
     s_ver = sub.add_parser("version", help="Show or bump ai_onboard version")
-    s_ver.add_argument("--bump", choices=["major","minor","patch"])
+    s_ver.add_argument("--bump", choices=["major", "minor", "patch"])
     s_ver.add_argument("--set", help="Set explicit version (e.g., 1.2.3)")
 
     args = p.parse_args(argv)
@@ -100,10 +113,11 @@ def main(argv=None):
                 current = versioning.get_version(root)
                 newv = versioning.bump(current, args.bump)
                 versioning.set_version(root, newv)
-                print(f"Bumped {args.bump}: {current} → {newv}")
+                print(f"Bumped {args.bump}: {current} -> {newv}")
                 return
             print(versioning.get_version(root))
             return
     except state.StateError as e:
         print(e)
         return
+

@@ -1,5 +1,5 @@
 from pathlib import Path
-from . import utils
+from . import utils, telemetry
 
 def parse_budget(s: str) -> int:
     s = s.strip().lower()
@@ -15,5 +15,11 @@ def quick_optimize(root: Path, budget: str="300s") -> None:
     print("Optimizer ran a quick (stub) trial. (Hooks are ready for deeper logic.)")
 
 def nudge_from_metrics(root: Path) -> None:
-    # Read metrics and nudge parameters (stubbed for now)
-    print("Kaizen: reviewed metrics and kept current schedule (stub).")
+    # Read metrics and nudge parameters (lightweight summary for now)
+    items = telemetry.read_metrics(root)
+    if not items:
+        print("Kaizen: no telemetry yet. Run 'validate' to collect metrics.")
+        return
+    last = items[-1]
+    comps = ", ".join([f"{c.get('name','?')}:{c.get('score','n/a')}" for c in last.get("components", [])])
+    print(f"Kaizen: last run pass={last.get('pass')} | components: {comps}")

@@ -1,0 +1,2 @@
+[console_scripts]
+ai-onboard = ai_onboard.__main__:main
