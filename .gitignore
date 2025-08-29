@@ -3,6 +3,8 @@
 
 # Environments
 venv/
+.venv/
+ENV/
 .env
 
 # Editors/IDE
@@ -11,8 +13,7 @@ venv/
 
 # Python
 __pycache__/
-*.pyc
-*.pyo
+*.py[cod]
 *.pyd
 
 # OS
@@ -23,5 +24,7 @@ Thumbs.db
 *.egg-info/
 dist/
 build/
+.dist/
+.build/
 .pytest_cache/
 *.log
