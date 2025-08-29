@@ -55,5 +55,5 @@ Agents should follow these gates to stay aligned and safe:
 
 - Gate A (Pre-edit): `python -m ai_onboard prompt summary --level brief` and attach to PR context.
 - Gate B (Safety): `python -m ai_onboard checkpoint create --scope "." --reason "pre-change"` when `files>10` or `lines>500`.
-- Gate C (Guard): `python -m ai_onboard prompt propose --diff '<json>'` must return `allow` or `confirm`. Any `deny` → stop and request review.
+- Gate C (Guard): `python -m ai_onboard prompt propose --diff '<json>'` must return a non-blocking decision (e.g., `allow` or `warn`). Any `block` → stop and request review.
 - Gate D (Post-op): `python -m ai_onboard validate --report` and address high-risk findings before merge.

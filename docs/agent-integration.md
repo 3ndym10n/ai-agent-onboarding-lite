@@ -13,25 +13,25 @@ Goals:
 
 Canonical layout and responsibilities:
 
-- `ai_onboard/` â€” package code (runtime, CLI, plugins, policies, schemas)
-  - `cli/` â€” CLI entrypoints
-  - `core/` â€” runtime modules
-  - `plugins/` â€” validation plugins
-  - `policies/` â€” versioned, canonical policies (YAML)
-  - `schemas/` â€” JSON Schemas (reserved)
-- `.ai_onboard/` â€” artifacts (never committed)
-  - `checkpoints/` â€” snapshots + index
-  - `metrics.jsonl`, `agents.jsonl` â€” telemetry streams
-  - `report.md`, `cache_index.json` â€” reports + caches
+- `ai_onboard/` — package code (runtime, CLI, plugins, policies, schemas)
+  - `cli/` — CLI entrypoints
+  - `core/` — runtime modules
+  - `plugins/` — validation plugins
+  - `policies/` — versioned, canonical policies (YAML)
+  - `schemas/` — JSON Schemas (reserved)
+- `.ai_onboard/` — artifacts (never committed)
+  - `checkpoints/` — snapshots + index
+  - `metrics.jsonl`, `agents.jsonl` — telemetry streams
+  - `report.md`, `cache_index.json` — reports + caches
 
 ## 1) Prompt-Level API (thin surface)
 
 Expose just enough for agents to self-serve context and guardrails. Two modes are useful: CLI and Python.
 
 CLI (proposed):
-- `python -m ai_onboard prompt state` â†’ JSON state summary (manifest, last metrics)
-- `python -m ai_onboard prompt rules --path <file> --change <summary>` â†’ relevant policy checks to review
-- `python -m ai_onboard prompt summary --level {brief,full}` â†’ summarized context for small/large models
+- `python -m ai_onboard prompt state` — JSON state summary (manifest, last metrics)
+- `python -m ai_onboard prompt rules --path <file> --change <summary>` — relevant policy checks to review
+- `python -m ai_onboard prompt summary --level {brief,full}` — summarized context for small/large models
 
 Python (proposed package API):
 - `ai_onboard.agent.state(root) -> dict`  (manifest + last metrics + top issues)
@@ -47,8 +47,8 @@ Notes:
 Lightweight snapshots to support retries/branching without requiring Git.
 
 Layout:
-- `.ai_onboard/checkpoints/<id>/` â†’ file snapshots (selected scope; not the entire repo by default)
-- `.ai_onboard/checkpoints/index.jsonl` â†’ append-only metadata
+- `.ai_onboard/checkpoints/<id>/` — file snapshots (selected scope; not the entire repo by default)
+- `.ai_onboard/checkpoints/index.jsonl` — append-only metadata
 
 Checkpoint metadata (JSONL per record):
 ```json
@@ -69,13 +69,13 @@ CLI (proposed):
 - `python -m ai_onboard checkpoint restore --id <ckpt>` (safe restore with confirmation)
 
 Design principles:
-- Default to â€œsmall scopeâ€ snapshots; allow opt-in full snapshot.
+- Default to "small scope" snapshots; allow opt-in full snapshot.
 - Rollback requests require explicit `--force` or interactive confirmation.
 - Never touch protected paths during snapshot/restore.
 
 ## 3) Cross-Agent Telemetry (unified JSONL)
 
-Add a separate, additive stream so we donâ€™t break existing `metrics.jsonl`:
+Add a separate, additive stream so we don’t break existing `metrics.jsonl`:
 - File: `.ai_onboard/agents.jsonl`
 
 Schema (append-only):
@@ -103,8 +103,8 @@ Usage:
 ## 4) Context Summarization (for small windows)
 
 Outputs:
-- `.ai_onboard/summaries/brief.json` â†’ compact project state, top issues, last run
-- `.ai_onboard/summaries/full.json` â†’ detailed components, relevant rules, hot files
+- `.ai_onboard/summaries/brief.json` — compact project state, top issues, last run
+- `.ai_onboard/summaries/full.json` — detailed components, relevant rules, hot files
 
 Generation:
 - `python -m ai_onboard prompt summary --level brief`
@@ -115,8 +115,8 @@ Generation:
 Beyond file validation, add policies about the size and risk of changes:
 
 Examples:
-- "Donâ€™t delete > X lines without related tests."
-- "Donâ€™t refactor > N files per run."
+- "Don’t delete > X lines without related tests."
+- "Don’t refactor > N files per run."
 - "Pause for confirmation when modifying protected folders."
 - "Require a plan update for subsystem-wide changes."
 
@@ -133,7 +133,7 @@ Policy format:
 1. Add CLI `prompt` group with `state|rules|summary` commands (thin wrappers)
 2. Add `agents.jsonl` writer (separate from `metrics.jsonl`)
 3. Add checkpoint create/list/restore with protected path awareness
-4. Add `agent_behavior` policy category and 2â€“3 default rules
+4. Add `agent_behavior` policy category and 2–3 default rules
 5. Document usage in README with examples and short JSON snippets
 
 All of the above can be added incrementally without changing current behavior. Start with read-only surfaces (`prompt state`, summaries), then layer on writes (checkpoints) and behavior policies.
@@ -179,4 +179,3 @@ Agents and humans read the same JSONL records:
 ## Appendix: CI Gates
 
 See `.github/workflows/agentops.yml` for a paste-ready workflow. It checks protected paths, emits a brief summary artifact, and runs validation/report steps.
-

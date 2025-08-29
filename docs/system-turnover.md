@@ -514,7 +514,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.8'
       - name: Install
         run: |
           python -m pip install --upgrade pip
@@ -548,3 +548,4 @@ Agents and humans should read the same JSONL facts for decisions and audits.
 ```
 {"ts":"2025-08-29T10:22:11Z","agent":"cursor:gpt-4o","cmd":"guard","decision":"warn","rules":["big-change-requires-approval"],"files":12,"lines":680}
 ```
+
