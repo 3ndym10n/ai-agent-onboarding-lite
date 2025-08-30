@@ -222,7 +222,7 @@ class SmartDebugger:
                     "Check if file is locked by another process"
                 ],
                 "type": "permission_error"
-            },
+            }
             confidence = 0.8
         else:
             solution = {
@@ -247,11 +247,14 @@ class SmartDebugger:
         
         # Add context-specific steps
         context = error_data.get("context", {})
-        if context.get("file_path"):
-            steps.insert(0, f"Check file: {context['file_path']}")
-        
-        if context.get("line_number"):
-            steps.insert(1, f"Review code around line {context['line_number']}")
+        if isinstance(context, dict):
+            if context.get("file_path"):
+                steps.insert(0, f"Check file: {context['file_path']}")
+            
+            if context.get("line_number"):
+                steps.insert(1, f"Review code around line {context['line_number']}")
+        elif isinstance(context, str):
+            steps.insert(0, f"Context: {context}")
         
         return steps
     
