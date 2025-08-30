@@ -1,0 +1,201 @@
+# Vision Interrogation Rules: Ensures clear vision definition before AI agent work
+
+vision_interrogation_rules:
+  # Core Interrogation Requirements
+  - id: vision-readiness-check
+    rule: "Before any AI agent work, check vision readiness: python -m ai_onboard interrogate check"
+    priority: critical
+    applies_to: ["all_agents"]
+    enforcement: "block_all_operations"
+
+  - id: interrogation-completion-required
+    rule: "Vision interrogation must be completed before AI agents can proceed"
+    priority: critical
+    applies_to: ["all_agents"]
+    enforcement: "halt_progress"
+
+  - id: vision-clarity-threshold
+    rule: "Vision clarity score must be >= 0.8 for AI agent work to proceed"
+    priority: critical
+    applies_to: ["all_agents"]
+    enforcement: "require_interrogation"
+
+  # Interrogation Process Rules
+  - id: start-interrogation-first
+    rule: "If vision is unclear, start interrogation: python -m ai_onboard interrogate start"
+    priority: high
+    applies_to: ["all_agents"]
+    enforcement: "guide_user"
+
+  - id: complete-interrogation-phases
+    rule: "Complete all interrogation phases before proceeding with AI work"
+    priority: high
+    applies_to: ["all_agents"]
+    enforcement: "require_completion"
+
+  - id: submit-detailed-responses
+    rule: "Provide detailed, thoughtful responses to interrogation questions"
+    priority: medium
+    applies_to: ["all_agents"]
+    enforcement: "quality_check"
+
+  # Vision Foundation Requirements
+  - id: core-problem-defined
+    rule: "Core problem must be clearly defined before AI work"
+    priority: critical
+    applies_to: ["all_agents"]
+    enforcement: "block_until_defined"
+
+  - id: vision-statement-required
+    rule: "Clear vision statement must exist before AI work"
+    priority: critical
+    applies_to: ["all_agents"]
+    enforcement: "block_until_defined"
+
+  - id: user-beneficiaries-identified
+    rule: "Primary users/beneficiaries must be identified"
+    priority: high
+    applies_to: ["all_agents"]
+    enforcement: "require_definition"
+
+  # Ambiguity Management
+  - id: resolve-critical-ambiguities
+    rule: "Critical ambiguities must be resolved before AI work"
+    priority: critical
+    applies_to: ["all_agents"]
+    enforcement: "block_until_resolved"
+
+  - id: acknowledge-technical-ambiguity
+    rule: "Technical ambiguity is acceptable if core vision is strong"
+    priority: medium
+    applies_to: ["all_agents"]
+    enforcement: "allow_with_notes"
+
+  - id: document-remaining-ambiguities
+    rule: "Document any remaining ambiguities for future resolution"
+    priority: medium
+    applies_to: ["all_agents"]
+    enforcement: "require_documentation"
+
+# Interrogation Process Guidelines
+interrogation_process:
+  phases:
+    vision_core:
+      description: "Define core vision elements"
+      required_questions: ["vc_01", "vc_02", "vc_03"]
+      completion_criteria: "All required questions answered with sufficient detail"
+      
+    stakeholders:
+      description: "Identify stakeholders and their goals"
+      required_questions: ["sg_01", "sg_02"]
+      completion_criteria: "Key stakeholders identified with clear goals"
+      
+    scope:
+      description: "Define project scope and boundaries"
+      required_questions: ["sb_01", "sb_02"]
+      completion_criteria: "Clear in-scope and out-of-scope definitions"
+      
+    success:
+      description: "Define success criteria and metrics"
+      required_questions: ["sc_01", "sc_02"]
+      completion_criteria: "Measurable success criteria defined"
+
+  quality_standards:
+    response_length:
+      minimum: 20
+      recommended: 50
+      description: "Minimum characters for meaningful responses"
+    
+    confidence_threshold:
+      minimum: 0.7
+      recommended: 0.9
+      description: "Minimum confidence level for responses"
+    
+    ambiguity_tolerance:
+      technical: "high"
+      vision: "low"
+      scope: "medium"
+      description: "Tolerance for ambiguity by category"
+
+# AI Agent Integration Rules
+agent_integration:
+  pre_work_checklist:
+    - "Check vision readiness: python -m ai_onboard interrogate check"
+    - "Verify interrogation completion"
+    - "Confirm vision clarity score >= 0.8"
+    - "Review blocking issues"
+    - "Ensure critical ambiguities resolved"
+
+  work_blocking_conditions:
+    - condition: "interrogation_incomplete"
+      action: "halt_and_guide"
+      message: "Vision interrogation must be completed first"
+      
+    - condition: "vision_clarity_low"
+      action: "require_interrogation"
+      message: "Vision clarity score too low, need interrogation"
+      
+    - condition: "critical_ambiguities"
+      action: "block_until_resolved"
+      message: "Critical ambiguities must be resolved"
+
+  progressive_guidance:
+    step_1: "Check current vision state"
+    step_2: "Identify missing elements"
+    step_3: "Guide through interrogation"
+    step_4: "Validate completion"
+    step_5: "Allow AI work to proceed"
+
+# Quality Assurance
+quality_assurance:
+  vision_clarity_metrics:
+    - "Problem definition clarity"
+    - "Vision statement completeness"
+    - "User/beneficiary identification"
+    - "Objective definition"
+    - "Scope boundary clarity"
+
+  interrogation_completion_metrics:
+    - "All required questions answered"
+    - "Sufficient response detail"
+    - "Confidence levels appropriate"
+    - "Ambiguities documented"
+    - "Foundation strength assessed"
+
+  blocking_issue_resolution:
+    - "Critical issues resolved"
+    - "High-priority issues addressed"
+    - "Medium-priority issues documented"
+    - "Low-priority issues acknowledged"
+
+# Emergency Procedures
+emergency_procedures:
+  vision_crisis:
+    - "Immediately halt all AI agent work"
+    - "Assess vision foundation damage"
+    - "Restart interrogation if needed"
+    - "Rebuild vision documents"
+    - "Validate before resuming"
+
+  interrogation_failure:
+    - "Document failure reasons"
+    - "Provide alternative approaches"
+    - "Escalate to human review"
+    - "Consider force completion"
+    - "Update process for future"
+
+# Continuous Improvement
+continuous_improvement:
+  learning_opportunities:
+    - "Analyze interrogation effectiveness"
+    - "Identify common blocking issues"
+    - "Improve question quality"
+    - "Enhance guidance systems"
+    - "Optimize completion criteria"
+
+  process_enhancement:
+    - "Refine question sets"
+    - "Improve response validation"
+    - "Enhance ambiguity detection"
+    - "Strengthen quality metrics"
+    - "Streamline completion process"

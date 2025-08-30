@@ -1,4 +1,5 @@
 import argparse
+import json
 from pathlib import Path
 from ..core import (
     charter,
@@ -14,6 +15,11 @@ from ..core import (
     versioning,
     cleanup,
     prompt_bridge,
+    vision_guardian,
+    dynamic_planner,
+    smart_debugger,
+    context_continuity,
+    vision_interrogator,
 )
 from ..plugins import example_policy  # ensure example plugin registers on import
 
@@ -82,6 +88,45 @@ def main(argv=None):
     sp_summary.add_argument("--level", choices=["brief","full"], default="brief")
     sp_propose = sp.add_parser("propose", help="Propose action; returns decision and rationale")
     sp_propose.add_argument("--diff", default="", help="JSON {files_changed, lines_deleted, has_tests, subsystems}")
+
+    # Vision and planning commands
+    s_vision = sub.add_parser("vision", help="Vision alignment and scope management")
+    sv_sub = s_vision.add_subparsers(dest="vision_cmd", required=True)
+    sv_sub.add_parser("validate", help="Validate decision alignment with project vision")
+    sv_sub.add_parser("scope-change", help="Propose scope change with user validation")
+    sv_sub.add_parser("update", help="Update vision documents")
+
+    # Dynamic planning commands
+    s_plan = sub.add_parser("plan", help="Dynamic project planning")
+    sp_sub = s_plan.add_subparsers(dest="plan_cmd", required=True)
+    sp_sub.add_parser("milestone", help="Mark milestone complete")
+    sp_sub.add_parser("progress", help="Update activity progress")
+    sp_sub.add_parser("auto-update", help="Auto-update plan based on progress")
+    sp_sub.add_parser("add-milestone", help="Add new milestone to plan")
+
+    # Smart debugging commands
+    s_debug = sub.add_parser("debug", help="Smart debugging system")
+    sd_sub = s_debug.add_subparsers(dest="debug_cmd", required=True)
+    sd_sub.add_parser("analyze", help="Analyze error and provide smart insights")
+    sd_sub.add_parser("improve", help="Improve debugging patterns")
+    sd_sub.add_parser("stats", help="Show debugging system statistics")
+
+    # Context continuity commands
+    s_context = sub.add_parser("context", help="Context continuity management")
+    sc_sub = s_context.add_subparsers(dest="context_cmd", required=True)
+    sc_sub.add_parser("summary", help="Get context summary")
+    sc_sub.add_parser("drift", help="Check for context drift")
+    sc_sub.add_parser("resolve", help="Resolve context drift")
+
+    # Vision interrogation commands
+    s_interrogate = sub.add_parser("interrogate", help="Vision interrogation system")
+    si_sub = s_interrogate.add_subparsers(dest="interrogate_cmd", required=True)
+    si_sub.add_parser("check", help="Check if vision is ready for AI agents")
+    si_sub.add_parser("start", help="Start vision interrogation process")
+    si_sub.add_parser("submit", help="Submit response to interrogation question")
+    si_sub.add_parser("questions", help="Get current interrogation questions")
+    si_sub.add_parser("summary", help="Get interrogation summary")
+    si_sub.add_parser("force-complete", help="Force complete interrogation (use with caution)")
 
     args = p.parse_args(argv)
     root = Path.cwd()
@@ -264,6 +309,193 @@ def main(argv=None):
                 print(prompt_bridge.dumps_json(out))
                 return
             print("{\"error\":\"unknown prompt subcommand\"}")
+            return
+
+        # Vision alignment commands
+        if args.cmd == "vision":
+            vcmd = getattr(args, "vision_cmd", None)
+            if vcmd == "validate":
+                # Validate decision alignment
+                decision_data = input("Enter decision data (JSON): ")
+                try:
+                    decision = json.loads(decision_data)
+                    guardian = vision_guardian.get_vision_guardian(root)
+                    result = guardian.validate_decision_alignment(decision)
+                    print(prompt_bridge.dumps_json(result))
+                except json.JSONDecodeError:
+                    print("{\"error\":\"invalid JSON\"}")
+                return
+            elif vcmd == "scope-change":
+                # Propose scope change
+                change_data = input("Enter scope change request (JSON): ")
+                try:
+                    change_request = json.loads(change_data)
+                    guardian = vision_guardian.get_vision_guardian(root)
+                    result = guardian.propose_scope_change(change_request)
+                    print(prompt_bridge.dumps_json(result))
+                except json.JSONDecodeError:
+                    print("{\"error\":\"invalid JSON\"}")
+                return
+            elif vcmd == "update":
+                # Update vision documents
+                updates_data = input("Enter vision updates (JSON): ")
+                try:
+                    updates = json.loads(updates_data)
+                    guardian = vision_guardian.get_vision_guardian(root)
+                    result = guardian.update_vision_documents(updates)
+                    print(prompt_bridge.dumps_json(result))
+                except json.JSONDecodeError:
+                    print("{\"error\":\"invalid JSON\"}")
+                return
+            print("{\"error\":\"unknown vision subcommand\"}")
+            return
+
+        # Dynamic planning commands
+        if args.cmd == "plan":
+            pcmd = getattr(args, "plan_cmd", None)
+            planner = dynamic_planner.get_dynamic_planner(root)
+            
+            if pcmd == "milestone":
+                # Mark milestone complete
+                milestone_name = input("Enter milestone name: ")
+                completion_data = input("Enter completion data (JSON): ")
+                try:
+                    completion = json.loads(completion_data) if completion_data else {}
+                    result = planner.mark_milestone_complete(milestone_name, completion)
+                    print(prompt_bridge.dumps_json(result))
+                except json.JSONDecodeError:
+                    print("{\"error\":\"invalid JSON\"}")
+                return
+            elif pcmd == "progress":
+                # Update activity progress
+                activity_id = input("Enter activity ID: ")
+                progress_data = input("Enter progress data (JSON): ")
+                try:
+                    progress = json.loads(progress_data)
+                    result = planner.update_activity_progress(activity_id, progress)
+                    print(prompt_bridge.dumps_json(result))
+                except json.JSONDecodeError:
+                    print("{\"error\":\"invalid JSON\"}")
+                return
+            elif pcmd == "auto-update":
+                # Auto-update plan
+                result = planner.auto_update_plan()
+                print(prompt_bridge.dumps_json(result))
+                return
+            elif pcmd == "add-milestone":
+                # Add new milestone
+                milestone_data = input("Enter milestone data (JSON): ")
+                try:
+                    milestone = json.loads(milestone_data)
+                    result = planner.add_new_milestone(milestone)
+                    print(prompt_bridge.dumps_json(result))
+                except json.JSONDecodeError:
+                    print("{\"error\":\"invalid JSON\"}")
+                return
+            print("{\"error\":\"unknown plan subcommand\"}")
+            return
+
+        # Smart debugging commands
+        if args.cmd == "debug":
+            dcmd = getattr(args, "debug_cmd", None)
+            debugger = smart_debugger.get_smart_debugger(root)
+            
+            if dcmd == "analyze":
+                # Analyze error
+                error_data = input("Enter error data (JSON): ")
+                try:
+                    error = json.loads(error_data)
+                    result = debugger.analyze_error(error)
+                    print(prompt_bridge.dumps_json(result))
+                except json.JSONDecodeError:
+                    print("{\"error\":\"invalid JSON\"}")
+                return
+            elif dcmd == "improve":
+                # Improve patterns
+                result = debugger.improve_patterns()
+                print(prompt_bridge.dumps_json(result))
+                return
+            elif dcmd == "stats":
+                # Show statistics
+                result = debugger.get_debugging_stats()
+                print(prompt_bridge.dumps_json(result))
+                return
+            print("{\"error\":\"unknown debug subcommand\"}")
+            return
+
+        # Context continuity commands
+        if args.cmd == "context":
+            ccmd = getattr(args, "context_cmd", None)
+            context_manager = context_continuity.get_context_continuity_manager(root)
+            
+            if ccmd == "summary":
+                # Get context summary
+                level = input("Enter summary level (brief/full): ").strip() or "brief"
+                result = context_manager.get_context_summary(level)
+                print(prompt_bridge.dumps_json(result))
+                return
+            elif ccmd == "drift":
+                # Check for drift
+                result = context_manager.check_context_drift()
+                print(prompt_bridge.dumps_json(result))
+                return
+            elif ccmd == "resolve":
+                # Resolve drift
+                drift_type = input("Enter drift type: ")
+                resolution_data = input("Enter resolution data (JSON): ")
+                try:
+                    resolution = json.loads(resolution_data) if resolution_data else {}
+                    result = context_manager.resolve_context_drift(drift_type, resolution)
+                    print(prompt_bridge.dumps_json(result))
+                except json.JSONDecodeError:
+                    print("{\"error\":\"invalid JSON\"}")
+                return
+            print("{\"error\":\"unknown context subcommand\"}")
+            return
+
+        # Vision interrogation commands
+        if args.cmd == "interrogate":
+            icmd = getattr(args, "interrogate_cmd", None)
+            interrogator = vision_interrogator.get_vision_interrogator(root)
+            
+            if icmd == "check":
+                # Check vision readiness
+                result = interrogator.check_vision_readiness()
+                print(prompt_bridge.dumps_json(result))
+                return
+            elif icmd == "start":
+                # Start interrogation
+                result = interrogator.start_interrogation()
+                print(prompt_bridge.dumps_json(result))
+                return
+            elif icmd == "submit":
+                # Submit response
+                phase = input("Enter phase: ")
+                question_id = input("Enter question ID: ")
+                response_data = input("Enter response (JSON): ")
+                try:
+                    response = json.loads(response_data)
+                    result = interrogator.submit_response(phase, question_id, response)
+                    print(prompt_bridge.dumps_json(result))
+                except json.JSONDecodeError:
+                    print("{\"error\":\"invalid JSON\"}")
+                return
+            elif icmd == "questions":
+                # Get current questions
+                result = interrogator.get_current_questions()
+                print(prompt_bridge.dumps_json(result))
+                return
+            elif icmd == "summary":
+                # Get interrogation summary
+                result = interrogator.get_interrogation_summary()
+                print(prompt_bridge.dumps_json(result))
+                return
+            elif icmd == "force-complete":
+                # Force complete interrogation
+                result = interrogator.force_complete_interrogation()
+                print(prompt_bridge.dumps_json(result))
+                return
+            print("{\"error\":\"unknown interrogate subcommand\"}")
             return
 
         if args.cmd == "cleanup":

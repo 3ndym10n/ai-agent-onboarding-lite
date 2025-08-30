@@ -28,6 +28,25 @@ def load(root: Path) -> dict:
     base_full = (root / base_path)
     # If configured base points to json but yaml exists, prefer configured; otherwise if default and json missing, try yaml
     policy = _read_policy_file(base_full)
+    
+    # Load self-preservation policies
+    self_preservation_path = root / "ai_onboard" / "policies" / "self_preservation.yaml"
+    if self_preservation_path.exists():
+        self_preservation_policy = _read_policy_file(self_preservation_path)
+        _merge(policy, self_preservation_policy)
+    
+    # Load agent prompt rules
+    agent_rules_path = root / "ai_onboard" / "policies" / "agent_prompt_rules.yaml"
+    if agent_rules_path.exists():
+        agent_rules_policy = _read_policy_file(agent_rules_path)
+        _merge(policy, agent_rules_policy)
+    
+    # Load vision interrogation rules
+    vision_interrogation_path = root / "ai_onboard" / "policies" / "vision_interrogation_rules.yaml"
+    if vision_interrogation_path.exists():
+        vision_interrogation_policy = _read_policy_file(vision_interrogation_path)
+        _merge(policy, vision_interrogation_policy)
+    
     for overlay in manifest.get("policies", {}).get("overlays", []):
         o = _read_policy_file(root / Path(overlay))
         _merge(policy, o)

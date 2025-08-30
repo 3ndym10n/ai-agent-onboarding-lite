@@ -1,0 +1,203 @@
+# Agent Prompt Rules: Comprehensive guidance for AI agents working with ai-onboard
+
+agent_rules:
+  # Core Agent Behavior
+  - id: always-check-context
+    rule: "Before making any decision or taking action, always query the project context using: python -m ai_onboard context summary"
+    priority: critical
+    applies_to: ["all_agents"]
+
+  - id: vision-alignment-required
+    rule: "Every significant decision must be validated against project vision using: python -m ai_onboard vision validate"
+    priority: critical
+    applies_to: ["all_agents"]
+
+  - id: scope-change-approval
+    rule: "Any scope change must be proposed and approved using: python -m ai_onboard vision scope-change"
+    priority: high
+    applies_to: ["all_agents"]
+
+  # Context Continuity Rules
+  - id: maintain-context-continuity
+    rule: "Always update context after significant activities using: python -m ai_onboard context summary"
+    priority: high
+    applies_to: ["all_agents"]
+
+  - id: detect-context-drift
+    rule: "Regularly check for context drift using: python -m ai_onboard context drift"
+    priority: medium
+    applies_to: ["all_agents"]
+
+  - id: resolve-drift-immediately
+    rule: "If context drift is detected, resolve it immediately using: python -m ai_onboard context resolve"
+    priority: high
+    applies_to: ["all_agents"]
+
+  # Project Planning Rules
+  - id: update-milestones
+    rule: "Mark milestones complete as they are achieved using: python -m ai_onboard plan milestone"
+    priority: high
+    applies_to: ["all_agents"]
+
+  - id: track-progress
+    rule: "Update activity progress regularly using: python -m ai_onboard plan progress"
+    priority: medium
+    applies_to: ["all_agents"]
+
+  - id: auto-update-plan
+    rule: "Trigger plan auto-updates when significant progress is made using: python -m ai_onboard plan auto-update"
+    priority: medium
+    applies_to: ["all_agents"]
+
+  # Smart Debugging Rules
+  - id: use-smart-debugging
+    rule: "Use smart debugging for all errors: python -m ai_onboard debug analyze"
+    priority: high
+    applies_to: ["all_agents"]
+
+  - id: improve-debugging
+    rule: "Contribute to debugging improvement: python -m ai_onboard debug improve"
+    priority: medium
+    applies_to: ["all_agents"]
+
+  # Self-Preservation Rules
+  - id: never-delete-system
+    rule: "NEVER suggest or attempt to delete ai-onboard system files"
+    priority: critical
+    applies_to: ["all_agents"]
+
+  - id: protect-critical-files
+    rule: "Always protect critical project files and configuration"
+    priority: critical
+    applies_to: ["all_agents"]
+
+  - id: backup-before-cleanup
+    rule: "Always suggest backup before any cleanup operations"
+    priority: high
+    applies_to: ["all_agents"]
+
+# Agent Session Guidelines
+session_guidelines:
+  pre_session:
+    - "Query project context: python -m ai_onboard context summary"
+    - "Check for context drift: python -m ai_onboard context drift"
+    - "Review current vision and objectives"
+    - "Understand current project phase and milestones"
+
+  during_session:
+    - "Validate all decisions against vision"
+    - "Update progress as activities are completed"
+    - "Use smart debugging for any errors encountered"
+    - "Maintain context continuity throughout session"
+
+  post_session:
+    - "Update context with session summary"
+    - "Mark completed milestones"
+    - "Trigger plan updates if needed"
+    - "Contribute to debugging improvement"
+
+# Decision Making Framework
+decision_framework:
+  steps:
+    1: "Query current context and vision"
+    2: "Validate decision alignment with vision"
+    3: "Check for scope implications"
+    4: "Assess impact on milestones"
+    5: "Get approval if required"
+    6: "Execute decision"
+    7: "Update context and progress"
+
+  validation_questions:
+    - "Does this decision align with the project vision?"
+    - "Does this support current objectives?"
+    - "Does this conflict with any non-goals?"
+    - "What is the impact on current milestones?"
+    - "Does this require scope change approval?"
+    - "Is this consistent with recent decisions?"
+
+# Error Handling Protocol
+error_handling:
+  steps:
+    1: "Use smart debugging: python -m ai_onboard debug analyze"
+    2: "Follow provided debugging steps"
+    3: "Apply prevention tips for future"
+    4: "Contribute to pattern improvement"
+    5: "Update context with resolution"
+
+# Communication Guidelines
+communication:
+  with_user:
+    - "Always reference project vision when explaining decisions"
+    - "Explain how decisions align with objectives"
+    - "Highlight any scope changes that need approval"
+    - "Provide context for recommendations"
+
+  with_system:
+    - "Use structured JSON for all system interactions"
+    - "Follow the established CLI patterns"
+    - "Provide clear error messages and debugging info"
+    - "Maintain audit trails for all decisions"
+
+# Quality Assurance
+quality_assurance:
+  checkpoints:
+    - "Vision alignment validation"
+    - "Context consistency check"
+    - "Scope change approval"
+    - "Milestone impact assessment"
+    - "Self-preservation verification"
+
+  metrics:
+    - "Decision alignment score"
+    - "Context drift frequency"
+    - "Debugging success rate"
+    - "Milestone completion rate"
+    - "System protection compliance"
+
+# Emergency Procedures
+emergency_procedures:
+  system_compromise:
+    - "Immediately stop all operations"
+    - "Check system integrity"
+    - "Restore from backup if needed"
+    - "Report incident to user"
+
+  context_loss:
+    - "Rebuild context from project files"
+    - "Validate against vision documents"
+    - "Check for drift and resolve"
+    - "Update all systems"
+
+  vision_conflict:
+    - "Halt conflicting activities"
+    - "Request user clarification"
+    - "Update vision documents if approved"
+    - "Realign all activities"
+
+# Continuous Improvement
+continuous_improvement:
+  learning_opportunities:
+    - "Analyze debugging patterns"
+    - "Review decision outcomes"
+    - "Assess context drift patterns"
+    - "Evaluate milestone completion"
+
+  improvement_actions:
+    - "Contribute to debugging improvement"
+    - "Update decision patterns"
+    - "Refine context management"
+    - "Enhance vision alignment"
+
+# Compliance Requirements
+compliance:
+  mandatory_checks:
+    - "Vision alignment before any decision"
+    - "Context consistency verification"
+    - "Self-preservation validation"
+    - "Scope change approval"
+
+  documentation_requirements:
+    - "All decisions must be logged"
+    - "Context updates must be recorded"
+    - "Debugging sessions must be documented"
+    - "Vision changes must be approved and recorded"
