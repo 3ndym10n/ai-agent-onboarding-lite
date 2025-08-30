@@ -97,8 +97,8 @@ def main(argv=None):
     sv_sub.add_parser("update", help="Update vision documents")
 
     # Dynamic planning commands
-    s_plan = sub.add_parser("plan", help="Dynamic project planning")
-    sp_sub = s_plan.add_subparsers(dest="plan_cmd", required=True)
+    s_planning = sub.add_parser("planning", help="Dynamic project planning")
+    sp_sub = s_planning.add_subparsers(dest="planning_cmd", required=True)
     sp_sub.add_parser("milestone", help="Mark milestone complete")
     sp_sub.add_parser("progress", help="Update activity progress")
     sp_sub.add_parser("auto-update", help="Auto-update plan based on progress")
@@ -351,8 +351,8 @@ def main(argv=None):
             return
 
         # Dynamic planning commands
-        if args.cmd == "plan":
-            pcmd = getattr(args, "plan_cmd", None)
+        if args.cmd == "planning":
+            pcmd = getattr(args, "planning_cmd", None)
             planner = dynamic_planner.get_dynamic_planner(root)
             
             if pcmd == "milestone":
@@ -392,7 +392,7 @@ def main(argv=None):
                 except json.JSONDecodeError:
                     print("{\"error\":\"invalid JSON\"}")
                 return
-            print("{\"error\":\"unknown plan subcommand\"}")
+            print("{\"error\":\"unknown planning subcommand\"}")
             return
 
         # Smart debugging commands
