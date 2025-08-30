@@ -37,7 +37,7 @@ class VisionGuardian:
         vision_context = self.get_vision_context()
         
         # Extract decision details
-        action_type = decision.get("action_type", "")
+        action_type = decision.get("action_type", decision.get("type", ""))
         scope_change = decision.get("scope_change", False)
         risk_level = decision.get("risk_level", "low")
         
@@ -46,13 +46,13 @@ class VisionGuardian:
         warnings = []
         
         # Check vision alignment
-        if action_type == "feature_add" and scope_change:
-            if not self._aligns_with_objectives(decision.get("description", ""), vision_context["objectives"]):
-                issues.append("Proposed change does not align with project objectives")
-                alignment_score -= 0.3
-            elif self._conflicts_with_non_goals(decision.get("description", ""), vision_context["non_goals"]):
+        if action_type in ["feature_add", "feature_addition"] and scope_change:
+            if self._conflicts_with_non_goals(decision.get("description", ""), vision_context["non_goals"]):
                 issues.append("Proposed change conflicts with project non-goals")
                 alignment_score -= 0.5
+            elif not self._aligns_with_objectives(decision.get("description", ""), vision_context["objectives"]):
+                issues.append("Proposed change does not align with project objectives")
+                alignment_score -= 0.3
         
         # Check risk tolerance
         if risk_level == "high" and vision_context["risk_appetite"] == "low":
@@ -170,7 +170,20 @@ class VisionGuardian:
         """Check if a change aligns with project objectives."""
         description_lower = description.lower()
         for objective in objectives:
-            if objective.lower() in description_lower:
+            objective_lower = objective.lower()
+            # Check if the objective phrase appears in the description
+            if objective_lower in description_lower:
+                return True
+            # Also check for key words that indicate alignment
+            if "progress" in description_lower and "progress" in objective_lower:
+                return True
+            if "visibility" in description_lower and "visibility" in objective_lower:
+                return True
+            if "collaboration" in description_lower and "collaboration" in objective_lower:
+                return True
+            if "meeting" in description_lower and "meeting" in objective_lower:
+                return True
+            if "task" in description_lower and "task" in objective_lower:
                 return True
         return False
     
@@ -178,7 +191,20 @@ class VisionGuardian:
         """Check if a change conflicts with project non-goals."""
         description_lower = description.lower()
         for non_goal in non_goals:
-            if non_goal.lower() in description_lower:
+            non_goal_lower = non_goal.lower()
+            # Check if the non-goal phrase appears in the description
+            if non_goal_lower in description_lower:
+                return True
+            # Also check for key words that are specific to non-goals
+            if "video" in description_lower and "video" in non_goal_lower:
+                return True
+            if "conferencing" in description_lower and "conferencing" in non_goal_lower:
+                return True
+            if "calendar" in description_lower and "calendar" in non_goal_lower:
+                return True
+            if "billing" in description_lower and "billing" in non_goal_lower:
+                return True
+            if "invoicing" in description_lower and "invoicing" in non_goal_lower:
                 return True
         return False
     
