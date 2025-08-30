@@ -44,6 +44,8 @@ def evaluate(manifest: Dict[str, Any], diff: Dict[str, Any]) -> Dict[str, Any]:
     """
     cfg = _cfg(manifest)
     files = diff.get("files_changed", []) or []
+    if isinstance(files, int):
+        files = []  # If files_changed is an integer, treat as empty list
     deleted = int(diff.get("lines_deleted", 0) or 0)
     has_tests = bool(diff.get("has_tests", False))
     subsystems = diff.get("subsystems", []) or []

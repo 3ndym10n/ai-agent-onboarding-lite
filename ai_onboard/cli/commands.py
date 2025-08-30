@@ -92,38 +92,61 @@ def main(argv=None):
     # Vision and planning commands
     s_vision = sub.add_parser("vision", help="Vision alignment and scope management")
     sv_sub = s_vision.add_subparsers(dest="vision_cmd", required=True)
-    sv_sub.add_parser("validate", help="Validate decision alignment with project vision")
-    sv_sub.add_parser("scope-change", help="Propose scope change with user validation")
-    sv_sub.add_parser("update", help="Update vision documents")
+    validate_parser = sv_sub.add_parser("validate", help="Validate decision alignment with project vision")
+    validate_parser.add_argument("--decision", help="Decision data (JSON)")
+    
+    scope_parser = sv_sub.add_parser("scope-change", help="Propose scope change with user validation")
+    scope_parser.add_argument("--change", help="Scope change data (JSON)")
+    
+    update_parser = sv_sub.add_parser("update", help="Update vision documents")
+    update_parser.add_argument("--update", help="Update data (JSON)")
 
     # Dynamic planning commands
     s_planning = sub.add_parser("planning", help="Dynamic project planning")
     sp_sub = s_planning.add_subparsers(dest="planning_cmd", required=True)
-    sp_sub.add_parser("milestone", help="Mark milestone complete")
-    sp_sub.add_parser("progress", help="Update activity progress")
+    milestone_parser = sp_sub.add_parser("milestone", help="Mark milestone complete")
+    milestone_parser.add_argument("--name", help="Milestone name")
+    milestone_parser.add_argument("--completion", help="Completion data (JSON)")
+    
+    progress_parser = sp_sub.add_parser("progress", help="Update activity progress")
+    progress_parser.add_argument("--activity-id", help="Activity ID")
+    progress_parser.add_argument("--progress", help="Progress data (JSON)")
+    
     sp_sub.add_parser("auto-update", help="Auto-update plan based on progress")
-    sp_sub.add_parser("add-milestone", help="Add new milestone to plan")
+    
+    add_milestone_parser = sp_sub.add_parser("add-milestone", help="Add new milestone to plan")
+    add_milestone_parser.add_argument("--milestone", help="Milestone data (JSON)")
 
     # Smart debugging commands
     s_debug = sub.add_parser("debug", help="Smart debugging system")
     sd_sub = s_debug.add_subparsers(dest="debug_cmd", required=True)
-    sd_sub.add_parser("analyze", help="Analyze error and provide smart insights")
+    analyze_parser = sd_sub.add_parser("analyze", help="Analyze error and provide smart insights")
+    analyze_parser.add_argument("--error", help="Error data (JSON)")
+    
     sd_sub.add_parser("improve", help="Improve debugging patterns")
     sd_sub.add_parser("stats", help="Show debugging system statistics")
 
     # Context continuity commands
     s_context = sub.add_parser("context", help="Context continuity management")
     sc_sub = s_context.add_subparsers(dest="context_cmd", required=True)
-    sc_sub.add_parser("summary", help="Get context summary")
+    summary_parser = sc_sub.add_parser("summary", help="Get context summary")
+    summary_parser.add_argument("--level", default="brief", help="Summary level (brief/full)")
+    
     sc_sub.add_parser("drift", help="Check for context drift")
-    sc_sub.add_parser("resolve", help="Resolve context drift")
+    
+    resolve_parser = sc_sub.add_parser("resolve", help="Resolve context drift")
+    resolve_parser.add_argument("--drift-type", help="Drift type")
+    resolve_parser.add_argument("--resolution", help="Resolution data (JSON)")
 
     # Vision interrogation commands
     s_interrogate = sub.add_parser("interrogate", help="Vision interrogation system")
     si_sub = s_interrogate.add_subparsers(dest="interrogate_cmd", required=True)
     si_sub.add_parser("check", help="Check if vision is ready for AI agents")
     si_sub.add_parser("start", help="Start vision interrogation process")
-    si_sub.add_parser("submit", help="Submit response to interrogation question")
+    submit_parser = si_sub.add_parser("submit", help="Submit response to interrogation question")
+    submit_parser.add_argument("--phase", help="Interrogation phase")
+    submit_parser.add_argument("--question-id", help="Question ID")
+    submit_parser.add_argument("--response", help="Response data (JSON)")
     si_sub.add_parser("questions", help="Get current interrogation questions")
     si_sub.add_parser("summary", help="Get interrogation summary")
     si_sub.add_parser("force-complete", help="Force complete interrogation (use with caution)")
@@ -316,7 +339,10 @@ def main(argv=None):
             vcmd = getattr(args, "vision_cmd", None)
             if vcmd == "validate":
                 # Validate decision alignment
-                decision_data = input("Enter decision data (JSON): ")
+                if hasattr(args, 'decision') and args.decision:
+                    decision_data = args.decision
+                else:
+                    decision_data = input("Enter decision data (JSON): ")
                 try:
                     decision = json.loads(decision_data)
                     guardian = vision_guardian.get_vision_guardian(root)
@@ -327,7 +353,10 @@ def main(argv=None):
                 return
             elif vcmd == "scope-change":
                 # Propose scope change
-                change_data = input("Enter scope change request (JSON): ")
+                if hasattr(args, 'change') and args.change:
+                    change_data = args.change
+                else:
+                    change_data = input("Enter scope change request (JSON): ")
                 try:
                     change_request = json.loads(change_data)
                     guardian = vision_guardian.get_vision_guardian(root)
@@ -338,7 +367,10 @@ def main(argv=None):
                 return
             elif vcmd == "update":
                 # Update vision documents
-                updates_data = input("Enter vision updates (JSON): ")
+                if hasattr(args, 'update') and args.update:
+                    updates_data = args.update
+                else:
+                    updates_data = input("Enter vision updates (JSON): ")
                 try:
                     updates = json.loads(updates_data)
                     guardian = vision_guardian.get_vision_guardian(root)
@@ -357,8 +389,16 @@ def main(argv=None):
             
             if pcmd == "milestone":
                 # Mark milestone complete
-                milestone_name = input("Enter milestone name: ")
-                completion_data = input("Enter completion data (JSON): ")
+                if hasattr(args, 'name') and args.name:
+                    milestone_name = args.name
+                else:
+                    milestone_name = input("Enter milestone name: ")
+                
+                if hasattr(args, 'completion') and args.completion:
+                    completion_data = args.completion
+                else:
+                    completion_data = input("Enter completion data (JSON): ")
+                
                 try:
                     completion = json.loads(completion_data) if completion_data else {}
                     result = planner.mark_milestone_complete(milestone_name, completion)
@@ -368,8 +408,16 @@ def main(argv=None):
                 return
             elif pcmd == "progress":
                 # Update activity progress
-                activity_id = input("Enter activity ID: ")
-                progress_data = input("Enter progress data (JSON): ")
+                if hasattr(args, 'activity_id') and args.activity_id:
+                    activity_id = args.activity_id
+                else:
+                    activity_id = input("Enter activity ID: ")
+                
+                if hasattr(args, 'progress') and args.progress:
+                    progress_data = args.progress
+                else:
+                    progress_data = input("Enter progress data (JSON): ")
+                
                 try:
                     progress = json.loads(progress_data)
                     result = planner.update_activity_progress(activity_id, progress)
@@ -384,7 +432,10 @@ def main(argv=None):
                 return
             elif pcmd == "add-milestone":
                 # Add new milestone
-                milestone_data = input("Enter milestone data (JSON): ")
+                if hasattr(args, 'milestone') and args.milestone:
+                    milestone_data = args.milestone
+                else:
+                    milestone_data = input("Enter milestone data (JSON): ")
                 try:
                     milestone = json.loads(milestone_data)
                     result = planner.add_new_milestone(milestone)
@@ -402,7 +453,10 @@ def main(argv=None):
             
             if dcmd == "analyze":
                 # Analyze error
-                error_data = input("Enter error data (JSON): ")
+                if hasattr(args, 'error') and args.error:
+                    error_data = args.error
+                else:
+                    error_data = input("Enter error data (JSON): ")
                 try:
                     error = json.loads(error_data)
                     result = debugger.analyze_error(error)
@@ -430,7 +484,10 @@ def main(argv=None):
             
             if ccmd == "summary":
                 # Get context summary
-                level = input("Enter summary level (brief/full): ").strip() or "brief"
+                if hasattr(args, 'level') and args.level:
+                    level = args.level
+                else:
+                    level = input("Enter summary level (brief/full): ").strip() or "brief"
                 result = context_manager.get_context_summary(level)
                 print(prompt_bridge.dumps_json(result))
                 return
@@ -441,8 +498,16 @@ def main(argv=None):
                 return
             elif ccmd == "resolve":
                 # Resolve drift
-                drift_type = input("Enter drift type: ")
-                resolution_data = input("Enter resolution data (JSON): ")
+                if hasattr(args, 'drift_type') and args.drift_type:
+                    drift_type = args.drift_type
+                else:
+                    drift_type = input("Enter drift type: ")
+                
+                if hasattr(args, 'resolution') and args.resolution:
+                    resolution_data = args.resolution
+                else:
+                    resolution_data = input("Enter resolution data (JSON): ")
+                
                 try:
                     resolution = json.loads(resolution_data) if resolution_data else {}
                     result = context_manager.resolve_context_drift(drift_type, resolution)
@@ -470,9 +535,17 @@ def main(argv=None):
                 return
             elif icmd == "submit":
                 # Submit response
-                phase = input("Enter phase: ")
-                question_id = input("Enter question ID: ")
-                response_data = input("Enter response (JSON): ")
+                if hasattr(args, 'phase') and hasattr(args, 'question_id') and hasattr(args, 'response'):
+                    # Use command line arguments if provided
+                    phase = args.phase
+                    question_id = args.question_id
+                    response_data = args.response
+                else:
+                    # Fall back to interactive input
+                    phase = input("Enter phase: ")
+                    question_id = input("Enter question ID: ")
+                    response_data = input("Enter response (JSON): ")
+                
                 try:
                     response = json.loads(response_data)
                     result = interrogator.submit_response(phase, question_id, response)
