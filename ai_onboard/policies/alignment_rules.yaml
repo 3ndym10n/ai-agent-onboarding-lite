@@ -1,0 +1,49 @@
+# Intelligent Alignment System (IAS) policy
+version: 1
+
+confidence:
+  proceed: 0.90
+  quick_confirm: 0.75
+  clarify: 0.0
+  weights:
+    vision_completeness: 0.25
+    prior_confirmations: 0.25
+    benchmark_fit: 0.20
+    ambiguity_inverse: 0.20
+    change_impact_inverse: 0.10
+
+# Gates that trigger alignment checks
+alignment_gates:
+  - discovery_changed
+  - feature_request
+  - ui_scope_change
+  - plan_generated
+  - plan_updated
+  - structural_edits
+  - external_dependency
+  - api_contract_change
+
+ambiguity_rules:
+  - id: missing_top_outcomes
+    description: charter missing or lacks primary outcomes
+    check: require(charter.top_outcomes)
+  - id: conflicting_priorities
+    description: conflicting goals detected in vision or plan
+    check: detect_conflict(vision.priorities)
+  - id: vague_ui
+    description: UI intent vague (no tokens/patterns/components)
+    check: vague_ui_intent()
+  - id: arch_divergence
+    description: proposed architecture deviates from discovered patterns without rationale
+    check: architecture_divergence()
+
+prompts:
+  quick_confirm:
+    - "Here is my understanding of your goal: {summary}. Is this correct?"
+    - "I plan to do {action}. Any tweaks before I proceed?"
+  clarify:
+    - "I see ambiguity in {areas}. Which of these options best matches your intent?"
+    - "Which is higher priority right now: {option_a} or {option_b}?"
+
+outputs:
+  report_path: .ai_onboard/alignment_report.json
