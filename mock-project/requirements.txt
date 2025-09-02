@@ -1,4 +1,0 @@
-flask==2.3.3
-sqlalchemy==2.0.21
-pytest==7.4.2
-python-dotenv==1.0.0
