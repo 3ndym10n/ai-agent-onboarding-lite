@@ -13,6 +13,17 @@ Run:
     python -m ai_onboard prompt state|rules|summary|propose
     python -m ai_onboard checkpoint create|list|restore
 
+## Alignment Preview (Dry Run)
+
+Use the intelligent alignment preview to assess confidence and ambiguities before executing changes. This is read-only and writes a small report.
+
+```
+python -m ai_onboard align --preview
+# -> prints JSON and writes .ai_onboard/alignment_report.json
+```
+
+The report includes: `confidence` (0-1), `decision` (proceed|quick_confirm|clarify), component scores, and detected ambiguities. Thresholds are configured in `ai_onboard/policies/alignment_rules.yaml`.
+
 ## Safe Cleanup
 
 The `cleanup` command safely removes non-critical files while never touching:
