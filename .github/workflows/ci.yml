@@ -12,6 +12,8 @@ jobs:
         with: { python-version: "3.8" }
       - run: python -m pip install --upgrade pip
       - run: pip install pytest pyyaml
+      - name: Install ai-onboard package
+        run: pip install -e .
       - name: Protected paths
         shell: pwsh
         run: python scripts/protected_paths_diff.py origin/${{ github.base_ref || 'main' }}
