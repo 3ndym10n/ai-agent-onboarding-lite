@@ -31,23 +31,49 @@ def is_feature_branch() -> bool:
         )
         current_branch = result.stdout.strip()
         
+        # Debug output for CI
+        print(f"DEBUG: Current branch: '{current_branch}'")
+        
         # Check if this is a feature branch
         feature_patterns = ["feature/", "feat/", "bugfix/", "hotfix/", "release/"]
-        return any(current_branch.startswith(pat) for pat in feature_patterns)
-    except subprocess.CalledProcessError:
+        is_feature = any(current_branch.startswith(pat) for pat in feature_patterns)
+        
+        print(f"DEBUG: Is feature branch: {is_feature}")
+        print(f"DEBUG: Feature patterns checked: {feature_patterns}")
+        
+        return is_feature
+    except subprocess.CalledProcessError as e:
         # If we can't determine branch, be conservative and assume it's not a feature branch
+        print(f"DEBUG: Error getting branch: {e}")
+        print(f"DEBUG: stderr: {e.stderr}")
         return False
 
 
 def main() -> int:
     base = sys.argv[1] if len(sys.argv) > 1 else "origin/main"
+    print(f"DEBUG: Base reference: '{base}'")
     
     # Check if we're on a feature branch
     is_feature = is_feature_branch()
     
+    # Debug: show git status
+    try:
+        status_result = subprocess.run(
+            ["git", "status", "--porcelain"],
+            text=True, capture_output=True, check=True
+        )
+        print(f"DEBUG: Git status:\n{status_result.stdout}")
+    except subprocess.CalledProcessError as e:
+        print(f"DEBUG: Error getting git status: {e}")
+    
     cp = subprocess.run([
         "git", "diff", "--name-status", base, "HEAD"
     ], text=True, capture_output=True, check=False)
+    
+    print(f"DEBUG: Git diff command: git diff --name-status {base} HEAD")
+    print(f"DEBUG: Git diff exit code: {cp.returncode}")
+    if cp.stderr:
+        print(f"DEBUG: Git diff stderr: {cp.stderr}")
     
     hits = []
     for ln in (cp.stdout or "").splitlines():
@@ -58,6 +84,8 @@ def main() -> int:
         touched = any(fnmatch.fnmatch(path, pat) for pat in PROTECTED)
         if touched:
             hits.append({"path": path, "status": status})
+    
+    print(f"DEBUG: Protected paths touched: {len(hits)}")
     
     if hits:
         print(json.dumps({
