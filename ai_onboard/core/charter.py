@@ -29,3 +29,8 @@ def ensure(root: Path, interactive: bool=False) -> dict:
 def require_gate(root: Path, needed: str) -> None:
     from . import state
     state.require_gate(root, needed)
+
+def load_charter(root: Path) -> dict:
+    """Load the project charter"""
+    path = root / ".ai_onboard" / "charter.json"
+    return utils.read_json(path, default=TEMPLATE.copy())

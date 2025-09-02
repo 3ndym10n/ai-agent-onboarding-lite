@@ -20,6 +20,8 @@ from ..core import (
     smart_debugger,
     context_continuity,
     vision_interrogator,
+    visual_design,
+    design_system,
 )
 from ..plugins import example_policy  # ensure example plugin registers on import
 
@@ -100,6 +102,26 @@ def main(argv=None):
     
     update_parser = sv_sub.add_parser("update", help="Update vision documents")
     update_parser.add_argument("--update", help="Update data (JSON)")
+
+    # UI/UX Design commands
+    s_design = sub.add_parser("design", help="UI/UX design validation and management")
+    sd_sub = s_design.add_subparsers(dest="design_cmd", required=True)
+    
+    analyze_parser = sd_sub.add_parser("analyze", help="Analyze UI design from screenshot")
+    analyze_parser.add_argument("--screenshot", required=True, help="Path to screenshot file")
+    
+    validate_parser = sd_sub.add_parser("validate", help="Validate design decision")
+    validate_parser.add_argument("--description", required=True, help="Design description")
+    
+    consistency_parser = sd_sub.add_parser("consistency", help="Check design consistency")
+    consistency_parser.add_argument("--description", required=True, help="Design description")
+    
+    system_parser = sd_sub.add_parser("system", help="Design system management")
+    system_sub = system_parser.add_subparsers(dest="system_cmd", required=True)
+    system_sub.add_parser("summary", help="Show design system summary")
+    system_sub.add_parser("tokens", help="List design tokens")
+    system_sub.add_parser("components", help="List design components")
+    system_sub.add_parser("patterns", help="List design patterns")
 
     # Dynamic planning commands
     s_planning = sub.add_parser("planning", help="Dynamic project planning")
@@ -569,6 +591,55 @@ def main(argv=None):
                 print(prompt_bridge.dumps_json(result))
                 return
             print("{\"error\":\"unknown interrogate subcommand\"}")
+            return
+
+        # UI/UX Design commands
+        if args.cmd == "design":
+            dcmd = getattr(args, "design_cmd", None)
+            
+            if dcmd == "analyze":
+                # Analyze UI design from screenshot
+                screenshot_path = args.screenshot
+                project_context = charter.load_charter(root)
+                result = visual_design.analyze_ui_design(screenshot_path, project_context)
+                print(prompt_bridge.dumps_json(result))
+                return
+            elif dcmd == "validate":
+                # Validate design decision
+                description = args.description
+                project_context = charter.load_charter(root)
+                result = visual_design.validate_design_decision(description, project_context)
+                print(prompt_bridge.dumps_json(result))
+                return
+            elif dcmd == "consistency":
+                # Check design consistency
+                description = args.description
+                result = design_system.validate_design_consistency(description, str(root))
+                print(prompt_bridge.dumps_json(result))
+                return
+            elif dcmd == "system":
+                # Design system management
+                scmd = getattr(args, "system_cmd", None)
+                
+                if scmd == "summary":
+                    result = design_system.get_design_system_summary(str(root))
+                    print(prompt_bridge.dumps_json(result))
+                    return
+                elif scmd == "tokens":
+                    # TODO: Implement token listing
+                    print("{\"message\":\"Token listing not yet implemented\"}")
+                    return
+                elif scmd == "components":
+                    # TODO: Implement component listing
+                    print("{\"message\":\"Component listing not yet implemented\"}")
+                    return
+                elif scmd == "patterns":
+                    # TODO: Implement pattern listing
+                    print("{\"message\":\"Pattern listing not yet implemented\"}")
+                    return
+                print("{\"error\":\"unknown system subcommand\"}")
+                return
+            print("{\"error\":\"unknown design subcommand\"}")
             return
 
         if args.cmd == "cleanup":
