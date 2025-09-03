@@ -1,5 +1,6 @@
 import fnmatch, os
 from pathlib import Path
+from typing import List
 from . import utils
 
 def _snapshot(root: Path):
@@ -21,14 +22,14 @@ def load(root: Path) -> dict:
 def save(root: Path, idx: dict) -> None:
     utils.write_json(root / ".ai_onboard" / "cache_index.json", idx)
 
-def changed_files(root: Path, idx: dict) -> list[str]:
+def changed_files(root: Path, idx: dict) -> List[str]:
     new = _snapshot(root)
     old = idx.get("snapshot", {})
     changed = [k for k,v in new.items() if old.get(k) != v]
     idx["snapshot"] = new
     return changed
 
-def rule_impacted(idx: dict, rule_id: str, changed: list[str]) -> bool:
+def rule_impacted(idx: dict, rule_id: str, changed: List[str]) -> bool:
     globs = idx.get("map", {}).get(rule_id, ["**/*"])
     for g in globs:
         for f in changed:

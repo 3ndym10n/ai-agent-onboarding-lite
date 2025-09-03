@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import List, Dict, Any
+from . import utils
 
 
 DEFAULTS = {
@@ -25,6 +27,16 @@ def _cfg(manifest: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def rules_summary(manifest: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Generate a summary of rules that would apply to this repo."""
+    # This is a simple heuristic - in practice you'd want more sophisticated analysis
+    # - files_changed: List[str]
+    # - subsystems: List[str]
+    # - rule_impact: Dict[str, float]
+    # - confidence: float
+    
+    # For now, just return a basic structure
+    hits: List[Dict[str, Any]] = []
+    
     cfg = _cfg(manifest)
     return [
         {"id": "MAX_DELETE_LINES", "threshold": cfg["MAX_DELETE_LINES"], "action": "confirm"},

@@ -48,6 +48,7 @@ def main(argv=None):
     s_al.add_argument("--checkpoint", default="PlanGate")
     s_al.add_argument("--approve", action="store_true")
     s_al.add_argument("--note", default="", help="Optional note to store with approval")
+    s_al.add_argument("--preview", action="store_true", help="Compute dry-run alignment report (no edits)")
 
     s_v = sub.add_parser("validate", help="Run validation and write report")
     s_v.add_argument("--report", action="store_true", help="Write .ai_onboard/report.md and versioned copy")
@@ -198,6 +199,11 @@ def main(argv=None):
             return
 
         if args.cmd == "align":
+            # Non-invasive preview mode
+            if getattr(args, "preview", False):
+                res = alignment.preview(root)
+                print(prompt_bridge.dumps_json(res))
+                return
             cp = args.checkpoint
             if args.approve:
                 alignment.record_decision(root, "ALIGN", cp, True, args.note)
