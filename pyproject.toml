@@ -48,7 +48,7 @@ where = ["."]
 include = ["ai_onboard*"]
 
 [tool.setuptools_scm]
-version_file = "ai_onboard/VERSION"
+version_file = "ai_onboard/VERSION.txt"
 write_to = "ai_onboard/_version.py"
 
 [tool.black]

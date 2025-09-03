@@ -4,7 +4,7 @@ except ImportError:
     # Fallback for development/editable installs
     try:
         from pathlib import Path
-        version_file = Path(__file__).parent / "VERSION"
+        version_file = Path(__file__).parent / "VERSION.txt"
         if version_file.exists():
             __version__ = version_file.read_text().strip()
         else:
