@@ -26,6 +26,7 @@ classifiers = [
 ]
 
 dependencies = [
+    "PyYAML>=6.0.0",  # Required for policy loading (YAML policies)
     # Currently uses only standard library modules
     # Add external dependencies here as needed
 ]
