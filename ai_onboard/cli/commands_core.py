@@ -25,7 +25,6 @@ def add_core_commands(subparsers):
     ias_parent = argparse.ArgumentParser(add_help=False)
     ias_parent.add_argument("--yes", action="store_true", help="Proceed without IAS confirmation (non-interactive)")
     ias_parent.add_argument("--assume", choices=["proceed", "quick_confirm", "clarify"], help="Assume IAS decision for this run")
-    ias_parent.add_argument("--interactive", action="store_true", help="Show IAS thinking process before gating")
 
     # Analyze
     s_an = subparsers.add_parser("analyze", parents=[ias_parent], help="Scan repo and draft ai_onboard.json manifest")
