@@ -91,7 +91,7 @@ def _ias_gate(args, root: Path) -> bool:
 
     if decision == "quick_confirm":
         # Require actual user confirmation
-        print(f"\n🤖 IAS Quick Confirm Required:")
+        print(f"\n[ROBOT] IAS Quick Confirm Required:")
         print(f"   Confidence: {report.get('confidence', 0.0):.2f}")
         print(f"   Report: {report.get('report_path', 'N/A')}")
         print(f"\n   Type 'yes' to proceed or 'no' to stop: ", end="")
@@ -99,16 +99,16 @@ def _ias_gate(args, root: Path) -> bool:
         try:
             user_input = input().strip().lower()
             if user_input != 'yes':
-                print("   ❌ Command cancelled by user.")
+                print("   [X] Command cancelled by user.")
                 return False
-            print("   ✅ Confirmed - proceeding...")
+            print("   [OK] Confirmed - proceeding...")
             return True
         except (EOFError, KeyboardInterrupt):
-            print("\n   ❌ Command cancelled by user.")
+            print("\n   [X] Command cancelled by user.")
             return False
 
     # Clarify: block and require detailed confirmation
-    print(f"\n🤖 IAS Requires Clarification:")
+    print(f"\n[ROBOT] IAS Requires Clarification:")
     print(f"   Confidence: {report.get('confidence', 0.0):.2f}")
     
     if report.get("components"):
@@ -119,7 +119,7 @@ def _ias_gate(args, root: Path) -> bool:
     if report.get("ambiguities"):
         print(f"   Issues Found:")
         for issue in report["ambiguities"]:
-            print(f"     ❌ {issue}")
+            print(f"     [X] {issue}")
     
     print(f"\n   Report saved to: {report.get('report_path', 'N/A')}")
     print(f"\n   Type 'yes' to proceed anyway or 'no' to stop: ", end="")
@@ -127,13 +127,13 @@ def _ias_gate(args, root: Path) -> bool:
     try:
         user_input = input().strip().lower()
         if user_input != 'yes':
-            print("   ❌ Command cancelled by user.")
-            print("   💡 Address the issues above or use --assume proceed to bypass.")
+            print("   [X] Command cancelled by user.")
+            print("   [TIP] Address the issues above or use --assume proceed to bypass.")
             return False
-        print("   ✅ Proceeding despite concerns...")
+        print("   [OK] Proceeding despite concerns...")
         return True
     except (EOFError, KeyboardInterrupt):
-        print("\n   ❌ Command cancelled by user.")
+        print("\n   [X] Command cancelled by user.")
         return False
 
 
