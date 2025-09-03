@@ -5,6 +5,7 @@ from pathlib import Path
 from .commands_core import add_core_commands, handle_core_commands
 from .commands_interrogate import add_interrogate_commands, handle_interrogate_commands
 from .commands_prompt import add_prompt_commands, handle_prompt_commands
+from .commands_ai_agent import add_ai_agent_commands, handle_ai_agent_commands
 from ..plugins import example_policy  # ensure example plugin registers on import
 
 
@@ -14,7 +15,7 @@ def main(argv=None):
         prog="ai_onboard",
         description=(
             "AI Onboard: drop-in project coach "
-            "(charter + plan + align + validate + kaizen + interrogate + prompt)"
+            "(charter + plan + align + validate + kaizen + interrogate + prompt + ai-agent)"
         ),
     )
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -27,6 +28,9 @@ def main(argv=None):
     
     # Add prompt commands
     add_prompt_commands(sub)
+    
+    # Add AI agent commands
+    add_ai_agent_commands(sub)
     
     # TODO: Add other domain commands as they're refactored
     # from .commands_vision import add_vision_commands, handle_vision_commands
@@ -51,6 +55,11 @@ def main(argv=None):
     # Handle prompt commands
     if args.cmd == "prompt":
         if handle_prompt_commands(args, root):
+            return
+
+    # Handle AI agent commands
+    if args.cmd == "ai-agent":
+        if handle_ai_agent_commands(args, root):
             return
 
     # TODO: Handle other domain commands as they're refactored
