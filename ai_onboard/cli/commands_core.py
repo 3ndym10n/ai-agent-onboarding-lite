@@ -25,6 +25,7 @@ def add_core_commands(subparsers):
     ias_parent = argparse.ArgumentParser(add_help=False)
     ias_parent.add_argument("--yes", action="store_true", help="Proceed without IAS confirmation (non-interactive)")
     ias_parent.add_argument("--assume", choices=["proceed", "quick_confirm", "clarify"], help="Assume IAS decision for this run")
+    ias_parent.add_argument("--interactive", action="store_true", help="Show IAS thinking process before gating")
 
     # Analyze
     s_an = subparsers.add_parser("analyze", parents=[ias_parent], help="Scan repo and draft ai_onboard.json manifest")
@@ -90,29 +91,51 @@ def _ias_gate(args, root: Path) -> bool:
         return True
 
     if decision == "quick_confirm":
-        # Require a lightweight confirmation unless --yes supplied
-        print(utils.dumps_json({
-            "ias": {
-                "decision": decision,
-                "confidence": report.get("confidence"),
-                "report_path": report.get("report_path"),
-                "next_action": "confirm or rerun with --yes/--assume proceed"
-            }
-        }))
-        return False
+        # Require actual user confirmation
+        print(f"\n🤖 IAS Quick Confirm Required:")
+        print(f"   Confidence: {report.get('confidence', 0.0):.2f}")
+        print(f"   Report: {report.get('report_path', 'N/A')}")
+        print(f"\n   Type 'yes' to proceed or 'no' to stop: ", end="")
+        
+        try:
+            user_input = input().strip().lower()
+            if user_input != 'yes':
+                print("   ❌ Command cancelled by user.")
+                return False
+            print("   ✅ Confirmed - proceeding...")
+            return True
+        except (EOFError, KeyboardInterrupt):
+            print("\n   ❌ Command cancelled by user.")
+            return False
 
-    # Clarify: block and surface reasons/components
-    print(utils.dumps_json({
-        "ias": {
-            "decision": decision,
-            "confidence": report.get("confidence"),
-            "components": report.get("components"),
-            "ambiguities": report.get("ambiguities"),
-            "report_path": report.get("report_path"),
-            "message": "IAS requests clarification before proceeding. Rerun after addressing items or pass --assume quick_confirm/proceed."
-        }
-    }))
-    return False
+    # Clarify: block and require detailed confirmation
+    print(f"\n🤖 IAS Requires Clarification:")
+    print(f"   Confidence: {report.get('confidence', 0.0):.2f}")
+    
+    if report.get("components"):
+        print(f"   Components:")
+        for key, value in report["components"].items():
+            print(f"     {key}: {value}")
+    
+    if report.get("ambiguities"):
+        print(f"   Issues Found:")
+        for issue in report["ambiguities"]:
+            print(f"     ❌ {issue}")
+    
+    print(f"\n   Report saved to: {report.get('report_path', 'N/A')}")
+    print(f"\n   Type 'yes' to proceed anyway or 'no' to stop: ", end="")
+    
+    try:
+        user_input = input().strip().lower()
+        if user_input != 'yes':
+            print("   ❌ Command cancelled by user.")
+            print("   💡 Address the issues above or use --assume proceed to bypass.")
+            return False
+        print("   ✅ Proceeding despite concerns...")
+        return True
+    except (EOFError, KeyboardInterrupt):
+        print("\n   ❌ Command cancelled by user.")
+        return False
 
 
 def handle_core_commands(args, root: Path):
