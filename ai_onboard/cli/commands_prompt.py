@@ -11,6 +11,10 @@ def add_prompt_commands(subparsers):
     s_prompt = subparsers.add_parser("prompt", help="Prompt management and generation")
     sp_sub = s_prompt.add_subparsers(dest="prompt_cmd", required=True)
     
+    # state
+    sp_sub.add_parser("state", help="Show prompt-related project state (manifest, last metrics)")
+    
+    # summary
     summary_parser = sp_sub.add_parser("summary", help="Generate project summary")
     summary_parser.add_argument("--level", choices=["brief", "detailed", "comprehensive"], default="brief", help="Summary detail level")
 
@@ -24,6 +28,11 @@ def handle_prompt_commands(args, root: Path):
     pcmd = getattr(args, "prompt_cmd", None)
     if not pcmd:
         print("{\"error\":\"no prompt subcommand specified\"}")
+        return True
+    
+    if pcmd == "state":
+        result = prompt_bridge.get_project_state(root)
+        print(prompt_bridge.dumps_json(result))
         return True
     
     if pcmd == "summary":
