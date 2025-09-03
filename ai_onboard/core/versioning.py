@@ -1,7 +1,8 @@
 from pathlib import Path
 
 def version_file(root: Path) -> Path:
-    return root / "ai_onboard" / "VERSION"
+    # Keep in sync with setuptools_scm config pointing at VERSION.txt
+    return root / "ai_onboard" / "VERSION.txt"
 
 def get_version(root: Path) -> str:
     vf = version_file(root)
