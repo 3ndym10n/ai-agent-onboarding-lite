@@ -4,6 +4,7 @@ import argparse
 from pathlib import Path
 from .commands_core import add_core_commands, handle_core_commands
 from .commands_interrogate import add_interrogate_commands, handle_interrogate_commands
+from .commands_prompt import add_prompt_commands, handle_prompt_commands
 from ..plugins import example_policy  # ensure example plugin registers on import
 
 
@@ -13,7 +14,7 @@ def main(argv=None):
         prog="ai_onboard",
         description=(
             "AI Onboard: drop-in project coach "
-            "(charter + plan + align + validate + kaizen + interrogate)"
+            "(charter + plan + align + validate + kaizen + interrogate + prompt)"
         ),
     )
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -23,6 +24,9 @@ def main(argv=None):
     
     # Add interrogate commands
     add_interrogate_commands(sub)
+    
+    # Add prompt commands
+    add_prompt_commands(sub)
     
     # TODO: Add other domain commands as they're refactored
     # from .commands_vision import add_vision_commands, handle_vision_commands
@@ -42,6 +46,11 @@ def main(argv=None):
     # Handle interrogate commands
     if args.cmd == "interrogate":
         if handle_interrogate_commands(args, root):
+            return
+
+    # Handle prompt commands
+    if args.cmd == "prompt":
+        if handle_prompt_commands(args, root):
             return
 
     # TODO: Handle other domain commands as they're refactored
