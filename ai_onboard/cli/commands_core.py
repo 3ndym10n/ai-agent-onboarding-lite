@@ -118,6 +118,13 @@ def _ias_gate(args, root: Path) -> bool:
 def handle_core_commands(args, root: Path):
     """Handle core command execution."""
     
+    # Allow a safe, read-only preview to bypass the IAS gate so users can
+    # inspect the recommendation before deciding to proceed.
+    if args.cmd == "align" and getattr(args, "preview", False):
+        out = alignment.preview(root)
+        print(utils.dumps_json(out))
+        return
+
     if args.cmd in {"analyze","charter","plan","align","validate","kaizen","optimize","metrics","cleanup"}:
         if not _ias_gate(args, root):
             return
@@ -132,11 +139,6 @@ def handle_core_commands(args, root: Path):
         # Implementation for plan command
         pass
     elif args.cmd == "align":
-        # Wire preview
-        if getattr(args, "preview", False):
-            out = alignment.preview(root)
-            print(utils.dumps_json(out))
-            return
         # Implementation for align command
         pass
     elif args.cmd == "validate":
