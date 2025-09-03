@@ -1,5 +1,6 @@
 import hashlib, json
 from pathlib import Path
+from typing import List
 from . import utils
 from .issue import Issue
 
@@ -24,7 +25,7 @@ def should_ask(root: Path, fp: str) -> bool:
     c = meta.get(fp, {}).get("count", 0)
     return c in (2, 5)  # ask at 2nd and 5th repeat as a simple heuristic
 
-def ask_card(root: Path, question: str, options: list[str]) -> None:
+def ask_card(root: Path, question: str, options: List[str]) -> None:
     card = root / ".ai_onboard" / "ask_card.md"
     text = ["# Ask Card", "", question, ""] + [f"- [ ] {opt}" for opt in options]
     utils.ensure_dir(card.parent)
