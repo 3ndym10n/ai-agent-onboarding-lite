@@ -1,14 +1,13 @@
-import os
-from pathlib import Path
-
-def _get_version():
-    """Read version from VERSION file."""
+try:
+    from ._version import version as __version__
+except ImportError:
+    # Fallback for development/editable installs
     try:
+        from pathlib import Path
         version_file = Path(__file__).parent / "VERSION"
         if version_file.exists():
-            return version_file.read_text().strip()
-        return "0.2.2"  # Fallback version
+            __version__ = version_file.read_text().strip()
+        else:
+            __version__ = "0.2.2"
     except Exception:
-        return "0.2.2"  # Fallback version
-
-__version__ = _get_version()
+        __version__ = "0.2.2"
