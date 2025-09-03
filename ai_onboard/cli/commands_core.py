@@ -91,8 +91,28 @@ def handle_core_commands(args, root: Path):
         # Implementation for optimize command
         pass
     elif args.cmd == "version":
-        # Implementation for version command
-        pass
+        # Show the actual package version, not project version
+        import ai_onboard
+        if args.set:
+            versioning.set_version(root, args.set)
+            print(f"Version set to {args.set}")
+            return
+        if args.bump:
+            current = versioning.get_version(root)
+            newv = versioning.bump(current, args.bump)
+            versioning.set_version(root, newv)
+            print(f"Bumped {args.bump}: {current} -> {newv}")
+            return
+        # Show package version, not project version
+        print(f"ai-onboard package version: {ai_onboard.__version__}")
+        # Also show project version if it exists
+        try:
+            project_version = versioning.get_version(root)
+            if project_version != "0.1.0":  # Only show if it's not the fallback
+                print(f"Project version: {project_version}")
+        except Exception:
+            pass  # Ignore project version errors
+        return
     elif args.cmd == "metrics":
         # Implementation for metrics command
         pass
