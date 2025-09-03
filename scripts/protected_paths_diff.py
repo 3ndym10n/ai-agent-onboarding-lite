@@ -97,10 +97,10 @@ def main() -> int:
         # On feature branches, allow changes to protected paths (development is expected)
         # On main branch or unknown, fail (protection is critical)
         if is_feature:
-            print("✅ Allowing protected path changes on feature branch (legitimate development)")
+            print("SUCCESS: Allowing protected path changes on feature branch (legitimate development)")
             return 0
         else:
-            print("❌ Blocking protected path changes on main branch (security violation)")
+            print("BLOCKED: Blocking protected path changes on main branch (security violation)")
             return 2
     
     return 0
