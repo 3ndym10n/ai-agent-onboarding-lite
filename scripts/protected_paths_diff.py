@@ -72,7 +72,7 @@ def is_feature_branch() -> bool:
                 return True
         
         # Check if this is a feature branch using standard patterns
-        feature_patterns = ["feature/", "feat/", "bugfix/", "hotfix/", "release/"]
+        feature_patterns = ["feature/", "feat/", "bugfix/", "hotfix/", "release/", "fix/"]
         is_feature = any(current_branch.startswith(pat) for pat in feature_patterns)
         
         print(f"DEBUG: Is feature branch: {is_feature}")

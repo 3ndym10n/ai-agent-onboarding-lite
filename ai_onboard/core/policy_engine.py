@@ -1,24 +1,41 @@
 from pathlib import Path
 from . import utils
 from typing import Any, Dict
+import logging
 
+# Set up logging for policy loading issues
+logger = logging.getLogger(__name__)
 
 def _read_policy_file(path: Path) -> Dict[str, Any]:
     if not path.exists():
         return {"rules": [], "scoring": {"pass_threshold": 0.7, "weights": {"error": 1.0, "warn": 0.4, "info": 0.1}}}
+    
     suffix = path.suffix.lower()
     try:
         if suffix in (".yaml", ".yml"):
             try:
                 import yaml  # type: ignore
-            except Exception:
-                # YAML not available; return empty policy (non-fatal)
+            except ImportError:
+                # YAML not available - log warning and fall back to JSON if available
+                logger.warning(f"PyYAML not available, cannot load {path}. Consider installing PyYAML for YAML policy support.")
+                
+                # Try to find a JSON equivalent
+                json_path = path.with_suffix('.json')
+                if json_path.exists():
+                    logger.info(f"Falling back to JSON equivalent: {json_path}")
+                    return utils.read_json(json_path, default={}) or {}
+                
+                # Return empty policy but log the issue
+                logger.error(f"YAML policy {path} cannot be loaded and no JSON fallback found. Policy enforcement may be weakened.")
                 return {}
+            
             with open(path, "r", encoding="utf-8") as f:
                 return yaml.safe_load(f) or {}
-        # default JSON
+        
+        # Default JSON handling
         return utils.read_json(path, default={}) or {}
-    except Exception:
+    except Exception as e:
+        logger.error(f"Error loading policy file {path}: {e}")
         return {}
 
 def load(root: Path) -> dict:
