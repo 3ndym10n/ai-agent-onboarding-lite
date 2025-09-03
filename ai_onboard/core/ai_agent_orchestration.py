@@ -25,6 +25,7 @@ from contextlib import contextmanager
 
 from . import alignment, utils
 from .ai_agent_wrapper import IASGuardrails
+from .session_storage import SessionStorageManager
 
 
 class DecisionStage(Enum):
@@ -346,11 +347,29 @@ class AIAgentOrchestrationLayer:
         self.command_orchestrator = CommandOrchestrator(root)
         self.guardrails = IASGuardrails()
         
+        # Initialize session storage
+        self.session_storage = SessionStorageManager(root)
+        
         # Register safety intervention
         self.safety_monitor.register_intervention_callback(self._handle_safety_intervention)
         
         # Session management
         self._session_lock = threading.Lock()
+        
+        # Load existing sessions from storage
+        self._load_existing_sessions()
+    
+    def _load_existing_sessions(self):
+        """Load existing sessions from persistent storage."""
+        try:
+            stored_sessions = self.session_storage.list_sessions()
+            for session_info in stored_sessions:
+                session_id = session_info["session_id"]
+                context = self.session_storage.load_session(session_id)
+                if context:
+                    self.sessions[session_id] = context
+        except Exception as e:
+            print(f"Warning: Could not load existing sessions: {e}")
     
     def create_session(self, user_id: str = "default") -> str:
         """Create a new conversation session."""
@@ -367,12 +386,21 @@ class AIAgentOrchestrationLayer:
             )
             
             self.sessions[session_id] = context
+            
+            # Save to persistent storage
+            self.session_storage.save_session(context)
+            
             return session_id
     
     def process_conversation(self, session_id: str, user_input: str) -> Dict[str, Any]:
         """Process user conversation through multi-stage decision pipeline."""
         if session_id not in self.sessions:
-            return {"error": "Session not found", "session_id": session_id}
+            # Try to load from storage
+            context = self.session_storage.load_session(session_id)
+            if context:
+                self.sessions[session_id] = context
+            else:
+                return {"error": "Session not found", "session_id": session_id}
         
         context = self.sessions[session_id]
         context.last_activity = time.time()
@@ -387,6 +415,9 @@ class AIAgentOrchestrationLayer:
         
         # Run through decision pipeline
         pipeline_result = self._run_decision_pipeline(context, user_input)
+        
+        # Save updated session to storage
+        self.session_storage.save_session(context)
         
         return pipeline_result
     
@@ -512,7 +543,12 @@ class AIAgentOrchestrationLayer:
     def execute_plan(self, session_id: str) -> Dict[str, Any]:
         """Execute the planned commands for a session."""
         if session_id not in self.sessions:
-            return {"error": "Session not found"}
+            # Try to load from storage
+            context = self.session_storage.load_session(session_id)
+            if context:
+                self.sessions[session_id] = context
+            else:
+                return {"error": "Session not found"}
         
         context = self.sessions[session_id]
         
@@ -536,6 +572,34 @@ class AIAgentOrchestrationLayer:
         
         return execution_result
     
+    def list_sessions(self, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        """List all available sessions."""
+        return self.session_storage.list_sessions(user_id)
+    
+    def delete_session(self, session_id: str) -> bool:
+        """Delete a session."""
+        if session_id in self.sessions:
+            del self.sessions[session_id]
+        return self.session_storage.delete_session(session_id)
+    
+    def cleanup_expired_sessions(self, max_age_hours: int = 24) -> int:
+        """Clean up expired sessions."""
+        deleted_count = self.session_storage.cleanup_expired_sessions(max_age_hours)
+        
+        # Also remove from memory
+        current_time = time.time()
+        cutoff_time = current_time - (max_age_hours * 3600)
+        
+        expired_in_memory = [
+            session_id for session_id, context in self.sessions.items()
+            if context.last_activity < cutoff_time
+        ]
+        
+        for session_id in expired_in_memory:
+            del self.sessions[session_id]
+        
+        return deleted_count
+    
     def _handle_safety_intervention(self, context: ConversationContext, reason: str):
         """Handle safety intervention callback."""
         print(f"🚨 SAFETY INTERVENTION: {reason}")
@@ -546,7 +610,12 @@ class AIAgentOrchestrationLayer:
     def get_session_status(self, session_id: str) -> Dict[str, Any]:
         """Get comprehensive session status."""
         if session_id not in self.sessions:
-            return {"error": "Session not found"}
+            # Try to load from storage
+            context = self.session_storage.load_session(session_id)
+            if context:
+                self.sessions[session_id] = context
+            else:
+                return {"error": "Session not found"}
         
         context = self.sessions[session_id]
         
