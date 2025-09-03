@@ -4,6 +4,7 @@ import sys
 import subprocess
 import json
 import fnmatch
+import os
 
 
 PROTECTED = [
@@ -24,7 +25,7 @@ PROTECTED = [
 def is_feature_branch() -> bool:
     """Check if we're on a feature branch (not main/master)."""
     try:
-        # Get current branch name
+        # First try: get current branch name
         result = subprocess.run(
             ["git", "rev-parse", "--abbrev-ref", "HEAD"],
             text=True, capture_output=True, check=True
@@ -34,7 +35,43 @@ def is_feature_branch() -> bool:
         # Debug output for CI
         print(f"DEBUG: Current branch: '{current_branch}'")
         
-        # Check if this is a feature branch
+        # If we're in a detached HEAD state (like in GitHub Actions), try alternative methods
+        if current_branch == "HEAD":
+            print("DEBUG: Detected detached HEAD, trying alternative branch detection...")
+            
+            # Method 1: Check if we're in a PR context by looking at remote refs
+            try:
+                remote_result = subprocess.run(
+                    ["git", "branch", "-r", "--contains", "HEAD"],
+                    text=True, capture_output=True, check=True
+                )
+                remote_branches = remote_result.stdout.strip().split('\n')
+                print(f"DEBUG: Remote branches containing HEAD: {remote_branches}")
+                
+                # Look for feature branches in remote refs
+                for branch in remote_branches:
+                    if branch.strip() and any(pat in branch for pat in ["feature/", "feat/", "bugfix/", "hotfix/", "release/"]):
+                        print(f"DEBUG: Found feature branch in remote refs: {branch}")
+                        return True
+            except subprocess.CalledProcessError as e:
+                print(f"DEBUG: Error checking remote refs: {e}")
+            
+            # Method 2: Check if we're in a PR by looking at the base ref
+            try:
+                # In GitHub Actions, we can check if we're comparing against main
+                base_ref = sys.argv[1] if len(sys.argv) > 1 else "origin/main"
+                if "main" in base_ref:
+                    print(f"DEBUG: Comparing against main branch, likely a feature branch")
+                    return True
+            except Exception as e:
+                print(f"DEBUG: Error checking base ref: {e}")
+            
+            # Method 3: Check if we're in a GitHub Actions PR context
+            if os.environ.get('GITHUB_EVENT_NAME') == 'pull_request':
+                print("DEBUG: GitHub Actions PR context detected")
+                return True
+        
+        # Check if this is a feature branch using standard patterns
         feature_patterns = ["feature/", "feat/", "bugfix/", "hotfix/", "release/"]
         is_feature = any(current_branch.startswith(pat) for pat in feature_patterns)
         
