@@ -16,6 +16,7 @@ from ..core import (
     versioning,
     cleanup,
 )
+from ..core.gate_system import create_clarification_gate, create_confirmation_gate
 
 
 def add_core_commands(subparsers):
@@ -90,51 +91,34 @@ def _ias_gate(args, root: Path) -> bool:
         return True
 
     if decision == "quick_confirm":
-        # Require actual user confirmation
-        print(f"\n[ROBOT] IAS Quick Confirm Required:")
-        print(f"   Confidence: {report.get('confidence', 0.0):.2f}")
-        print(f"   Report: {report.get('report_path', 'N/A')}")
-        print(f"\n   Type 'yes' to proceed or 'no' to stop: ", end="")
+        # Use gate system for confirmation
+        context = {
+            "command": getattr(args, 'cmd', 'unknown'),
+            "confidence": report.get('confidence', 0.0),
+            "report_path": report.get('report_path', 'N/A')
+        }
         
-        try:
-            user_input = input().strip().lower()
-            if user_input != 'yes':
-                print("   [X] Command cancelled by user.")
-                return False
-            print("   [OK] Confirmed - proceeding...")
-            return True
-        except (EOFError, KeyboardInterrupt):
-            print("\n   [X] Command cancelled by user.")
-            return False
+        response = create_confirmation_gate(
+            root, 
+            f"proceed with {getattr(args, 'cmd', 'command')}", 
+            context
+        )
+        
+        return response.get("user_decision") == "proceed"
 
-    # Clarify: block and require detailed confirmation
-    print(f"\n[ROBOT] IAS Requires Clarification:")
-    print(f"   Confidence: {report.get('confidence', 0.0):.2f}")
+    # Clarify: Use gate system for clarification
+    confidence = report.get('confidence', 0.0)
+    issues = report.get('ambiguities', [])
     
-    if report.get("components"):
-        print(f"   Components:")
-        for key, value in report["components"].items():
-            print(f"     {key}: {value}")
+    context = {
+        "command": getattr(args, 'cmd', 'unknown'),
+        "report_path": report.get('report_path', 'N/A'),
+        "components": report.get('components', {})
+    }
     
-    if report.get("ambiguities"):
-        print(f"   Issues Found:")
-        for issue in report["ambiguities"]:
-            print(f"     [X] {issue}")
+    response = create_clarification_gate(root, confidence, issues, context)
     
-    print(f"\n   Report saved to: {report.get('report_path', 'N/A')}")
-    print(f"\n   Type 'yes' to proceed anyway or 'no' to stop: ", end="")
-    
-    try:
-        user_input = input().strip().lower()
-        if user_input != 'yes':
-            print("   [X] Command cancelled by user.")
-            print("   [TIP] Address the issues above or use --assume proceed to bypass.")
-            return False
-        print("   [OK] Proceeding despite concerns...")
-        return True
-    except (EOFError, KeyboardInterrupt):
-        print("\n   [X] Command cancelled by user.")
-        return False
+    return response.get("user_decision") == "proceed"
 
 
 def handle_core_commands(args, root: Path):
