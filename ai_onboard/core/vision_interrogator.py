@@ -248,6 +248,16 @@ class VisionInterrogator:
         else:
             interrogation_data["status"] = "completed"
             interrogation_data["completed_at"] = utils.now_iso()
+            
+            # Auto-sync to charter when interrogation is completed
+            try:
+                from .interrogation_to_charter import auto_sync_on_completion
+                if auto_sync_on_completion(self.root):
+                    print("✅ Vision interrogation data synced to charter.json")
+                else:
+                    print("⚠️ Could not sync interrogation data to charter")
+            except Exception as e:
+                print(f"⚠️ Error syncing to charter: {e}")
     
     def get_current_questions(self) -> Dict[str, Any]:
         """Get current questions for the active phase."""
@@ -473,4 +483,6 @@ class VisionInterrogator:
 def get_vision_interrogator(root: Path) -> VisionInterrogator:
     """Get vision interrogator instance."""
     return VisionInterrogator(root)
+
+
 
