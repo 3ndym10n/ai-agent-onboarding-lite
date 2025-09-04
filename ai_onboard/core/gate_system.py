@@ -157,7 +157,7 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
         
         return prompt
     
-    def _wait_for_response(self, timeout_seconds: int = 300) -> Dict[str, Any]:
+    def _wait_for_response(self, timeout_seconds: int = 5) -> Dict[str, Any]:
         """Wait for AI agent to provide user response."""
         
         start_time = time.time()
