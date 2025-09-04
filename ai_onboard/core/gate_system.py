@@ -183,12 +183,13 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
             
             time.sleep(1)  # Check every second
         
-        # Timeout - return default response
+        # Timeout - return safe default response
         print(f"⏰ Gate timeout after {timeout_seconds} seconds")
+        print(f"🚨 Safety: Defaulting to STOP due to timeout - user input required")
         return {
             "user_responses": ["timeout"],
-            "user_decision": "proceed",
-            "additional_context": "Gate timed out",
+            "user_decision": "stop",
+            "additional_context": "Gate timed out - no user response received",
             "timestamp": time.time()
         }
     
