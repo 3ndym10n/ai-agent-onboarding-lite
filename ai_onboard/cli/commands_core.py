@@ -70,6 +70,22 @@ def add_core_commands(subparsers):
     s_clean.add_argument("--dry-run", action="store_true", help="Show what would be deleted without actually deleting")
     s_clean.add_argument("--force", action="store_true", help="Skip confirmation prompts")
     s_clean.add_argument("--backup", action="store_true", help="Create backup before cleanup")
+    
+    # Gate management
+    s_gate = subparsers.add_parser("gate", help="Gate management commands")
+    gate_subparsers = s_gate.add_subparsers(dest="gate_cmd", help="Gate subcommands")
+    
+    # Gate status
+    gate_subparsers.add_parser("status", help="Check if a gate is currently active")
+    
+    # Gate clear
+    gate_subparsers.add_parser("clear", help="Clear any active gates (use with caution)")
+    
+    # Gate respond
+    s_gate_resp = gate_subparsers.add_parser("respond", help="Manually respond to an active gate")
+    s_gate_resp.add_argument("--decision", choices=["proceed", "modify", "stop"], default="proceed", help="User decision")
+    s_gate_resp.add_argument("--responses", nargs="*", help="User responses to questions")
+    s_gate_resp.add_argument("--context", default="", help="Additional context")
 
 
 def _ias_gate(args, root: Path) -> bool:
@@ -121,6 +137,50 @@ def _ias_gate(args, root: Path) -> bool:
     return response.get("user_decision") == "proceed"
 
 
+def _handle_gate_commands(args, root: Path):
+    """Handle gate management commands."""
+    gates_dir = root / ".ai_onboard" / "gates"
+    current_gate_file = gates_dir / "current_gate.md"
+    response_file = gates_dir / "gate_response.json"
+    
+    if args.gate_cmd == "status":
+        if current_gate_file.exists():
+            print("[INFO] Gate is ACTIVE")
+            print(f"[FOLDER] Gate file: {current_gate_file}")
+            print(f"[INFO] Read the gate file for instructions")
+        else:
+            print("[INFO] No active gates")
+            
+    elif args.gate_cmd == "clear":
+        if current_gate_file.exists():
+            current_gate_file.unlink()
+            print("[OK] Gate cleared")
+        if response_file.exists():
+            response_file.unlink()
+            print("[OK] Response file cleared")
+        if not current_gate_file.exists() and not response_file.exists():
+            print("[INFO] No gates to clear")
+            
+    elif args.gate_cmd == "respond":
+        if not current_gate_file.exists():
+            print("[ERROR] No active gate to respond to")
+            return
+            
+        import json
+        import time
+        
+        response_data = {
+            "user_responses": args.responses or ["manual response"],
+            "user_decision": args.decision,
+            "additional_context": args.context,
+            "timestamp": time.time()
+        }
+        
+        response_file.write_text(json.dumps(response_data, indent=2), encoding='utf-8')
+        print(f"[OK] Response written to: {response_file}")
+        print(f"[INFO] The system should now continue automatically")
+
+
 def handle_core_commands(args, root: Path):
     """Handle core command execution."""
     
@@ -135,6 +195,9 @@ def handle_core_commands(args, root: Path):
     if args.cmd in {"analyze","charter","plan","align","validate","kaizen","optimize","metrics","cleanup"}:
         if not _ias_gate(args, root):
             return
+    elif args.cmd == "gate":
+        _handle_gate_commands(args, root)
+        return
     
     if args.cmd == "analyze":
         # Scan repository and create manifest

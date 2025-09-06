@@ -74,9 +74,11 @@ class GateSystem:
         
         # Tell AI agent to check the gate
         print(f"\n[ROBOT] AI AGENT GATE ACTIVATED")
-        print(f"[FOLDER] Please check: {self.current_gate_file}")
-        print(f"[CLIPBOARD] Follow the instructions in the file to collaborate")
-        print(f"[CLOCK] Waiting for your response...")
+        print(f"[FOLDER] Gate file created: {self.current_gate_file}")
+        print(f"[CLIPBOARD] AI Agent: Read the gate file and follow the instructions")
+        print(f"[CLOCK] Waiting for AI agent to ask user questions...")
+        print(f"[INFO] If you're an AI agent, check: {self.current_gate_file}")
+        print(f"[INFO] If you're a human, wait for the AI agent to ask you questions")
         
         # Wait for AI agent response
         response = self._wait_for_response()
@@ -126,10 +128,22 @@ class GateSystem:
         # Add instructions for AI agent
         prompt += """### [TARGET] Instructions for AI Agent:
 
-1. **ASK THE USER** these questions in Cursor chat
-2. **WAIT FOR THEIR RESPONSE** - Do not generate fake responses
-3. **WRITE THEIR ACTUAL RESPONSE** to the response file
-4. **BE COLLABORATIVE** - This is the whole point of the system
+**STEP 1: DETECT THIS GATE**
+- You are reading this because a gate is active
+- The gate file is at: `.ai_onboard/gates/current_gate.md`
+- You MUST handle this gate before proceeding
+
+**STEP 2: ASK THE USER**
+- Copy the questions below and ask them in the chat
+- Wait for the user's actual responses
+- Do NOT generate fake responses
+
+**STEP 3: WRITE RESPONSE FILE**
+- Create `.ai_onboard/gates/gate_response.json` with user's answers
+- Use the exact format shown below
+
+**STEP 4: CONTINUE**
+- Once the response file is created, the system will continue automatically
 
 ### Response Format:
 Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure:
@@ -146,11 +160,17 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
 }
 ```
 
-### [WARNING] IMPORTANT:
+### [WARNING] CRITICAL RULES:
 - Do NOT generate fake responses for the user
 - Do NOT bypass this gate by making assumptions
+- Do NOT proceed without user input
 - This is a COLLABORATION point - work WITH the user
 - The user's input is REQUIRED to continue
+
+### [INFO] What happens if you ignore this gate:
+- The system will timeout after 5 seconds
+- The command will fail with "stop" decision
+- The user will be confused and frustrated
 
 **Status: WAITING_FOR_USER_INPUT**
 """
@@ -184,7 +204,10 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
             time.sleep(1)  # Check every second
         
         # Timeout - return safe default response
-        print(f"[ALARM] Gate timeout after {timeout_seconds} seconds")
+        print(f"\n[ALARM] Gate timeout after {timeout_seconds} seconds")
+        print(f"[WARNING] The AI agent did not handle the gate properly")
+        print(f"[INFO] Gate file is still available at: {self.current_gate_file}")
+        print(f"[INFO] To manually respond, create: {self.response_file}")
         print(f"[WARNING] Safety: Defaulting to STOP due to timeout - user input required")
         return {
             "user_responses": ["timeout"],
