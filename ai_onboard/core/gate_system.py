@@ -49,8 +49,7 @@ class GateSystem:
         self.current_gate_file = self.gates_dir / "current_gate.md"
         self.response_file = self.gates_dir / "gate_response.json"
         self.status_file = self.gates_dir / "gate_status.json"
-        # In-memory confirmation token for the current gate confirmation step
-        self._confirmation_code: Optional[str] = None
+        # Confirmation code removed (was previously used for strict approval)
         # Cursor rules file (best-effort, ignored if unsupported). Not committed.
         self.cursor_rules_file = self.project_root / ".cursorrules"
     
@@ -101,9 +100,8 @@ class GateSystem:
             self._cleanup_gate()
             return initial_response
 
-        # Step 2: Confirmation gate with one-time code
-        self._confirmation_code = self._generate_confirmation_code()
-        confirm_prompt = self._generate_confirmation_prompt(gate_request, initial_response, self._confirmation_code)
+        # Step 2: Confirmation gate (no code)
+        confirm_prompt = self._generate_confirmation_prompt(gate_request, initial_response)
         self.current_gate_file.write_text(confirm_prompt, encoding='utf-8')
 
         status = {
@@ -112,7 +110,7 @@ class GateSystem:
             "created_at": time.time(),
             "phase": "confirm",
             "waiting_for_response": True,
-            "confirmation_code_hint": f"{self._confirmation_code[:2]}***"  # small hint for UX
+            "confirmation_required": True
         }
         self.status_file.write_text(json.dumps(status, indent=2), encoding='utf-8')
         
@@ -124,7 +122,7 @@ class GateSystem:
             self.response_file.unlink()
 
         print("[INFO] Awaiting explicit USER CONFIRMATION to proceed...")
-        confirmation_response = self._wait_for_response(timeout_seconds=45, expected_confirmation_code=self._confirmation_code, require_proceed=True)
+        confirmation_response = self._wait_for_response(timeout_seconds=45, require_proceed=True)
 
         # Clean up gate files
         self._cleanup_gate()
@@ -238,11 +236,10 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
         
         return prompt
     
-    def _wait_for_response(self, timeout_seconds: int = 30, expected_confirmation_code: Optional[str] = None, require_proceed: bool = False) -> Dict[str, Any]:
+    def _wait_for_response(self, timeout_seconds: int = 30, require_proceed: bool = False) -> Dict[str, Any]:
         """Wait for AI agent to provide user response.
 
-        If expected_confirmation_code is provided, the response must include a matching
-        "confirmation_code" field. If require_proceed is True, any non-"proceed" decision
+        If require_proceed is True, any non-"proceed" decision
         will be treated as a STOP for safety.
         """
         
@@ -255,7 +252,7 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
                     response = json.loads(response_text)
                     
                     # Validate response structure
-                    if self._validate_response(response, expected_confirmation_code=expected_confirmation_code):
+                    if self._validate_response(response):
                         if require_proceed and response.get("user_decision") != "proceed":
                             print("[WARNING] Confirmation did not approve proceed. Stopping for safety.")
                             return {
@@ -290,11 +287,8 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
             "timestamp": time.time()
         }
     
-    def _validate_response(self, response: Dict[str, Any], expected_confirmation_code: Optional[str] = None) -> bool:
+    def _validate_response(self, response: Dict[str, Any]) -> bool:
         """Validate the structure of the AI agent response and detect fake responses.
-
-        If expected_confirmation_code is provided, ensure response contains a matching
-        "confirmation_code" field.
         """
         required_fields = ["user_responses", "user_decision", "timestamp"]
         if not all(field in response for field in required_fields):
@@ -313,13 +307,6 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
                 break
         if not has_substance:
             return False
-
-        # If a confirmation code is expected, enforce a match
-        if expected_confirmation_code is not None:
-            code = response.get("confirmation_code")
-            if not isinstance(code, str) or code != expected_confirmation_code:
-                print("[WARNING] Missing or invalid confirmation code in response")
-                return False
 
         # Detect AI-generated responses
         fake_patterns = [
@@ -350,7 +337,7 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
         alphabet = string.ascii_uppercase + string.digits
         return "".join(random.choice(alphabet) for _ in range(6))
 
-    def _generate_confirmation_prompt(self, gate_request: GateRequest, initial_response: Dict[str, Any], code: str) -> str:
+    def _generate_confirmation_prompt(self, gate_request: GateRequest, initial_response: Dict[str, Any]) -> str:
         """Generate a confirmation gate prompt summarizing proposed answers."""
         lines = [
             "# [ROBOT] Confirmation Required",
@@ -367,22 +354,18 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
         lines.extend([
             "",
             "### What you need to do:",
-            "- If these are correct, reply with decision 'proceed' and include the CONFIRMATION CODE below.",
+            "- If these are correct, reply with decision 'proceed'.",
             "- If anything is wrong, reply with decision 'modify' and updated answers.",
             "- If you want to stop, reply with decision 'stop'.",
-            "",
-            "### CONFIRMATION CODE (must be included in your response):",
-            f"- CODE: {code}",
             "",
             "### Response Format (JSON in .ai_onboard/gates/gate_response.json):",
             "{",
             "  \"user_responses\": [\"...\"],",
             "  \"user_decision\": \"proceed|modify|stop\",",
-            "  \"additional_context\": \"...\",",
-            "  \"confirmation_code\": \"" + code + "\"",
+            "  \"additional_context\": \"...\"",
             "}",
             "",
-            "[INFO] The system will ONLY proceed if the code matches and decision == 'proceed'.",
+            "[INFO] The system will ONLY proceed if decision == 'proceed'.",
         ])
         return "\n".join(lines)
 

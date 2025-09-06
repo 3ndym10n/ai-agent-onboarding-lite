@@ -80,6 +80,7 @@ def submit_gate_response(user_responses: List[str], user_decision: str, addition
         "additional_context": additional_context,
         "timestamp": time.time()
     }
+    # confirmation_code removed by default path; extra field harmless if provided
     if confirmation_code:
         response_data["confirmation_code"] = confirmation_code
     
