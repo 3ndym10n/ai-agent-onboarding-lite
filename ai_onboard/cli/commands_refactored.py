@@ -47,7 +47,7 @@ def main(argv=None):
     root = Path.cwd()
 
     # Handle core commands
-    if args.cmd in ["analyze", "charter", "plan", "align", "validate", "kaizen", "optimize", "version", "metrics", "cleanup"]:
+    if args.cmd in ["analyze", "charter", "plan", "align", "validate", "kaizen", "optimize", "version", "metrics", "cleanup", "gate"]:
         handle_core_commands(args, root)
         return
 
