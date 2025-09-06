@@ -54,7 +54,7 @@ class AIAgentGateDetector:
         }
         
         self.response_file.write_text(json.dumps(response_data, indent=2), encoding='utf-8')
-        print(f"✅ Response file created: {self.response_file}")
+        print(f"[OK] Response file created: {self.response_file}")
     
     def generate_agent_prompt(self, gate_content: str) -> str:
         """Generate a prompt that forces the AI agent to follow gate protocol."""

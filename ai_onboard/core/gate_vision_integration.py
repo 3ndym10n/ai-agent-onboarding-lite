@@ -43,11 +43,11 @@ class GateVisionIntegrator:
             # Save updated vision data
             self._save_vision_data(vision_data)
             
-            print("✅ Gate responses integrated into vision interrogation system")
+            print("[OK] Gate responses integrated into vision interrogation system")
             return True
             
         except Exception as e:
-            print(f"❌ Error integrating gate response: {e}")
+            print(f"[X] Error integrating gate response: {e}")
             return False
     
     def _load_vision_data(self) -> Dict[str, Any]:

@@ -253,7 +253,7 @@ class VisionInterrogator:
             try:
                 from .interrogation_to_charter import auto_sync_on_completion
                 if auto_sync_on_completion(self.root):
-                    print("✅ Vision interrogation data synced to charter.json")
+                    print("[OK] Vision interrogation data synced to charter.json")
                 else:
                     print("⚠️ Could not sync interrogation data to charter")
             except Exception as e:

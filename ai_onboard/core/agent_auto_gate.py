@@ -28,7 +28,7 @@ def auto_handle_gates(project_root: Path = None) -> bool:
         return False
     
     print("🚨 ACTIVE GATE DETECTED!")
-    print("🤖 Auto-handling gate for AI agent...")
+    print("[ROBOT] Auto-handling gate for AI agent...")
     
     # Read the gate file
     gate_content = current_gate_file.read_text(encoding='utf-8')
@@ -38,9 +38,9 @@ def auto_handle_gates(project_root: Path = None) -> bool:
     
     # Display the gate information
     print("\n" + "="*60)
-    print("🤖 AI AGENT COLLABORATION GATE")
+    print("[ROBOT] AI AGENT COLLABORATION GATE")
     print("="*60)
-    print(f"📁 Gate File: {current_gate_file}")
+    print(f"[FOLDER] Gate File: {current_gate_file}")
     print("\n🎯 QUESTIONS FOR USER:")
     
     for i, question in enumerate(questions, 1):
@@ -52,7 +52,7 @@ def auto_handle_gates(project_root: Path = None) -> bool:
     print("   3. CALL submit_gate_response() with their answers")
     print("   4. DO NOT proceed until gate is resolved")
     
-    print("\n⏳ Gate is ACTIVE - waiting for AI agent to ask questions...")
+    print("\n[CLOCK] Gate is ACTIVE - waiting for AI agent to ask questions...")
     print("="*60)
     
     return True
@@ -83,8 +83,8 @@ def submit_gate_response(user_responses: List[str], user_decision: str, addition
     
     response_file.write_text(json.dumps(response_data, indent=2), encoding='utf-8')
     
-    print("✅ Gate response submitted!")
-    print(f"📁 Response saved to: {response_file}")
+    print("[OK] Gate response submitted!")
+    print(f"[FOLDER] Response saved to: {response_file}")
     
     # Integrate response into vision system
     try:
