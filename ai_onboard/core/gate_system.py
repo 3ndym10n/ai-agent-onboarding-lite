@@ -114,8 +114,8 @@ class GateSystem:
         }
         self.status_file.write_text(json.dumps(status, indent=2), encoding='utf-8')
         
-        # Update Cursor rules to include explicit confirmation flow with code
-        self._write_cursor_rules(self._cursor_rules_contract(code_hint=self._confirmation_code))
+        # Update Cursor rules to include explicit confirmation flow
+        self._write_cursor_rules(self._cursor_rules_contract(code_hint=None))
 
         # Ensure we do not read the previous response again
         if self.response_file.exists():
