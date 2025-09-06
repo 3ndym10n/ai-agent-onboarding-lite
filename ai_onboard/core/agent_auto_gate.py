@@ -58,7 +58,7 @@ def auto_handle_gates(project_root: Path = None) -> bool:
     return True
 
 
-def submit_gate_response(user_responses: List[str], user_decision: str, additional_context: str = "", project_root: Path = None):
+def submit_gate_response(user_responses: List[str], user_decision: str, additional_context: str = "", project_root: Path = None, confirmation_code: Optional[str] = None):
     """
     Submit the user's responses to resolve the active gate.
     
@@ -80,6 +80,8 @@ def submit_gate_response(user_responses: List[str], user_decision: str, addition
         "additional_context": additional_context,
         "timestamp": time.time()
     }
+    if confirmation_code:
+        response_data["confirmation_code"] = confirmation_code
     
     response_file.write_text(json.dumps(response_data, indent=2), encoding='utf-8')
     

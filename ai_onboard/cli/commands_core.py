@@ -85,6 +85,7 @@ def add_core_commands(subparsers):
     s_gate_resp.add_argument("--decision", choices=["proceed", "modify", "stop"], default="proceed", help="User decision")
     s_gate_resp.add_argument("--responses", nargs="*", help="User responses to questions")
     s_gate_resp.add_argument("--context", default="", help="Additional context")
+    s_gate_resp.add_argument("--code", default=None, help="Confirmation code (if confirmation phase is active)")
 
 
 def _ias_gate(args, root: Path) -> bool:
@@ -189,6 +190,8 @@ def _handle_gate_commands(args, root: Path):
             "additional_context": args.context,
             "timestamp": time.time()
         }
+        if args.code:
+            response_data["confirmation_code"] = args.code
         
         response_file.write_text(json.dumps(response_data, indent=2), encoding='utf-8')
         print(f"[OK] Response written to: {response_file}")
