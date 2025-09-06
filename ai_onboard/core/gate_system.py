@@ -49,11 +49,19 @@ class GateSystem:
         self.current_gate_file = self.gates_dir / "current_gate.md"
         self.response_file = self.gates_dir / "gate_response.json"
         self.status_file = self.gates_dir / "gate_status.json"
+        # Confirmation code removed (was previously used for strict approval)
+        # Cursor rules file (best-effort, ignored if unsupported). Not committed.
+        self.cursor_rules_file = self.project_root / ".cursorrules"
     
     def create_gate(self, gate_request: GateRequest) -> Dict[str, Any]:
-        """Create a gate that requires AI agent collaboration."""
+        """Create a gate that requires AI agent collaboration.
+
+        This is now a mandatory two-step process:
+        1) Collect user's answers
+        2) Present a confirmation summary requiring an explicit approval code
+        """
         
-        # Generate gate prompt
+        # Generate gate prompt (step 1)
         gate_prompt = self._generate_gate_prompt(gate_request)
         
         # Write gate prompt file
@@ -64,9 +72,13 @@ class GateSystem:
             "gate_active": True,
             "gate_type": gate_request.gate_type.value,
             "created_at": time.time(),
+            "phase": "collect",
             "waiting_for_response": True
         }
         self.status_file.write_text(json.dumps(status, indent=2), encoding='utf-8')
+        
+        # Best-effort: write Cursor AI rules to force chat behavior during gate handling
+        self._write_cursor_rules(self._cursor_rules_contract(code_hint=None))
         
         # Clean up any existing response
         if self.response_file.exists():
@@ -80,13 +92,42 @@ class GateSystem:
         print(f"[INFO] If you're an AI agent, check: {self.current_gate_file}")
         print(f"[INFO] If you're a human, tell the AI agent: 'Please read the gate file and ask me the questions'")
         
-        # Wait for AI agent response
-        response = self._wait_for_response()
+        # Wait for initial responses (step 1)
+        initial_response = self._wait_for_response(timeout_seconds=30)
+
+        # If first step timed out or user decided to stop/modify, honor it immediately
+        if initial_response.get("user_decision") != "proceed":
+            self._cleanup_gate()
+            return initial_response
+
+        # Step 2: Confirmation gate (no code)
+        confirm_prompt = self._generate_confirmation_prompt(gate_request, initial_response)
+        self.current_gate_file.write_text(confirm_prompt, encoding='utf-8')
+
+        status = {
+            "gate_active": True,
+            "gate_type": gate_request.gate_type.value,
+            "created_at": time.time(),
+            "phase": "confirm",
+            "waiting_for_response": True,
+            "confirmation_required": True
+        }
+        self.status_file.write_text(json.dumps(status, indent=2), encoding='utf-8')
         
+        # Update Cursor rules to include explicit confirmation flow with code
+        self._write_cursor_rules(self._cursor_rules_contract(code_hint=self._confirmation_code))
+
+        # Ensure we do not read the previous response again
+        if self.response_file.exists():
+            self.response_file.unlink()
+
+        print("[INFO] Awaiting explicit USER CONFIRMATION to proceed...")
+        confirmation_response = self._wait_for_response(timeout_seconds=45, require_proceed=True)
+
         # Clean up gate files
         self._cleanup_gate()
         
-        return response
+        return confirmation_response
     
     def _generate_gate_prompt(self, gate_request: GateRequest) -> str:
         """Generate a structured prompt for the AI agent."""
@@ -195,8 +236,12 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
         
         return prompt
     
-    def _wait_for_response(self, timeout_seconds: int = 5) -> Dict[str, Any]:
-        """Wait for AI agent to provide user response."""
+    def _wait_for_response(self, timeout_seconds: int = 30, require_proceed: bool = False) -> Dict[str, Any]:
+        """Wait for AI agent to provide user response.
+
+        If require_proceed is True, any non-"proceed" decision
+        will be treated as a STOP for safety.
+        """
         
         start_time = time.time()
         
@@ -208,6 +253,14 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
                     
                     # Validate response structure
                     if self._validate_response(response):
+                        if require_proceed and response.get("user_decision") != "proceed":
+                            print("[WARNING] Confirmation did not approve proceed. Stopping for safety.")
+                            return {
+                                "user_responses": response.get("user_responses", []),
+                                "user_decision": "stop",
+                                "additional_context": "Confirmation denied or modified",
+                                "timestamp": time.time()
+                            }
                         print(f"[OK] Received user response via AI agent")
                         return response
                     else:
@@ -235,7 +288,8 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
         }
     
     def _validate_response(self, response: Dict[str, Any]) -> bool:
-        """Validate the structure of the AI agent response and detect fake responses."""
+        """Validate the structure of the AI agent response and detect fake responses.
+        """
         required_fields = ["user_responses", "user_decision", "timestamp"]
         if not all(field in response for field in required_fields):
             return False
@@ -244,7 +298,16 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
         user_responses = response.get("user_responses", [])
         if not user_responses:
             return False
-            
+        
+        # Basic content checks: require some substance in answers
+        has_substance = False
+        for r in user_responses:
+            if isinstance(r, str) and len(r.strip()) >= 3:
+                has_substance = True
+                break
+        if not has_substance:
+            return False
+
         # Detect AI-generated responses
         fake_patterns = [
             "based on the context",
@@ -267,6 +330,45 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
         
         return True
     
+    def _generate_confirmation_code(self) -> str:
+        """Generate a short, hard-to-guess confirmation code."""
+        import random
+        import string
+        alphabet = string.ascii_uppercase + string.digits
+        return "".join(random.choice(alphabet) for _ in range(6))
+
+    def _generate_confirmation_prompt(self, gate_request: GateRequest, initial_response: Dict[str, Any]) -> str:
+        """Generate a confirmation gate prompt summarizing proposed answers."""
+        lines = [
+            "# [ROBOT] Confirmation Required",
+            "",
+            "[WARNING] The AI agent has proposed the following answers. Please REVIEW and CONFIRM.",
+            "",
+            f"## Gate Type: {gate_request.gate_type.value.replace('_', ' ').title()}",
+            f"### {gate_request.title}",
+            "",
+            "### Proposed Answers:",
+        ]
+        for i, ans in enumerate(initial_response.get("user_responses", []), 1):
+            lines.append(f"{i}. {ans}")
+        lines.extend([
+            "",
+            "### What you need to do:",
+            "- If these are correct, reply with decision 'proceed'.",
+            "- If anything is wrong, reply with decision 'modify' and updated answers.",
+            "- If you want to stop, reply with decision 'stop'.",
+            "",
+            "### Response Format (JSON in .ai_onboard/gates/gate_response.json):",
+            "{",
+            "  \"user_responses\": [\"...\"],",
+            "  \"user_decision\": \"proceed|modify|stop\",",
+            "  \"additional_context\": \"...\"",
+            "}",
+            "",
+            "[INFO] The system will ONLY proceed if decision == 'proceed'.",
+        ])
+        return "\n".join(lines)
+
     def _cleanup_gate(self):
         """Clean up gate files after successful collaboration."""
         files_to_clean = [self.current_gate_file, self.response_file, self.status_file]
@@ -274,6 +376,12 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
         for file_path in files_to_clean:
             if file_path.exists():
                 file_path.unlink()
+        # Remove transient Cursor rules file if we created it
+        try:
+            if self.cursor_rules_file.exists():
+                self.cursor_rules_file.unlink()
+        except Exception:
+            pass
     
     def is_gate_active(self) -> bool:
         """Check if there's currently an active gate."""
@@ -285,6 +393,43 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
             return status.get("gate_active", False)
         except:
             return False
+
+    def _cursor_rules_contract(self, code_hint: Optional[str]) -> str:
+        """Return a Cursor rules contract that nudges chat agents to follow gates.
+
+        Placed in project root as `.cursorrules`. It's best-effort; if Cursor ignores
+        it, normal confirmation-code enforcement still prevents bypass.
+        """
+        header = [
+            "SYSTEM CONTRACT: AI-Onboard Gate Handler",
+            "",
+            "You MUST handle gates as a two-step, human-confirmed process. Never self-answer or self-confirm.",
+            "",
+            "When a gate is active (.ai_onboard/gates/current_gate.md exists):",
+            "1) Read the gate and extract the 'Questions for User'.",
+            "2) Ask the user those questions in chat. Do NOT answer yourself.",
+            "3) Wait for the user's replies. Summarize them back to the user.",
+            "4) Show: 'Proposed Answers → Please type: CONFIRM: <CODE> to approve, or provide corrections.'",
+            "5) Only after the user types CONFIRM with the exact code, call submit_gate_response(...).",
+            "6) If corrections are provided, update and ask for CONFIRM again.",
+            "7) If no confirmation, STOP.",
+            "",
+            "Hard Rules:",
+            "- Never infer or fabricate answers.",
+            "- Never fabricate the confirmation code.",
+            "- If unsure, STOP and ask the user.",
+        ]
+        if code_hint:
+            header.append("")
+            header.append(f"Active confirmation code (copy exactly after 'CONFIRM:'): {code_hint}")
+        return "\n".join(header) + "\n"
+
+    def _write_cursor_rules(self, content: str) -> None:
+        try:
+            self.cursor_rules_file.write_text(content, encoding="utf-8")
+        except Exception:
+            # Best-effort only
+            pass
 
 
 # Convenience functions for common gate types
