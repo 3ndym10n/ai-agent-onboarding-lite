@@ -47,8 +47,41 @@ def handle_interrogate_commands(args, root: Path):
         print(prompt_bridge.dumps_json(result))
         return True
     elif icmd == "start":
-        # Start interrogation
+        # Start interrogation and immediately open a gate to collect answers from the human
         result = interrogator.start_interrogation()
+        # Try to fetch questions for the gate prompt
+        try:
+            qres = interrogator.get_current_questions()
+            questions = []
+            for q in qres.get("questions", []):
+                qt = q.get("text") or q.get("question")
+                if qt:
+                    questions.append(qt)
+        except Exception:
+            questions = []
+
+        if questions:
+            gate = GateSystem(root)
+            gate_request = GateRequest(
+                gate_type=GateType.VISION_MISSING,
+                title="Vision Interrogation - Provide Your Answers",
+                description="Please answer the questions below in chat. The system will only continue with your approval.",
+                context={"phase": "vision_core"},
+                questions=questions,
+            )
+            resp = gate.create_gate(gate_request)
+            if resp.get("user_decision") == "proceed":
+                # Submit answers in order against current questions
+                try:
+                    qres = interrogator.get_current_questions()
+                    qlist = qres.get("questions", [])
+                    answers = resp.get("user_responses", [])
+                    for i, q in enumerate(qlist):
+                        if i < len(answers):
+                            payload = {"answer": answers[i]}
+                            interrogator.submit_response(q.get("phase") or "vision_core", q.get("id"), payload)
+                except Exception:
+                    pass
         print(prompt_bridge.dumps_json(result))
         return True
     elif icmd == "submit":
@@ -113,9 +146,27 @@ def handle_interrogate_commands(args, root: Path):
             print(f"{{\"error\":\"failed to submit response: {str(e)}\"}}")
         return True
     elif icmd == "questions":
-        # Get current questions
+        # Get current questions and open a gate to collect answers
         result = interrogator.get_current_questions()
         print(prompt_bridge.dumps_json(result))
+        try:
+            questions = []
+            for q in result.get("questions", []):
+                qt = q.get("text") or q.get("question")
+                if qt:
+                    questions.append(qt)
+            if questions:
+                gate = GateSystem(root)
+                gate_request = GateRequest(
+                    gate_type=GateType.VISION_MISSING,
+                    title="Vision Interrogation - Provide Your Answers",
+                    description="Please answer the questions below in chat. The system will only continue with your approval.",
+                    context={"phase": result.get("phase", "vision_core")},
+                    questions=questions,
+                )
+                gate.create_gate(gate_request)
+        except Exception:
+            pass
         return True
     elif icmd == "summary":
         # Get interrogation summary
