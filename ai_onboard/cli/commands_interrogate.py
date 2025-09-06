@@ -4,6 +4,8 @@ import argparse
 import json
 from pathlib import Path
 from ..core import vision_interrogator, prompt_bridge
+from ..core.gate_system import GateSystem, GateType, GateRequest
+import os
 
 
 def add_interrogate_commands(subparsers):
@@ -50,24 +52,62 @@ def handle_interrogate_commands(args, root: Path):
         print(prompt_bridge.dumps_json(result))
         return True
     elif icmd == "submit":
-        # Submit response
+        # Submit response (gate-enforced)
         phase = getattr(args, 'phase', None)
         question_id = getattr(args, 'question_id', None)
-        response_data = getattr(args, 'response', None)
-        
-        if not all([phase, question_id, response_data]):
-            print("{\"error\":\"missing required arguments: phase, question-id, and response are required\"}")
+        provided_response = getattr(args, 'response', None)
+
+        if not all([phase, question_id]):
+            print("{\"error\":\"missing required arguments: phase and question-id are required\"}")
             return True
-        
-        try:
-            # Try to parse as JSON first
+
+        # CI-only bypass maintains previous behavior
+        if os.getenv("GITHUB_ACTIONS", "").lower() == "true" and os.getenv("AI_ONBOARD_BYPASS", "") == "ci" and provided_response:
             try:
-                response = json.loads(response_data)
-            except json.JSONDecodeError:
-                # If JSON fails, treat as plain text
-                response = {"answer": response_data}
-            
-            result = interrogator.submit_response(phase, question_id, response)
+                try:
+                    response = json.loads(provided_response)
+                except json.JSONDecodeError:
+                    response = {"answer": provided_response}
+                result = interrogator.submit_response(phase, question_id, response)
+                print(prompt_bridge.dumps_json(result))
+            except Exception as e:
+                print(f"{{\"error\":\"failed to submit response: {str(e)}\"}}")
+            return True
+
+        # Gate-enforced path: always ask the human in chat to answer
+        # Find the question text for better UX
+        question_text = None
+        try:
+            qres = interrogator.get_current_questions()
+            for q in qres.get('questions', []):
+                if q.get('id') == question_id or str(q.get('id')) == str(question_id):
+                    question_text = q.get('text') or q.get('question')
+                    break
+        except Exception:
+            pass
+        if not question_text:
+            question_text = "Please provide your answer to the interrogation question."
+
+        gate = GateSystem(root)
+        gate_request = GateRequest(
+            gate_type=GateType.CLARIFICATION_NEEDED,
+            title="Vision Interrogation",
+            description=f"Phase: {phase} | Question ID: {question_id}",
+            context={"phase": phase, "question_id": question_id},
+            questions=[question_text]
+        )
+        response = gate.create_gate(gate_request)
+        if response.get("user_decision") != "proceed":
+            print("{\"error\":\"interrogation halted by user (or timeout)\"}")
+            return True
+
+        # Convert user response(s) to expected payload
+        user_answers = response.get("user_responses", [])
+        answer_text = user_answers[0] if user_answers else ""
+        payload = {"answer": answer_text}
+
+        try:
+            result = interrogator.submit_response(phase, question_id, payload)
             print(prompt_bridge.dumps_json(result))
         except Exception as e:
             print(f"{{\"error\":\"failed to submit response: {str(e)}\"}}")
