@@ -1,6 +1,7 @@
 """Core CLI commands for ai-onboard."""
 
 import argparse
+import os
 from pathlib import Path
 from ..core import (
     charter,
@@ -22,10 +23,8 @@ from ..core.gate_system import create_clarification_gate, create_confirmation_ga
 def add_core_commands(subparsers):
     """Add core command parsers."""
     
-    # Global IAS flags via parent parser
+    # Global IAS parent parser (intentionally minimal: no bypass flags)
     ias_parent = argparse.ArgumentParser(add_help=False)
-    ias_parent.add_argument("--yes", action="store_true", help="Proceed without IAS confirmation (non-interactive)")
-    ias_parent.add_argument("--assume", choices=["proceed", "quick_confirm", "clarify"], help="Assume IAS decision for this run")
 
     # Analyze
     s_an = subparsers.add_parser("analyze", parents=[ias_parent], help="Scan repo and draft ai_onboard.json manifest")
@@ -93,14 +92,29 @@ def _ias_gate(args, root: Path) -> bool:
 
     Returns True if execution may proceed, False if it should stop for clarification.
     """
-    # Bypass for explicit approval or non-interactive runs
-    assume = getattr(args, "assume", None)
-    if getattr(args, "yes", False) or assume == "proceed":
+    # CI-only bypass: allow in GitHub Actions when explicitly enabled
+    if os.getenv("GITHUB_ACTIONS", "").lower() == "true" and os.getenv("AI_ONBOARD_BYPASS", "") == "ci":
+        telemetry.log_event(
+            "gate_bypass_ci",
+            reason="CI smoke run",
+            branch=os.getenv("GITHUB_REF", "unknown"),
+        )
         return True
 
-    # Compute preview
+    # Manual override file (human-only). If present, proceed and log.
+    gates_dir = root / ".ai_onboard" / "gates"
+    override_file = gates_dir / "override.txt"
+    if override_file.exists():
+        try:
+            note = override_file.read_text(encoding="utf-8").strip()[:500]
+        except Exception:
+            note = "(unreadable)"
+        telemetry.log_event("gate_override_manual", note=note)
+        return True
+
+    # Compute preview (no user-bypass flags honored)
     report = alignment.preview(root)
-    decision = assume or report.get("decision", "clarify")
+    decision = report.get("decision", "clarify")
 
     if decision == "proceed":
         # Quietly allow
