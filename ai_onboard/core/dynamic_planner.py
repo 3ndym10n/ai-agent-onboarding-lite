@@ -207,12 +207,13 @@ class DynamicPlanner:
         
         # Check milestone completion criteria
         for milestone in plan.get("milestones", []):
-            if milestone["id"] in progress.get("milestones", {}):
+            milestone_id = milestone.get("id", milestone.get("name", "unknown"))
+            if milestone_id in progress.get("milestones", {}):
                 continue  # Already completed
             
             # Check if milestone criteria are met
             if self._milestone_criteria_met(milestone, progress):
-                completed_milestones.append(milestone["id"])
+                completed_milestones.append(milestone_id)
         
         return {
             "completed_milestones": completed_milestones
@@ -243,7 +244,8 @@ class DynamicPlanner:
         next_milestones = []
         
         for milestone in plan.get("milestones", []):
-            if milestone["id"] not in completed_milestones:
+            milestone_id = milestone.get("id", milestone.get("name", "unknown"))
+            if milestone_id not in completed_milestones:
                 # Check dependencies
                 dependencies = milestone.get("dependencies", [])
                 if all(dep in completed_milestones for dep in dependencies):

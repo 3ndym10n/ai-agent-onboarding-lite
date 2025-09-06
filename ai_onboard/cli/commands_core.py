@@ -127,6 +127,7 @@ def handle_core_commands(args, root: Path):
     # Allow a safe, read-only preview to bypass the IAS gate so users can
     # inspect the recommendation before deciding to proceed.
     if args.cmd == "align" and getattr(args, "preview", False):
+        from ..core import alignment, utils
         out = alignment.preview(root)
         print(utils.dumps_json(out))
         return
@@ -136,26 +137,56 @@ def handle_core_commands(args, root: Path):
             return
     
     if args.cmd == "analyze":
-        # Implementation for analyze command
-        pass
+        # Scan repository and create manifest
+        from ..core import discovery, utils
+        manifest = discovery.run(root, allow_exec=args.allowExec)
+        utils.write_json(root / "ai_onboard.json", manifest)
+        print("Wrote ai_onboard.json (draft).")
     elif args.cmd == "charter":
-        # Implementation for charter command
-        pass
+        # Create or update project charter
+        from ..core import charter, state
+        charter.ensure(root, interactive=args.interactive)
+        state.advance(root, state.load(root), "chartered")
+        print("Charter ready at .ai_onboard/charter.json")
     elif args.cmd == "plan":
-        # Implementation for plan command
-        pass
+        # Build project plan from charter
+        from ..core import planning, state
+        planning.build(root)
+        state.advance(root, state.load(root), "planned")
+        print("Plan ready at .ai_onboard/plan.json")
     elif args.cmd == "align":
-        # Implementation for align command
-        pass
+        # Open or approve an alignment checkpoint
+        from ..core import alignment, state, prompt_bridge
+        if args.preview:
+            res = alignment.preview(root)
+            print(prompt_bridge.dumps_json(res))
+        elif args.approve:
+            alignment.record_decision(root, "ALIGN", args.checkpoint, True, args.note)
+            state.advance(root, state.load(root), "aligned")
+            print(f"Alignment approved for {args.checkpoint}.")
+        else:
+            alignment.open_checkpoint(root, args.checkpoint)
+            print(f"Opened alignment checkpoint {args.checkpoint}.")
     elif args.cmd == "validate":
-        # Implementation for validate command
-        pass
+        # Run validation and write report
+        from ..core import alignment, validation_runtime, progress_tracker, telemetry
+        alignment.require_state(root, "aligned")
+        res = validation_runtime.run(root)
+        if args.report:
+            progress_tracker.write_report(root, res)
+            print("Wrote .ai_onboard/report.md (+ versioned copy).")
+        telemetry.record_run(root, res)
+        print("Validation complete.")
     elif args.cmd == "kaizen":
-        # Implementation for kaizen command
-        pass
+        # Run a kaizen cycle (metrics-driven nudges)
+        from ..core import optimizer
+        optimizer.nudge_from_metrics(root)
+        print("Kaizen cycle complete.")
     elif args.cmd == "optimize":
-        # Implementation for optimize command
-        pass
+        # Run quick optimization experiments
+        from ..core import optimizer
+        optimizer.quick_optimize(root)
+        print("Optimization complete.")
     elif args.cmd == "version":
         # Show the actual package version, not project version
         import ai_onboard
@@ -180,8 +211,27 @@ def handle_core_commands(args, root: Path):
             pass  # Ignore project version errors
         return
     elif args.cmd == "metrics":
-        # Implementation for metrics command
-        pass
+        # Show project metrics
+        from ..core import telemetry
+        items = telemetry.read_metrics(root)
+        if not items:
+            print("No metrics available. Run 'validate' to collect metrics.")
+        else:
+            print(f"Found {len(items)} metric records:")
+            for i, item in enumerate(items[-3:], 1):  # Show last 3
+                print(f"  {i}. {item.get('ts', 'unknown')} - pass={item.get('pass')} - components: {len(item.get('components', []))}")
+        print("Metrics display complete.")
     elif args.cmd == "cleanup":
-        # Implementation for cleanup command
-        pass
+        # Safe cleanup functionality
+        from ..core import cleanup
+        if args.dry_run:
+            cleanup.safe_cleanup(root, dry_run=True)
+        elif args.force:
+            cleanup.safe_cleanup(root, dry_run=False, force=True)
+        elif args.backup:
+            backup_path = cleanup.create_backup(root)
+            print(f"Backup created at: {backup_path}")
+            cleanup.safe_cleanup(root, dry_run=False)
+        else:
+            cleanup.safe_cleanup(root, dry_run=False)
+        print("Cleanup complete.")

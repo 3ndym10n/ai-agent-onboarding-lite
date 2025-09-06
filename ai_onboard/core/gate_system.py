@@ -73,10 +73,10 @@ class GateSystem:
             self.response_file.unlink()
         
         # Tell AI agent to check the gate
-        print(f"\n🤖 AI AGENT GATE ACTIVATED")
-        print(f"📁 Please check: {self.current_gate_file}")
-        print(f"📋 Follow the instructions in the file to collaborate")
-        print(f"⏳ Waiting for your response...")
+        print(f"\n[ROBOT] AI AGENT GATE ACTIVATED")
+        print(f"[FOLDER] Please check: {self.current_gate_file}")
+        print(f"[CLIPBOARD] Follow the instructions in the file to collaborate")
+        print(f"[CLOCK] Waiting for your response...")
         
         # Wait for AI agent response
         response = self._wait_for_response()
@@ -89,7 +89,7 @@ class GateSystem:
     def _generate_gate_prompt(self, gate_request: GateRequest) -> str:
         """Generate a structured prompt for the AI agent."""
         
-        prompt = f"""# 🤖 AI Agent Collaboration Gate
+        prompt = f"""# [ROBOT] AI Agent Collaboration Gate
 
 ## Gate Type: {gate_request.gate_type.value.replace('_', ' ').title()}
 
@@ -114,7 +114,7 @@ class GateSystem:
         if gate_request.issues:
             prompt += "### Issues Detected:\n"
             for issue in gate_request.issues:
-                prompt += f"- ❌ {issue}\n"
+                prompt += f"- [X] {issue}\n"
             prompt += "\n"
         
         # Add questions for the user
@@ -124,7 +124,7 @@ class GateSystem:
         prompt += "\n"
         
         # Add instructions for AI agent
-        prompt += """### 🎯 Instructions for AI Agent:
+        prompt += """### [TARGET] Instructions for AI Agent:
 
 1. **ASK THE USER** these questions in Cursor chat
 2. **WAIT FOR THEIR RESPONSE** - Do not generate fake responses
@@ -146,7 +146,7 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
 }
 ```
 
-### 🚨 IMPORTANT:
+### [WARNING] IMPORTANT:
 - Do NOT generate fake responses for the user
 - Do NOT bypass this gate by making assumptions
 - This is a COLLABORATION point - work WITH the user
@@ -157,7 +157,7 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
         
         return prompt
     
-    def _wait_for_response(self, timeout_seconds: int = 300) -> Dict[str, Any]:
+    def _wait_for_response(self, timeout_seconds: int = 5) -> Dict[str, Any]:
         """Wait for AI agent to provide user response."""
         
         start_time = time.time()
@@ -170,22 +170,22 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
                     
                     # Validate response structure
                     if self._validate_response(response):
-                        print(f"✅ Received user response via AI agent")
+                        print(f"[OK] Received user response via AI agent")
                         return response
                     else:
-                        print(f"❌ Invalid response format, waiting...")
+                        print(f"[X] Invalid response format, waiting...")
                         self.response_file.unlink()  # Remove invalid response
                 
                 except (json.JSONDecodeError, Exception) as e:
-                    print(f"❌ Error reading response: {e}")
+                    print(f"[X] Error reading response: {e}")
                     if self.response_file.exists():
                         self.response_file.unlink()
             
             time.sleep(1)  # Check every second
         
         # Timeout - return safe default response
-        print(f"⏰ Gate timeout after {timeout_seconds} seconds")
-        print(f"🚨 Safety: Defaulting to STOP due to timeout - user input required")
+        print(f"[ALARM] Gate timeout after {timeout_seconds} seconds")
+        print(f"[WARNING] Safety: Defaulting to STOP due to timeout - user input required")
         return {
             "user_responses": ["timeout"],
             "user_decision": "stop",

@@ -1,5 +1,6 @@
 # Project artifacts
 .ai_onboard/
+ai_onboard.json
 
 # Environments
 venv/
