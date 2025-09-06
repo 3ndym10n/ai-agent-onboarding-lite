@@ -255,9 +255,9 @@ class VisionInterrogator:
                 if auto_sync_on_completion(self.root):
                     print("[OK] Vision interrogation data synced to charter.json")
                 else:
-                    print("⚠️ Could not sync interrogation data to charter")
+                    print("[WARNING] Could not sync interrogation data to charter")
             except Exception as e:
-                print(f"⚠️ Error syncing to charter: {e}")
+                print(f"[WARNING] Error syncing to charter: {e}")
     
     def get_current_questions(self) -> Dict[str, Any]:
         """Get current questions for the active phase."""

@@ -124,7 +124,7 @@ class GateSystem:
         prompt += "\n"
         
         # Add instructions for AI agent
-        prompt += """### 🎯 Instructions for AI Agent:
+        prompt += """### [TARGET] Instructions for AI Agent:
 
 1. **ASK THE USER** these questions in Cursor chat
 2. **WAIT FOR THEIR RESPONSE** - Do not generate fake responses
@@ -146,7 +146,7 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
 }
 ```
 
-### 🚨 IMPORTANT:
+### [WARNING] IMPORTANT:
 - Do NOT generate fake responses for the user
 - Do NOT bypass this gate by making assumptions
 - This is a COLLABORATION point - work WITH the user
@@ -184,8 +184,8 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
             time.sleep(1)  # Check every second
         
         # Timeout - return safe default response
-        print(f"⏰ Gate timeout after {timeout_seconds} seconds")
-        print(f"🚨 Safety: Defaulting to STOP due to timeout - user input required")
+        print(f"[ALARM] Gate timeout after {timeout_seconds} seconds")
+        print(f"[WARNING] Safety: Defaulting to STOP due to timeout - user input required")
         return {
             "user_responses": ["timeout"],
             "user_decision": "stop",

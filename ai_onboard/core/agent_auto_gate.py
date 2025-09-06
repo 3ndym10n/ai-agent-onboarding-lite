@@ -27,7 +27,7 @@ def auto_handle_gates(project_root: Path = None) -> bool:
     if not current_gate_file.exists():
         return False
     
-    print("🚨 ACTIVE GATE DETECTED!")
+    print("[WARNING] ACTIVE GATE DETECTED!")
     print("[ROBOT] Auto-handling gate for AI agent...")
     
     # Read the gate file
@@ -41,12 +41,12 @@ def auto_handle_gates(project_root: Path = None) -> bool:
     print("[ROBOT] AI AGENT COLLABORATION GATE")
     print("="*60)
     print(f"[FOLDER] Gate File: {current_gate_file}")
-    print("\n🎯 QUESTIONS FOR USER:")
+    print("\n[TARGET] QUESTIONS FOR USER:")
     
     for i, question in enumerate(questions, 1):
         print(f"   {i}. {question}")
     
-    print("\n🚨 INSTRUCTIONS FOR AI AGENT:")
+    print("\n[WARNING] INSTRUCTIONS FOR AI AGENT:")
     print("   1. ASK the user these questions in the chat")
     print("   2. WAIT for their responses")
     print("   3. CALL submit_gate_response() with their answers")
@@ -90,13 +90,13 @@ def submit_gate_response(user_responses: List[str], user_decision: str, addition
     try:
         from .gate_vision_integration import integrate_latest_gate_response
         if integrate_latest_gate_response(project_root):
-            print("🎯 Gate responses integrated into vision system!")
+            print("[TARGET] Gate responses integrated into vision system!")
         else:
-            print("⚠️ Could not integrate gate responses into vision system")
+            print("[WARNING] Could not integrate gate responses into vision system")
     except Exception as e:
-        print(f"⚠️ Error integrating gate responses: {e}")
+        print(f"[WARNING] Error integrating gate responses: {e}")
     
-    print("🎉 System will now continue with user input!")
+    print("[PARTY] System will now continue with user input!")
 
 
 def _extract_questions(gate_content: str) -> List[str]:
