@@ -51,6 +51,8 @@ class GateSystem:
         self.status_file = self.gates_dir / "gate_status.json"
         # In-memory confirmation token for the current gate confirmation step
         self._confirmation_code: Optional[str] = None
+        # Cursor rules file (best-effort, ignored if unsupported). Not committed.
+        self.cursor_rules_file = self.project_root / ".cursorrules"
     
     def create_gate(self, gate_request: GateRequest) -> Dict[str, Any]:
         """Create a gate that requires AI agent collaboration.
@@ -75,6 +77,9 @@ class GateSystem:
             "waiting_for_response": True
         }
         self.status_file.write_text(json.dumps(status, indent=2), encoding='utf-8')
+        
+        # Best-effort: write Cursor AI rules to force chat behavior during gate handling
+        self._write_cursor_rules(self._cursor_rules_contract(code_hint=None))
         
         # Clean up any existing response
         if self.response_file.exists():
@@ -110,6 +115,9 @@ class GateSystem:
             "confirmation_code_hint": f"{self._confirmation_code[:2]}***"  # small hint for UX
         }
         self.status_file.write_text(json.dumps(status, indent=2), encoding='utf-8')
+        
+        # Update Cursor rules to include explicit confirmation flow with code
+        self._write_cursor_rules(self._cursor_rules_contract(code_hint=self._confirmation_code))
 
         # Ensure we do not read the previous response again
         if self.response_file.exists():
@@ -385,6 +393,12 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
         for file_path in files_to_clean:
             if file_path.exists():
                 file_path.unlink()
+        # Remove transient Cursor rules file if we created it
+        try:
+            if self.cursor_rules_file.exists():
+                self.cursor_rules_file.unlink()
+        except Exception:
+            pass
     
     def is_gate_active(self) -> bool:
         """Check if there's currently an active gate."""
@@ -396,6 +410,43 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
             return status.get("gate_active", False)
         except:
             return False
+
+    def _cursor_rules_contract(self, code_hint: Optional[str]) -> str:
+        """Return a Cursor rules contract that nudges chat agents to follow gates.
+
+        Placed in project root as `.cursorrules`. It's best-effort; if Cursor ignores
+        it, normal confirmation-code enforcement still prevents bypass.
+        """
+        header = [
+            "SYSTEM CONTRACT: AI-Onboard Gate Handler",
+            "",
+            "You MUST handle gates as a two-step, human-confirmed process. Never self-answer or self-confirm.",
+            "",
+            "When a gate is active (.ai_onboard/gates/current_gate.md exists):",
+            "1) Read the gate and extract the 'Questions for User'.",
+            "2) Ask the user those questions in chat. Do NOT answer yourself.",
+            "3) Wait for the user's replies. Summarize them back to the user.",
+            "4) Show: 'Proposed Answers → Please type: CONFIRM: <CODE> to approve, or provide corrections.'",
+            "5) Only after the user types CONFIRM with the exact code, call submit_gate_response(...).",
+            "6) If corrections are provided, update and ask for CONFIRM again.",
+            "7) If no confirmation, STOP.",
+            "",
+            "Hard Rules:",
+            "- Never infer or fabricate answers.",
+            "- Never fabricate the confirmation code.",
+            "- If unsure, STOP and ask the user.",
+        ]
+        if code_hint:
+            header.append("")
+            header.append(f"Active confirmation code (copy exactly after 'CONFIRM:'): {code_hint}")
+        return "\n".join(header) + "\n"
+
+    def _write_cursor_rules(self, content: str) -> None:
+        try:
+            self.cursor_rules_file.write_text(content, encoding="utf-8")
+        except Exception:
+            # Best-effort only
+            pass
 
 
 # Convenience functions for common gate types
