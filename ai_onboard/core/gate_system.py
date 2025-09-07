@@ -76,6 +76,9 @@ class GateSystem:
             "waiting_for_response": True
         }
         self.status_file.write_text(json.dumps(status, indent=2), encoding='utf-8')
+
+        # Ensure files are visible and non-empty before returning control
+        self._finalize_gate_files()
         
         # Best-effort: write Cursor AI rules to force chat behavior during gate handling
         self._write_cursor_rules(self._cursor_rules_contract(code_hint=None))
@@ -113,6 +116,9 @@ class GateSystem:
             "confirmation_required": True
         }
         self.status_file.write_text(json.dumps(status, indent=2), encoding='utf-8')
+
+        # Ensure files are visible and non-empty before returning control
+        self._finalize_gate_files()
         
         # Update Cursor rules to include explicit confirmation flow
         self._write_cursor_rules(self._cursor_rules_contract(code_hint=None))
@@ -393,6 +399,30 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
             return status.get("gate_active", False)
         except:
             return False
+
+    def _finalize_gate_files(self) -> None:
+        """Best-effort to make gate files immediately discoverable by external agents.
+
+        - Wait until both current_gate.md and gate_status.json exist and are non-empty
+        - Write a small readiness marker to reduce race conditions
+        """
+        try:
+            deadline = time.time() + 2.0  # up to 2 seconds
+            while time.time() < deadline:
+                ok = True
+                if not self.current_gate_file.exists() or self.current_gate_file.stat().st_size == 0:
+                    ok = False
+                if not self.status_file.exists() or self.status_file.stat().st_size == 0:
+                    ok = False
+                if ok:
+                    break
+                time.sleep(0.05)
+            # Write a readiness marker
+            ready_file = self.gates_dir / "gate_ready.flag"
+            ready_file.write_text(str(time.time()), encoding="utf-8")
+        except Exception:
+            # Best-effort only; do not fail gate creation
+            pass
 
     def _cursor_rules_contract(self, code_hint: Optional[str]) -> str:
         """Return a Cursor rules contract that nudges chat agents to follow gates.
