@@ -18,6 +18,7 @@ from ..core import (
     cleanup,
 )
 from ..core.gate_system import create_clarification_gate, create_confirmation_gate
+from ..core import analysis_lite, roadmap_lite, runlog
 
 
 def add_core_commands(subparsers):
@@ -63,6 +64,11 @@ def add_core_commands(subparsers):
 
     # Metrics
     subparsers.add_parser("metrics", parents=[ias_parent], help="Show last validation run summary from telemetry")
+
+    # Lite: analysis and roadmap
+    subparsers.add_parser("roadmap", help="Generate simple roadmap from analysis.json")
+    s_work = subparsers.add_parser("work", help="Show next task from roadmap.json and log it")
+    s_work.add_argument("--next", action="store_true", help="Show next pending task")
 
     # Cleanup
     s_clean = subparsers.add_parser("cleanup", parents=[ias_parent], help="Safely remove non-critical files (build artifacts, cache, etc.)")
@@ -234,6 +240,31 @@ def handle_core_commands(args, root: Path):
         planning.build(root)
         state.advance(root, state.load(root), "planned")
         print("Plan ready at .ai_onboard/plan.json")
+    elif args.cmd == "roadmap":
+        # Build lightweight roadmap from analysis
+        from ..core import roadmap_lite
+        goal = ""
+        rm = roadmap_lite.build(root, goal)
+        print(utils.dumps_json(rm))
+    elif args.cmd == "work":
+        # Show next task and log it
+        from ..core import runlog
+        import json
+        rm_path = root / ".ai_onboard" / "roadmap.json"
+        if not rm_path.exists():
+            print("No roadmap.json. Run 'ai_onboard roadmap' first.")
+            return
+        rm = json.loads(rm_path.read_text(encoding="utf-8"))
+        next_task = None
+        for t in rm.get("tasks", []):
+            if t.get("status") == "pending":
+                next_task = t
+                break
+        if not next_task:
+            print("No pending tasks.")
+            return
+        runlog.write_event(root, "work.next", {"task": next_task})
+        print(utils.dumps_json({"next_task": next_task}))
     elif args.cmd == "align":
         # Open or approve an alignment checkpoint
         from ..core import alignment, state, prompt_bridge
