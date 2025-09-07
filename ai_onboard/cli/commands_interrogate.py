@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 from ..core import vision_interrogator, prompt_bridge
 from ..core.gate_system import GateSystem, GateType, GateRequest
+from ..core.lean_approval import request_approval
 import os
 
 
@@ -61,17 +62,14 @@ def handle_interrogate_commands(args, root: Path):
             questions = []
 
         if questions:
-            gate = GateSystem(root)
-            gate_request = GateRequest(
-                gate_type=GateType.VISION_MISSING,
+            # Lean approve server (one-click). Stronger guarantee than chat gates.
+            resp = request_approval(
                 title="Vision Interrogation - Provide Your Answers",
-                description="Please answer the questions below in chat. The system will only continue with your approval.",
-                context={"phase": "vision_core"},
+                description="Answer the questions below, then click Approve to submit.",
                 questions=questions,
+                timeout_seconds=600,
             )
-            resp = gate.create_gate(gate_request)
             if resp.get("user_decision") == "proceed":
-                # Submit answers in order against current questions
                 try:
                     qres = interrogator.get_current_questions()
                     qlist = qres.get("questions", [])
@@ -156,15 +154,12 @@ def handle_interrogate_commands(args, root: Path):
                 if qt:
                     questions.append(qt)
             if questions:
-                gate = GateSystem(root)
-                gate_request = GateRequest(
-                    gate_type=GateType.VISION_MISSING,
+                request_approval(
                     title="Vision Interrogation - Provide Your Answers",
-                    description="Please answer the questions below in chat. The system will only continue with your approval.",
-                    context={"phase": result.get("phase", "vision_core")},
+                    description="Answer the questions below, then click Approve to submit.",
                     questions=questions,
+                    timeout_seconds=600,
                 )
-                gate.create_gate(gate_request)
         except Exception:
             pass
         return True
