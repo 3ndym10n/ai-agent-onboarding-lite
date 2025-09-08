@@ -1,7 +1,8 @@
 from dataclasses import dataclass
-from typing import Optional, Literal
+from typing import Literal, Optional
 
-Severity = Literal["error","warn","info"]
+Severity = Literal["error", "warn", "info"]
+
 
 @dataclass
 class Issue:

@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Dict, List
 
-from . import telemetry, utils, cache
+from . import cache, telemetry, utils
 
 
 def _brief(last: Dict[str, Any], changed: List[str]) -> Dict[str, Any]:
@@ -33,7 +33,14 @@ def make_summary(root: Path, level: str = "brief") -> Dict[str, Any]:
     # Convert absolute paths to repo-relative for readability
     abs_changed = cache.changed_files(root, idx)
     prefix = str(root.resolve())
-    changed = [c[len(prefix)+1:] if c.startswith(prefix + "\\") or c.startswith(prefix + "/") else c for c in abs_changed]
+    changed = [
+        (
+            c[len(prefix) + 1 :]
+            if c.startswith(prefix + "\\") or c.startswith(prefix + "/")
+            else c
+        )
+        for c in abs_changed
+    ]
     if level == "full":
         return _full(last, changed)
     return _brief(last, changed)

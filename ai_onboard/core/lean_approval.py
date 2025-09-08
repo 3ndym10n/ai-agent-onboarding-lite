@@ -7,12 +7,12 @@ optional textareas for questions. Returns a result dict and shuts down.
 Compatible with Python 3.8+.
 """
 
-from http.server import HTTPServer, BaseHTTPRequestHandler
-from threading import Thread
-from typing import List, Dict, Any, Optional
-from urllib.parse import parse_qs
 import socket
 import time
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from threading import Thread
+from typing import Any, Dict, List, Optional
+from urllib.parse import parse_qs
 
 
 def _find_free_port(preferred: int = 8765) -> int:
@@ -32,12 +32,15 @@ class _ApprovalHandler(BaseHTTPRequestHandler):
 
     def _html(self, body: str) -> bytes:
         return (
-            ("<!doctype html><html><head><meta charset='utf-8'>"
-             "<title>AI Onboard Approval</title>"
-             "<style>body{font-family:system-ui,Arial;margin:24px;max-width:860px}"
-             "button{padding:10px 16px;margin-right:8px}</style>"
-             "</head><body>")
-            + body + "</body></html>"
+            (
+                "<!doctype html><html><head><meta charset='utf-8'>"
+                "<title>AI Onboard Approval</title>"
+                "<style>body{font-family:system-ui,Arial;margin:24px;max-width:860px}"
+                "button{padding:10px 16px;margin-right:8px}</style>"
+                "</head><body>"
+            )
+            + body
+            + "</body></html>"
         ).encode("utf-8")
 
     def do_GET(self):  # noqa: N802
@@ -57,8 +60,8 @@ class _ApprovalHandler(BaseHTTPRequestHandler):
             f"<h2>{title}</h2>"
             f"<p>{description}</p>"
             "<form method='POST' action='/submit'>"
-            + "".join(inputs) +
-            "<div style='margin-top:16px'>"
+            + "".join(inputs)
+            + "<div style='margin-top:16px'>"
             "<button type='submit' name='decision' value='proceed'>Approve</button>"
             "<button type='submit' name='decision' value='stop'>Stop</button>"
             "</div>"
@@ -78,8 +81,10 @@ class _ApprovalHandler(BaseHTTPRequestHandler):
 
         # Extract answers in index order
         answers: List[str] = []
-        for key in sorted((k for k in form.keys() if k.startswith("answer_")),
-                          key=lambda x: int(x.split("_", 1)[1])):
+        for key in sorted(
+            (k for k in form.keys() if k.startswith("answer_")),
+            key=lambda x: int(x.split("_", 1)[1]),
+        ):
             answers.append((form.get(key, [""])[0] or "").strip())
 
         # Store and shutdown
@@ -96,8 +101,12 @@ class _ApprovalHandler(BaseHTTPRequestHandler):
         Thread(target=self.server.shutdown, daemon=True).start()  # type: ignore[attr-defined]
 
 
-def request_approval(title: str, description: str, questions: Optional[List[str]] = None,
-                     timeout_seconds: int = 300) -> Dict[str, Any]:
+def request_approval(
+    title: str,
+    description: str,
+    questions: Optional[List[str]] = None,
+    timeout_seconds: int = 300,
+) -> Dict[str, Any]:
     """Start a small local server and block until user approves or stops.
 
     Returns a dict: { user_decision: "proceed"|"stop", user_responses: [...] }
@@ -137,5 +146,3 @@ def request_approval(title: str, description: str, questions: Optional[List[str]
         "user_responses": [],
         "ts": time.time(),
     }
-
-

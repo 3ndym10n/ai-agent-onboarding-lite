@@ -27,4 +27,3 @@ def test_prompt_summary_brief_smoke():
     data = json.loads(cp.stdout)
     assert isinstance(data, dict)
     assert "top_components" in data
-

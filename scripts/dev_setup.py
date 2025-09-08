@@ -29,30 +29,32 @@ def run_command(cmd, description):
 def main():
     """Set up development environment."""
     print("🚀 Setting up ai-onboard development environment...")
-    
+
     # Check Python version
     if sys.version_info < (3, 8):
         print("❌ Python 3.8+ required")
         sys.exit(1)
-    
+
     print(f"✅ Python {sys.version_info.major}.{sys.version_info.minor} detected")
-    
+
     # Install development dependencies
     success = True
-    success &= run_command("pip install -e .[dev]", "Installing development dependencies")
-    
+    success &= run_command(
+        "pip install -e .[dev]", "Installing development dependencies"
+    )
+
     # Run linting
     success &= run_command("python -m flake8 ai_onboard/", "Running code linting")
-    
+
     # Run type checking
     success &= run_command("python -m mypy ai_onboard/", "Running type checking")
-    
+
     # Run tests
     success &= run_command("python -m pytest tests/ -v", "Running tests")
-    
+
     # Test the CLI
     success &= run_command("python -m ai_onboard --help", "Testing CLI help")
-    
+
     if success:
         print("\n🎉 Development environment setup complete!")
         print("\n📋 Next steps:")

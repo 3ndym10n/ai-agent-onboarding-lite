@@ -1,4 +1,5 @@
 from pathlib import Path
+
 from . import utils
 
 
@@ -10,7 +11,9 @@ ORDER = ["unchartered", "chartered", "planned", "aligned", "executing", "kaizen_
 
 
 def load(root: Path) -> dict:
-    return utils.read_json(root / ".ai_onboard" / "state.json", default={"state": "unchartered"})
+    return utils.read_json(
+        root / ".ai_onboard" / "state.json", default={"state": "unchartered"}
+    )
 
 
 def save(root: Path, st: dict) -> None:
@@ -31,4 +34,3 @@ def require_gate(root: Path, needed: str) -> None:
         raise StateError(
             f"Blocked: state must be at least {needed} (current: {st.get('state')})"
         )
-

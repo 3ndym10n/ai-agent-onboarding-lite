@@ -1,13 +1,10 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any, Dict, List
-import json
 
-from . import utils
-from . import telemetry
-from . import intent_checks
-from . import summarizer
+from . import intent_checks, summarizer, telemetry, utils
 
 
 def dumps_json(obj: Any) -> str:
@@ -33,7 +30,9 @@ def get_project_state(root: Path) -> Dict[str, Any]:
     }
 
 
-def get_applicable_rules(root: Path, target_path: str = ".", change_summary: str = "") -> Dict[str, Any]:
+def get_applicable_rules(
+    root: Path, target_path: str = ".", change_summary: str = ""
+) -> Dict[str, Any]:
     man = _manifest(root)
     try:
         parsed = json.loads(change_summary) if change_summary else {}
@@ -54,4 +53,3 @@ def propose_action(root: Path, diff_json: str = "") -> Dict[str, Any]:
         return {"decision": "deny", "reason": f"invalid diff json: {e}"}
     man = _manifest(root)
     return intent_checks.propose(root, man, diff)
-

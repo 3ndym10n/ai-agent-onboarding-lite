@@ -20,4 +20,3 @@ def ok(**k):
     out = {"ok": True}
     out.update(k or {})
     return out
-

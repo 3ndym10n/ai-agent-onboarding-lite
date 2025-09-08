@@ -6,26 +6,27 @@ collaborate with the ai-onboard system, including best practices, examples,
 and automated guidance generation.
 """
 
-from pathlib import Path
-from typing import Dict, List, Any, Optional, Union
-from dataclasses import dataclass, field
-from enum import Enum
 import json
 import time
+from dataclasses import dataclass, field
 from datetime import datetime
+from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Union
 
 from . import utils
 from .ai_agent_collaboration_protocol import (
-    get_collaboration_protocol,
+    AgentCapability,
     AgentProfile,
     CollaborationMode,
-    AgentCapability,
-    SafetyLevel
+    SafetyLevel,
+    get_collaboration_protocol,
 )
 
 
 class GuidanceType(Enum):
     """Types of guidance that can be provided."""
+
     ONBOARDING = "onboarding"
     BEST_PRACTICES = "best_practices"
     SAFETY_GUIDELINES = "safety_guidelines"
@@ -37,6 +38,7 @@ class GuidanceType(Enum):
 
 class GuidanceLevel(Enum):
     """Levels of guidance detail."""
+
     BASIC = "basic"
     INTERMEDIATE = "intermediate"
     ADVANCED = "advanced"
@@ -46,6 +48,7 @@ class GuidanceLevel(Enum):
 @dataclass
 class GuidanceItem:
     """A single guidance item."""
+
     id: str
     title: str
     content: str
@@ -62,6 +65,7 @@ class GuidanceItem:
 @dataclass
 class AgentGuidanceProfile:
     """Profile for AI agent guidance."""
+
     agent_id: str
     experience_level: GuidanceLevel
     preferred_guidance_types: List[GuidanceType]
@@ -73,21 +77,22 @@ class AgentGuidanceProfile:
 
 class AIAgentGuidanceSystem:
     """Comprehensive guidance system for AI agents."""
-    
+
     def __init__(self, project_root: Path):
         self.project_root = project_root
         self.collaboration_protocol = get_collaboration_protocol(project_root)
         self.guidance_items: Dict[str, GuidanceItem] = {}
         self.agent_profiles: Dict[str, AgentGuidanceProfile] = {}
         self._initialize_guidance_items()
-    
+
     def _initialize_guidance_items(self):
         """Initialize the guidance items database."""
         # Onboarding guidance
-        self._add_guidance_item(GuidanceItem(
-            id="onboarding_001",
-            title="Getting Started with ai-onboard",
-            content="""
+        self._add_guidance_item(
+            GuidanceItem(
+                id="onboarding_001",
+                title="Getting Started with ai-onboard",
+                content="""
 # Getting Started with ai-onboard
 
 Welcome to ai-onboard! This system helps you collaborate effectively with users on software projects.
@@ -113,16 +118,18 @@ Welcome to ai-onboard! This system helps you collaborate effectively with users 
 - Ask for clarification when uncertain
 - Document your actions and decisions
             """,
-            guidance_type=GuidanceType.ONBOARDING,
-            level=GuidanceLevel.BASIC,
-            tags=["getting_started", "basics", "onboarding"]
-        ))
-        
+                guidance_type=GuidanceType.ONBOARDING,
+                level=GuidanceLevel.BASIC,
+                tags=["getting_started", "basics", "onboarding"],
+            )
+        )
+
         # Safety guidelines
-        self._add_guidance_item(GuidanceItem(
-            id="safety_001",
-            title="Safety Guidelines for AI Agents",
-            content="""
+        self._add_guidance_item(
+            GuidanceItem(
+                id="safety_001",
+                title="Safety Guidelines for AI Agents",
+                content="""
 # Safety Guidelines for AI Agents
 
 ## Protected Files and Directories
@@ -157,16 +164,18 @@ Avoid these command patterns:
 - Changing project configuration
 - Accessing external resources
             """,
-            guidance_type=GuidanceType.SAFETY_GUIDELINES,
-            level=GuidanceLevel.BASIC,
-            tags=["safety", "protection", "guidelines"]
-        ))
-        
+                guidance_type=GuidanceType.SAFETY_GUIDELINES,
+                level=GuidanceLevel.BASIC,
+                tags=["safety", "protection", "guidelines"],
+            )
+        )
+
         # Workflow guidance
-        self._add_guidance_item(GuidanceItem(
-            id="workflow_001",
-            title="Standard Workflow for AI Agents",
-            content="""
+        self._add_guidance_item(
+            GuidanceItem(
+                id="workflow_001",
+                title="Standard Workflow for AI Agents",
+                content="""
 # Standard Workflow for AI Agents
 
 ## 1. Project Initialization
@@ -231,16 +240,18 @@ if vision_status["context"]["active_gates"]:
     pass
 ```
             """,
-            guidance_type=GuidanceType.WORKFLOW_GUIDANCE,
-            level=GuidanceLevel.INTERMEDIATE,
-            tags=["workflow", "process", "steps"]
-        ))
-        
+                guidance_type=GuidanceType.WORKFLOW_GUIDANCE,
+                level=GuidanceLevel.INTERMEDIATE,
+                tags=["workflow", "process", "steps"],
+            )
+        )
+
         # Best practices
-        self._add_guidance_item(GuidanceItem(
-            id="best_practices_001",
-            title="Best Practices for AI Agent Collaboration",
-            content="""
+        self._add_guidance_item(
+            GuidanceItem(
+                id="best_practices_001",
+                title="Best Practices for AI Agent Collaboration",
+                content="""
 # Best Practices for AI Agent Collaboration
 
 ## Communication
@@ -278,16 +289,18 @@ if vision_status["context"]["active_gates"]:
 3. **Recovery Strategies**: Have fallback plans for common failures
 4. **Learn from Errors**: Update your behavior to avoid repeating mistakes
             """,
-            guidance_type=GuidanceType.BEST_PRACTICES,
-            level=GuidanceLevel.INTERMEDIATE,
-            tags=["best_practices", "collaboration", "communication"]
-        ))
-        
+                guidance_type=GuidanceType.BEST_PRACTICES,
+                level=GuidanceLevel.INTERMEDIATE,
+                tags=["best_practices", "collaboration", "communication"],
+            )
+        )
+
         # Examples
-        self._add_guidance_item(GuidanceItem(
-            id="examples_001",
-            title="Common AI Agent Tasks and Examples",
-            content="""
+        self._add_guidance_item(
+            GuidanceItem(
+                id="examples_001",
+                title="Common AI Agent Tasks and Examples",
+                content="""
 # Common AI Agent Tasks and Examples
 
 ## 1. Reading Project Files
@@ -363,16 +376,18 @@ if result["status"] == "safety_violation":
         # Wait for user response
 ```
             """,
-            guidance_type=GuidanceType.EXAMPLES,
-            level=GuidanceLevel.INTERMEDIATE,
-            tags=["examples", "code", "tasks"]
-        ))
-        
+                guidance_type=GuidanceType.EXAMPLES,
+                level=GuidanceLevel.INTERMEDIATE,
+                tags=["examples", "code", "tasks"],
+            )
+        )
+
         # Integration help
-        self._add_guidance_item(GuidanceItem(
-            id="integration_001",
-            title="Integrating with Different AI Agent Platforms",
-            content="""
+        self._add_guidance_item(
+            GuidanceItem(
+                id="integration_001",
+                title="Integrating with Different AI Agent Platforms",
+                content="""
 # Integrating with Different AI Agent Platforms
 
 ## Cursor AI Integration
@@ -452,16 +467,22 @@ export AI_ONBOARD_SAFETY_LEVEL="medium"
 export AI_ONBOARD_COLLABORATION_MODE="collaborative"
 ```
             """,
-            guidance_type=GuidanceType.INTEGRATION_HELP,
-            level=GuidanceLevel.ADVANCED,
-            tags=["integration", "platforms", "setup"]
-        ))
-    
+                guidance_type=GuidanceType.INTEGRATION_HELP,
+                level=GuidanceLevel.ADVANCED,
+                tags=["integration", "platforms", "setup"],
+            )
+        )
+
     def _add_guidance_item(self, item: GuidanceItem):
         """Add a guidance item to the database."""
         self.guidance_items[item.id] = item
-    
-    def get_guidance_for_agent(self, agent_id: str, guidance_type: Optional[GuidanceType] = None, level: Optional[GuidanceLevel] = None) -> Dict[str, Any]:
+
+    def get_guidance_for_agent(
+        self,
+        agent_id: str,
+        guidance_type: Optional[GuidanceType] = None,
+        level: Optional[GuidanceLevel] = None,
+    ) -> Dict[str, Any]:
         """Get guidance for a specific agent."""
         try:
             # Get or create agent profile
@@ -469,36 +490,43 @@ export AI_ONBOARD_COLLABORATION_MODE="collaborative"
                 self.agent_profiles[agent_id] = AgentGuidanceProfile(
                     agent_id=agent_id,
                     experience_level=GuidanceLevel.BASIC,
-                    preferred_guidance_types=[GuidanceType.ONBOARDING, GuidanceType.BEST_PRACTICES]
+                    preferred_guidance_types=[
+                        GuidanceType.ONBOARDING,
+                        GuidanceType.BEST_PRACTICES,
+                    ],
                 )
-            
+
             agent_profile = self.agent_profiles[agent_id]
             agent_profile.last_guidance_request = datetime.now()
-            
+
             # Filter guidance items
             filtered_items = []
             for item in self.guidance_items.values():
                 # Check type filter
                 if guidance_type and item.guidance_type != guidance_type:
                     continue
-                
+
                 # Check level filter
                 if level and item.level != level:
                     continue
-                
+
                 # Check if agent can access this level
-                if not self._can_access_level(agent_profile.experience_level, item.level):
+                if not self._can_access_level(
+                    agent_profile.experience_level, item.level
+                ):
                     continue
-                
+
                 # Check if already completed
                 if item.id in agent_profile.completed_guidance:
                     continue
-                
+
                 filtered_items.append(item)
-            
+
             # Sort by relevance
-            filtered_items.sort(key=lambda x: self._calculate_relevance_score(x, agent_profile))
-            
+            filtered_items.sort(
+                key=lambda x: self._calculate_relevance_score(x, agent_profile)
+            )
+
             # Return top items
             return {
                 "status": "success",
@@ -512,47 +540,48 @@ export AI_ONBOARD_COLLABORATION_MODE="collaborative"
                         "type": item.guidance_type.value,
                         "level": item.level.value,
                         "tags": item.tags,
-                        "examples": item.examples
+                        "examples": item.examples,
                     }
                     for item in filtered_items[:10]  # Top 10 most relevant
                 ],
-                "total_available": len(filtered_items)
+                "total_available": len(filtered_items),
             }
-            
+
         except Exception as e:
-            return {
-                "status": "error",
-                "message": f"Failed to get guidance: {str(e)}"
-            }
-    
+            return {"status": "error", "message": f"Failed to get guidance: {str(e)}"}
+
     def get_specific_guidance(self, guidance_id: str, agent_id: str) -> Dict[str, Any]:
         """Get a specific guidance item."""
         try:
             if guidance_id not in self.guidance_items:
                 return {
                     "status": "error",
-                    "message": f"Guidance item {guidance_id} not found"
+                    "message": f"Guidance item {guidance_id} not found",
                 }
-            
+
             item = self.guidance_items[guidance_id]
-            
+
             # Check if agent can access this item
             if agent_id in self.agent_profiles:
                 agent_profile = self.agent_profiles[agent_id]
-                if not self._can_access_level(agent_profile.experience_level, item.level):
+                if not self._can_access_level(
+                    agent_profile.experience_level, item.level
+                ):
                     return {
                         "status": "error",
-                        "message": f"Agent {agent_id} cannot access guidance level {item.level.value}"
+                        "message": f"Agent {agent_id} cannot access guidance level {item.level.value}",
                     }
-            
+
             # Mark as accessed
             if agent_id in self.agent_profiles:
-                self.agent_profiles[agent_id].guidance_history.append({
-                    "guidance_id": guidance_id,
-                    "accessed_at": datetime.now().isoformat(),
-                    "title": item.title
-                })
-            
+                self.agent_profiles[agent_id].guidance_history.append(
+                    {
+                        "guidance_id": guidance_id,
+                        "accessed_at": datetime.now().isoformat(),
+                        "title": item.title,
+                    }
+                )
+
             return {
                 "status": "success",
                 "guidance_item": {
@@ -564,67 +593,65 @@ export AI_ONBOARD_COLLABORATION_MODE="collaborative"
                     "tags": item.tags,
                     "examples": item.examples,
                     "prerequisites": item.prerequisites,
-                    "related_items": item.related_items
-                }
+                    "related_items": item.related_items,
+                },
             }
-            
+
         except Exception as e:
             return {
                 "status": "error",
-                "message": f"Failed to get specific guidance: {str(e)}"
+                "message": f"Failed to get specific guidance: {str(e)}",
             }
-    
-    def mark_guidance_completed(self, agent_id: str, guidance_id: str) -> Dict[str, Any]:
+
+    def mark_guidance_completed(
+        self, agent_id: str, guidance_id: str
+    ) -> Dict[str, Any]:
         """Mark a guidance item as completed by an agent."""
         try:
             if agent_id not in self.agent_profiles:
-                return {
-                    "status": "error",
-                    "message": f"Agent {agent_id} not found"
-                }
-            
+                return {"status": "error", "message": f"Agent {agent_id} not found"}
+
             if guidance_id not in self.guidance_items:
                 return {
                     "status": "error",
-                    "message": f"Guidance item {guidance_id} not found"
+                    "message": f"Guidance item {guidance_id} not found",
                 }
-            
+
             agent_profile = self.agent_profiles[agent_id]
-            
+
             if guidance_id not in agent_profile.completed_guidance:
                 agent_profile.completed_guidance.append(guidance_id)
-                
+
                 # Check if agent should level up
                 self._check_agent_level_up(agent_profile)
-            
+
             return {
                 "status": "success",
                 "message": f"Guidance {guidance_id} marked as completed",
-                "completed_count": len(agent_profile.completed_guidance)
+                "completed_count": len(agent_profile.completed_guidance),
             }
-            
+
         except Exception as e:
             return {
                 "status": "error",
-                "message": f"Failed to mark guidance as completed: {str(e)}"
+                "message": f"Failed to mark guidance as completed: {str(e)}",
             }
-    
+
     def get_agent_progress(self, agent_id: str) -> Dict[str, Any]:
         """Get progress summary for an agent."""
         try:
             if agent_id not in self.agent_profiles:
-                return {
-                    "status": "error",
-                    "message": f"Agent {agent_id} not found"
-                }
-            
+                return {"status": "error", "message": f"Agent {agent_id} not found"}
+
             agent_profile = self.agent_profiles[agent_id]
-            
+
             # Calculate progress metrics
             total_guidance = len(self.guidance_items)
             completed_guidance = len(agent_profile.completed_guidance)
-            completion_rate = (completed_guidance / total_guidance) * 100 if total_guidance > 0 else 0
-            
+            completion_rate = (
+                (completed_guidance / total_guidance) * 100 if total_guidance > 0 else 0
+            )
+
             # Get guidance by type
             guidance_by_type = {}
             for item in self.guidance_items.values():
@@ -633,7 +660,7 @@ export AI_ONBOARD_COLLABORATION_MODE="collaborative"
                     if guidance_type not in guidance_by_type:
                         guidance_by_type[guidance_type] = 0
                     guidance_by_type[guidance_type] += 1
-            
+
             return {
                 "status": "success",
                 "agent_id": agent_id,
@@ -642,50 +669,62 @@ export AI_ONBOARD_COLLABORATION_MODE="collaborative"
                     "total_guidance_items": total_guidance,
                     "completed_items": completed_guidance,
                     "completion_rate": completion_rate,
-                    "guidance_by_type": guidance_by_type
+                    "guidance_by_type": guidance_by_type,
                 },
-                "recent_activity": agent_profile.guidance_history[-10:] if agent_profile.guidance_history else [],
-                "last_guidance_request": agent_profile.last_guidance_request.isoformat() if agent_profile.last_guidance_request else None
+                "recent_activity": (
+                    agent_profile.guidance_history[-10:]
+                    if agent_profile.guidance_history
+                    else []
+                ),
+                "last_guidance_request": (
+                    agent_profile.last_guidance_request.isoformat()
+                    if agent_profile.last_guidance_request
+                    else None
+                ),
             }
-            
+
         except Exception as e:
             return {
                 "status": "error",
-                "message": f"Failed to get agent progress: {str(e)}"
+                "message": f"Failed to get agent progress: {str(e)}",
             }
-    
-    def generate_contextual_guidance(self, agent_id: str, context: Dict[str, Any]) -> Dict[str, Any]:
+
+    def generate_contextual_guidance(
+        self, agent_id: str, context: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Generate contextual guidance based on current situation."""
         try:
             # Analyze context to determine relevant guidance
             relevant_guidance = []
-            
+
             # Check for safety violations
             if context.get("safety_violations", 0) > 0:
                 relevant_guidance.append("safety_001")
-            
+
             # Check for vision interrogation needs
             if not context.get("vision_confirmed", False):
                 relevant_guidance.append("onboarding_001")
-            
+
             # Check for workflow needs
             if context.get("actions_taken", 0) == 0:
                 relevant_guidance.append("workflow_001")
-            
+
             # Get guidance items
             guidance_items = []
             for guidance_id in relevant_guidance:
                 if guidance_id in self.guidance_items:
                     item = self.guidance_items[guidance_id]
-                    guidance_items.append({
-                        "id": item.id,
-                        "title": item.title,
-                        "content": item.content,
-                        "type": item.guidance_type.value,
-                        "level": item.level.value,
-                        "tags": item.tags
-                    })
-            
+                    guidance_items.append(
+                        {
+                            "id": item.id,
+                            "title": item.title,
+                            "content": item.content,
+                            "type": item.guidance_type.value,
+                            "level": item.level.value,
+                            "tags": item.tags,
+                        }
+                    )
+
             return {
                 "status": "success",
                 "agent_id": agent_id,
@@ -693,59 +732,72 @@ export AI_ONBOARD_COLLABORATION_MODE="collaborative"
                 "context_analysis": {
                     "safety_violations": context.get("safety_violations", 0),
                     "vision_confirmed": context.get("vision_confirmed", False),
-                    "actions_taken": context.get("actions_taken", 0)
-                }
+                    "actions_taken": context.get("actions_taken", 0),
+                },
             }
-            
+
         except Exception as e:
             return {
                 "status": "error",
-                "message": f"Failed to generate contextual guidance: {str(e)}"
+                "message": f"Failed to generate contextual guidance: {str(e)}",
             }
-    
-    def _can_access_level(self, agent_level: GuidanceLevel, item_level: GuidanceLevel) -> bool:
+
+    def _can_access_level(
+        self, agent_level: GuidanceLevel, item_level: GuidanceLevel
+    ) -> bool:
         """Check if an agent can access a guidance level."""
         level_hierarchy = {
             GuidanceLevel.BASIC: 1,
             GuidanceLevel.INTERMEDIATE: 2,
             GuidanceLevel.ADVANCED: 3,
-            GuidanceLevel.EXPERT: 4
+            GuidanceLevel.EXPERT: 4,
         }
-        
+
         return level_hierarchy[agent_level] >= level_hierarchy[item_level]
-    
-    def _calculate_relevance_score(self, item: GuidanceItem, agent_profile: AgentGuidanceProfile) -> float:
+
+    def _calculate_relevance_score(
+        self, item: GuidanceItem, agent_profile: AgentGuidanceProfile
+    ) -> float:
         """Calculate relevance score for a guidance item."""
         score = 0.0
-        
+
         # Base score
         score += 1.0
-        
+
         # Preference bonus
         if item.guidance_type in agent_profile.preferred_guidance_types:
             score += 2.0
-        
+
         # Level appropriateness
         if item.level == agent_profile.experience_level:
             score += 1.5
         elif self._can_access_level(agent_profile.experience_level, item.level):
             score += 1.0
-        
+
         # Completion penalty
         if item.id in agent_profile.completed_guidance:
             score -= 3.0
-        
+
         return score
-    
+
     def _check_agent_level_up(self, agent_profile: AgentGuidanceProfile):
         """Check if an agent should level up based on completed guidance."""
         completed_count = len(agent_profile.completed_guidance)
-        
-        if completed_count >= 10 and agent_profile.experience_level == GuidanceLevel.BASIC:
+
+        if (
+            completed_count >= 10
+            and agent_profile.experience_level == GuidanceLevel.BASIC
+        ):
             agent_profile.experience_level = GuidanceLevel.INTERMEDIATE
-        elif completed_count >= 25 and agent_profile.experience_level == GuidanceLevel.INTERMEDIATE:
+        elif (
+            completed_count >= 25
+            and agent_profile.experience_level == GuidanceLevel.INTERMEDIATE
+        ):
             agent_profile.experience_level = GuidanceLevel.ADVANCED
-        elif completed_count >= 50 and agent_profile.experience_level == GuidanceLevel.ADVANCED:
+        elif (
+            completed_count >= 50
+            and agent_profile.experience_level == GuidanceLevel.ADVANCED
+        ):
             agent_profile.experience_level = GuidanceLevel.EXPERT
 
 

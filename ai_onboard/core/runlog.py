@@ -1,9 +1,9 @@
 """Append-only run log (.ai_onboard/log.jsonl)."""
 
-from pathlib import Path
-from typing import Dict, Any
 import json
 import time
+from pathlib import Path
+from typing import Any, Dict
 
 
 def _path(root: Path) -> Path:
@@ -21,5 +21,3 @@ def write_event(root: Path, kind: str, payload: Dict[str, Any]) -> None:
     p = _path(root)
     with p.open("a", encoding="utf-8") as f:
         f.write(json.dumps(rec) + "\n")
-
-

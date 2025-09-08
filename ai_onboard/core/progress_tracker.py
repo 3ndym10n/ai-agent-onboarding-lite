@@ -1,4 +1,5 @@
 from pathlib import Path
+
 from . import utils, versioning
 
 
@@ -30,4 +31,3 @@ def write_report(root: Path, res: dict) -> None:
     # versioned copy
     v = versioning.get_version(root)
     (root / ".ai_onboard" / f"report_v{v}.md").write_text(content, encoding="utf-8")
-

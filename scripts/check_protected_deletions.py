@@ -6,7 +6,6 @@ import sys
 from pathlib import Path
 from typing import List
 
-
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 # Keep in sync with scripts/protected_paths.py
@@ -15,16 +14,13 @@ PROTECTED_FILES = {
     "pyproject.toml",
     "README_ai_onboard.md",
     "AGENTS.md",
-
     # Package identity
     "ai_onboard/__init__.py",
     "ai_onboard/__main__.py",
     "ai_onboard/VERSION",
-
     # CLI entry
     "ai_onboard/cli/__init__.py",
     "ai_onboard/cli/commands.py",
-
     # Core runtime (minimum viable)
     "ai_onboard/core/__init__.py",
     "ai_onboard/core/utils.py",
@@ -33,7 +29,6 @@ PROTECTED_FILES = {
     "ai_onboard/core/validation_runtime.py",
     "ai_onboard/core/policy_engine.py",
     "ai_onboard/core/registry.py",
-
     # Baseline policy
     "ai_onboard/policies/base.json",
 }
@@ -90,4 +85,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-

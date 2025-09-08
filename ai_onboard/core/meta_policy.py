@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import List, Dict, Any
-from . import utils
+from typing import Any, Dict, List
 
+from . import utils
 
 DEFAULTS = {
     "MAX_DELETE_LINES": 100,
@@ -16,7 +16,7 @@ DEFAULTS = {
 def _cfg(manifest: Dict[str, Any]) -> Dict[str, Any]:
     # Read from manifest["metaPolicies"] or top-level thresholds fallback
     m = manifest or {}
-    mp = (m.get("metaPolicies") or {})
+    mp = m.get("metaPolicies") or {}
     out = DEFAULTS.copy()
     out.update({k: v for k, v in mp.items() if k in DEFAULTS})
     # Legacy variables (if present at top-level)
@@ -33,15 +33,27 @@ def rules_summary(manifest: Dict[str, Any]) -> List[Dict[str, Any]]:
     # - subsystems: List[str]
     # - rule_impact: Dict[str, float]
     # - confidence: float
-    
+
     # For now, just return a basic structure
     hits: List[Dict[str, Any]] = []
-    
+
     cfg = _cfg(manifest)
     return [
-        {"id": "MAX_DELETE_LINES", "threshold": cfg["MAX_DELETE_LINES"], "action": "confirm"},
-        {"id": "MAX_REFACTOR_FILES", "threshold": cfg["MAX_REFACTOR_FILES"], "action": "confirm"},
-        {"id": "REQUIRES_TEST_COVERAGE", "enabled": bool(cfg["REQUIRES_TEST_COVERAGE"]), "action": "confirm"},
+        {
+            "id": "MAX_DELETE_LINES",
+            "threshold": cfg["MAX_DELETE_LINES"],
+            "action": "confirm",
+        },
+        {
+            "id": "MAX_REFACTOR_FILES",
+            "threshold": cfg["MAX_REFACTOR_FILES"],
+            "action": "confirm",
+        },
+        {
+            "id": "REQUIRES_TEST_COVERAGE",
+            "enabled": bool(cfg["REQUIRES_TEST_COVERAGE"]),
+            "action": "confirm",
+        },
     ]
 
 
@@ -65,39 +77,50 @@ def evaluate(manifest: Dict[str, Any], diff: Dict[str, Any]) -> Dict[str, Any]:
     hits: List[Dict[str, Any]] = []
 
     if deleted > cfg["MAX_DELETE_LINES"]:
-        hits.append({
-            "rule": "MAX_DELETE_LINES",
-            "severity": "warn",
-            "detail": {"deleted": deleted, "threshold": cfg["MAX_DELETE_LINES"]},
-            "action": "confirm",
-        })
+        hits.append(
+            {
+                "rule": "MAX_DELETE_LINES",
+                "severity": "warn",
+                "detail": {"deleted": deleted, "threshold": cfg["MAX_DELETE_LINES"]},
+                "action": "confirm",
+            }
+        )
 
     if len(files) > cfg["MAX_REFACTOR_FILES"]:
-        hits.append({
-            "rule": "MAX_REFACTOR_FILES",
-            "severity": "warn",
-            "detail": {"files": len(files), "threshold": cfg["MAX_REFACTOR_FILES"]},
-            "action": "confirm",
-        })
+        hits.append(
+            {
+                "rule": "MAX_REFACTOR_FILES",
+                "severity": "warn",
+                "detail": {"files": len(files), "threshold": cfg["MAX_REFACTOR_FILES"]},
+                "action": "confirm",
+            }
+        )
 
-    if cfg["REQUIRES_TEST_COVERAGE"] and (deleted > 0 or len(files) > 0) and not has_tests:
-        hits.append({
-            "rule": "REQUIRES_TEST_COVERAGE",
-            "severity": "warn",
-            "detail": {"has_tests": has_tests},
-            "action": "confirm",
-        })
+    if (
+        cfg["REQUIRES_TEST_COVERAGE"]
+        and (deleted > 0 or len(files) > 0)
+        and not has_tests
+    ):
+        hits.append(
+            {
+                "rule": "REQUIRES_TEST_COVERAGE",
+                "severity": "warn",
+                "detail": {"has_tests": has_tests},
+                "action": "confirm",
+            }
+        )
 
     # Subsystem breadth heuristic: touching multiple components should confirm
     if len(subsystems) > 1:
-        hits.append({
-            "rule": "SUBSYSTEM_BREADTH",
-            "severity": "warn",
-            "detail": {"subsystems": subsystems},
-            "action": "confirm",
-        })
+        hits.append(
+            {
+                "rule": "SUBSYSTEM_BREADTH",
+                "severity": "warn",
+                "detail": {"subsystems": subsystems},
+                "action": "confirm",
+            }
+        )
 
     # Decision aggregation
     decision = "allow" if not hits else "confirm"
     return {"decision": decision, "reasons": hits}
-

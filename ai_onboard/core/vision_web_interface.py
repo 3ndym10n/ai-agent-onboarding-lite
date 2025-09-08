@@ -6,66 +6,63 @@ interrogation system, making it easy for users to define their project vision
 through guided questioning.
 """
 
-from pathlib import Path
-from typing import Dict, List, Any, Optional
 import json
-import webbrowser
 import tempfile
-from datetime import datetime
-from http.server import HTTPServer, BaseHTTPRequestHandler
 import threading
 import time
+import webbrowser
+from datetime import datetime
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 from .enhanced_vision_interrogator import (
-    EnhancedVisionInterrogator, 
-    ProjectType, 
+    EnhancedVisionInterrogator,
+    ProjectType,
     QuestionType,
-    get_enhanced_vision_interrogator
+    get_enhanced_vision_interrogator,
 )
 
 
 class VisionWebInterface:
     """Web interface for vision interrogation system."""
-    
+
     def __init__(self, root: Path, port: int = 8080):
         self.root = root
         self.port = port
         self.interrogator = get_enhanced_vision_interrogator(root)
         self.server = None
         self.server_thread = None
-        
+
     def start_web_interface(self) -> Dict[str, Any]:
         """Start the web interface server."""
         try:
             # Create custom request handler
             handler = self._create_request_handler()
-            
+
             # Start server in a separate thread
-            self.server = HTTPServer(('localhost', self.port), handler)
+            self.server = HTTPServer(("localhost", self.port), handler)
             self.server_thread = threading.Thread(target=self.server.serve_forever)
             self.server_thread.daemon = True
             self.server_thread.start()
-            
+
             # Wait a moment for server to start
             time.sleep(1)
-            
+
             # Open browser
             url = f"http://localhost:{self.port}"
             webbrowser.open(url)
-            
+
             return {
                 "status": "success",
                 "message": f"Web interface started on {url}",
                 "url": url,
-                "port": self.port
+                "port": self.port,
             }
-            
+
         except Exception as e:
-            return {
-                "status": "error",
-                "message": f"Failed to start web interface: {e}"
-            }
-    
+            return {"status": "error", "message": f"Failed to start web interface: {e}"}
+
     def stop_web_interface(self) -> Dict[str, Any]:
         """Stop the web interface server."""
         try:
@@ -73,62 +70,56 @@ class VisionWebInterface:
                 self.server.shutdown()
                 self.server.server_close()
                 self.server = None
-            
-            return {
-                "status": "success",
-                "message": "Web interface stopped"
-            }
+
+            return {"status": "success", "message": "Web interface stopped"}
         except Exception as e:
-            return {
-                "status": "error",
-                "message": f"Failed to stop web interface: {e}"
-            }
-    
+            return {"status": "error", "message": f"Failed to stop web interface: {e}"}
+
     def _create_request_handler(self):
         """Create custom HTTP request handler."""
         interrogator = self.interrogator
-        
+
         class VisionRequestHandler(BaseHTTPRequestHandler):
             def do_GET(self):
-                if self.path == '/':
+                if self.path == "/":
                     self._serve_main_page()
-                elif self.path == '/api/status':
+                elif self.path == "/api/status":
                     self._serve_status()
-                elif self.path == '/api/questions':
+                elif self.path == "/api/questions":
                     self._serve_questions()
-                elif self.path.startswith('/api/project-types'):
+                elif self.path.startswith("/api/project-types"):
                     self._serve_project_types()
                 else:
                     self._serve_404()
-            
+
             def do_POST(self):
-                if self.path == '/api/start':
+                if self.path == "/api/start":
                     self._handle_start_interrogation()
-                elif self.path == '/api/submit':
+                elif self.path == "/api/submit":
                     self._handle_submit_response()
-                elif self.path == '/api/complete':
+                elif self.path == "/api/complete":
                     self._handle_complete_interrogation()
                 else:
                     self._serve_404()
-            
+
             def _serve_main_page(self):
                 """Serve the main HTML page."""
                 html = self._generate_html()
                 self.send_response(200)
-                self.send_header('Content-type', 'text/html')
+                self.send_header("Content-type", "text/html")
                 self.end_headers()
-                self.wfile.write(html.encode('utf-8'))
-            
+                self.wfile.write(html.encode("utf-8"))
+
             def _serve_status(self):
                 """Serve interrogation status."""
                 status = interrogator.get_enhanced_interrogation_status()
                 self._send_json_response(status)
-            
+
             def _serve_questions(self):
                 """Serve current questions."""
                 questions_data = interrogator.get_current_questions()
                 self._send_json_response(questions_data)
-            
+
             def _serve_project_types(self):
                 """Serve available project types."""
                 project_types = [
@@ -136,49 +127,51 @@ class VisionWebInterface:
                     for pt in ProjectType
                 ]
                 self._send_json_response({"project_types": project_types})
-            
+
             def _handle_start_interrogation(self):
                 """Handle start interrogation request."""
-                content_length = int(self.headers['Content-Length'])
+                content_length = int(self.headers["Content-Length"])
                 post_data = self.rfile.read(content_length)
-                data = json.loads(post_data.decode('utf-8'))
-                
-                project_type = ProjectType(data.get('project_type', 'generic'))
+                data = json.loads(post_data.decode("utf-8"))
+
+                project_type = ProjectType(data.get("project_type", "generic"))
                 result = interrogator.start_enhanced_interrogation(project_type)
                 self._send_json_response(result)
-            
+
             def _handle_submit_response(self):
                 """Handle submit response request."""
-                content_length = int(self.headers['Content-Length'])
+                content_length = int(self.headers["Content-Length"])
                 post_data = self.rfile.read(content_length)
-                data = json.loads(post_data.decode('utf-8'))
-                
-                phase = data.get('phase')
-                question_id = data.get('question_id')
-                response = data.get('response')
-                
-                result = interrogator.submit_enhanced_response(phase, question_id, response)
+                data = json.loads(post_data.decode("utf-8"))
+
+                phase = data.get("phase")
+                question_id = data.get("question_id")
+                response = data.get("response")
+
+                result = interrogator.submit_enhanced_response(
+                    phase, question_id, response
+                )
                 self._send_json_response(result)
-            
+
             def _handle_complete_interrogation(self):
                 """Handle complete interrogation request."""
                 result = interrogator.force_complete_interrogation()
                 self._send_json_response(result)
-            
+
             def _send_json_response(self, data):
                 """Send JSON response."""
                 self.send_response(200)
-                self.send_header('Content-type', 'application/json')
+                self.send_header("Content-type", "application/json")
                 self.end_headers()
-                self.wfile.write(json.dumps(data).encode('utf-8'))
-            
+                self.wfile.write(json.dumps(data).encode("utf-8"))
+
             def _serve_404(self):
                 """Serve 404 error."""
                 self.send_response(404)
-                self.send_header('Content-type', 'text/plain')
+                self.send_header("Content-type", "text/plain")
                 self.end_headers()
-                self.wfile.write(b'Not Found')
-            
+                self.wfile.write(b"Not Found")
+
             def _generate_html(self):
                 """Generate the main HTML page."""
                 return """
@@ -809,7 +802,7 @@ class VisionWebInterface:
 </body>
 </html>
                 """
-        
+
         return VisionRequestHandler
 
 

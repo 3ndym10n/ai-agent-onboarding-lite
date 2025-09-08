@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any, Dict
-import json
 
 from . import utils
 
@@ -21,4 +21,3 @@ def record_event(root: Path, rec: Dict[str, Any]) -> None:
             f.write("\n")
     except Exception:
         pass
-

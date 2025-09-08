@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from pathlib import Path
-from typing import Any, Dict, Iterable, List
 import json
 import time
+from pathlib import Path
+from typing import Any, Dict, Iterable, List
 
 from . import utils
 
@@ -55,7 +55,9 @@ def record_run(root: Path, res: Dict[str, Any]) -> None:
         err_path = metrics_path.with_suffix(".errors.log")
         try:
             with open(err_path, "a", encoding="utf-8") as ef:
-                ef.write(f"{utils.now_iso()} | telemetry_write_error | {type(e).__name__}: {e}\n")
+                ef.write(
+                    f"{utils.now_iso()} | telemetry_write_error | {type(e).__name__}: {e}\n"
+                )
         except Exception:
             # Swallow secondary errors to avoid surfacing telemetry issues to users.
             pass

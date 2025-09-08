@@ -2,9 +2,10 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, 'feature/*', 'feat/*', 'bugfix/*', 'hotfix/*', 'release/*', 'fix/*' ]
   pull_request:
     branches: [ main, develop ]
+  workflow_dispatch:
 
 jobs:
   test:
@@ -40,10 +41,25 @@ jobs:
       run: |
         pre-commit run --all-files
     
-    - name: Run tests
+    - name: Run system tests
       run: |
         python scripts/test_system.py
-        pytest tests/ -v --cov=ai_onboard --cov-report=xml
+    
+    - name: Run unit tests
+      run: |
+        pytest tests/ -v --cov=ai_onboard --cov-report=xml --cov-report=html
+    
+    - name: Test AI Agent Collaboration Protocol
+      run: |
+        python -m ai_onboard ai-collaboration test
+    
+    - name: Test Enhanced Vision System
+      run: |
+        python -m ai_onboard enhanced-vision status
+    
+    - name: Validate development environment
+      run: |
+        python scripts/validate_dev_env.py
     
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
@@ -51,6 +67,50 @@ jobs:
         file: ./coverage.xml
         flags: unittests
         name: codecov-umbrella
+
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e .[dev]
+    
+    - name: Run code quality checks
+      run: |
+        # Run black formatter check
+        black --check ai_onboard/ tests/ scripts/
+        
+        # Run isort import sorting check
+        isort --check-only ai_onboard/ tests/ scripts/
+        
+        # Run flake8 linting
+        flake8 ai_onboard/ tests/ scripts/
+        
+        # Run mypy type checking
+        mypy ai_onboard/ --ignore-missing-imports
+        
+        # Run docstring checks
+        pydocstyle ai_onboard/ --convention=google
+    
+    - name: Check code complexity
+      run: |
+        pip install radon
+        radon cc ai_onboard/ --min B
+        radon mi ai_onboard/ --min B
+    
+    - name: Check for security issues
+      run: |
+        pip install bandit safety
+        bandit -r ai_onboard/ -f json -o bandit-report.json || true
+        safety check --json --output safety-report.json || true
 
   security:
     runs-on: ubuntu-latest
@@ -85,7 +145,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    needs: [test, security]
+    needs: [test, quality, security]
     
     steps:
     - uses: actions/checkout@v4
@@ -134,3 +194,39 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
       run: |
         twine upload dist/*
+
+  release:
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e .[dev]
+    
+    - name: Generate changelog
+      run: |
+        python scripts/generate_changelog.py
+    
+    - name: Create release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.run_number }}
+        release_name: Release ${{ github.run_number }}
+        body_path: CHANGELOG.md
+        draft: false
+        prerelease: false

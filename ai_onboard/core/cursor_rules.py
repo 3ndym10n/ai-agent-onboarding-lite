@@ -11,14 +11,12 @@ No external deps. Python 3.8+.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import json
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from . import utils, prompt_bridge
-from . import alignment
-
+from . import alignment, prompt_bridge, utils
 
 CONVO_FILE = ".ai_onboard/conversation.jsonl"
 DECISIONS_FILE = ".ai_onboard/decisions.jsonl"
@@ -47,7 +45,9 @@ def _read_jsonl(path: Path) -> List[Dict[str, Any]]:
     return lines
 
 
-def record_observation(root: Path, rule_id: str, text: str, tags: Optional[List[str]] = None) -> Dict[str, Any]:
+def record_observation(
+    root: Path, rule_id: str, text: str, tags: Optional[List[str]] = None
+) -> Dict[str, Any]:
     """Record a free-form observation for a rule, both JSONL and a plain .md note."""
     rec: Dict[str, Any] = {
         "ts": utils.now_iso(),
@@ -65,7 +65,9 @@ def record_observation(root: Path, rule_id: str, text: str, tags: Optional[List[
     return rec
 
 
-def record_decision(root: Path, decision: str, rationale: str, meta: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+def record_decision(
+    root: Path, decision: str, rationale: str, meta: Optional[Dict[str, Any]] = None
+) -> Dict[str, Any]:
     """Record a decision with rationale (allow/deny/clarify/quick_confirm/custom)."""
     rec: Dict[str, Any] = {
         "ts": utils.now_iso(),
@@ -95,7 +97,9 @@ def _compute_checklist(root: Path) -> List[ChecklistItem]:
 
     items: List[ChecklistItem] = [
         ChecklistItem("readme", "Scan README*, AGENTS.md, and project docs for intent"),
-        ChecklistItem("guardrails", "Confirm protected paths and safety policies are present"),
+        ChecklistItem(
+            "guardrails", "Confirm protected paths and safety policies are present"
+        ),
         ChecklistItem("manifest", "Create or update ai_onboard.json (only if missing)"),
         ChecklistItem("summary", "Emit brief project summary for the model context"),
         ChecklistItem("ambiguities", "List ambiguities and top outcomes to clarify"),
@@ -139,9 +143,15 @@ def generate_system_prompt(root: Path) -> str:
     """
     items = _compute_checklist(root)
     profile = load_agent_profile(root)
-    checklist_lines = "\n".join([f"- [{ 'x' if it.done else ' ' }] {it.label}" for it in items])
-    include_lines = "\n".join([f"  - {p}" for p in profile.get("include", [])]) or "  - (none)"
-    exclude_lines = "\n".join([f"  - {p}" for p in profile.get("exclude", [])]) or "  - (none)"
+    checklist_lines = "\n".join(
+        [f"- [{ 'x' if it.done else ' ' }] {it.label}" for it in items]
+    )
+    include_lines = (
+        "\n".join([f"  - {p}" for p in profile.get("include", [])]) or "  - (none)"
+    )
+    exclude_lines = (
+        "\n".join([f"  - {p}" for p in profile.get("exclude", [])]) or "  - (none)"
+    )
 
     prompt = f"""
 You are a repository guide operating in a prompt-only workflow. Do not run CLI commands.
@@ -198,20 +208,24 @@ def suggest_next_actions(root: Path) -> List[Dict[str, Any]]:
     conf = float(prev.get("confidence", 0.0)) if isinstance(prev, dict) else 0.0
     ambiguities = prev.get("ambiguities", []) if isinstance(prev, dict) else []
     if conf < 0.6 or (isinstance(ambiguities, list) and len(ambiguities) >= 2):
-        suggestions.append({
-            "id": "interrogate",
-            "label": "Start targeted interrogation to resolve key ambiguities",
-            "why": f"confidence={conf} ambiguities={len(ambiguities)}"
-        })
+        suggestions.append(
+            {
+                "id": "interrogate",
+                "label": "Start targeted interrogation to resolve key ambiguities",
+                "why": f"confidence={conf} ambiguities={len(ambiguities)}",
+            }
+        )
 
     # 2) Alignment drift check: if no recent preview or time gap
     # Lightweight check: if report missing, suggest preview
     if not (root / ".ai_onboard/alignment_report.json").exists():
-        suggestions.append({
-            "id": "alignment_preview",
-            "label": "Run alignment preview (dry) and reflect",
-            "why": "no prior alignment report"
-        })
+        suggestions.append(
+            {
+                "id": "alignment_preview",
+                "label": "Run alignment preview (dry) and reflect",
+                "why": "no prior alignment report",
+            }
+        )
 
     # 3) Plan update: if alignment is proceed/approved but plan missing
     plan_path = root / ".ai_onboard/plan.json"
@@ -229,11 +243,13 @@ def suggest_next_actions(root: Path) -> List[Dict[str, Any]]:
                 proceed = True
                 break
     if proceed and not plan_path.exists():
-        suggestions.append({
-            "id": "plan",
-            "label": "Draft plan from charter and decisions",
-            "why": "alignment indicates proceed but no plan.json"
-        })
+        suggestions.append(
+            {
+                "id": "plan",
+                "label": "Draft plan from charter and decisions",
+                "why": "alignment indicates proceed but no plan.json",
+            }
+        )
 
     return suggestions
 
@@ -243,5 +259,3 @@ def _read_json_safe(path: Path):
         return json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
     except Exception:
         return {}
-
-

@@ -1,13 +1,12 @@
 from __future__ import annotations
 
+import json
+import shutil
+import uuid
 from pathlib import Path
 from typing import Any, Dict, Iterable, List
-import shutil
-import json
-import uuid
 
 from . import utils
-
 
 INDEX = "index.jsonl"
 
@@ -104,4 +103,3 @@ def restore(root: Path, ckpt_id: str) -> Dict[str, Any]:
         except Exception as e:
             errors.append(f"{rel}: {e}")
     return {"restored": restored, "errors": errors}
-
