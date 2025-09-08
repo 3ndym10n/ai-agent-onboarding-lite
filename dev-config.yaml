@@ -1,0 +1,111 @@
+# Development Configuration for ai-onboard
+# This file contains development-specific settings and overrides
+
+development:
+  # Enable debug mode
+  debug: true
+  
+  # Logging configuration
+  logging:
+    level: DEBUG
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    handlers:
+      - type: console
+        level: DEBUG
+      - type: file
+        filename: ".ai_onboard/dev.log"
+        level: INFO
+  
+  # Testing configuration
+  testing:
+    # Enable test mode
+    test_mode: true
+    
+    # Mock external services
+    mock_services: true
+    
+    # Test data directory
+    test_data_dir: "tests/data"
+    
+    # Coverage settings
+    coverage:
+      threshold: 80
+      exclude:
+        - "tests/*"
+        - "venv/*"
+        - ".ai_onboard/*"
+  
+  # Development tools
+  tools:
+    # Pre-commit hooks
+    pre_commit:
+      enabled: true
+      hooks:
+        - black
+        - flake8
+        - mypy
+        - isort
+        - protected-paths-check
+    
+    # IDE settings
+    ide:
+      vscode:
+        enabled: true
+        settings:
+          python.defaultInterpreterPath: "./venv/Scripts/python.exe"
+          python.linting.enabled: true
+          python.formatting.provider: "black"
+      
+      pycharm:
+        enabled: true
+        settings:
+          python_interpreter: "./venv/Scripts/python.exe"
+  
+  # Development overrides
+  overrides:
+    # Disable gates in development
+    gates:
+      enabled: false
+      timeout_seconds: 1
+    
+    # Enable development features
+    features:
+      hot_reload: true
+      auto_format: true
+      debug_logging: true
+    
+    # Development paths
+    paths:
+      cache_dir: ".ai_onboard/cache"
+      logs_dir: ".ai_onboard/logs"
+      temp_dir: ".ai_onboard/temp"
+
+# Environment-specific settings
+environments:
+  local:
+    extends: development
+    overrides:
+      gates:
+        enabled: false
+  
+  ci:
+    extends: development
+    overrides:
+      gates:
+        enabled: false
+      testing:
+        test_mode: true
+        mock_services: true
+  
+  production:
+    extends: development
+    overrides:
+      debug: false
+      gates:
+        enabled: true
+        timeout_seconds: 30
+      logging:
+        level: INFO
+      testing:
+        test_mode: false
+        mock_services: false

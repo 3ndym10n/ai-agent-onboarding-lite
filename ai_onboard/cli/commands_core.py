@@ -232,6 +232,14 @@ def handle_core_commands(args, root: Path):
         # Create or update project charter
         from ..core import charter, state
         charter.ensure(root, interactive=args.interactive)
+        
+        # Mark vision as confirmed if run interactively
+        if args.interactive:
+            charter_data = charter.load_charter(root)
+            charter_data["vision_confirmed"] = True
+            charter.save_charter(root, charter_data)
+            print("✅ Vision confirmed in charter")
+        
         state.advance(root, state.load(root), "chartered")
         print("Charter ready at .ai_onboard/charter.json")
     elif args.cmd == "plan":
@@ -280,8 +288,16 @@ def handle_core_commands(args, root: Path):
             print(f"Opened alignment checkpoint {args.checkpoint}.")
     elif args.cmd == "validate":
         # Run validation and write report
-        from ..core import alignment, validation_runtime, progress_tracker, telemetry
+        from ..core import alignment, validation_runtime, progress_tracker, telemetry, charter
         alignment.require_state(root, "aligned")
+        
+        # Check if vision is confirmed before allowing validation
+        charter_data = charter.load_charter(root)
+        if not charter_data.get("vision_confirmed", False):
+            print("❌ Vision not confirmed. Please confirm the project vision before running validation.")
+            print("💡 Run: python -m ai_onboard charter --interactive to confirm vision")
+            return
+        
         res = validation_runtime.run(root)
         if args.report:
             progress_tracker.write_report(root, res)
