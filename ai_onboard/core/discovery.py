@@ -1,7 +1,5 @@
 from pathlib import Path
 
-from . import utils
-
 
 def run(root: Path, allow_exec: bool = False) -> dict:
     has_py = (root / "pyproject.toml").exists() or (root / "requirements.txt").exists()

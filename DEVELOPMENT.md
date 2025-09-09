@@ -27,7 +27,7 @@ This guide covers everything you need to know to develop, test, and contribute t
    ```bash
    # Windows
    venv\Scripts\activate
-   
+
    # macOS/Linux
    source venv/bin/activate
    ```

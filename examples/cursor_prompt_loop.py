@@ -10,8 +10,8 @@ Usage:
 """
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
 # Ensure local ai_onboard is preferred over any installed package
 project_root = Path(__file__).parent.parent
@@ -26,7 +26,9 @@ def main():
     p.add_argument("--status", action="store_true")
     p.add_argument("--observe", help="Free-form observation text")
     p.add_argument("--rule", help="Rule/checklist id for observation")
-    p.add_argument("--decide", help="Decision label (allow/deny/clarify/quick_confirm/custom)")
+    p.add_argument(
+        "--decide", help="Decision label (allow/deny/clarify/quick_confirm/custom)"
+    )
     p.add_argument("--why", help="Decision rationale")
     p.add_argument("--root", help="Target project root (defaults to CWD)")
     args = p.parse_args()
@@ -39,9 +41,11 @@ def main():
 
     if args.status:
         from ai_onboard.core import prompt_bridge
+
         s = cursor_rules.status(root)
         s["project_state"] = prompt_bridge.get_project_state(root)
         import json
+
         print(json.dumps(s, indent=2))
         return
 
@@ -49,21 +53,22 @@ def main():
         rule_id = args.rule or "general"
         rec = cursor_rules.record_observation(root, rule_id, args.observe)
         import json
+
         print(json.dumps(rec, indent=2))
         return
 
     if args.decide:
         rec = cursor_rules.record_decision(root, args.decide, args.why or "")
         import json
+
         print(json.dumps(rec, indent=2))
         return
 
     # Default: show checklist
     import json
+
     print(json.dumps({"checklist": cursor_rules.next_checklist(root)}, indent=2))
 
 
 if __name__ == "__main__":
     main()
-
-

@@ -27,4 +27,3 @@ approvals:
 
 defaults:
   require_checkpoint_when: ["require_approval", "block"]
-

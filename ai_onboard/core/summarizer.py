@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Dict, List
 
-from . import cache, telemetry, utils
+from . import cache, telemetry
 
 
 def _brief(last: Dict[str, Any], changed: List[str]) -> Dict[str, Any]:

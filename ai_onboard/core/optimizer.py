@@ -31,7 +31,7 @@ def nudge_from_metrics(root: Path) -> None:
     last = items[-1]
     comps = ", ".join(
         [
-            f"{c.get('name','?')}:{c.get('score','n/a')}"
+            f"{c.get('name', '?')}:{c.get('score', 'n/a')}"
             for c in last.get("components", [])
         ]
     )

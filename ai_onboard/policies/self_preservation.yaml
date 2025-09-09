@@ -135,7 +135,7 @@ defaults:
   require_checkpoint_when: ["require_approval", "block"]
   backup_before_cleanup: true
   preserve_system_state: true
-  
+
 # Emergency recovery
 emergency:
   recovery_mode: true

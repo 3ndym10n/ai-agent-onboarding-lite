@@ -84,17 +84,17 @@ interrogation_process:
       description: "Define core vision elements"
       required_questions: ["vc_01", "vc_02", "vc_03"]
       completion_criteria: "All required questions answered with sufficient detail"
-      
+
     stakeholders:
       description: "Identify stakeholders and their goals"
       required_questions: ["sg_01", "sg_02"]
       completion_criteria: "Key stakeholders identified with clear goals"
-      
+
     scope:
       description: "Define project scope and boundaries"
       required_questions: ["sb_01", "sb_02"]
       completion_criteria: "Clear in-scope and out-of-scope definitions"
-      
+
     success:
       description: "Define success criteria and metrics"
       required_questions: ["sc_01", "sc_02"]
@@ -105,12 +105,12 @@ interrogation_process:
       minimum: 20
       recommended: 50
       description: "Minimum characters for meaningful responses"
-    
+
     confidence_threshold:
       minimum: 0.7
       recommended: 0.9
       description: "Minimum confidence level for responses"
-    
+
     ambiguity_tolerance:
       technical: "high"
       vision: "low"
@@ -130,11 +130,11 @@ agent_integration:
     - condition: "interrogation_incomplete"
       action: "halt_and_guide"
       message: "Vision interrogation must be completed first"
-      
+
     - condition: "vision_clarity_low"
       action: "require_interrogation"
       message: "Vision clarity score too low, need interrogation"
-      
+
     - condition: "critical_ambiguities"
       action: "block_until_resolved"
       message: "Critical ambiguities must be resolved"

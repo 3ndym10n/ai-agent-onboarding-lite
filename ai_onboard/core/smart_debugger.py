@@ -6,9 +6,9 @@ import json
 import re
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
-from . import error_resolver, telemetry, utils
+from . import utils
 
 
 class SmartDebugger:
@@ -26,7 +26,7 @@ class SmartDebugger:
         # Extract error information
         error_type = error_data.get("type", "unknown")
         error_message = error_data.get("message", "")
-        error_context = error_data.get("context", {})
+        error_data.get("context", {})
 
         # Check for known patterns
         pattern_match = self._find_pattern_match(error_type, error_message)

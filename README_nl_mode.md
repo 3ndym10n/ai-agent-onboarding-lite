@@ -29,6 +29,3 @@ Agent profile (optional):
 Safety:
 - The NL system only writes under `.ai_onboard/`.
 - Use `README_ai_onboard.md` and `AGENTS.md` for repo rules/guardrails.
-
-
-

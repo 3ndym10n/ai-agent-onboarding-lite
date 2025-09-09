@@ -10,16 +10,14 @@ This enhanced system provides:
 - Integration with AI agent collaboration
 """
 
-import json
 import re
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
-from . import charter, utils, vision_guardian
+from . import utils
 
 
 class QuestionType(Enum):
@@ -288,9 +286,9 @@ class EnhancedVisionInterrogator:
             interrogation_data["adaptive_questions"].extend(follow_up_questions)
 
         # Update vision quality score
-        interrogation_data["vision_quality_score"] = (
-            self._calculate_enhanced_vision_quality(interrogation_data)
-        )
+        interrogation_data[
+            "vision_quality_score"
+        ] = self._calculate_enhanced_vision_quality(interrogation_data)
 
         # Check phase completion with enhanced logic
         if self._is_enhanced_phase_complete(interrogation_data, phase):
@@ -719,7 +717,6 @@ class EnhancedVisionInterrogator:
     ) -> List[Dict[str, Any]]:
         """Generate enhanced insights from response analysis."""
         insights = []
-        answer = response.get("answer", "").lower()
         metadata = response.get("analysis_metadata", {})
 
         # Technical focus insight
@@ -830,7 +827,7 @@ class EnhancedVisionInterrogator:
                         "id": str(uuid.uuid4()),
                         "type": "uncertainty",
                         "priority": "medium",
-                        "description": f"Response contains uncertainty indicators",
+                        "description": "Response contains uncertainty indicators",
                         "source_question": question_id,
                         "source_phase": phase,
                         "suggested_clarifications": [
@@ -1010,9 +1007,9 @@ class EnhancedVisionInterrogator:
             interrogation_data["completed_at"] = utils.now_iso()
 
             # Generate final vision quality report
-            interrogation_data["final_vision_quality"] = (
-                self._generate_vision_quality_report(interrogation_data)
-            )
+            interrogation_data[
+                "final_vision_quality"
+            ] = self._generate_vision_quality_report(interrogation_data)
 
             # Auto-sync to charter
             try:

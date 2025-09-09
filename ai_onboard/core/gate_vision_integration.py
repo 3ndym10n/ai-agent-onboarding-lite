@@ -6,7 +6,6 @@ those responses are automatically integrated into the vision interrogation data.
 """
 
 import json
-import time
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List
@@ -59,7 +58,7 @@ class GateVisionIntegrator:
         if self.vision_file.exists():
             try:
                 return json.loads(self.vision_file.read_text(encoding="utf-8"))
-            except:
+            except (json.JSONDecodeError, FileNotFoundError, OSError):
                 pass
 
         # Create new vision data structure

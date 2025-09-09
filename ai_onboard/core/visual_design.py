@@ -5,12 +5,10 @@ This module provides AI-Onboard with the ability to analyze visual designs,
 screenshots, and UI mockups to validate design decisions against project vision.
 """
 
-import base64
-import json
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List
 
 logger = logging.getLogger(__name__)
 
@@ -131,7 +129,7 @@ class VisualDesignValidator:
 
         # Extract project vision and brand guidelines
         vision = project_context.get("vision", "")
-        brand_guidelines = project_context.get("brand_guidelines", {})
+        _brand_guidelines = project_context.get("brand_guidelines", {})
 
         # Simulate analysis based on file properties and context
         file_path = Path(screenshot_path)

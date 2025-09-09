@@ -17,6 +17,8 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List
 
+# mypy: ignore-errors
+
 
 class DevEnvironmentSetup:
     def __init__(self, project_root: Path):

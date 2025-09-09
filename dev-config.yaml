@@ -4,7 +4,7 @@
 development:
   # Enable debug mode
   debug: true
-  
+
   # Logging configuration
   logging:
     level: DEBUG
@@ -15,18 +15,18 @@ development:
       - type: file
         filename: ".ai_onboard/dev.log"
         level: INFO
-  
+
   # Testing configuration
   testing:
     # Enable test mode
     test_mode: true
-    
+
     # Mock external services
     mock_services: true
-    
+
     # Test data directory
     test_data_dir: "tests/data"
-    
+
     # Coverage settings
     coverage:
       threshold: 80
@@ -34,7 +34,7 @@ development:
         - "tests/*"
         - "venv/*"
         - ".ai_onboard/*"
-  
+
   # Development tools
   tools:
     # Pre-commit hooks
@@ -46,7 +46,7 @@ development:
         - mypy
         - isort
         - protected-paths-check
-    
+
     # IDE settings
     ide:
       vscode:
@@ -55,25 +55,25 @@ development:
           python.defaultInterpreterPath: "./venv/Scripts/python.exe"
           python.linting.enabled: true
           python.formatting.provider: "black"
-      
+
       pycharm:
         enabled: true
         settings:
           python_interpreter: "./venv/Scripts/python.exe"
-  
+
   # Development overrides
   overrides:
     # Disable gates in development
     gates:
       enabled: false
       timeout_seconds: 1
-    
+
     # Enable development features
     features:
       hot_reload: true
       auto_format: true
       debug_logging: true
-    
+
     # Development paths
     paths:
       cache_dir: ".ai_onboard/cache"
@@ -87,7 +87,7 @@ environments:
     overrides:
       gates:
         enabled: false
-  
+
   ci:
     extends: development
     overrides:
@@ -96,7 +96,7 @@ environments:
       testing:
         test_mode: true
         mock_services: true
-  
+
   production:
     extends: development
     overrides:

@@ -399,11 +399,8 @@ def _analyze_dependencies(tasks: list) -> dict:
 def _calculate_critical_path(tasks: list, dependencies: list) -> list:
     """Calculate the critical path through the project."""
     # Simple critical path calculation based on effort and dependencies
-    task_effort = {task["id"]: task["effort_days"] for task in tasks}
-
     # Find longest path (simplified approach)
     critical_tasks = []
-    max_effort = 0
 
     # Group by WBS to find critical path
     wbs_groups = {}

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -35,7 +34,6 @@ def rules_summary(manifest: Dict[str, Any]) -> List[Dict[str, Any]]:
     # - confidence: float
 
     # For now, just return a basic structure
-    hits: List[Dict[str, Any]] = []
 
     cfg = _cfg(manifest)
     return [

@@ -4,9 +4,9 @@ Vision Guardian: Ensures all decisions align with project vision and prevents sc
 
 import json
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
-from . import charter, planning, utils
+from . import utils
 
 
 class VisionGuardian:

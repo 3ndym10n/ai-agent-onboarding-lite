@@ -2,11 +2,10 @@
 Vision Interrogator: Ensures clear vision definition before AI agent work begins.
 """
 
-import json
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
-from . import charter, utils, vision_guardian
+from . import utils
 
 
 class VisionInterrogator:
@@ -348,7 +347,7 @@ class VisionInterrogator:
     def get_interrogation_summary(self) -> Dict[str, Any]:
         """Get summary of the interrogation process."""
         interrogation_data = utils.read_json(self.interrogation_path, default={})
-        charter_data = utils.read_json(self.charter_path, default={})
+        utils.read_json(self.charter_path, default={})
 
         if not interrogation_data:
             return {

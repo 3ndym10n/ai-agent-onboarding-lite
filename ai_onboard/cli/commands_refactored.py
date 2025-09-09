@@ -55,10 +55,10 @@ def main(argv=None):
 
     # Add AI agent collaboration commands
     add_ai_agent_collaboration_parser(sub)
-    
+
     # Add continuous improvement commands
     add_continuous_improvement_parser(sub)
-    
+
     # TODO: Add other domain commands as they're refactored
     # from .commands_vision import add_vision_commands, handle_vision_commands
     # from .commands_design import add_design_commands, handle_design_commands

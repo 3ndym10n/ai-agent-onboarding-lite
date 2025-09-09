@@ -10,23 +10,24 @@ This module provides comprehensive analytics and reporting capabilities for the 
 - Real-time monitoring and alerts
 """
 
-import json
-import time
-from datetime import datetime, timedelta
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
-from dataclasses import dataclass, field
-from enum import Enum
-import statistics
-from collections import defaultdict, Counter
 import csv
 import io
+import json
+import statistics
+import time
+from collections import Counter, defaultdict
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta
+from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple, Union
 
-from . import utils, telemetry, continuous_improvement_system
+from . import continuous_improvement_system, telemetry, utils
 
 
 class ReportType(Enum):
     """Types of reports that can be generated."""
+
     PERFORMANCE_SUMMARY = "performance_summary"
     LEARNING_ANALYTICS = "learning_analytics"
     RECOMMENDATION_EFFECTIVENESS = "recommendation_effectiveness"
@@ -39,6 +40,7 @@ class ReportType(Enum):
 
 class MetricType(Enum):
     """Types of metrics tracked."""
+
     COUNTER = "counter"
     GAUGE = "gauge"
     HISTOGRAM = "histogram"
@@ -48,6 +50,7 @@ class MetricType(Enum):
 
 class AlertLevel(Enum):
     """Alert severity levels."""
+
     INFO = "info"
     WARNING = "warning"
     CRITICAL = "critical"
@@ -57,6 +60,7 @@ class AlertLevel(Enum):
 @dataclass
 class Metric:
     """A single metric measurement."""
+
     metric_id: str
     metric_type: MetricType
     name: str
@@ -69,6 +73,7 @@ class Metric:
 @dataclass
 class KPI:
     """A Key Performance Indicator."""
+
     kpi_id: str
     name: str
     description: str
@@ -84,6 +89,7 @@ class KPI:
 @dataclass
 class Report:
     """A generated report."""
+
     report_id: str
     report_type: ReportType
     title: str
@@ -101,6 +107,7 @@ class Report:
 @dataclass
 class Alert:
     """A system alert."""
+
     alert_id: str
     alert_level: AlertLevel
     title: str
@@ -124,23 +131,25 @@ class ContinuousImprovementAnalytics:
         self.reports_path = root / ".ai_onboard" / "analytics_reports.jsonl"
         self.alerts_path = root / ".ai_onboard" / "analytics_alerts.jsonl"
         self.analytics_config_path = root / ".ai_onboard" / "analytics_config.json"
-        
+
         # Initialize subsystems
-        self.continuous_improvement = continuous_improvement_system.get_continuous_improvement_system(root)
-        
+        self.continuous_improvement = (
+            continuous_improvement_system.get_continuous_improvement_system(root)
+        )
+
         # Analytics state
         self.metrics: List[Metric] = []
         self.kpis: Dict[str, KPI] = {}
         self.reports: List[Report] = []
         self.alerts: List[Alert] = []
-        
+
         # Analytics configuration
         self.analytics_config = self._load_analytics_config()
         self.kpi_definitions = self._get_kpi_definitions()
-        
+
         # Ensure directories exist
         self._ensure_directories()
-        
+
         # Load existing data
         self._load_metrics()
         self._load_kpis()
@@ -160,26 +169,29 @@ class ContinuousImprovementAnalytics:
 
     def _load_analytics_config(self) -> Dict[str, Any]:
         """Load analytics configuration."""
-        return utils.read_json(self.analytics_config_path, default={
-            "metrics_retention_days": 90,
-            "kpi_update_interval_minutes": 15,
-            "report_generation_enabled": True,
-            "alerting_enabled": True,
-            "dashboard_refresh_interval_seconds": 30,
-            "export_formats": ["json", "csv", "html"],
-            "kpi_thresholds": {
-                "learning_rate": {"warning": 0.1, "critical": 0.05},
-                "recommendation_acceptance_rate": {"warning": 0.6, "critical": 0.4},
-                "system_health_score": {"warning": 0.7, "critical": 0.5},
-                "user_satisfaction": {"warning": 0.7, "critical": 0.5},
-                "knowledge_growth_rate": {"warning": 0.05, "critical": 0.02}
+        return utils.read_json(
+            self.analytics_config_path,
+            default={
+                "metrics_retention_days": 90,
+                "kpi_update_interval_minutes": 15,
+                "report_generation_enabled": True,
+                "alerting_enabled": True,
+                "dashboard_refresh_interval_seconds": 30,
+                "export_formats": ["json", "csv", "html"],
+                "kpi_thresholds": {
+                    "learning_rate": {"warning": 0.1, "critical": 0.05},
+                    "recommendation_acceptance_rate": {"warning": 0.6, "critical": 0.4},
+                    "system_health_score": {"warning": 0.7, "critical": 0.5},
+                    "user_satisfaction": {"warning": 0.7, "critical": 0.5},
+                    "knowledge_growth_rate": {"warning": 0.05, "critical": 0.02},
+                },
+                "report_schedules": {
+                    "daily": ["performance_summary", "system_health"],
+                    "weekly": ["learning_analytics", "recommendation_effectiveness"],
+                    "monthly": ["knowledge_base_growth", "trend_analysis"],
+                },
             },
-            "report_schedules": {
-                "daily": ["performance_summary", "system_health"],
-                "weekly": ["learning_analytics", "recommendation_effectiveness"],
-                "monthly": ["knowledge_base_growth", "trend_analysis"]
-            }
-        })
+        )
 
     def _get_kpi_definitions(self) -> Dict[str, Dict[str, Any]]:
         """Get KPI definitions and calculations."""
@@ -189,59 +201,61 @@ class ContinuousImprovementAnalytics:
                 "description": "Rate of new learning events per day",
                 "unit": "events/day",
                 "target": 10.0,
-                "calculation": self._calculate_learning_rate
+                "calculation": self._calculate_learning_rate,
             },
             "recommendation_acceptance_rate": {
                 "name": "Recommendation Acceptance Rate",
                 "description": "Percentage of recommendations that are accepted",
                 "unit": "%",
                 "target": 80.0,
-                "calculation": self._calculate_recommendation_acceptance_rate
+                "calculation": self._calculate_recommendation_acceptance_rate,
             },
             "system_health_score": {
                 "name": "System Health Score",
                 "description": "Overall system health score",
                 "unit": "score",
                 "target": 90.0,
-                "calculation": self._calculate_system_health_score
+                "calculation": self._calculate_system_health_score,
             },
             "user_satisfaction": {
                 "name": "User Satisfaction",
                 "description": "Average user satisfaction score",
                 "unit": "score",
                 "target": 85.0,
-                "calculation": self._calculate_user_satisfaction
+                "calculation": self._calculate_user_satisfaction,
             },
             "knowledge_growth_rate": {
                 "name": "Knowledge Growth Rate",
                 "description": "Rate of knowledge base growth",
                 "unit": "items/day",
                 "target": 5.0,
-                "calculation": self._calculate_knowledge_growth_rate
+                "calculation": self._calculate_knowledge_growth_rate,
             },
             "error_resolution_time": {
                 "name": "Error Resolution Time",
                 "description": "Average time to resolve errors",
                 "unit": "minutes",
                 "target": 30.0,
-                "calculation": self._calculate_error_resolution_time
+                "calculation": self._calculate_error_resolution_time,
             },
             "performance_improvement": {
                 "name": "Performance Improvement",
                 "description": "Percentage improvement in system performance",
                 "unit": "%",
                 "target": 15.0,
-                "calculation": self._calculate_performance_improvement
-            }
+                "calculation": self._calculate_performance_improvement,
+            },
         }
 
     def _load_metrics(self):
         """Load metrics from storage."""
         if not self.metrics_path.exists():
             return
-        
-        cutoff_date = datetime.now() - timedelta(days=self.analytics_config["metrics_retention_days"])
-        
+
+        cutoff_date = datetime.now() - timedelta(
+            days=self.analytics_config["metrics_retention_days"]
+        )
+
         with open(self.metrics_path, "r", encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
@@ -250,11 +264,11 @@ class ContinuousImprovementAnalytics:
                 try:
                     data = json.loads(line)
                     metric_timestamp = datetime.fromisoformat(data["timestamp"])
-                    
+
                     # Skip old metrics
                     if metric_timestamp < cutoff_date:
                         continue
-                    
+
                     metric = Metric(
                         metric_id=data["metric_id"],
                         metric_type=MetricType(data["metric_type"]),
@@ -262,7 +276,7 @@ class ContinuousImprovementAnalytics:
                         value=data["value"],
                         timestamp=metric_timestamp,
                         tags=data.get("tags", {}),
-                        metadata=data.get("metadata", {})
+                        metadata=data.get("metadata", {}),
                     )
                     self.metrics.append(metric)
                 except (json.JSONDecodeError, KeyError, ValueError):
@@ -272,15 +286,15 @@ class ContinuousImprovementAnalytics:
         """Load KPIs from storage."""
         if not self.kpis_path.exists():
             return
-        
+
         data = utils.read_json(self.kpis_path, default={})
-        
+
         for kpi_id, kpi_data in data.items():
             historical_values = [
                 (datetime.fromisoformat(timestamp), value)
                 for timestamp, value in kpi_data.get("historical_values", [])
             ]
-            
+
             kpi = KPI(
                 kpi_id=kpi_id,
                 name=kpi_data["name"],
@@ -291,7 +305,7 @@ class ContinuousImprovementAnalytics:
                 trend=kpi_data["trend"],
                 last_updated=datetime.fromisoformat(kpi_data["last_updated"]),
                 historical_values=historical_values,
-                alerts=kpi_data.get("alerts", [])
+                alerts=kpi_data.get("alerts", []),
             )
             self.kpis[kpi_id] = kpi
 
@@ -299,7 +313,7 @@ class ContinuousImprovementAnalytics:
         """Load reports from storage."""
         if not self.reports_path.exists():
             return
-        
+
         with open(self.reports_path, "r", encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
@@ -319,7 +333,7 @@ class ContinuousImprovementAnalytics:
                         summary=data["summary"],
                         recommendations=data.get("recommendations", []),
                         charts=data.get("charts", []),
-                        export_formats=data.get("export_formats", [])
+                        export_formats=data.get("export_formats", []),
                     )
                     self.reports.append(report)
                 except (json.JSONDecodeError, KeyError, ValueError):
@@ -329,7 +343,7 @@ class ContinuousImprovementAnalytics:
         """Load alerts from storage."""
         if not self.alerts_path.exists():
             return
-        
+
         with open(self.alerts_path, "r", encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
@@ -346,9 +360,13 @@ class ContinuousImprovementAnalytics:
                         current_value=data["current_value"],
                         threshold_value=data["threshold_value"],
                         triggered_at=datetime.fromisoformat(data["triggered_at"]),
-                        resolved_at=datetime.fromisoformat(data["resolved_at"]) if data.get("resolved_at") else None,
+                        resolved_at=(
+                            datetime.fromisoformat(data["resolved_at"])
+                            if data.get("resolved_at")
+                            else None
+                        ),
                         acknowledged=data.get("acknowledged", False),
-                        metadata=data.get("metadata", {})
+                        metadata=data.get("metadata", {}),
                     )
                     self.alerts.append(alert)
                 except (json.JSONDecodeError, KeyError, ValueError):
@@ -360,11 +378,11 @@ class ContinuousImprovementAnalytics:
         value: float,
         metric_type: MetricType = MetricType.GAUGE,
         tags: Dict[str, str] = None,
-        metadata: Dict[str, Any] = None
+        metadata: Dict[str, Any] = None,
     ) -> str:
         """Record a new metric."""
         metric_id = f"metric_{int(time.time())}_{utils.random_string(8)}"
-        
+
         metric = Metric(
             metric_id=metric_id,
             metric_type=metric_type,
@@ -372,26 +390,26 @@ class ContinuousImprovementAnalytics:
             value=value,
             timestamp=datetime.now(),
             tags=tags or {},
-            metadata=metadata or {}
+            metadata=metadata or {},
         )
-        
+
         self.metrics.append(metric)
         self._save_metric(metric)
-        
+
         # Check for alerts
         self._check_metric_alerts(metric)
-        
+
         # Update relevant KPIs
         self._update_related_kpis(metric)
-        
+
         telemetry.log_event(
             "metric_recorded",
             metric_id=metric_id,
             name=name,
             value=value,
-            metric_type=metric_type.value
+            metric_type=metric_type.value,
         )
-        
+
         return metric_id
 
     def _save_metric(self, metric: Metric):
@@ -403,9 +421,9 @@ class ContinuousImprovementAnalytics:
             "value": metric.value,
             "timestamp": metric.timestamp.isoformat(),
             "tags": metric.tags,
-            "metadata": metric.metadata
+            "metadata": metric.metadata,
         }
-        
+
         with open(self.metrics_path, "a", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
@@ -414,21 +432,25 @@ class ContinuousImprovementAnalytics:
         """Check if a metric triggers any alerts."""
         if not self.analytics_config["alerting_enabled"]:
             return
-        
+
         # Check KPI thresholds
         for kpi_id, kpi_def in self.kpi_definitions.items():
             if kpi_def["name"].lower() in metric.name.lower():
                 thresholds = self.analytics_config["kpi_thresholds"].get(kpi_id, {})
-                
+
                 for level, threshold in thresholds.items():
                     if metric.value <= threshold:
                         self._create_alert(
-                            alert_level=AlertLevel.WARNING if level == "warning" else AlertLevel.CRITICAL,
+                            alert_level=(
+                                AlertLevel.WARNING
+                                if level == "warning"
+                                else AlertLevel.CRITICAL
+                            ),
                             title=f"{kpi_def['name']} Alert",
                             description=f"{kpi_def['name']} is {metric.value:.2f}, below {level} threshold of {threshold}",
                             metric_name=metric.name,
                             current_value=metric.value,
-                            threshold_value=threshold
+                            threshold_value=threshold,
                         )
 
     def _create_alert(
@@ -439,11 +461,11 @@ class ContinuousImprovementAnalytics:
         metric_name: str,
         current_value: float,
         threshold_value: float,
-        metadata: Dict[str, Any] = None
+        metadata: Dict[str, Any] = None,
     ):
         """Create a new alert."""
         alert_id = f"alert_{int(time.time())}_{utils.random_string(8)}"
-        
+
         alert = Alert(
             alert_id=alert_id,
             alert_level=alert_level,
@@ -453,12 +475,12 @@ class ContinuousImprovementAnalytics:
             current_value=current_value,
             threshold_value=threshold_value,
             triggered_at=datetime.now(),
-            metadata=metadata or {}
+            metadata=metadata or {},
         )
-        
+
         self.alerts.append(alert)
         self._save_alert(alert)
-        
+
         telemetry.log_event(
             "alert_created",
             alert_id=alert_id,
@@ -466,7 +488,7 @@ class ContinuousImprovementAnalytics:
             title=title,
             metric_name=metric_name,
             current_value=current_value,
-            threshold_value=threshold_value
+            threshold_value=threshold_value,
         )
 
     def _save_alert(self, alert: Alert):
@@ -482,9 +504,9 @@ class ContinuousImprovementAnalytics:
             "triggered_at": alert.triggered_at.isoformat(),
             "resolved_at": alert.resolved_at.isoformat() if alert.resolved_at else None,
             "acknowledged": alert.acknowledged,
-            "metadata": alert.metadata
+            "metadata": alert.metadata,
         }
-        
+
         with open(self.alerts_path, "a", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
@@ -495,13 +517,13 @@ class ContinuousImprovementAnalytics:
             if kpi_def["name"].lower() in metric.name.lower():
                 # Calculate new KPI value
                 new_value = kpi_def["calculation"](self)
-                
+
                 if kpi_id in self.kpis:
                     kpi = self.kpis[kpi_id]
                     kpi.historical_values.append((datetime.now(), new_value))
                     kpi.current_value = new_value
                     kpi.last_updated = datetime.now()
-                    
+
                     # Calculate trend
                     if len(kpi.historical_values) >= 2:
                         recent_values = [v for _, v in kpi.historical_values[-5:]]
@@ -523,10 +545,10 @@ class ContinuousImprovementAnalytics:
                         unit=kpi_def["unit"],
                         trend="stable",
                         last_updated=datetime.now(),
-                        historical_values=[(datetime.now(), new_value)]
+                        historical_values=[(datetime.now(), new_value)],
                     )
                     self.kpis[kpi_id] = kpi
-                
+
                 self._save_kpis()
 
     def _calculate_learning_rate(self) -> float:
@@ -534,7 +556,8 @@ class ContinuousImprovementAnalytics:
         # Count learning events in the last 24 hours
         cutoff = datetime.now() - timedelta(hours=24)
         learning_events = [
-            metric for metric in self.metrics
+            metric
+            for metric in self.metrics
             if "learning" in metric.name.lower() and metric.timestamp >= cutoff
         ]
         return len(learning_events)
@@ -562,7 +585,8 @@ class ContinuousImprovementAnalytics:
         # Count knowledge additions in the last 24 hours
         cutoff = datetime.now() - timedelta(hours=24)
         knowledge_metrics = [
-            metric for metric in self.metrics
+            metric
+            for metric in self.metrics
             if "knowledge" in metric.name.lower() and metric.timestamp >= cutoff
         ]
         return len(knowledge_metrics)
@@ -595,9 +619,9 @@ class ContinuousImprovementAnalytics:
                     (timestamp.isoformat(), value)
                     for timestamp, value in kpi.historical_values
                 ],
-                "alerts": kpi.alerts
+                "alerts": kpi.alerts,
             }
-        
+
         utils.write_json(self.kpis_path, data)
 
     def generate_report(
@@ -606,7 +630,7 @@ class ContinuousImprovementAnalytics:
         period_start: datetime,
         period_end: datetime,
         title: str = None,
-        description: str = None
+        description: str = None,
     ) -> str:
         """Generate a comprehensive report."""
         # Convert string to enum if needed
@@ -616,16 +640,18 @@ class ContinuousImprovementAnalytics:
             except ValueError:
                 # If not a valid enum value, use a default
                 report_type = ReportType.PERFORMANCE_SUMMARY
-        
+
         report_id = f"report_{int(time.time())}_{utils.random_string(8)}"
-        
+
         # Generate report data based on type
         if report_type == ReportType.PERFORMANCE_SUMMARY:
             data = self._generate_performance_summary_data(period_start, period_end)
         elif report_type == ReportType.LEARNING_ANALYTICS:
             data = self._generate_learning_analytics_data(period_start, period_end)
         elif report_type == ReportType.RECOMMENDATION_EFFECTIVENESS:
-            data = self._generate_recommendation_effectiveness_data(period_start, period_end)
+            data = self._generate_recommendation_effectiveness_data(
+                period_start, period_end
+            )
         elif report_type == ReportType.SYSTEM_HEALTH:
             data = self._generate_system_health_data(period_start, period_end)
         elif report_type == ReportType.KNOWLEDGE_BASE_GROWTH:
@@ -636,11 +662,11 @@ class ContinuousImprovementAnalytics:
             data = self._generate_trend_analysis_data(period_start, period_end)
         else:
             data = {"error": f"Unknown report type: {report_type}"}
-        
+
         # Generate summary and recommendations
         summary = self._generate_report_summary(report_type, data)
         recommendations = self._generate_report_recommendations(report_type, data)
-        
+
         # Create report
         report = Report(
             report_id=report_id,
@@ -653,85 +679,102 @@ class ContinuousImprovementAnalytics:
             data=data,
             summary=summary,
             recommendations=recommendations,
-            export_formats=self.analytics_config["export_formats"]
+            export_formats=self.analytics_config["export_formats"],
         )
-        
+
         self.reports.append(report)
         self._save_report(report)
-        
+
         telemetry.log_event(
             "report_generated",
             report_id=report_id,
             report_type=report_type.value,
             period_start=period_start.isoformat(),
-            period_end=period_end.isoformat()
+            period_end=period_end.isoformat(),
         )
-        
+
         return report_id
 
-    def _generate_performance_summary_data(self, period_start: datetime, period_end: datetime) -> Dict[str, Any]:
+    def _generate_performance_summary_data(
+        self, period_start: datetime, period_end: datetime
+    ) -> Dict[str, Any]:
         """Generate performance summary report data."""
         # Filter metrics for the period
         period_metrics = [
-            metric for metric in self.metrics
+            metric
+            for metric in self.metrics
             if period_start <= metric.timestamp <= period_end
         ]
-        
+
         # Calculate performance metrics
         total_metrics = len(period_metrics)
-        avg_value = statistics.mean([m.value for m in period_metrics]) if period_metrics else 0
-        
+        avg_value = (
+            statistics.mean([m.value for m in period_metrics]) if period_metrics else 0
+        )
+
         # Group by metric type
         by_type = defaultdict(list)
         for metric in period_metrics:
             by_type[metric.metric_type.value].append(metric.value)
-        
+
         return {
             "period": {
                 "start": period_start.isoformat(),
                 "end": period_end.isoformat(),
-                "duration_days": (period_end - period_start).days
+                "duration_days": (period_end - period_start).days,
             },
             "summary": {
                 "total_metrics": total_metrics,
                 "average_value": avg_value,
-                "metrics_by_type": {k: len(v) for k, v in by_type.items()}
+                "metrics_by_type": {k: len(v) for k, v in by_type.items()},
             },
             "kpis": {
                 kpi_id: {
                     "name": kpi.name,
                     "current_value": kpi.current_value,
                     "target_value": kpi.target_value,
-                    "trend": kpi.trend
+                    "trend": kpi.trend,
                 }
                 for kpi_id, kpi in self.kpis.items()
             },
             "alerts": {
-                "total": len([a for a in self.alerts if period_start <= a.triggered_at <= period_end]),
-                "by_level": dict(Counter(a.alert_level.value for a in self.alerts if period_start <= a.triggered_at <= period_end))
-            }
+                "total": len(
+                    [
+                        a
+                        for a in self.alerts
+                        if period_start <= a.triggered_at <= period_end
+                    ]
+                ),
+                "by_level": dict(
+                    Counter(
+                        a.alert_level.value
+                        for a in self.alerts
+                        if period_start <= a.triggered_at <= period_end
+                    )
+                ),
+            },
         }
 
-    def _generate_learning_analytics_data(self, period_start: datetime, period_end: datetime) -> Dict[str, Any]:
+    def _generate_learning_analytics_data(
+        self, period_start: datetime, period_end: datetime
+    ) -> Dict[str, Any]:
         """Generate learning analytics report data."""
         # This would analyze learning events and patterns
         return {
-            "learning_events": {
-                "total": 0,
-                "by_type": {},
-                "trend": "stable"
-            },
+            "learning_events": {"total": 0, "by_type": {}, "trend": "stable"},
             "knowledge_acquisition": {
                 "new_knowledge_items": 0,
-                "knowledge_quality_score": 0.0
+                "knowledge_quality_score": 0.0,
             },
             "pattern_discovery": {
                 "patterns_discovered": 0,
-                "pattern_confidence_avg": 0.0
-            }
+                "pattern_confidence_avg": 0.0,
+            },
         }
 
-    def _generate_recommendation_effectiveness_data(self, period_start: datetime, period_end: datetime) -> Dict[str, Any]:
+    def _generate_recommendation_effectiveness_data(
+        self, period_start: datetime, period_end: datetime
+    ) -> Dict[str, Any]:
         """Generate recommendation effectiveness report data."""
         # This would analyze recommendation acceptance and impact
         return {
@@ -739,84 +782,67 @@ class ContinuousImprovementAnalytics:
                 "total_generated": 0,
                 "accepted": 0,
                 "rejected": 0,
-                "acceptance_rate": 0.0
+                "acceptance_rate": 0.0,
             },
             "effectiveness": {
                 "average_impact_score": 0.0,
-                "successful_implementations": 0
-            }
+                "successful_implementations": 0,
+            },
         }
 
-    def _generate_system_health_data(self, period_start: datetime, period_end: datetime) -> Dict[str, Any]:
+    def _generate_system_health_data(
+        self, period_start: datetime, period_end: datetime
+    ) -> Dict[str, Any]:
         """Generate system health report data."""
         # This would integrate with the health monitoring system
         return {
-            "health_score": {
-                "current": 85.0,
-                "average": 82.0,
-                "trend": "improving"
-            },
-            "issues": {
-                "total": 0,
-                "resolved": 0,
-                "active": 0
-            },
-            "self_healing": {
-                "actions_taken": 0,
-                "success_rate": 0.0
-            }
+            "health_score": {"current": 85.0, "average": 82.0, "trend": "improving"},
+            "issues": {"total": 0, "resolved": 0, "active": 0},
+            "self_healing": {"actions_taken": 0, "success_rate": 0.0},
         }
 
-    def _generate_knowledge_base_growth_data(self, period_start: datetime, period_end: datetime) -> Dict[str, Any]:
+    def _generate_knowledge_base_growth_data(
+        self, period_start: datetime, period_end: datetime
+    ) -> Dict[str, Any]:
         """Generate knowledge base growth report data."""
         # This would analyze knowledge base evolution
         return {
-            "growth": {
-                "new_items": 0,
-                "growth_rate": 0.0,
-                "total_items": 0
-            },
-            "quality": {
-                "average_confidence": 0.0,
-                "high_quality_percentage": 0.0
-            },
-            "patterns": {
-                "discovered": 0,
-                "validated": 0
-            }
+            "growth": {"new_items": 0, "growth_rate": 0.0, "total_items": 0},
+            "quality": {"average_confidence": 0.0, "high_quality_percentage": 0.0},
+            "patterns": {"discovered": 0, "validated": 0},
         }
 
-    def _generate_user_satisfaction_data(self, period_start: datetime, period_end: datetime) -> Dict[str, Any]:
+    def _generate_user_satisfaction_data(
+        self, period_start: datetime, period_end: datetime
+    ) -> Dict[str, Any]:
         """Generate user satisfaction report data."""
         # This would analyze user feedback and satisfaction metrics
         return {
             "satisfaction": {
                 "current_score": 82.0,
                 "average_score": 80.0,
-                "trend": "stable"
+                "trend": "stable",
             },
-            "feedback": {
-                "total_responses": 0,
-                "positive_percentage": 0.0
-            }
+            "feedback": {"total_responses": 0, "positive_percentage": 0.0},
         }
 
-    def _generate_trend_analysis_data(self, period_start: datetime, period_end: datetime) -> Dict[str, Any]:
+    def _generate_trend_analysis_data(
+        self, period_start: datetime, period_end: datetime
+    ) -> Dict[str, Any]:
         """Generate trend analysis report data."""
         # This would analyze trends across all metrics and KPIs
         return {
             "trends": {
                 "performance": "improving",
                 "learning": "stable",
-                "health": "improving"
+                "health": "improving",
             },
-            "forecasts": {
-                "next_week": {},
-                "next_month": {}
-            }
+            "forecasts": {"next_week": {}, "next_month": {}},
         }
 
-    def _generate_report_summary(self, report_type: ReportType, data: Dict[str, Any]) -> str:
+    def _generate_report_summary(
+        self, report_type: ReportType, data: Dict[str, Any]
+    ) -> str:
         """Generate a summary for a report."""
         if report_type == ReportType.PERFORMANCE_SUMMARY:
             return f"Performance summary shows {data['summary']['total_metrics']} metrics tracked with average value of {data['summary']['average_value']:.2f}."
@@ -827,22 +853,24 @@ class ContinuousImprovementAnalytics:
         else:
             return f"Report generated for {report_type.value} covering the specified period."
 
-    def _generate_report_recommendations(self, report_type: ReportType, data: Dict[str, Any]) -> List[str]:
+    def _generate_report_recommendations(
+        self, report_type: ReportType, data: Dict[str, Any]
+    ) -> List[str]:
         """Generate recommendations for a report."""
         recommendations = []
-        
+
         if report_type == ReportType.PERFORMANCE_SUMMARY:
-            if data['summary']['average_value'] < 50:
+            if data["summary"]["average_value"] < 50:
                 recommendations.append("Consider performance optimization initiatives")
-            if data['alerts']['total'] > 10:
+            if data["alerts"]["total"] > 10:
                 recommendations.append("Review alert thresholds to reduce noise")
-        
+
         elif report_type == ReportType.SYSTEM_HEALTH:
-            if data['health_score']['current'] < 80:
+            if data["health_score"]["current"] < 80:
                 recommendations.append("Investigate system health issues")
-            if data['issues']['active'] > 5:
+            if data["issues"]["active"] > 5:
                 recommendations.append("Prioritize resolution of active issues")
-        
+
         return recommendations
 
     def _save_report(self, report: Report):
@@ -859,9 +887,9 @@ class ContinuousImprovementAnalytics:
             "summary": report.summary,
             "recommendations": report.recommendations,
             "charts": report.charts,
-            "export_formats": report.export_formats
+            "export_formats": report.export_formats,
         }
-        
+
         with open(self.reports_path, "a", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
@@ -876,7 +904,7 @@ class ContinuousImprovementAnalytics:
                     "target_value": kpi.target_value,
                     "unit": kpi.unit,
                     "trend": kpi.trend,
-                    "last_updated": kpi.last_updated.isoformat()
+                    "last_updated": kpi.last_updated.isoformat(),
                 }
                 for kpi_id, kpi in self.kpis.items()
             },
@@ -886,7 +914,7 @@ class ContinuousImprovementAnalytics:
                     "level": alert.alert_level.value,
                     "title": alert.title,
                     "triggered_at": alert.triggered_at.isoformat(),
-                    "acknowledged": alert.acknowledged
+                    "acknowledged": alert.acknowledged,
                 }
                 for alert in self.alerts[-10:]  # Last 10 alerts
             ],
@@ -895,7 +923,7 @@ class ContinuousImprovementAnalytics:
                     "name": metric.name,
                     "value": metric.value,
                     "timestamp": metric.timestamp.isoformat(),
-                    "type": metric.metric_type.value
+                    "type": metric.metric_type.value,
                 }
                 for metric in self.metrics[-20:]  # Last 20 metrics
             ],
@@ -903,8 +931,8 @@ class ContinuousImprovementAnalytics:
                 "total_metrics": len(self.metrics),
                 "active_kpis": len(self.kpis),
                 "total_reports": len(self.reports),
-                "active_alerts": len([a for a in self.alerts if not a.resolved_at])
-            }
+                "active_alerts": len([a for a in self.alerts if not a.resolved_at]),
+            },
         }
 
     def export_report(self, report_id: str, format: str = "json") -> str:
@@ -915,37 +943,40 @@ class ContinuousImprovementAnalytics:
             if r.report_id == report_id:
                 report = r
                 break
-        
+
         if not report:
             raise ValueError(f"Report {report_id} not found")
-        
+
         if format == "json":
-            return json.dumps({
-                "report_id": report.report_id,
-                "title": report.title,
-                "generated_at": report.generated_at.isoformat(),
-                "period": {
-                    "start": report.period_start.isoformat(),
-                    "end": report.period_end.isoformat()
+            return json.dumps(
+                {
+                    "report_id": report.report_id,
+                    "title": report.title,
+                    "generated_at": report.generated_at.isoformat(),
+                    "period": {
+                        "start": report.period_start.isoformat(),
+                        "end": report.period_end.isoformat(),
+                    },
+                    "summary": report.summary,
+                    "data": report.data,
+                    "recommendations": report.recommendations,
                 },
-                "summary": report.summary,
-                "data": report.data,
-                "recommendations": report.recommendations
-            }, indent=2)
-        
+                indent=2,
+            )
+
         elif format == "csv":
             # Convert report data to CSV format
             output = io.StringIO()
             writer = csv.writer(output)
-            
+
             # Write summary data
             writer.writerow(["Metric", "Value"])
             for key, value in report.data.items():
                 if isinstance(value, (int, float, str)):
                     writer.writerow([key, value])
-            
+
             return output.getvalue()
-        
+
         elif format == "html":
             # Generate HTML report
             html = f"""
@@ -979,7 +1010,7 @@ class ContinuousImprovementAnalytics:
             </html>
             """
             return html
-        
+
         else:
             raise ValueError(f"Unsupported export format: {format}")
 
@@ -989,23 +1020,39 @@ class ContinuousImprovementAnalytics:
             "metrics": {
                 "total": len(self.metrics),
                 "by_type": dict(Counter(m.metric_type.value for m in self.metrics)),
-                "recent_count": len([m for m in self.metrics if m.timestamp >= datetime.now() - timedelta(hours=24)])
+                "recent_count": len(
+                    [
+                        m
+                        for m in self.metrics
+                        if m.timestamp >= datetime.now() - timedelta(hours=24)
+                    ]
+                ),
             },
             "kpis": {
                 "total": len(self.kpis),
-                "on_target": len([k for k in self.kpis.values() if k.current_value >= k.target_value]),
+                "on_target": len(
+                    [k for k in self.kpis.values() if k.current_value >= k.target_value]
+                ),
                 "trending_up": len([k for k in self.kpis.values() if k.trend == "up"]),
-                "trending_down": len([k for k in self.kpis.values() if k.trend == "down"])
+                "trending_down": len(
+                    [k for k in self.kpis.values() if k.trend == "down"]
+                ),
             },
             "reports": {
                 "total": len(self.reports),
-                "recent": len([r for r in self.reports if r.generated_at >= datetime.now() - timedelta(days=7)])
+                "recent": len(
+                    [
+                        r
+                        for r in self.reports
+                        if r.generated_at >= datetime.now() - timedelta(days=7)
+                    ]
+                ),
             },
             "alerts": {
                 "total": len(self.alerts),
                 "active": len([a for a in self.alerts if not a.resolved_at]),
-                "by_level": dict(Counter(a.alert_level.value for a in self.alerts))
-            }
+                "by_level": dict(Counter(a.alert_level.value for a in self.alerts)),
+            },
         }
 
 

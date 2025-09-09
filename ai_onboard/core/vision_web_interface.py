@@ -7,19 +7,16 @@ through guided questioning.
 """
 
 import json
-import tempfile
 import threading
 import time
 import webbrowser
-from datetime import datetime
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 from .enhanced_vision_interrogator import (
     EnhancedVisionInterrogator,
     ProjectType,
-    QuestionType,
     get_enhanced_vision_interrogator,
 )
 
@@ -187,14 +184,14 @@ class VisionWebInterface:
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
-        
+
         .container {
             max-width: 800px;
             margin: 0 auto;
@@ -203,29 +200,29 @@ class VisionWebInterface:
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             overflow: hidden;
         }
-        
+
         .header {
             background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
             color: white;
             padding: 30px;
             text-align: center;
         }
-        
+
         .header h1 {
             font-size: 2.5rem;
             margin-bottom: 10px;
             font-weight: 700;
         }
-        
+
         .header p {
             font-size: 1.1rem;
             opacity: 0.9;
         }
-        
+
         .content {
             padding: 40px;
         }
-        
+
         .status-card {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
@@ -233,51 +230,51 @@ class VisionWebInterface:
             padding: 20px;
             margin-bottom: 30px;
         }
-        
+
         .status-card h3 {
             color: #1e293b;
             margin-bottom: 15px;
             font-size: 1.2rem;
         }
-        
+
         .status-info {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
         }
-        
+
         .status-item {
             display: flex;
             justify-content: space-between;
             padding: 10px 0;
             border-bottom: 1px solid #e2e8f0;
         }
-        
+
         .status-item:last-child {
             border-bottom: none;
         }
-        
+
         .status-label {
             font-weight: 500;
             color: #64748b;
         }
-        
+
         .status-value {
             font-weight: 600;
             color: #1e293b;
         }
-        
+
         .project-type-selector {
             margin-bottom: 30px;
         }
-        
+
         .project-type-selector label {
             display: block;
             margin-bottom: 10px;
             font-weight: 600;
             color: #1e293b;
         }
-        
+
         .project-type-selector select {
             width: 100%;
             padding: 12px;
@@ -286,7 +283,7 @@ class VisionWebInterface:
             font-size: 1rem;
             background: white;
         }
-        
+
         .button {
             background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
             color: white;
@@ -298,31 +295,31 @@ class VisionWebInterface:
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
         }
-        
+
         .button:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
         }
-        
+
         .button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
         }
-        
+
         .button.secondary {
             background: #6b7280;
         }
-        
+
         .button.success {
             background: #10b981;
         }
-        
+
         .questions-section {
             margin-top: 30px;
         }
-        
+
         .question-card {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
@@ -330,14 +327,14 @@ class VisionWebInterface:
             padding: 20px;
             margin-bottom: 20px;
         }
-        
+
         .question-text {
             font-size: 1.1rem;
             font-weight: 600;
             color: #1e293b;
             margin-bottom: 15px;
         }
-        
+
         .question-input {
             width: 100%;
             min-height: 100px;
@@ -348,12 +345,12 @@ class VisionWebInterface:
             font-family: inherit;
             resize: vertical;
         }
-        
+
         .confidence-slider {
             width: 100%;
             margin: 15px 0;
         }
-        
+
         .confidence-label {
             display: flex;
             justify-content: space-between;
@@ -361,7 +358,7 @@ class VisionWebInterface:
             font-size: 0.9rem;
             color: #64748b;
         }
-        
+
         .insights-section {
             background: #ecfdf5;
             border: 1px solid #a7f3d0;
@@ -369,12 +366,12 @@ class VisionWebInterface:
             padding: 20px;
             margin-top: 20px;
         }
-        
+
         .insights-section h4 {
             color: #065f46;
             margin-bottom: 15px;
         }
-        
+
         .insight-item {
             background: white;
             border: 1px solid #a7f3d0;
@@ -382,29 +379,29 @@ class VisionWebInterface:
             padding: 15px;
             margin-bottom: 10px;
         }
-        
+
         .insight-type {
             font-weight: 600;
             color: #047857;
             margin-bottom: 5px;
         }
-        
+
         .insight-description {
             color: #065f46;
             margin-bottom: 10px;
         }
-        
+
         .insight-recommendations {
             font-size: 0.9rem;
             color: #047857;
         }
-        
+
         .loading {
             text-align: center;
             padding: 40px;
             color: #64748b;
         }
-        
+
         .error {
             background: #fef2f2;
             border: 1px solid #fecaca;
@@ -413,7 +410,7 @@ class VisionWebInterface:
             border-radius: 6px;
             margin-bottom: 20px;
         }
-        
+
         .success {
             background: #f0fdf4;
             border: 1px solid #bbf7d0;
@@ -422,7 +419,7 @@ class VisionWebInterface:
             border-radius: 6px;
             margin-bottom: 20px;
         }
-        
+
         .progress-bar {
             width: 100%;
             height: 8px;
@@ -431,27 +428,27 @@ class VisionWebInterface:
             overflow: hidden;
             margin-bottom: 20px;
         }
-        
+
         .progress-fill {
             height: 100%;
             background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
             transition: width 0.3s ease;
         }
-        
+
         @media (max-width: 768px) {
             .container {
                 margin: 10px;
                 border-radius: 8px;
             }
-            
+
             .header {
                 padding: 20px;
             }
-            
+
             .header h1 {
                 font-size: 2rem;
             }
-            
+
             .content {
                 padding: 20px;
             }
@@ -464,7 +461,7 @@ class VisionWebInterface:
             <h1>🎯 Vision Interrogation</h1>
             <p>Define your project vision through guided questioning</p>
         </div>
-        
+
         <div class="content">
             <div id="status-section" class="status-card">
                 <h3>Current Status</h3>
@@ -472,7 +469,7 @@ class VisionWebInterface:
                     Loading status...
                 </div>
             </div>
-            
+
             <div id="project-type-section" class="project-type-selector" style="display: none;">
                 <label for="project-type">Select Project Type:</label>
                 <select id="project-type">
@@ -487,7 +484,7 @@ class VisionWebInterface:
                     Start Vision Interrogation
                 </button>
             </div>
-            
+
             <div id="questions-section" class="questions-section" style="display: none;">
                 <div id="progress-section">
                     <div class="progress-bar">
@@ -495,14 +492,14 @@ class VisionWebInterface:
                     </div>
                     <div id="progress-text">Progress: 0%</div>
                 </div>
-                
+
                 <div id="current-question"></div>
                 <div id="insights-section" class="insights-section" style="display: none;">
                     <h4>💡 Insights & Recommendations</h4>
                     <div id="insights-content"></div>
                 </div>
             </div>
-            
+
             <div id="completion-section" style="display: none;">
                 <div class="success">
                     <h3>🎉 Vision Interrogation Complete!</h3>
@@ -511,7 +508,7 @@ class VisionWebInterface:
             </div>
         </div>
     </div>
-    
+
     <script>
         class VisionInterrogationApp {
             constructor() {
@@ -521,18 +518,18 @@ class VisionWebInterface:
                 this.projectType = 'generic';
                 this.init();
             }
-            
+
             async init() {
                 await this.loadStatus();
                 this.setupEventListeners();
             }
-            
+
             setupEventListeners() {
                 document.getElementById('start-btn').addEventListener('click', () => {
                     this.startInterrogation();
                 });
             }
-            
+
             async loadStatus() {
                 try {
                     const response = await fetch('/api/status');
@@ -543,10 +540,10 @@ class VisionWebInterface:
                     this.showError('Failed to load status');
                 }
             }
-            
+
             updateStatusDisplay(status) {
                 const statusContent = document.getElementById('status-content');
-                
+
                 if (status.status === 'no_interrogation') {
                     statusContent.innerHTML = `
                         <div class="status-info">
@@ -603,10 +600,10 @@ class VisionWebInterface:
                     document.getElementById('completion-section').style.display = 'block';
                 }
             }
-            
+
             async startInterrogation() {
                 const projectType = document.getElementById('project-type').value;
-                
+
                 try {
                     const response = await fetch('/api/start', {
                         method: 'POST',
@@ -615,9 +612,9 @@ class VisionWebInterface:
                         },
                         body: JSON.stringify({ project_type: projectType })
                     });
-                    
+
                     const result = await response.json();
-                    
+
                     if (result.status === 'enhanced_interrogation_started') {
                         this.projectType = projectType;
                         document.getElementById('project-type-section').style.display = 'none';
@@ -631,12 +628,12 @@ class VisionWebInterface:
                     this.showError('Failed to start interrogation');
                 }
             }
-            
+
             async loadQuestions() {
                 try {
                     const response = await fetch('/api/questions');
                     const questionsData = await response.json();
-                    
+
                     if (questionsData.status === 'questions_available') {
                         this.currentPhase = questionsData.current_phase;
                         this.currentQuestions = questionsData.questions;
@@ -651,34 +648,34 @@ class VisionWebInterface:
                     this.showError('Failed to load questions');
                 }
             }
-            
+
             displayCurrentQuestion() {
                 if (this.currentQuestionIndex >= this.currentQuestions.length) {
                     this.showCompletion();
                     return;
                 }
-                
+
                 const question = this.currentQuestions[this.currentQuestionIndex];
                 const questionContainer = document.getElementById('current-question');
-                
+
                 questionContainer.innerHTML = `
                     <div class="question-card">
                         <div class="question-text">${question.question}</div>
-                        <textarea 
-                            id="answer-input" 
-                            class="question-input" 
+                        <textarea
+                            id="answer-input"
+                            class="question-input"
                             placeholder="Enter your answer here..."
                         ></textarea>
                         <div class="confidence-label">
                             <span>Confidence Level</span>
                             <span id="confidence-value">50%</span>
                         </div>
-                        <input 
-                            type="range" 
-                            id="confidence-slider" 
-                            class="confidence-slider" 
-                            min="0" 
-                            max="100" 
+                        <input
+                            type="range"
+                            id="confidence-slider"
+                            class="confidence-slider"
+                            min="0"
+                            max="100"
                             value="50"
                         >
                         <button id="submit-btn" class="button" style="margin-top: 15px;">
@@ -686,30 +683,30 @@ class VisionWebInterface:
                         </button>
                     </div>
                 `;
-                
+
                 // Setup confidence slider
                 const slider = document.getElementById('confidence-slider');
                 const value = document.getElementById('confidence-value');
-                
+
                 slider.addEventListener('input', (e) => {
                     value.textContent = e.target.value + '%';
                 });
-                
+
                 // Setup submit button
                 document.getElementById('submit-btn').addEventListener('click', () => {
                     this.submitAnswer(question);
                 });
             }
-            
+
             async submitAnswer(question) {
                 const answer = document.getElementById('answer-input').value.trim();
                 const confidence = parseInt(document.getElementById('confidence-slider').value) / 100;
-                
+
                 if (!answer) {
                     this.showError('Please enter an answer');
                     return;
                 }
-                
+
                 try {
                     const response = await fetch('/api/submit', {
                         method: 'POST',
@@ -725,19 +722,19 @@ class VisionWebInterface:
                             }
                         })
                     });
-                    
+
                     const result = await response.json();
-                    
+
                     if (result.status === 'enhanced_response_accepted') {
                         this.showInsights(result);
                         this.currentQuestionIndex++;
-                        
+
                         if (result.phase_complete) {
                             await this.loadQuestions(); // Load next phase
                         } else {
                             this.displayCurrentQuestion();
                         }
-                        
+
                         await this.loadStatus(); // Update status
                     } else {
                         this.showError('Failed to submit answer: ' + result.message);
@@ -747,12 +744,12 @@ class VisionWebInterface:
                     this.showError('Failed to submit answer');
                 }
             }
-            
+
             showInsights(result) {
                 if (result.recommendations && result.recommendations.length > 0) {
                     const insightsSection = document.getElementById('insights-section');
                     const insightsContent = document.getElementById('insights-content');
-                    
+
                     let insightsHtml = '';
                     result.recommendations.forEach(rec => {
                         insightsHtml += `
@@ -761,39 +758,39 @@ class VisionWebInterface:
                             </div>
                         `;
                     });
-                    
+
                     insightsContent.innerHTML = insightsHtml;
                     insightsSection.style.display = 'block';
                 }
             }
-            
+
             updateProgress(progress) {
                 const progressFill = document.getElementById('progress-fill');
                 const progressText = document.getElementById('progress-text');
-                
+
                 progressFill.style.width = progress + '%';
                 progressText.textContent = `Progress: ${progress.toFixed(1)}%`;
             }
-            
+
             showCompletion() {
                 document.getElementById('questions-section').style.display = 'none';
                 document.getElementById('completion-section').style.display = 'block';
             }
-            
+
             showError(message) {
                 const errorDiv = document.createElement('div');
                 errorDiv.className = 'error';
                 errorDiv.textContent = message;
-                
+
                 const content = document.querySelector('.content');
                 content.insertBefore(errorDiv, content.firstChild);
-                
+
                 setTimeout(() => {
                     errorDiv.remove();
                 }, 5000);
             }
         }
-        
+
         // Initialize the app when the page loads
         document.addEventListener('DOMContentLoaded', () => {
             new VisionInterrogationApp();

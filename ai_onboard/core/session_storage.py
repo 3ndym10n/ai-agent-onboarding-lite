@@ -12,11 +12,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 if TYPE_CHECKING:
-    from .ai_agent_orchestration import (
-        ConversationContext,
-        ConversationState,
-        DecisionStage,
-    )
+    from .ai_agent_orchestration import ConversationContext
 
 
 @dataclass

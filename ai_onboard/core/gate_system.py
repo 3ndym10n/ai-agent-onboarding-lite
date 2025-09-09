@@ -90,13 +90,14 @@ class GateSystem:
             self.response_file.unlink()
 
         # Tell AI agent to check the gate
-        print(f"\n[ROBOT] AI AGENT GATE ACTIVATED")
+        print("\n[ROBOT] AI AGENT GATE ACTIVATED")
         print(f"[FOLDER] Gate file created: {self.current_gate_file}")
-        print(f"[CLIPBOARD] AI Agent: Read the gate file and follow the instructions")
-        print(f"[CLOCK] Waiting for AI agent to ask user questions...")
+        print("[CLIPBOARD] AI Agent: Read the gate file and follow the instructions")
+        print("[CLOCK] Waiting for AI agent to ask user questions...")
         print(f"[INFO] If you're an AI agent, check: {self.current_gate_file}")
         print(
-            f"[INFO] If you're a human, tell the AI agent: 'Please read the gate file and ask me the questions'"
+            "[INFO] If you're a human, tell the AI agent: "
+            "'Please read the gate file and ask me the questions'"
         )
 
         # Wait for initial responses (step 1)
@@ -276,7 +277,8 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
                             and response.get("user_decision") != "proceed"
                         ):
                             print(
-                                "[WARNING] Confirmation did not approve proceed. Stopping for safety."
+                                "[WARNING] Confirmation did not approve proceed. "
+                                "Stopping for safety."
                             )
                             return {
                                 "user_responses": response.get("user_responses", []),
@@ -284,10 +286,10 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
                                 "additional_context": "Confirmation denied or modified",
                                 "timestamp": time.time(),
                             }
-                        print(f"[OK] Received user response via AI agent")
+                        print("[OK] Received user response via AI agent")
                         return response
                     else:
-                        print(f"[X] Invalid response format, waiting...")
+                        print("[X] Invalid response format, waiting...")
                         self.response_file.unlink()  # Remove invalid response
 
                 except (json.JSONDecodeError, Exception) as e:
@@ -299,11 +301,11 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
 
         # Timeout - return safe default response
         print(f"\n[ALARM] Gate timeout after {timeout_seconds} seconds")
-        print(f"[WARNING] The AI agent did not handle the gate properly")
+        print("[WARNING] The AI agent did not handle the gate properly")
         print(f"[INFO] Gate file is still available at: {self.current_gate_file}")
         print(f"[INFO] To manually respond, create: {self.response_file}")
         print(
-            f"[WARNING] Safety: Defaulting to STOP due to timeout - user input required"
+            "[WARNING] Safety: Defaulting to STOP due to timeout - user input required"
         )
         return {
             "user_responses": ["timeout"],
@@ -349,10 +351,12 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
                 for pattern in fake_patterns:
                     if pattern in response_lower:
                         print(
-                            f"[WARNING] Detected potential fake response: '{response_text}'"
+                            f"[WARNING] Detected potential fake response: "
+                            f"'{response_text}'"
                         )
                         print(
-                            f"[WARNING] This looks like an AI-generated response, not user input"
+                            "[WARNING] This looks like an AI-generated response, "
+                            "not user input"
                         )
                         return False
 
@@ -373,7 +377,8 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
         lines = [
             "# [ROBOT] Confirmation Required",
             "",
-            "[WARNING] The AI agent has proposed the following answers. Please REVIEW and CONFIRM.",
+            "[WARNING] The AI agent has proposed the following answers. "
+            "Please REVIEW and CONFIRM.",
             "",
             f"## Gate Type: {gate_request.gate_type.value.replace('_', ' ').title()}",
             f"### {gate_request.title}",
@@ -387,7 +392,8 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
                 "",
                 "### What you need to do:",
                 "- If these are correct, reply with decision 'proceed'.",
-                "- If anything is wrong, reply with decision 'modify' and updated answers.",
+                "- If anything is wrong, reply with decision 'modify' "
+                "and updated answers.",
                 "- If you want to stop, reply with decision 'stop'.",
                 "",
                 "### Response Format (JSON in .ai_onboard/gates/gate_response.json):",
@@ -424,7 +430,7 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
         try:
             status = json.loads(self.status_file.read_text())
             return status.get("gate_active", False)
-        except:
+        except (json.JSONDecodeError, FileNotFoundError, OSError):
             return False
 
     def _finalize_gate_files(self) -> None:
@@ -466,14 +472,17 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
         header = [
             "SYSTEM CONTRACT: AI-Onboard Gate Handler",
             "",
-            "You MUST handle gates as a two-step, human-confirmed process. Never self-answer or self-confirm.",
+            "You MUST handle gates as a two-step, human-confirmed process. "
+            "Never self-answer or self-confirm.",
             "",
             "When a gate is active (.ai_onboard/gates/current_gate.md exists):",
             "1) Read the gate and extract the 'Questions for User'.",
             "2) Ask the user those questions in chat. Do NOT answer yourself.",
             "3) Wait for the user's replies. Summarize them back to the user.",
-            "4) Show: 'Proposed Answers → Please type: CONFIRM: <CODE> to approve, or provide corrections.'",
-            "5) Only after the user types CONFIRM with the exact code, call submit_gate_response(...).",
+            "4) Show: 'Proposed Answers → Please type: CONFIRM: <CODE> to approve, "
+            "or provide corrections.'",
+            "5) Only after the user types CONFIRM with the exact code, call "
+            "submit_gate_response(...).",
             "6) If corrections are provided, update and ask for CONFIRM again.",
             "7) If no confirmation, STOP.",
             "",
@@ -518,7 +527,10 @@ def create_clarification_gate(
     gate_request = GateRequest(
         gate_type=GateType.CLARIFICATION_NEEDED,
         title="System Needs Clarification",
-        description=f"The system has low confidence ({confidence:.2f}) and needs your input to proceed effectively.",
+        description=(
+            f"The system has low confidence ({confidence:.2f}) and needs your "
+            "input to proceed effectively."
+        ),
         context=context,
         questions=questions,
         confidence=confidence,

@@ -1,13 +1,13 @@
-"""
-Dynamic Project Planner: Updates project plans as milestones are hit and activities completed.
+"""Dynamic Project Planner.
+
+Updates project plans as milestones are hit and activities completed.
 """
 
 import json
-from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
-from . import planning, progress_tracker, utils
+from . import utils
 
 
 class DynamicPlanner:

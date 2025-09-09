@@ -1,7 +1,8 @@
+# mypy: ignore-errors
 import json
 import sys
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
 
 
 def load_json(path: Path, default=None):
@@ -25,6 +26,7 @@ def check_acceptance(root: Path) -> Dict[str, Any]:
     try:
         # Defer import to avoid package dependency issues when run standalone
         from ai_onboard.core.vision_interrogator import VisionInterrogator
+
         vi = VisionInterrogator(root)
         readiness = vi.check_vision_readiness()
     except Exception:
@@ -35,43 +37,51 @@ def check_acceptance(root: Path) -> Dict[str, Any]:
 
     # 1) Vision clarity score >= 0.85
     clarity = float(readiness.get("vision_clarity", {}).get("score", 0.0))
-    checks.append({
-        "name": "Vision Clarity",
-        "target": ">= 0.85",
-        "actual": round(clarity, 3),
-        "pass": clarity >= 0.85,
-    })
+    checks.append(
+        {
+            "name": "Vision Clarity",
+            "target": ">= 0.85",
+            "actual": round(clarity, 3),
+            "pass": clarity >= 0.85,
+        }
+    )
 
     # 2) Guardrail false positives <= 5% (placeholder; no live metric source yet)
     # If we later store in .ai_onboard/metrics.json, read it; for now mark unknown
     guardrail_fp = None  # unknown
-    checks.append({
-        "name": "Guardrail False Positives",
-        "target": "<= 5%",
-        "actual": guardrail_fp,
-        "pass": guardrail_fp is None,  # treat unknown as neutral for now
-        "note": "No data source yet; integrate when available",
-    })
+    checks.append(
+        {
+            "name": "Guardrail False Positives",
+            "target": "<= 5%",
+            "actual": guardrail_fp,
+            "pass": guardrail_fp is None,  # treat unknown as neutral for now
+            "note": "No data source yet; integrate when available",
+        }
+    )
 
     # 3) Drift interventions <= 2 per 100 actions (placeholder; unknown)
     drift_interventions = None
-    checks.append({
-        "name": "AI Drift Interventions",
-        "target": "<= 2/100 actions (30d)",
-        "actual": drift_interventions,
-        "pass": drift_interventions is None,
-        "note": "No data source yet; integrate when available",
-    })
+    checks.append(
+        {
+            "name": "AI Drift Interventions",
+            "target": "<= 2/100 actions (30d)",
+            "actual": drift_interventions,
+            "pass": drift_interventions is None,
+            "note": "No data source yet; integrate when available",
+        }
+    )
 
     # 4) Owner satisfaction >= 4.5/5 over last 10 sessions (placeholder; unknown)
     satisfaction = None
-    checks.append({
-        "name": "Owner Satisfaction",
-        "target": ">= 4.5/5 (last 10)",
-        "actual": satisfaction,
-        "pass": satisfaction is None,
-        "note": "No data source yet; integrate when available",
-    })
+    checks.append(
+        {
+            "name": "Owner Satisfaction",
+            "target": ">= 4.5/5 (last 10)",
+            "actual": satisfaction,
+            "pass": satisfaction is None,
+            "note": "No data source yet; integrate when available",
+        }
+    )
 
     overall = all(c.get("pass") for c in checks if c.get("pass") is not None)
 
@@ -99,7 +109,9 @@ def check_acceptance(root: Path) -> Dict[str, Any]:
     ]
     for c in checks:
         status = "PASS" if c["pass"] else "FAIL"
-        lines.append(f"- {c['name']}: {status} (target {c['target']}, actual {c['actual']})")
+        lines.append(
+            f"- {c['name']}: {status} (target {c['target']}, actual {c['actual']})"
+        )
         if c.get("note"):
             lines.append(f"  - Note: {c['note']}")
     (out_dir / "acceptance_report.md").write_text("\n".join(lines), encoding="utf-8")
@@ -110,7 +122,10 @@ def check_acceptance(root: Path) -> Dict[str, Any]:
 if __name__ == "__main__":
     root = Path.cwd()
     rep = check_acceptance(root)
-    print(json.dumps({"overall_pass": rep.get("overall_pass"), "checks": rep.get("checks")}, ensure_ascii=False))
+    print(
+        json.dumps(
+            {"overall_pass": rep.get("overall_pass"), "checks": rep.get("checks")},
+            ensure_ascii=False,
+        )
+    )
     sys.exit(0 if rep.get("overall_pass") else 0)
-
-

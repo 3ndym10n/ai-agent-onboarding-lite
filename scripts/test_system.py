@@ -40,7 +40,7 @@ def test_error_monitoring():
     # Get usage report
     report = monitor.get_usage_report()
 
-    print(f"✅ Error monitoring active")
+    print("✅ Error monitoring active")
     print(f"   - Total capability uses: {report['total_capability_uses']}")
     print(f"   - Error rate: {report['error_rate']:.2%}")
     print(f"   - Recent errors: {len(report['recent_errors'])}")
@@ -55,7 +55,7 @@ def test_vision_system():
     interrogator = get_vision_interrogator(Path.cwd())
     readiness = interrogator.check_vision_readiness()
 
-    print(f"✅ Vision system status:")
+    print("✅ Vision system status:")
     print(f"   - Ready for agents: {readiness['ready_for_agents']}")
     print(f"   - Interrogation complete: {readiness['interrogation_complete']}")
     print(f"   - Vision clarity: {readiness['vision_clarity']['score']:.2f}")
@@ -69,7 +69,7 @@ def test_alignment_system():
 
     alignment_data = preview(Path.cwd())
 
-    print(f"✅ Alignment system status:")
+    print("✅ Alignment system status:")
     print(f"   - Confidence: {alignment_data['confidence']:.2f}")
     print(f"   - Decision: {alignment_data['decision']}")
     print(
@@ -91,7 +91,7 @@ def test_project_plan():
     with open(plan_path, "r") as f:
         plan = json.load(f)
 
-    print(f"✅ Project plan status:")
+    print("✅ Project plan status:")
     print(f"   - Total tasks: {len(plan.get('tasks', []))}")
     print(
         f"   - Total effort: {sum(t.get('effort_days', 0) for t in plan.get('tasks', []))} days"

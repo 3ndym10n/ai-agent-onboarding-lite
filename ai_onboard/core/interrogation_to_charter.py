@@ -6,7 +6,6 @@ vision source for the entire system.
 """
 
 from pathlib import Path
-from typing import Any, Dict
 
 from . import utils
 

@@ -7,7 +7,7 @@ import sys
 import traceback
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict
 
 from . import smart_debugger, telemetry, utils
 
