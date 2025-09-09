@@ -19,7 +19,11 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-import psutil
+# psutil is optional at runtime to avoid hard dependency during CLI import paths
+try:  # pragma: no cover - environment-dependent
+    import psutil  # type: ignore
+except Exception:  # pragma: no cover - fallback when not installed
+    psutil = None  # type: ignore
 
 from . import continuous_improvement_system, telemetry, utils
 
