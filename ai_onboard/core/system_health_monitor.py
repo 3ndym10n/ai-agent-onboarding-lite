@@ -21,7 +21,11 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-import psutil
+# psutil is optional to avoid hard dependency in minimal environments/Windows gates
+try:  # pragma: no cover - environment-dependent
+    import psutil  # type: ignore
+except Exception:  # pragma: no cover - fallback when not installed
+    psutil = None  # type: ignore
 
 from . import continuous_improvement_system, telemetry, utils
 
