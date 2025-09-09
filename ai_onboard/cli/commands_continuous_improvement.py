@@ -10,7 +10,7 @@ import base64
 import json
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from ..core import utils
 from ..core.adaptive_config_manager import (
@@ -91,9 +91,9 @@ def _parse_kv_pairs(text: str) -> Dict[str, Any]:
 
 
 def _parse_json_source(
-    raw: str | None = None,
-    file: str | None = None,
-    b64: str | None = None,
+    raw: Optional[str] = None,
+    file: Optional[str] = None,
+    b64: Optional[str] = None,
     allow_kv: bool = True,
 ) -> Dict[str, Any]:
     """Parse structured input from one of: file, base64, raw JSON string, or key=value pairs.
