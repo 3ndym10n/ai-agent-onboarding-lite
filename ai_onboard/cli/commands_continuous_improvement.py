@@ -1074,7 +1074,9 @@ def _handle_health_metrics(health_monitor) -> None:
         status_icon = (
             "🟢"
             if metric_value.value <= metric_value.threshold_warning
-            else "🟡" if metric_value.value <= metric_value.threshold_critical else "🔴"
+            else "🟡"
+            if metric_value.value <= metric_value.threshold_critical
+            else "🔴"
         )
         print(
             f"{status_icon} {metric.value}: {metric_value.value:.1f}{metric_value.unit}"
@@ -1722,7 +1724,9 @@ def _handle_list_kpis(analytics) -> None:
         status_icon = (
             "🟢"
             if kpi.current_value >= kpi.target_value
-            else "🟡" if kpi.current_value >= kpi.target_value * 0.8 else "🔴"
+            else "🟡"
+            if kpi.current_value >= kpi.target_value * 0.8
+            else "🔴"
         )
         trend_icon = "📈" if kpi.trend == "up" else "📉" if kpi.trend == "down" else "➡️"
 
@@ -2861,7 +2865,9 @@ def _handle_view_validation_report(args: argparse.Namespace, validator) -> None:
                 else (
                     "❌"
                     if test["result"] == "fail"
-                    else "⚠️" if test["result"] == "warning" else "⏭️"
+                    else "⚠️"
+                    if test["result"] == "warning"
+                    else "⏭️"
                 )
             )
             print(

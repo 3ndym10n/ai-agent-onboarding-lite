@@ -515,9 +515,9 @@ class AIAgentOrchestrationLayer:
         if risk_assessment["requires_intervention"]:
             self.safety_monitor.trigger_intervention(context, "High risk detected")
             pipeline_results["final_decision"] = "intervention_triggered"
-            pipeline_results["ai_agent_response"] = (
-                "🚨 Safety intervention triggered. Operation cancelled for security reasons."
-            )
+            pipeline_results[
+                "ai_agent_response"
+            ] = "🚨 Safety intervention triggered. Operation cancelled for security reasons."
             return pipeline_results
 
         # Stage 3: Confidence Scoring
