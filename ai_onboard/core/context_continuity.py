@@ -163,9 +163,7 @@ class ContextContinuityManager:
             "recommendation": (
                 "approve"
                 if overall_score > 0.7
-                else "review"
-                if overall_score > 0.3
-                else "reject"
+                else "review" if overall_score > 0.3 else "reject"
             ),
         }
 
@@ -362,9 +360,7 @@ class ContextContinuityManager:
             "activity_trend": (
                 "increasing"
                 if scope_expansion > 0.3
-                else "stable"
-                if scope_expansion < 0.1
-                else "variable"
+                else "stable" if scope_expansion < 0.1 else "variable"
             ),
         }
 
@@ -429,9 +425,7 @@ class ContextContinuityManager:
             "recommendation": (
                 "consistent"
                 if consistency_score > 0.7
-                else "review"
-                if consistency_score > 0.4
-                else "inconsistent"
+                else "review" if consistency_score > 0.4 else "inconsistent"
             ),
         }
 
