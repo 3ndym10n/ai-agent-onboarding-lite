@@ -387,9 +387,7 @@ def handle_core_commands(args, root: Path):
             print(
                 "❌ Vision not confirmed. Please confirm the project vision before running validation."
             )
-            print(
-                "💡 Run: python -m ai_onboard charter --interactive to confirm vision"
-            )
+            print("💡 Run: python -m ai_onboard charter --interactive to confirm vision")
             return
 
         res = validation_runtime.run(root)

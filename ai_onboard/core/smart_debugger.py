@@ -190,10 +190,15 @@ class SmartDebugger:
     def _get_solution(self, pattern_id: str) -> Dict[str, Any]:
         """Get solution for a pattern."""
         solutions = self._load_solutions()
-        return solutions.get("solutions", {}).get(
-            pattern_id,
-            {"description": "No solution available", "steps": [], "type": "unknown"},
-        )
+        solution_list = solutions.get("solutions", [])
+
+        # Find solution by ID
+        for solution in solution_list:
+            if solution.get("id") == pattern_id:
+                return solution
+
+        # Default if not found
+        return {"description": "No solution available", "steps": [], "type": "unknown"}
 
     def _generate_analysis(self, error_data: Dict[str, Any]) -> Dict[str, Any]:
         """Generate new analysis for an error."""
