@@ -33,6 +33,10 @@ def add_interrogate_commands(subparsers):
     si_sub.add_parser(
         "force-complete", help="Force complete interrogation (use with caution)"
     )
+    si_sub.add_parser(
+        "complete-from-charter",
+        help="Mark interrogation complete using existing charter.json (non-interactive)",
+    )
 
 
 def handle_interrogate_commands(args, root: Path):
@@ -186,6 +190,11 @@ def handle_interrogate_commands(args, root: Path):
     elif icmd == "force-complete":
         # Force complete interrogation
         result = interrogator.force_complete_interrogation()
+        print(prompt_bridge.dumps_json(result))
+        return True
+    elif icmd == "complete-from-charter":
+        # Non-interactive completion using existing charter
+        result = interrogator.complete_from_charter()
         print(prompt_bridge.dumps_json(result))
         return True
 

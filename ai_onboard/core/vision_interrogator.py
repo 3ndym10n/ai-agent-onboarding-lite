@@ -165,6 +165,43 @@ class VisionInterrogator:
 
         return issues
 
+    def complete_from_charter(self) -> Dict[str, Any]:
+        """Complete interrogation non-interactively using existing charter.
+
+        This is a resilient path for cases where the human has already provided
+        charter details and we simply need to mark the interrogation complete so
+        downstream systems (readiness checks, clarity scoring) can proceed.
+        """
+        charter_data = utils.read_json(self.charter_path, default={})
+        if not charter_data or not charter_data.get("vision"):
+            return {
+                "ok": False,
+                "error": "charter.json missing or incomplete; cannot complete from charter",
+            }
+
+        interrogation_data = utils.read_json(self.interrogation_path, default={}) or {}
+
+        # Preserve any existing responses but ensure completed status
+        if "responses" not in interrogation_data:
+            interrogation_data["responses"] = {}
+
+        interrogation_data.update(
+            {
+                "status": "completed",
+                "completed_at": utils.now_iso(),
+                "completion_mode": "from_charter",
+            }
+        )
+
+        utils.write_json(self.interrogation_path, interrogation_data)
+
+        readiness = self.check_vision_readiness()
+        return {
+            "ok": True,
+            "interrogation": interrogation_data,
+            "readiness": readiness,
+        }
+
     def _get_phase_questions(self, phase: str) -> List[Dict[str, Any]]:
         """Get questions for interrogation phase."""
         questions = {
