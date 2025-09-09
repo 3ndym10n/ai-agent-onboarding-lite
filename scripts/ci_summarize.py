@@ -14,7 +14,6 @@ import re
 from pathlib import Path
 from typing import Dict, List
 
-
 LOG_DIR = Path(".ai_onboard/logs")
 SUMMARY_PATH = LOG_DIR / "summary.json"
 
