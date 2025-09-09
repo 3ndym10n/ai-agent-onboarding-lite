@@ -286,9 +286,9 @@ class EnhancedVisionInterrogator:
             interrogation_data["adaptive_questions"].extend(follow_up_questions)
 
         # Update vision quality score
-        interrogation_data[
-            "vision_quality_score"
-        ] = self._calculate_enhanced_vision_quality(interrogation_data)
+        interrogation_data["vision_quality_score"] = (
+            self._calculate_enhanced_vision_quality(interrogation_data)
+        )
 
         # Check phase completion with enhanced logic
         if self._is_enhanced_phase_complete(interrogation_data, phase):
@@ -1007,9 +1007,9 @@ class EnhancedVisionInterrogator:
             interrogation_data["completed_at"] = utils.now_iso()
 
             # Generate final vision quality report
-            interrogation_data[
-                "final_vision_quality"
-            ] = self._generate_vision_quality_report(interrogation_data)
+            interrogation_data["final_vision_quality"] = (
+                self._generate_vision_quality_report(interrogation_data)
+            )
 
             # Auto-sync to charter
             try:
