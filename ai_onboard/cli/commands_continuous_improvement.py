@@ -652,15 +652,13 @@ def _handle_config_list(args: argparse.Namespace, config_manager) -> None:
 
 def _handle_config_adapt(args: argparse.Namespace, config_manager) -> None:
     """Handle configuration adaptation."""
-    # Parse context from JSON if provided
-    context = {}
-    if args.context:
-        try:
-            import json
-            context = json.loads(args.context)
-        except json.JSONDecodeError:
-            print("❌ Invalid JSON in context parameter")
-            return
+    # Parse context (flexible sources)
+    context = _parse_json_source(
+        raw=getattr(args, "context", None),
+        file=getattr(args, "context_file", None),
+        b64=getattr(args, "context_b64", None),
+        allow_kv=True,
+    )
     
     # Apply default context if none provided
     if not context:
@@ -708,15 +706,13 @@ def _handle_config_profiles(args: argparse.Namespace, config_manager) -> None:
         name = args.profile_name
         description = args.profile_description or f"Profile for {name}"
         
-        # Parse context from JSON if provided
-        context = {}
-        if args.context:
-            try:
-                import json
-                context = json.loads(args.context)
-            except json.JSONDecodeError:
-                print("❌ Invalid JSON in context parameter")
-                return
+        # Parse context (flexible sources)
+        context = _parse_json_source(
+            raw=getattr(args, "context", None),
+            file=getattr(args, "context_file", None),
+            b64=getattr(args, "context_b64", None),
+            allow_kv=True,
+        )
         
         profile_id = config_manager.create_configuration_profile(
             name, description, context
@@ -1252,7 +1248,13 @@ def _handle_add_knowledge(args: argparse.Namespace, knowledge_base) -> None:
     quality = KnowledgeQuality(args.quality) if args.quality else KnowledgeQuality.MEDIUM
     
     tags = args.tags.split(",") if args.tags else []
-    metadata = json.loads(args.metadata) if args.metadata else {}
+    # Parse metadata (flexible sources)
+    metadata = _parse_json_source(
+        raw=getattr(args, "metadata", None),
+        file=getattr(args, "metadata_file", None),
+        b64=getattr(args, "metadata_b64", None),
+        allow_kv=True,
+    )
     
     knowledge_id = knowledge_base.add_knowledge(
         knowledge_type=knowledge_type,
@@ -2204,7 +2206,9 @@ def add_continuous_improvement_parser(subparsers) -> None:
     add_knowledge_parser.add_argument("source", choices=[ks.value for ks in KnowledgeSource], help="Knowledge source")
     add_knowledge_parser.add_argument("--quality", choices=[kq.value for kq in KnowledgeQuality], help="Knowledge quality")
     add_knowledge_parser.add_argument("--tags", help="Comma-separated tags")
-    add_knowledge_parser.add_argument("--metadata", help="Metadata JSON")
+    add_knowledge_parser.add_argument("--metadata", help="Metadata (JSON or key=value pairs)")
+    add_knowledge_parser.add_argument("--metadata-file", dest="metadata_file", help="Path to JSON file for metadata")
+    add_knowledge_parser.add_argument("--metadata-b64", dest="metadata_b64", help="Base64-encoded JSON for metadata")
     add_knowledge_parser.add_argument("--confidence", type=float, help="Confidence score (0-1)")
     
     # Search knowledge
@@ -2528,7 +2532,9 @@ def add_continuous_improvement_parser(subparsers) -> None:
         "adapt",
         help="Adapt configuration based on context"
     )
-    adapt_parser.add_argument("--context", help="Context JSON for adaptation")
+    adapt_parser.add_argument("--context", help="Context (JSON or key=value pairs)")
+    adapt_parser.add_argument("--context-file", dest="context_file", help="Path to JSON file for context")
+    adapt_parser.add_argument("--context-b64", dest="context_b64", help="Base64-encoded JSON for context")
     
     # Configuration profiles
     profiles_parser = config_subparsers.add_parser(
@@ -2544,7 +2550,9 @@ def add_continuous_improvement_parser(subparsers) -> None:
     create_parser = profiles_subparsers.add_parser("create", help="Create configuration profile")
     create_parser.add_argument("profile_name", help="Profile name")
     create_parser.add_argument("--description", help="Profile description")
-    create_parser.add_argument("--context", help="Context JSON")
+    create_parser.add_argument("--context", help="Context (JSON or key=value pairs)")
+    create_parser.add_argument("--context-file", dest="context_file", help="Path to JSON file for context")
+    create_parser.add_argument("--context-b64", dest="context_b64", help="Base64-encoded JSON for context")
     
     apply_parser = profiles_subparsers.add_parser("apply", help="Apply configuration profile")
     apply_parser.add_argument("profile_id", help="Profile ID to apply")
