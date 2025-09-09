@@ -7,6 +7,7 @@ including learning events, recommendations, and system health monitoring.
 
 import argparse
 import json
+import base64
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, Any, List
@@ -58,6 +59,68 @@ from ..core.continuous_improvement_validator import (
     TestCategory,
 )
 from ..core import utils
+
+
+def _coerce_scalar(value: str):
+    """Coerce a string scalar to bool/int/float when possible, else return as-is."""
+    lower = value.strip().lower()
+    if lower in ("true", "false"):
+        return lower == "true"
+    try:
+        if "." in value:
+            return float(value)
+        return int(value)
+    except ValueError:
+        return value
+
+
+def _parse_kv_pairs(text: str) -> Dict[str, Any]:
+    """Parse simple key=value[,key=value] pairs into a dict with light type coercion."""
+    result: Dict[str, Any] = {}
+    if not text:
+        return result
+    for pair in text.split(","):
+        if not pair:
+            continue
+        if "=" not in pair:
+            # Skip malformed segment
+            continue
+        key, val = pair.split("=", 1)
+        result[key.strip()] = _coerce_scalar(val.strip())
+    return result
+
+
+def _parse_json_source(raw: str | None = None, file: str | None = None, b64: str | None = None, allow_kv: bool = True) -> Dict[str, Any]:
+    """Parse structured input from one of: file, base64, raw JSON string, or key=value pairs.
+
+    Precedence: file > base64 > raw.
+    Returns an empty dict when no input provided.
+    """
+    try:
+        if file:
+            p = Path(file)
+            if not p.exists():
+                print(f"❌ File not found: {file}")
+                return {}
+            return json.loads(p.read_text(encoding="utf-8"))
+
+        if b64:
+            decoded = base64.b64decode(b64).decode("utf-8")
+            return json.loads(decoded)
+
+        if raw:
+            raw = raw.strip()
+            if raw.startswith("{") and raw.endswith("}"):
+                return json.loads(raw)
+            if allow_kv:
+                return _parse_kv_pairs(raw)
+        return {}
+    except json.JSONDecodeError as e:
+        print(f"❌ Invalid JSON: {e}")
+        return {}
+    except Exception as e:
+        print(f"❌ Failed to parse structured input: {e}")
+        return {}
 
 
 def handle_continuous_improvement_commands(args: argparse.Namespace, root: Path) -> None:
@@ -115,25 +178,19 @@ def _handle_record_learning(args: argparse.Namespace, system) -> None:
         print(f"Available types: {', '.join([lt.value for lt in LearningType])}")
         return
     
-    # Parse context and outcome from JSON if provided
-    context = {}
-    outcome = {}
-    
-    if args.context:
-        try:
-            import json
-            context = json.loads(args.context)
-        except json.JSONDecodeError:
-            print("Invalid JSON in context parameter")
-            return
-    
-    if args.outcome:
-        try:
-            import json
-            outcome = json.loads(args.outcome)
-        except json.JSONDecodeError:
-            print("Invalid JSON in outcome parameter")
-            return
+    # Parse context and outcome from flexible inputs
+    context = _parse_json_source(
+        raw=getattr(args, "context", None),
+        file=getattr(args, "context_file", None),
+        b64=getattr(args, "context_b64", None),
+        allow_kv=True,
+    )
+    outcome = _parse_json_source(
+        raw=getattr(args, "outcome", None),
+        file=getattr(args, "outcome_file", None),
+        b64=getattr(args, "outcome_b64", None),
+        allow_kv=True,
+    )
     
     # Record the learning event
     event_id = system.record_learning_event(
@@ -206,9 +263,9 @@ def _handle_recommendations_commands(args: argparse.Namespace, root: Path) -> No
 
 def _handle_list_recommendations(args: argparse.Namespace, system) -> None:
     """Handle listing improvement recommendations."""
-    limit = args.limit or 10
-    priority_threshold = args.priority or 5
-    status = args.status or "pending"
+    limit = getattr(args, 'limit', None) or 10
+    priority_threshold = getattr(args, 'priority', None) or 5
+    status = getattr(args, 'status', None) or "pending"
     
     recommendations = system.get_improvement_recommendations(
         limit=limit,
@@ -728,25 +785,20 @@ def _handle_record_interaction(args: argparse.Namespace, preference_system) -> N
         print(f"Available types: {', '.join([it.value for it in InteractionType])}")
         return
     
-    # Parse context from JSON if provided
-    context = {}
-    if args.context:
-        try:
-            import json
-            context = json.loads(args.context)
-        except json.JSONDecodeError:
-            print("❌ Invalid JSON in context parameter")
-            return
-    
-    # Parse outcome from JSON if provided
-    outcome = None
-    if args.outcome:
-        try:
-            import json
-            outcome = json.loads(args.outcome)
-        except json.JSONDecodeError:
-            print("❌ Invalid JSON in outcome parameter")
-            return
+    # Parse context/outcome (flexible sources)
+    context = _parse_json_source(
+        raw=getattr(args, "context", None),
+        file=getattr(args, "context_file", None),
+        b64=getattr(args, "context_b64", None),
+        allow_kv=True,
+    )
+    outcome_obj = _parse_json_source(
+        raw=getattr(args, "outcome", None),
+        file=getattr(args, "outcome_file", None),
+        b64=getattr(args, "outcome_b64", None),
+        allow_kv=True,
+    )
+    outcome = outcome_obj if outcome_obj else None
     
     # Record the interaction
     interaction_id = preference_system.record_user_interaction(
@@ -1405,7 +1457,7 @@ def _handle_knowledge_recommendations(args: argparse.Namespace, knowledge_base) 
     if args.recommendations_action == "get":
         _handle_get_recommendations(args, knowledge_base)
     elif args.recommendations_action == "list":
-        _handle_list_recommendations(knowledge_base)
+        _handle_list_knowledge_recommendations(knowledge_base)
     else:
         print(f"Unknown recommendations action: {args.recommendations_action}")
 
@@ -1436,7 +1488,7 @@ def _handle_get_recommendations(args: argparse.Namespace, knowledge_base) -> Non
         print()
 
 
-def _handle_list_recommendations(knowledge_base) -> None:
+def _handle_list_knowledge_recommendations(knowledge_base) -> None:
     """Handle listing knowledge recommendations."""
     recommendations = knowledge_base.knowledge_recommendations
     
@@ -1993,8 +2045,13 @@ def add_continuous_improvement_parser(subparsers) -> None:
         help="Record a learning event"
     )
     record_parser.add_argument("learning_type", help="Type of learning event")
-    record_parser.add_argument("--context", help="Context JSON")
-    record_parser.add_argument("--outcome", help="Outcome JSON")
+    # Flexible context/outcome inputs
+    record_parser.add_argument("--context", help="Context (JSON or key=value pairs)")
+    record_parser.add_argument("--context-file", dest="context_file", help="Path to JSON file for context")
+    record_parser.add_argument("--context-b64", dest="context_b64", help="Base64-encoded JSON for context")
+    record_parser.add_argument("--outcome", help="Outcome (JSON or key=value pairs)")
+    record_parser.add_argument("--outcome-file", dest="outcome_file", help="Path to JSON file for outcome")
+    record_parser.add_argument("--outcome-b64", dest="outcome_b64", help="Base64-encoded JSON for outcome")
     record_parser.add_argument("--confidence", type=float, help="Confidence score (0-1)")
     record_parser.add_argument("--impact", type=float, help="Impact score (0-1)")
     record_parser.add_argument("--source", help="Source of the learning event")
@@ -2516,9 +2573,14 @@ def add_continuous_improvement_parser(subparsers) -> None:
     )
     record_parser.add_argument("user_id", help="User ID")
     record_parser.add_argument("interaction_type", help="Type of interaction")
-    record_parser.add_argument("--context", help="Context JSON")
+    # Flexible context/outcome inputs
+    record_parser.add_argument("--context", help="Context (JSON or key=value pairs)")
+    record_parser.add_argument("--context-file", dest="context_file", help="Path to JSON file for context")
+    record_parser.add_argument("--context-b64", dest="context_b64", help="Base64-encoded JSON for context")
     record_parser.add_argument("--duration", type=float, help="Interaction duration in seconds")
-    record_parser.add_argument("--outcome", help="Outcome JSON")
+    record_parser.add_argument("--outcome", help="Outcome (JSON or key=value pairs)")
+    record_parser.add_argument("--outcome-file", dest="outcome_file", help="Path to JSON file for outcome")
+    record_parser.add_argument("--outcome-b64", dest="outcome_b64", help="Base64-encoded JSON for outcome")
     record_parser.add_argument("--satisfaction", type=float, help="Satisfaction score (0-1)")
     record_parser.add_argument("--feedback", help="User feedback")
     
