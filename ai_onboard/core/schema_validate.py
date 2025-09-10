@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from .errors import PolicyError
-
 
 ALLOWED_ACTIONS = {"allow", "warn", "require_approval", "block"}
 
@@ -40,5 +39,6 @@ def validate_policy(policy: Dict[str, Any]) -> None:
             )
         msg = r.get("message")
         if msg is not None and not _is_str(msg):
-            raise PolicyError(f"policy.rules[{idx}].message must be a string if present")
-
+            raise PolicyError(
+                f"policy.rules[{idx}].message must be a string if present"
+            )

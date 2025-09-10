@@ -11,43 +11,43 @@ interrogation_phases:
         type: "text"
         required: true
         follow_up: "Can you describe the mood or feeling you want users to experience?"
-      
+
       - id: "target_audience"
         question: "Who is your primary target audience? What are their characteristics and needs?"
         type: "text"
         required: true
         follow_up: "How do you want different user types to feel when using your interface?"
-      
+
       - id: "user_journey"
         question: "What are the key user journeys or flows you want to optimize?"
         type: "text"
         required: true
         follow_up: "What should be the most intuitive and delightful parts of the user experience?"
-      
+
       - id: "accessibility_goals"
         question: "What accessibility standards or user needs are important to you?"
         type: "text"
         required: false
         follow_up: "Are there specific user groups with accessibility needs you want to prioritize?"
-      
+
       - id: "brand_identity"
         question: "How should the interface reflect your brand identity and values?"
         type: "text"
         required: false
         follow_up: "What colors, typography, or visual elements represent your brand?"
-      
+
       - id: "interaction_patterns"
         question: "What interaction patterns or behaviors should feel natural to users?"
         type: "text"
         required: false
         follow_up: "Are there specific interactions that should feel particularly smooth or intuitive?"
-      
+
       - id: "visual_hierarchy"
         question: "How should information be prioritized and organized visually?"
         type: "text"
         required: false
         follow_up: "What should users notice first, second, and third when they look at your interface?"
-      
+
       - id: "responsive_design"
         question: "What devices and screen sizes should the interface work well on?"
         type: "text"
@@ -59,15 +59,15 @@ validation_rules:
     - rule: "Visual style should be clearly defined"
       weight: 0.8
       criteria: ["modern", "minimalist", "playful", "professional", "elegant", "bold"]
-    
+
     - rule: "Target audience should be well understood"
       weight: 0.9
       criteria: ["user needs", "demographics", "behavior", "preferences"]
-    
+
     - rule: "User journey should be mapped"
       weight: 0.8
       criteria: ["user flow", "interaction", "experience", "journey"]
-    
+
     - rule: "Accessibility considerations should be mentioned"
       weight: 0.6
       criteria: ["accessibility", "inclusive", "universal design", "assistive technology"]
@@ -78,13 +78,13 @@ ambiguity_management:
     technical: true
     scope: false
     resolution: "Provide examples or references to similar designs"
-  
+
   user_experience:
     critical: true
     technical: false
     scope: false
     resolution: "Define specific user goals and success metrics"
-  
+
   interaction_design:
     critical: false
     technical: true
@@ -97,7 +97,7 @@ foundation_strength:
     - "Understanding of target audience"
     - "Key user journey identification"
     - "Basic accessibility awareness"
-  
+
   enhancement_areas:
     - "Detailed interaction patterns"
     - "Comprehensive accessibility plan"
@@ -109,7 +109,7 @@ completion_criteria:
     - "Visual style defined"
     - "Target audience identified"
     - "At least one key user journey mapped"
-  
+
   recommended_additional:
     - "Accessibility goals specified"
     - "Brand identity considerations"
@@ -120,5 +120,3 @@ output_format:
   charter_section: "ui_ux_vision"
   plan_integration: "design_milestones"
   validation_focus: "visual_alignment"
-
-

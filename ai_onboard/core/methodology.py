@@ -10,4 +10,7 @@ def pick(ch: dict) -> dict:
         chosen = "scrum"
     else:
         chosen = "hybrid"
-    return {"chosen": chosen, "rationale": f"team={team}, horizon={horizon}, pref={pref}"}
+    return {
+        "chosen": chosen,
+        "rationale": f"team={team}, horizon={horizon}, pref={pref}",
+    }

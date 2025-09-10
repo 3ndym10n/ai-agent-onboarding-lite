@@ -7,10 +7,9 @@ Produces .ai_onboard/analysis.json with:
 - quick_wins: simple actionable suggestions
 """
 
-from pathlib import Path
-from typing import Dict, Any, List
 import json
-
+from pathlib import Path
+from typing import Any, Dict, List
 
 LANG_EXT = {
     ".py": "python",
@@ -25,7 +24,15 @@ LANG_EXT = {
 
 
 def _list_files(root: Path) -> List[Path]:
-    ignore_dirs = {".git", "node_modules", "venv", ".venv", "dist", "build", "__pycache__"}
+    ignore_dirs = {
+        ".git",
+        "node_modules",
+        "venv",
+        ".venv",
+        "dist",
+        "build",
+        "__pycache__",
+    }
     files: List[Path] = []
     for p in root.rglob("*"):
         if p.is_dir():
@@ -51,13 +58,24 @@ def run(root: Path) -> Dict[str, Any]:
             lang = LANG_EXT[suffix]
             lang_counts[lang] = lang_counts.get(lang, 0) + 1
 
-        if f.name in {"pyproject.toml", "package.json", "requirements.txt", "Dockerfile", "README.md"}:
+        if f.name in {
+            "pyproject.toml",
+            "package.json",
+            "requirements.txt",
+            "Dockerfile",
+            "README.md",
+        }:
             important.append(str(f.relative_to(root)))
 
     risks: List[str] = []
-    if "python" in lang_counts and "pyproject.toml" not in {Path(p).name for p in important}:
+    if "python" in lang_counts and "pyproject.toml" not in {
+        Path(p).name for p in important
+    }:
         risks.append("Python project missing pyproject.toml")
-    if "javascript" in lang_counts and counts.get(".ts", 0) + counts.get(".tsx", 0) == 0:
+    if (
+        "javascript" in lang_counts
+        and counts.get(".ts", 0) + counts.get(".tsx", 0) == 0
+    ):
         risks.append("JS code without TypeScript")
 
     quick_wins: List[str] = []
@@ -81,5 +99,3 @@ def run(root: Path) -> Dict[str, Any]:
     ai_dir.mkdir(parents=True, exist_ok=True)
     (ai_dir / "analysis.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
     return out
-
-

@@ -1,4 +1,5 @@
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+
 from ..core.issue import Issue
 from ..core.registry import register
 
@@ -9,7 +10,11 @@ class ExamplePolicy:
     def run(self, paths: List[str], ctx: Dict[str, Any]):
         # No-op example: always returns an info-level issue on first path
         target = (paths or ["."])[0]
-        return [Issue("EXAMPLE_POLICY", "info", "Example policy ran", target, confidence=0.1)]
+        return [
+            Issue(
+                "EXAMPLE_POLICY", "info", "Example policy ran", target, confidence=0.1
+            )
+        ]
 
 
 def _register():
@@ -18,4 +23,3 @@ def _register():
 
 
 _register()
-

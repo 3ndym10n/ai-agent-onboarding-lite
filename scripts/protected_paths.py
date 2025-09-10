@@ -3,7 +3,6 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 # Minimal set of paths that must exist in any valid repo state
@@ -12,16 +11,13 @@ REQUIRED_FILES = [
     "pyproject.toml",
     "README_ai_onboard.md",
     "AGENTS.md",
-    
     # Package identity
     "ai_onboard/__init__.py",
     "ai_onboard/__main__.py",
     "ai_onboard/VERSION",
-
     # CLI entry
     "ai_onboard/cli/__init__.py",
     "ai_onboard/cli/commands.py",
-
     # Core runtime (minimum viable)
     "ai_onboard/core/__init__.py",
     "ai_onboard/core/utils.py",
@@ -30,7 +26,6 @@ REQUIRED_FILES = [
     "ai_onboard/core/validation_runtime.py",
     "ai_onboard/core/policy_engine.py",
     "ai_onboard/core/registry.py",
-
     # Policies (baseline)
     "ai_onboard/policies/base.json",
 ]

@@ -1,5 +1,5 @@
-import re
 import pathlib
+import re
 import sys
 
 
@@ -17,7 +17,9 @@ def main() -> int:
     pp_path.write_text(text, encoding="utf-8")
 
     # ai_onboard/__init__.py
-    (root / "ai_onboard" / "__init__.py").write_text(f'__version__ = "{new}"\n', encoding="utf-8")
+    (root / "ai_onboard" / "__init__.py").write_text(
+        f'__version__ = "{new}"\n', encoding="utf-8"
+    )
 
     # ai_onboard/VERSION
     (root / "ai_onboard" / "VERSION").write_text(new + "\n", encoding="utf-8")
@@ -28,4 +30,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

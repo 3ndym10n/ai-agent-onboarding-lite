@@ -1,6 +1,8 @@
 import json
-from pathlib import Path
+import random
+import string
 from datetime import datetime
+from pathlib import Path
 
 
 def ensure_dir(path: Path):
@@ -29,3 +31,8 @@ def dumps_json(data) -> str:
         return json.dumps(data, ensure_ascii=False)
     except TypeError:
         return json.dumps(data, ensure_ascii=False, default=str)
+
+
+def random_string(length: int = 8) -> str:
+    """Generate a random string of specified length."""
+    return "".join(random.choices(string.ascii_lowercase + string.digits, k=length))

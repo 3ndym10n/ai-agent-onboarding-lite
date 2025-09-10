@@ -2,9 +2,9 @@
 Derive a simple roadmap from analysis.json + optional goal text.
 """
 
-from pathlib import Path
-from typing import Dict, Any, List
 import json
+from pathlib import Path
+from typing import Any, Dict, List
 
 
 def build(root: Path, goal: str = "") -> Dict[str, Any]:
@@ -19,23 +19,27 @@ def build(root: Path, goal: str = "") -> Dict[str, Any]:
 
     # Seed tasks from quick wins
     for qw in analysis.get("quick_wins", []):
-        tasks.append({
-            "id": f"qw-{len(tasks)+1}",
-            "title": qw,
-            "type": "quick_win",
-            "refs": ["analysis.quick_wins"],
-            "status": "pending",
-        })
+        tasks.append(
+            {
+                "id": f"qw-{len(tasks)+1}",
+                "title": qw,
+                "type": "quick_win",
+                "refs": ["analysis.quick_wins"],
+                "status": "pending",
+            }
+        )
 
     # Basic hygiene tasks
     if (root / "README.md").exists() is False:
-        tasks.append({
-            "id": f"doc-{len(tasks)+1}",
-            "title": "Create README.md with setup and run steps",
-            "type": "doc",
-            "refs": ["files.README.md"],
-            "status": "pending",
-        })
+        tasks.append(
+            {
+                "id": f"doc-{len(tasks)+1}",
+                "title": "Create README.md with setup and run steps",
+                "type": "doc",
+                "refs": ["files.README.md"],
+                "status": "pending",
+            }
+        )
 
     roadmap = {
         "goal": goal,
@@ -43,7 +47,7 @@ def build(root: Path, goal: str = "") -> Dict[str, Any]:
         "tasks": tasks,
     }
 
-    (ai_dir / "roadmap.json").write_text(json.dumps(roadmap, indent=2), encoding="utf-8")
+    (ai_dir / "roadmap.json").write_text(
+        json.dumps(roadmap, indent=2), encoding="utf-8"
+    )
     return roadmap
-
-

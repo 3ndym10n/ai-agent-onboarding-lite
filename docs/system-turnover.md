@@ -548,4 +548,3 @@ Agents and humans should read the same JSONL facts for decisions and audits.
 ```
 {"ts":"2025-08-29T10:22:11Z","agent":"cursor:gpt-4o","cmd":"guard","decision":"warn","rules":["big-change-requires-approval"],"files":12,"lines":680}
 ```
-

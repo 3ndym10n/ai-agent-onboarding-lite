@@ -1,6 +1,7 @@
 import shutil
 from pathlib import Path
-from typing import List, Set, Dict, Any
+from typing import Any, Dict, List, Set
+
 from . import utils
 
 # CRITICAL: Never delete these files/directories
@@ -8,11 +9,9 @@ CRITICAL_PATTERNS = {
     # Core ai_onboard system (NEVER DELETE)
     "ai_onboard/",
     ".ai_onboard/",
-    
     # Version control (NEVER DELETE)
     ".git/",
     ".gitignore",
-    
     # Project configuration (NEVER DELETE)
     "pyproject.toml",
     "requirements.txt",
@@ -21,7 +20,6 @@ CRITICAL_PATTERNS = {
     "package.json",
     "package-lock.json",
     "yarn.lock",
-    
     # Documentation (NEVER DELETE)
     "README*",
     "README.md",
@@ -29,24 +27,20 @@ CRITICAL_PATTERNS = {
     "AGENTS.md",
     "LICENSE*",
     "CHANGELOG*",
-    
     # CI/CD (NEVER DELETE)
     ".github/",
     ".gitlab-ci.yml",
     ".travis.yml",
     "azure-pipelines.yml",
-    
     # Environment files (NEVER DELETE)
     ".env*",
     "venv/",
     "env/",
     "ENV/",
-    
     # IDE/Editor configs (NEVER DELETE)
     ".vscode/",
     ".idea/",
     ".editorconfig",
-    
     # OS files (NEVER DELETE)
     ".DS_Store",
     "Thumbs.db",
@@ -64,14 +58,12 @@ NON_CRITICAL_PATTERNS = {
     "dist/",
     "*.egg-info/",
     "*.egg",
-    
     # Test artifacts
     ".pytest_cache/",
     ".coverage",
     "htmlcov/",
     ".tox/",
     "coverage.xml",
-    
     # Temporary files
     "*.tmp",
     "*.temp",
@@ -80,13 +72,11 @@ NON_CRITICAL_PATTERNS = {
     "*.swp",
     "*.swo",
     "*~",
-    
     # Node.js artifacts
     "node_modules/",
     "npm-debug.log*",
     "yarn-debug.log*",
     "yarn-error.log*",
-    
     # Python virtual environments (user-created)
     "venv*/",
     "env*/",
@@ -95,15 +85,16 @@ NON_CRITICAL_PATTERNS = {
     ".env/",
 }
 
+
 def is_critical(path: Path, root: Path) -> bool:
     """Check if a path is critical and should never be deleted."""
     rel_path = path.relative_to(root)
     rel_str = str(rel_path).replace("\\", "/")
-    
+
     # Check exact matches first
     if rel_str in CRITICAL_PATTERNS:
         return True
-    
+
     # Check pattern matches
     for pattern in CRITICAL_PATTERNS:
         if pattern.endswith("/"):
@@ -114,14 +105,15 @@ def is_critical(path: Path, root: Path) -> bool:
             # File pattern
             if rel_str == pattern or rel_str.endswith(pattern):
                 return True
-    
+
     return False
+
 
 def is_non_critical(path: Path, root: Path) -> bool:
     """Check if a path matches non-critical patterns that can be safely removed."""
     rel_path = path.relative_to(root)
     rel_str = str(rel_path).replace("\\", "/")
-    
+
     for pattern in NON_CRITICAL_PATTERNS:
         if pattern.endswith("/"):
             # Directory pattern
@@ -131,15 +123,16 @@ def is_non_critical(path: Path, root: Path) -> bool:
             # File pattern
             if rel_str == pattern or rel_str.endswith(pattern):
                 return True
-    
+
     return False
+
 
 def scan_for_cleanup(root: Path) -> Dict[str, List[Path]]:
     """Scan the project directory and categorize files for cleanup."""
     critical_files = []
     non_critical_files = []
     unknown_files = []
-    
+
     for path in root.rglob("*"):
         if path.is_file():
             if is_critical(path, root):
@@ -160,30 +153,33 @@ def scan_for_cleanup(root: Path) -> Dict[str, List[Path]]:
                     non_critical_files.append(path)
                 else:
                     unknown_files.append(path)
-    
+
     return {
         "critical": critical_files,
         "non_critical": non_critical_files,
-        "unknown": unknown_files
+        "unknown": unknown_files,
     }
 
-def safe_cleanup(root: Path, dry_run: bool = True, force: bool = False) -> Dict[str, Any]:
+
+def safe_cleanup(
+    root: Path, dry_run: bool = True, force: bool = False
+) -> Dict[str, Any]:
     """Perform safe cleanup of non-critical files."""
     scan_result = scan_for_cleanup(root)
-    
+
     if dry_run:
         return {
             "mode": "dry_run",
             "scan_result": scan_result,
             "would_delete": len(scan_result["non_critical"]),
             "protected": len(scan_result["critical"]),
-            "unknown": len(scan_result["unknown"])
+            "unknown": len(scan_result["unknown"]),
         }
-    
+
     # In real mode, only delete non-critical files
     deleted_count = 0
     errors = []
-    
+
     for path in scan_result["non_critical"]:
         try:
             if path.is_file():
@@ -194,20 +190,21 @@ def safe_cleanup(root: Path, dry_run: bool = True, force: bool = False) -> Dict[
                 deleted_count += 1
         except Exception as e:
             errors.append(f"Failed to delete {path}: {e}")
-    
+
     return {
         "mode": "executed",
         "deleted_count": deleted_count,
         "errors": errors,
         "protected": len(scan_result["critical"]),
-        "unknown": len(scan_result["unknown"])
+        "unknown": len(scan_result["unknown"]),
     }
+
 
 def create_backup(root: Path) -> Path:
     """Create a backup of the current state before cleanup."""
     backup_dir = root / f".ai_onboard_backup_{utils.now_iso().replace(':', '-')}"
     utils.ensure_dir(backup_dir)
-    
+
     # Copy all files except ai_onboard system itself
     for path in root.rglob("*"):
         if path.is_file() and not str(path).startswith(str(backup_dir)):
@@ -215,5 +212,5 @@ def create_backup(root: Path) -> Path:
             backup_path = backup_dir / rel_path
             utils.ensure_dir(backup_path.parent)
             shutil.copy2(path, backup_path)
-    
+
     return backup_dir

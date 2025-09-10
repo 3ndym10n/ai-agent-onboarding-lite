@@ -1,27 +1,28 @@
 import argparse
 import json
 from pathlib import Path
+
 from ..core import (
-    charter,
-    planning,
-    discovery,
     alignment,
+    charter,
+    cleanup,
+    context_continuity,
+    design_system,
+    discovery,
+    dynamic_planner,
+    optimizer,
+    planning,
+    progress_tracker,
+    prompt_bridge,
+    smart_debugger,
     state,
+    telemetry,
     utils,
     validation_runtime,
-    progress_tracker,
-    telemetry,
-    optimizer,
     versioning,
-    cleanup,
-    prompt_bridge,
     vision_guardian,
-    dynamic_planner,
-    smart_debugger,
-    context_continuity,
     vision_interrogator,
     visual_design,
-    design_system,
 )
 from ..plugins import example_policy  # ensure example plugin registers on import
 
@@ -36,8 +37,14 @@ def main(argv=None):
     )
     sub = p.add_subparsers(dest="cmd", required=True)
 
-    s_an = sub.add_parser("analyze", help="Scan repo and draft ai_onboard.json manifest")
-    s_an.add_argument("--allowExec", action="store_true", help="Permit safe external probes (off by default)")
+    s_an = sub.add_parser(
+        "analyze", help="Scan repo and draft ai_onboard.json manifest"
+    )
+    s_an.add_argument(
+        "--allowExec",
+        action="store_true",
+        help="Permit safe external probes (off by default)",
+    )
 
     s_ch = sub.add_parser("charter", help="Create or update project charter")
     s_ch.add_argument("--interactive", action="store_true")
@@ -48,10 +55,18 @@ def main(argv=None):
     s_al.add_argument("--checkpoint", default="PlanGate")
     s_al.add_argument("--approve", action="store_true")
     s_al.add_argument("--note", default="", help="Optional note to store with approval")
-    s_al.add_argument("--preview", action="store_true", help="Compute dry-run alignment report (no edits)")
+    s_al.add_argument(
+        "--preview",
+        action="store_true",
+        help="Compute dry-run alignment report (no edits)",
+    )
 
     s_v = sub.add_parser("validate", help="Run validation and write report")
-    s_v.add_argument("--report", action="store_true", help="Write .ai_onboard/report.md and versioned copy")
+    s_v.add_argument(
+        "--report",
+        action="store_true",
+        help="Write .ai_onboard/report.md and versioned copy",
+    )
 
     s_k = sub.add_parser("kaizen", help="Run a kaizen cycle (metrics-driven nudges)")
     s_k.add_argument("--once", action="store_true")
@@ -65,15 +80,28 @@ def main(argv=None):
 
     sub.add_parser("metrics", help="Show last validation run summary from telemetry")
 
-    s_clean = sub.add_parser("cleanup", help="Safely remove non-critical files (build artifacts, cache, etc.)")
-    s_clean.add_argument("--dry-run", action="store_true", help="Show what would be deleted without actually deleting")
-    s_clean.add_argument("--force", action="store_true", help="Skip confirmation prompts")
-    s_clean.add_argument("--backup", action="store_true", help="Create backup before cleanup")
+    s_clean = sub.add_parser(
+        "cleanup",
+        help="Safely remove non-critical files (build artifacts, cache, etc.)",
+    )
+    s_clean.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show what would be deleted without actually deleting",
+    )
+    s_clean.add_argument(
+        "--force", action="store_true", help="Skip confirmation prompts"
+    )
+    s_clean.add_argument(
+        "--backup", action="store_true", help="Create backup before cleanup"
+    )
 
     # Checkpoints (agent-aware snapshots)
     s_ck = sub.add_parser("checkpoint", help="Manage lightweight checkpoints")
     ck_sub = s_ck.add_subparsers(dest="ck_cmd", required=True)
-    ck_create = ck_sub.add_parser("create", help="Create checkpoint for given scope globs")
+    ck_create = ck_sub.add_parser(
+        "create", help="Create checkpoint for given scope globs"
+    )
     ck_create.add_argument("--scope", nargs="+", default=["."])
     ck_create.add_argument("--reason", default="")
     ck_sub.add_parser("list", help="List checkpoints")
@@ -81,42 +109,68 @@ def main(argv=None):
     ck_restore.add_argument("--id", required=True)
 
     # Agent-facing prompt bridge (read-mostly, feature-flagged)
-    s_prompt = sub.add_parser("prompt", help="Agent context APIs: state|rules|summary|propose")
+    s_prompt = sub.add_parser(
+        "prompt", help="Agent context APIs: state|rules|summary|propose"
+    )
     sp = s_prompt.add_subparsers(dest="prompt_cmd", required=True)
     sp.add_parser("state", help="Emit compact project state JSON")
-    sp_rules = sp.add_parser("rules", help="Applicable meta-policy rules for a target path")
+    sp_rules = sp.add_parser(
+        "rules", help="Applicable meta-policy rules for a target path"
+    )
     sp_rules.add_argument("--path", default=".")
-    sp_rules.add_argument("--change", default="", help="Optional change summary (free-text or JSON)")
+    sp_rules.add_argument(
+        "--change", default="", help="Optional change summary (free-text or JSON)"
+    )
     sp_summary = sp.add_parser("summary", help="Model-aware summary: brief|full")
-    sp_summary.add_argument("--level", choices=["brief","full"], default="brief")
-    sp_propose = sp.add_parser("propose", help="Propose action; returns decision and rationale")
-    sp_propose.add_argument("--diff", default="", help="JSON {files_changed, lines_deleted, has_tests, subsystems}")
+    sp_summary.add_argument("--level", choices=["brief", "full"], default="brief")
+    sp_propose = sp.add_parser(
+        "propose", help="Propose action; returns decision and rationale"
+    )
+    sp_propose.add_argument(
+        "--diff",
+        default="",
+        help="JSON {files_changed, lines_deleted, has_tests, subsystems}",
+    )
 
     # Vision and planning commands
     s_vision = sub.add_parser("vision", help="Vision alignment and scope management")
     sv_sub = s_vision.add_subparsers(dest="vision_cmd", required=True)
-    validate_parser = sv_sub.add_parser("validate", help="Validate decision alignment with project vision")
+    validate_parser = sv_sub.add_parser(
+        "validate", help="Validate decision alignment with project vision"
+    )
     validate_parser.add_argument("--decision", help="Decision data (JSON)")
-    
-    scope_parser = sv_sub.add_parser("scope-change", help="Propose scope change with user validation")
+
+    scope_parser = sv_sub.add_parser(
+        "scope-change", help="Propose scope change with user validation"
+    )
     scope_parser.add_argument("--change", help="Scope change data (JSON)")
-    
+
     update_parser = sv_sub.add_parser("update", help="Update vision documents")
     update_parser.add_argument("--update", help="Update data (JSON)")
 
     # UI/UX Design commands
     s_design = sub.add_parser("design", help="UI/UX design validation and management")
     sd_sub = s_design.add_subparsers(dest="design_cmd", required=True)
-    
-    analyze_parser = sd_sub.add_parser("analyze", help="Analyze UI design from screenshot")
-    analyze_parser.add_argument("--screenshot", required=True, help="Path to screenshot file")
-    
+
+    analyze_parser = sd_sub.add_parser(
+        "analyze", help="Analyze UI design from screenshot"
+    )
+    analyze_parser.add_argument(
+        "--screenshot", required=True, help="Path to screenshot file"
+    )
+
     validate_parser = sd_sub.add_parser("validate", help="Validate design decision")
-    validate_parser.add_argument("--description", required=True, help="Design description")
-    
-    consistency_parser = sd_sub.add_parser("consistency", help="Check design consistency")
-    consistency_parser.add_argument("--description", required=True, help="Design description")
-    
+    validate_parser.add_argument(
+        "--description", required=True, help="Design description"
+    )
+
+    consistency_parser = sd_sub.add_parser(
+        "consistency", help="Check design consistency"
+    )
+    consistency_parser.add_argument(
+        "--description", required=True, help="Design description"
+    )
+
     system_parser = sd_sub.add_parser("system", help="Design system management")
     system_sub = system_parser.add_subparsers(dest="system_cmd", required=True)
     system_sub.add_parser("summary", help="Show design system summary")
@@ -130,22 +184,26 @@ def main(argv=None):
     milestone_parser = sp_sub.add_parser("milestone", help="Mark milestone complete")
     milestone_parser.add_argument("--name", help="Milestone name")
     milestone_parser.add_argument("--completion", help="Completion data (JSON)")
-    
+
     progress_parser = sp_sub.add_parser("progress", help="Update activity progress")
     progress_parser.add_argument("--activity-id", help="Activity ID")
     progress_parser.add_argument("--progress", help="Progress data (JSON)")
-    
+
     sp_sub.add_parser("auto-update", help="Auto-update plan based on progress")
-    
-    add_milestone_parser = sp_sub.add_parser("add-milestone", help="Add new milestone to plan")
+
+    add_milestone_parser = sp_sub.add_parser(
+        "add-milestone", help="Add new milestone to plan"
+    )
     add_milestone_parser.add_argument("--milestone", help="Milestone data (JSON)")
 
     # Smart debugging commands
     s_debug = sub.add_parser("debug", help="Smart debugging system")
     sd_sub = s_debug.add_subparsers(dest="debug_cmd", required=True)
-    analyze_parser = sd_sub.add_parser("analyze", help="Analyze error and provide smart insights")
+    analyze_parser = sd_sub.add_parser(
+        "analyze", help="Analyze error and provide smart insights"
+    )
     analyze_parser.add_argument("--error", help="Error data (JSON)")
-    
+
     sd_sub.add_parser("improve", help="Improve debugging patterns")
     sd_sub.add_parser("stats", help="Show debugging system statistics")
 
@@ -153,10 +211,12 @@ def main(argv=None):
     s_context = sub.add_parser("context", help="Context continuity management")
     sc_sub = s_context.add_subparsers(dest="context_cmd", required=True)
     summary_parser = sc_sub.add_parser("summary", help="Get context summary")
-    summary_parser.add_argument("--level", default="brief", help="Summary level (brief/full)")
-    
+    summary_parser.add_argument(
+        "--level", default="brief", help="Summary level (brief/full)"
+    )
+
     sc_sub.add_parser("drift", help="Check for context drift")
-    
+
     resolve_parser = sc_sub.add_parser("resolve", help="Resolve context drift")
     resolve_parser.add_argument("--drift-type", help="Drift type")
     resolve_parser.add_argument("--resolution", help="Resolution data (JSON)")
@@ -166,13 +226,17 @@ def main(argv=None):
     si_sub = s_interrogate.add_subparsers(dest="interrogate_cmd", required=True)
     si_sub.add_parser("check", help="Check if vision is ready for AI agents")
     si_sub.add_parser("start", help="Start vision interrogation process")
-    submit_parser = si_sub.add_parser("submit", help="Submit response to interrogation question")
+    submit_parser = si_sub.add_parser(
+        "submit", help="Submit response to interrogation question"
+    )
     submit_parser.add_argument("--phase", help="Interrogation phase")
     submit_parser.add_argument("--question-id", help="Question ID")
     submit_parser.add_argument("--response", help="Response data (JSON)")
     si_sub.add_parser("questions", help="Get current interrogation questions")
     si_sub.add_parser("summary", help="Get interrogation summary")
-    si_sub.add_parser("force-complete", help="Force complete interrogation (use with caution)")
+    si_sub.add_parser(
+        "force-complete", help="Force complete interrogation (use with caution)"
+    )
 
     args = p.parse_args(argv)
     root = Path.cwd()
@@ -224,7 +288,9 @@ def main(argv=None):
             return
 
         if args.cmd == "kaizen":
-            print("Kaizen: ingesting telemetry and nudging schedules/bounds (lightweight).")
+            print(
+                "Kaizen: ingesting telemetry and nudging schedules/bounds (lightweight)."
+            )
             optimizer.nudge_from_metrics(root)
             return
 
@@ -276,23 +342,27 @@ def main(argv=None):
             print(f"  Would delete: {result['would_delete']} files")
             print(f"  Unknown: {result['unknown']} files")
 
-            if result['would_delete'] == 0:
+            if result["would_delete"] == 0:
                 print("\nNo files to clean up!")
                 return
 
             if args.dry_run:
                 print("\nDRY RUN MODE - No files will be deleted")
                 print("Files that would be deleted:")
-                for path in result['scan_result']['non_critical'][:10]:  # Show first 10
+                for path in result["scan_result"]["non_critical"][:10]:  # Show first 10
                     print(f"  - {path.relative_to(root)}")
-                if len(result['scan_result']['non_critical']) > 10:
-                    print(f"  ... and {len(result['scan_result']['non_critical']) - 10} more")
+                if len(result["scan_result"]["non_critical"]) > 10:
+                    print(
+                        f"  ... and {len(result['scan_result']['non_critical']) - 10} more"
+                    )
                 return
 
             # Real cleanup mode
             if not args.force:
-                response = input(f"\nAre you sure you want to delete {result['would_delete']} files? (y/N): ")
-                if response.lower() != 'y':
+                response = input(
+                    f"\nAre you sure you want to delete {result['would_delete']} files? (y/N): "
+                )
+                if response.lower() != "y":
                     print("Cleanup cancelled.")
                     return
 
@@ -307,20 +377,21 @@ def main(argv=None):
 
             print("\nCleanup completed!")
             print(f"  Deleted: {result['deleted_count']} files")
-            if result['errors']:
+            if result["errors"]:
                 print(f"  Errors: {len(result['errors'])} files failed to delete")
-                for error in result['errors'][:5]:
+                for error in result["errors"][:5]:
                     print(f"    - {error}")
             return
 
         if args.cmd == "checkpoint":
             manifest = utils.read_json(root / "ai_onboard.json", default={}) or {}
-            ff = (manifest.get("features") or {})
+            ff = manifest.get("features") or {}
             if ff.get("checkpoints", True) is False:
-                print("{\"error\":\"checkpoints disabled\"}")
+                print('{"error":"checkpoints disabled"}')
                 return
             subcmd = getattr(args, "ck_cmd", None)
             from ..core import checkpoints
+
             if subcmd == "create":
                 rec = checkpoints.create(root, scope=args.scope, reason=args.reason)
                 print(prompt_bridge.dumps_json({"created": rec}))
@@ -333,14 +404,14 @@ def main(argv=None):
                 res = checkpoints.restore(root, ckpt_id=args.id)
                 print(prompt_bridge.dumps_json(res))
                 return
-            print("{\"error\":\"unknown checkpoint subcommand\"}")
+            print('{"error":"unknown checkpoint subcommand"}')
             return
 
         if args.cmd == "prompt":
             manifest = utils.read_json(root / "ai_onboard.json", default={}) or {}
-            ff = (manifest.get("features") or {})
+            ff = manifest.get("features") or {}
             if ff.get("prompt_bridge", True) is False:
-                print("{\"error\":\"prompt_bridge disabled\"}")
+                print('{"error":"prompt_bridge disabled"}')
                 return
             pcmd = getattr(args, "prompt_cmd", None)
             if pcmd == "state":
@@ -348,7 +419,9 @@ def main(argv=None):
                 print(prompt_bridge.dumps_json(out))
                 return
             if pcmd == "rules":
-                out = prompt_bridge.get_applicable_rules(root, target_path=args.path, change_summary=args.change)
+                out = prompt_bridge.get_applicable_rules(
+                    root, target_path=args.path, change_summary=args.change
+                )
                 print(prompt_bridge.dumps_json(out))
                 return
             if pcmd == "summary":
@@ -359,7 +432,7 @@ def main(argv=None):
                 out = prompt_bridge.propose_action(root, diff_json=args.diff)
                 print(prompt_bridge.dumps_json(out))
                 return
-            print("{\"error\":\"unknown prompt subcommand\"}")
+            print('{"error":"unknown prompt subcommand"}')
             return
 
         # Vision alignment commands
@@ -367,7 +440,7 @@ def main(argv=None):
             vcmd = getattr(args, "vision_cmd", None)
             if vcmd == "validate":
                 # Validate decision alignment
-                if hasattr(args, 'decision') and args.decision:
+                if hasattr(args, "decision") and args.decision:
                     decision_data = args.decision
                 else:
                     decision_data = input("Enter decision data (JSON): ")
@@ -377,11 +450,11 @@ def main(argv=None):
                     result = guardian.validate_decision_alignment(decision)
                     print(prompt_bridge.dumps_json(result))
                 except json.JSONDecodeError:
-                    print("{\"error\":\"invalid JSON\"}")
+                    print('{"error":"invalid JSON"}')
                 return
             elif vcmd == "scope-change":
                 # Propose scope change
-                if hasattr(args, 'change') and args.change:
+                if hasattr(args, "change") and args.change:
                     change_data = args.change
                 else:
                     change_data = input("Enter scope change request (JSON): ")
@@ -391,11 +464,11 @@ def main(argv=None):
                     result = guardian.propose_scope_change(change_request)
                     print(prompt_bridge.dumps_json(result))
                 except json.JSONDecodeError:
-                    print("{\"error\":\"invalid JSON\"}")
+                    print('{"error":"invalid JSON"}')
                 return
             elif vcmd == "update":
                 # Update vision documents
-                if hasattr(args, 'update') and args.update:
+                if hasattr(args, "update") and args.update:
                     updates_data = args.update
                 else:
                     updates_data = input("Enter vision updates (JSON): ")
@@ -405,53 +478,53 @@ def main(argv=None):
                     result = guardian.update_vision_documents(updates)
                     print(prompt_bridge.dumps_json(result))
                 except json.JSONDecodeError:
-                    print("{\"error\":\"invalid JSON\"}")
+                    print('{"error":"invalid JSON"}')
                 return
-            print("{\"error\":\"unknown vision subcommand\"}")
+            print('{"error":"unknown vision subcommand"}')
             return
 
         # Dynamic planning commands
         if args.cmd == "planning":
             pcmd = getattr(args, "planning_cmd", None)
             planner = dynamic_planner.get_dynamic_planner(root)
-            
+
             if pcmd == "milestone":
                 # Mark milestone complete
-                if hasattr(args, 'name') and args.name:
+                if hasattr(args, "name") and args.name:
                     milestone_name = args.name
                 else:
                     milestone_name = input("Enter milestone name: ")
-                
-                if hasattr(args, 'completion') and args.completion:
+
+                if hasattr(args, "completion") and args.completion:
                     completion_data = args.completion
                 else:
                     completion_data = input("Enter completion data (JSON): ")
-                
+
                 try:
                     completion = json.loads(completion_data) if completion_data else {}
                     result = planner.mark_milestone_complete(milestone_name, completion)
                     print(prompt_bridge.dumps_json(result))
                 except json.JSONDecodeError:
-                    print("{\"error\":\"invalid JSON\"}")
+                    print('{"error":"invalid JSON"}')
                 return
             elif pcmd == "progress":
                 # Update activity progress
-                if hasattr(args, 'activity_id') and args.activity_id:
+                if hasattr(args, "activity_id") and args.activity_id:
                     activity_id = args.activity_id
                 else:
                     activity_id = input("Enter activity ID: ")
-                
-                if hasattr(args, 'progress') and args.progress:
+
+                if hasattr(args, "progress") and args.progress:
                     progress_data = args.progress
                 else:
                     progress_data = input("Enter progress data (JSON): ")
-                
+
                 try:
                     progress = json.loads(progress_data)
                     result = planner.update_activity_progress(activity_id, progress)
                     print(prompt_bridge.dumps_json(result))
                 except json.JSONDecodeError:
-                    print("{\"error\":\"invalid JSON\"}")
+                    print('{"error":"invalid JSON"}')
                 return
             elif pcmd == "auto-update":
                 # Auto-update plan
@@ -460,7 +533,7 @@ def main(argv=None):
                 return
             elif pcmd == "add-milestone":
                 # Add new milestone
-                if hasattr(args, 'milestone') and args.milestone:
+                if hasattr(args, "milestone") and args.milestone:
                     milestone_data = args.milestone
                 else:
                     milestone_data = input("Enter milestone data (JSON): ")
@@ -469,19 +542,19 @@ def main(argv=None):
                     result = planner.add_new_milestone(milestone)
                     print(prompt_bridge.dumps_json(result))
                 except json.JSONDecodeError:
-                    print("{\"error\":\"invalid JSON\"}")
+                    print('{"error":"invalid JSON"}')
                 return
-            print("{\"error\":\"unknown planning subcommand\"}")
+            print('{"error":"unknown planning subcommand"}')
             return
 
         # Smart debugging commands
         if args.cmd == "debug":
             dcmd = getattr(args, "debug_cmd", None)
             debugger = smart_debugger.get_smart_debugger(root)
-            
+
             if dcmd == "analyze":
                 # Analyze error
-                if hasattr(args, 'error') and args.error:
+                if hasattr(args, "error") and args.error:
                     error_data = args.error
                 else:
                     error_data = input("Enter error data (JSON): ")
@@ -490,7 +563,7 @@ def main(argv=None):
                     result = debugger.analyze_error(error)
                     print(prompt_bridge.dumps_json(result))
                 except json.JSONDecodeError:
-                    print("{\"error\":\"invalid JSON\"}")
+                    print('{"error":"invalid JSON"}')
                 return
             elif dcmd == "improve":
                 # Improve patterns
@@ -502,20 +575,22 @@ def main(argv=None):
                 result = debugger.get_debugging_stats()
                 print(prompt_bridge.dumps_json(result))
                 return
-            print("{\"error\":\"unknown debug subcommand\"}")
+            print('{"error":"unknown debug subcommand"}')
             return
 
         # Context continuity commands
         if args.cmd == "context":
             ccmd = getattr(args, "context_cmd", None)
             context_manager = context_continuity.get_context_continuity_manager(root)
-            
+
             if ccmd == "summary":
                 # Get context summary
-                if hasattr(args, 'level') and args.level:
+                if hasattr(args, "level") and args.level:
                     level = args.level
                 else:
-                    level = input("Enter summary level (brief/full): ").strip() or "brief"
+                    level = (
+                        input("Enter summary level (brief/full): ").strip() or "brief"
+                    )
                 result = context_manager.get_context_summary(level)
                 print(prompt_bridge.dumps_json(result))
                 return
@@ -526,31 +601,33 @@ def main(argv=None):
                 return
             elif ccmd == "resolve":
                 # Resolve drift
-                if hasattr(args, 'drift_type') and args.drift_type:
+                if hasattr(args, "drift_type") and args.drift_type:
                     drift_type = args.drift_type
                 else:
                     drift_type = input("Enter drift type: ")
-                
-                if hasattr(args, 'resolution') and args.resolution:
+
+                if hasattr(args, "resolution") and args.resolution:
                     resolution_data = args.resolution
                 else:
                     resolution_data = input("Enter resolution data (JSON): ")
-                
+
                 try:
                     resolution = json.loads(resolution_data) if resolution_data else {}
-                    result = context_manager.resolve_context_drift(drift_type, resolution)
+                    result = context_manager.resolve_context_drift(
+                        drift_type, resolution
+                    )
                     print(prompt_bridge.dumps_json(result))
                 except json.JSONDecodeError:
-                    print("{\"error\":\"invalid JSON\"}")
+                    print('{"error":"invalid JSON"}')
                 return
-            print("{\"error\":\"unknown context subcommand\"}")
+            print('{"error":"unknown context subcommand"}')
             return
 
         # Vision interrogation commands
         if args.cmd == "interrogate":
             icmd = getattr(args, "interrogate_cmd", None)
             interrogator = vision_interrogator.get_vision_interrogator(root)
-            
+
             if icmd == "check":
                 # Check vision readiness
                 result = interrogator.check_vision_readiness()
@@ -563,7 +640,11 @@ def main(argv=None):
                 return
             elif icmd == "submit":
                 # Submit response
-                if hasattr(args, 'phase') and hasattr(args, 'question_id') and hasattr(args, 'response'):
+                if (
+                    hasattr(args, "phase")
+                    and hasattr(args, "question_id")
+                    and hasattr(args, "response")
+                ):
                     # Use command line arguments if provided
                     phase = args.phase
                     question_id = args.question_id
@@ -573,13 +654,13 @@ def main(argv=None):
                     phase = input("Enter phase: ")
                     question_id = input("Enter question ID: ")
                     response_data = input("Enter response (JSON): ")
-                
+
                 try:
                     response = json.loads(response_data)
                     result = interrogator.submit_response(phase, question_id, response)
                     print(prompt_bridge.dumps_json(result))
                 except json.JSONDecodeError:
-                    print("{\"error\":\"invalid JSON\"}")
+                    print('{"error":"invalid JSON"}')
                 return
             elif icmd == "questions":
                 # Get current questions
@@ -596,103 +677,113 @@ def main(argv=None):
                 result = interrogator.force_complete_interrogation()
                 print(prompt_bridge.dumps_json(result))
                 return
-            print("{\"error\":\"unknown interrogate subcommand\"}")
+            print('{"error":"unknown interrogate subcommand"}')
             return
 
         # UI/UX Design commands
         if args.cmd == "design":
             dcmd = getattr(args, "design_cmd", None)
-            
+
             if dcmd == "analyze":
                 # Analyze UI design from screenshot
                 screenshot_path = args.screenshot
                 project_context = charter.load_charter(root)
-                result = visual_design.analyze_ui_design(screenshot_path, project_context)
+                result = visual_design.analyze_ui_design(
+                    screenshot_path, project_context
+                )
                 print(prompt_bridge.dumps_json(result))
                 return
             elif dcmd == "validate":
                 # Validate design decision
                 description = args.description
                 project_context = charter.load_charter(root)
-                result = visual_design.validate_design_decision(description, project_context)
+                result = visual_design.validate_design_decision(
+                    description, project_context
+                )
                 print(prompt_bridge.dumps_json(result))
                 return
             elif dcmd == "consistency":
                 # Check design consistency
                 description = args.description
-                result = design_system.validate_design_consistency(description, str(root))
+                result = design_system.validate_design_consistency(
+                    description, str(root)
+                )
                 print(prompt_bridge.dumps_json(result))
                 return
             elif dcmd == "system":
                 # Design system management
                 scmd = getattr(args, "system_cmd", None)
-                
+
                 if scmd == "summary":
                     result = design_system.get_design_system_summary(str(root))
                     print(prompt_bridge.dumps_json(result))
                     return
                 elif scmd == "tokens":
                     # TODO: Implement token listing
-                    print("{\"message\":\"Token listing not yet implemented\"}")
+                    print('{"message":"Token listing not yet implemented"}')
                     return
                 elif scmd == "components":
                     # TODO: Implement component listing
-                    print("{\"message\":\"Component listing not yet implemented\"}")
+                    print('{"message":"Component listing not yet implemented"}')
                     return
                 elif scmd == "patterns":
                     # TODO: Implement pattern listing
-                    print("{\"message\":\"Pattern listing not yet implemented\"}")
+                    print('{"message":"Pattern listing not yet implemented"}')
                     return
-                print("{\"error\":\"unknown system subcommand\"}")
+                print('{"error":"unknown system subcommand"}')
                 return
-            print("{\"error\":\"unknown design subcommand\"}")
+            print('{"error":"unknown design subcommand"}')
             return
 
         if args.cmd == "cleanup":
             print("🔍 Scanning for files to clean up...")
-            
+
             # Always start with dry-run to show what would be deleted
             result = cleanup.safe_cleanup(root, dry_run=True)
-            
+
             print(f"\n📊 Scan Results:")
             print(f"  🛡️  Protected (critical): {result['protected']} files")
             print(f"  🗑️  Would delete: {result['would_delete']} files")
             print(f"  ❓ Unknown: {result['unknown']} files")
-            
-            if result['would_delete'] == 0:
+
+            if result["would_delete"] == 0:
                 print("\n✨ No files to clean up!")
                 return
-            
+
             if args.dry_run:
                 print("\n🔍 DRY RUN MODE - No files will be deleted")
                 print("Files that would be deleted:")
-                for path in result['scan_result']['non_critical'][:10]:  # Show first 10
+                for path in result["scan_result"]["non_critical"][:10]:  # Show first 10
                     print(f"  - {path.relative_to(root)}")
-                if len(result['scan_result']['non_critical']) > 10:
-                    print(f"  ... and {len(result['scan_result']['non_critical']) - 10} more")
+                if len(result["scan_result"]["non_critical"]) > 10:
+                    print(
+                        f"  ... and {len(result['scan_result']['non_critical']) - 10} more"
+                    )
                 return
-            
+
             # Real cleanup mode
             if not args.force:
-                response = input(f"\n⚠️  Are you sure you want to delete {result['would_delete']} files? (y/N): ")
-                if response.lower() != 'y':
+                response = input(
+                    f"\n⚠️  Are you sure you want to delete {result['would_delete']} files? (y/N): "
+                )
+                if response.lower() != "y":
                     print("❌ Cleanup cancelled.")
                     return
-            
+
             # Create backup if requested
             if args.backup:
                 print("💾 Creating backup...")
                 backup_dir = cleanup.create_backup(root)
                 print(f"✅ Backup created at: {backup_dir}")
-            
+
             print("🧹 Performing cleanup...")
             result = cleanup.safe_cleanup(root, dry_run=False)
-            
+
             print(f"\n✅ Cleanup completed!")
             print(f"  🗑️  Deleted: {result['deleted_count']} files")
-            if result['errors']:
+            if result["errors"]:
                 print(f"  ⚠️  Errors: {len(result['errors'])} files failed to delete")
-                for error in result['errors'][:5]:
+                for error in result["errors"][:5]:
                     print(f"    - {error}")
             return
     except state.StateError as e:

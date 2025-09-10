@@ -1,5 +1,5 @@
-from pathlib import Path
 import json
+from pathlib import Path
 
 from . import utils
 
@@ -8,12 +8,12 @@ def open_checkpoint(root: Path, name: str) -> None:
     log = root / ".ai_onboard" / "decision_log.jsonl"
     utils.ensure_dir(log.parent)
     with open(log, "a", encoding="utf-8") as f:
-        f.write(
-            f'{{"ts":"{utils.now_iso()}","decision":"OPEN","subject":"{name}"}}\n'
-        )
+        f.write(f'{{"ts":"{utils.now_iso()}","decision":"OPEN","subject":"{name}"}}\n')
 
 
-def record_decision(root: Path, decision: str, subject: str, approved: bool, note: str) -> None:
+def record_decision(
+    root: Path, decision: str, subject: str, approved: bool, note: str
+) -> None:
     """Record a decision to the JSON lines log.
 
     Each decision is stored as a single JSON object per line. ``json.dump`` is
@@ -69,6 +69,7 @@ def require_state(root: Path, needed: str) -> None:
 
 # --- Intelligent Alignment Preview (non-invasive) ---
 
+
 def _load_policy(root: Path) -> dict:
     """Load IAS policy YAML if available; otherwise return defaults.
 
@@ -108,7 +109,9 @@ def _load_policy(root: Path) -> dict:
 
 def _read_json(path: Path, default):
     try:
-        return json.loads(path.read_text(encoding="utf-8")) if path.exists() else default
+        return (
+            json.loads(path.read_text(encoding="utf-8")) if path.exists() else default
+        )
     except Exception:
         return default
 
@@ -131,8 +134,14 @@ def _compute_confidence(root: Path, policy: dict) -> dict:
 
     charter_path = root / ".ai_onboard" / "charter.json"
     charter_data = _read_json(charter_path, default={}) or {}
-    top_outcomes = (charter_data.get("top_outcomes") or []) if isinstance(charter_data, dict) else []
-    vision_completeness = 1.0 if top_outcomes else (0.6 if charter_path.exists() else 0.0)
+    top_outcomes = (
+        (charter_data.get("top_outcomes") or [])
+        if isinstance(charter_data, dict)
+        else []
+    )
+    vision_completeness = (
+        1.0 if top_outcomes else (0.6 if charter_path.exists() else 0.0)
+    )
 
     # Prior confirmations
     log = root / ".ai_onboard" / "decision_log.jsonl"
@@ -150,7 +159,9 @@ def _compute_confidence(root: Path, policy: dict) -> dict:
     # Benchmark fit: very coarse heuristic for now
     has_tests = (root / "tests").exists()
     has_docs = (root / "docs").exists()
-    benchmark_fit = 1.0 if (has_tests and has_docs) else 0.6 if (has_tests or has_docs) else 0.4
+    benchmark_fit = (
+        1.0 if (has_tests and has_docs) else 0.6 if (has_tests or has_docs) else 0.4
+    )
 
     # Ambiguity detection (basic)
     ambiguities = []
@@ -188,7 +199,11 @@ def _compute_confidence(root: Path, policy: dict) -> dict:
         "ambiguity_inverse": round(ambiguity_inverse, 3),
         "change_impact_inverse": round(change_impact_inverse, 3),
     }
-    return {"confidence": round(confidence, 3), "components": components, "ambiguities": ambiguities}
+    return {
+        "confidence": round(confidence, 3),
+        "components": components,
+        "ambiguities": ambiguities,
+    }
 
 
 def preview(root: Path) -> dict:
@@ -221,7 +236,9 @@ def preview(root: Path) -> dict:
         "policy": {"thresholds": {"proceed": proceed_t, "quick_confirm": qc_t}},
     }
 
-    report_rel = policy.get("outputs", {}).get("report_path", ".ai_onboard/alignment_report.json")
+    report_rel = policy.get("outputs", {}).get(
+        "report_path", ".ai_onboard/alignment_report.json"
+    )
     report_path = root / report_rel
     utils.write_json(report_path, report)
     return {"report_path": str(report_path), **report}

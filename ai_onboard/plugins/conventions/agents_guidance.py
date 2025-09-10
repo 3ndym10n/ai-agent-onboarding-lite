@@ -1,5 +1,6 @@
 import os
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+
 from ...core.issue import Issue
 from ...core.registry import register
 
@@ -62,4 +63,3 @@ def _register():
 
 
 _register()
-

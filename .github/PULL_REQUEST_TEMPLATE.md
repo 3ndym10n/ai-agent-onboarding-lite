@@ -12,4 +12,3 @@ Describe the change and why it’s needed.
 ## Notes
 
 Anything reviewers should pay special attention to.
-
