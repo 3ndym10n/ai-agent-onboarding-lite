@@ -63,6 +63,11 @@ line-length = 88
 target-version = ['py38']
 extend-exclude = "ai_onboard/_version\\.py"
 
+[tool.isort]
+profile = "black"
+line_length = 88
+extend_skip_glob = ["ai_onboard/_version.py"]
+
 [tool.mypy]
 python_version = "3.8"
 warn_return_any = true
