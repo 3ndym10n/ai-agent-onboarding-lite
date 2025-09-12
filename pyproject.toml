@@ -63,11 +63,6 @@ line-length = 88
 target-version = ['py38']
 extend-exclude = "ai_onboard/_version\\.py"
 
-[tool.isort]
-profile = "black"
-line_length = 88
-extend_skip_glob = ["ai_onboard/_version.py"]
-
 [tool.mypy]
 python_version = "3.8"
 warn_return_any = true
@@ -125,6 +120,7 @@ line_length = 88
 known_first_party = ["ai_onboard"]
 known_third_party = ["pytest", "black", "flake8", "mypy"]
 skip_glob = ["ai_onboard/_version.py"]
+extend_skip_glob = ["ai_onboard/_version.py"]
 
 [tool.flake8]
 max-line-length = 88
