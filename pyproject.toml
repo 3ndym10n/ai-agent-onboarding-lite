@@ -119,8 +119,7 @@ multi_line_output = 3
 line_length = 88
 known_first_party = ["ai_onboard"]
 known_third_party = ["pytest", "black", "flake8", "mypy"]
-skip_glob = ["ai_onboard/_version.py"]
-extend_skip_glob = ["ai_onboard/_version.py"]
+skip_glob = ["*/_version.py", "ai_onboard/_version.py"]
 
 [tool.flake8]
 max-line-length = 88
