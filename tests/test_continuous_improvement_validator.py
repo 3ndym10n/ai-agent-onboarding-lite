@@ -159,19 +159,19 @@ class TestContinuousImprovementValidator:
             # Mock test results
             mock_integration.return_value = [
                 TestCase(
-                    "integration_test", TestCategory.INTEGRATION, TestResult.PASS, 100.0
+                    "integration_test", "integration_test", "Integration test", TestCategory.INTEGRATION, TestResult.PASS, 100.0
                 )
             ]
             mock_data_integrity.return_value = [
                 TestCase(
-                    "data_test", TestCategory.DATA_INTEGRITY, TestResult.PASS, 50.0
+                    "data_test", "data_test", "Data integrity test", TestCategory.DATA_INTEGRITY, TestResult.PASS, 50.0
                 )
             ]
             mock_performance.return_value = [
-                TestCase("perf_test", TestCategory.PERFORMANCE, TestResult.PASS, 200.0)
+                TestCase("perf_test", "perf_test", "Performance test", TestCategory.PERFORMANCE, TestResult.PASS, 200.0)
             ]
             mock_end_to_end.return_value = [
-                TestCase("e2e_test", TestCategory.END_TO_END, TestResult.PASS, 500.0)
+                TestCase("e2e_test", "e2e_test", "End-to-end test", TestCategory.END_TO_END, TestResult.PASS, 500.0)
             ]
 
             report = validator.run_comprehensive_validation()
@@ -244,10 +244,10 @@ class TestContinuousImprovementValidator:
     def test_system_health_calculation(self, validator):
         """Test system health score calculation."""
         test_results = [
-            TestCase("test1", TestCategory.INTEGRATION, TestResult.PASS, 100.0),
-            TestCase("test2", TestCategory.INTEGRATION, TestResult.PASS, 150.0),
-            TestCase("test3", TestCategory.INTEGRATION, TestResult.FAIL, 200.0),
-            TestCase("test4", TestCategory.INTEGRATION, TestResult.WARNING, 75.0),
+            TestCase("test1", "test1", "Test case 1", TestCategory.INTEGRATION, TestResult.PASS, 100.0),
+            TestCase("test2", "test2", "Test case 2", TestCategory.INTEGRATION, TestResult.PASS, 150.0),
+            TestCase("test3", "test3", "Test case 3", TestCategory.INTEGRATION, TestResult.FAIL, 200.0),
+            TestCase("test4", "test4", "Test case 4", TestCategory.INTEGRATION, TestResult.WARNING, 75.0),
         ]
 
         health_score = validator._calculate_system_health_score(test_results)
@@ -296,8 +296,8 @@ class TestContinuousImprovementValidator:
     def test_summary_generation(self, validator):
         """Test summary generation for validation reports."""
         test_results = [
-            TestCase("test1", TestCategory.INTEGRATION, TestResult.PASS, 100.0),
-            TestCase("test2", TestCategory.INTEGRATION, TestResult.FAIL, 150.0),
+            TestCase("test1", "test1", "Test case 1", TestCategory.INTEGRATION, TestResult.PASS, 100.0),
+            TestCase("test2", "test2", "Test case 2", TestCategory.INTEGRATION, TestResult.FAIL, 150.0),
         ]
 
         summary = validator._generate_summary(test_results, 75.0)
@@ -472,9 +472,11 @@ class TestValidationReporting:
             warning_tests=1,
             skipped_tests=0,
             test_results=[
-                TestCase("test1", TestCategory.INTEGRATION, TestResult.PASS, 100.0),
+                TestCase("test1", "test1", "Test case 1", TestCategory.INTEGRATION, TestResult.PASS, 100.0),
                 TestCase(
                     "test2",
+                    "test2", 
+                    "Test case 2",
                     TestCategory.PERFORMANCE,
                     TestResult.FAIL,
                     200.0,
@@ -549,7 +551,7 @@ class TestPerformanceValidation:
         # Run a subset of tests to avoid long execution
         with patch.object(validator, "_run_integration_tests") as mock_integration:
             mock_integration.return_value = [
-                TestCase("test1", TestCategory.INTEGRATION, TestResult.PASS, 100.0)
+                TestCase("test1", "test1", "Test case 1", TestCategory.INTEGRATION, TestResult.PASS, 100.0)
             ]
 
             report = validator.run_comprehensive_validation()
