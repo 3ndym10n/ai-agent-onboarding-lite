@@ -25,6 +25,7 @@ from ..core import (
     visual_design,
     task_completion_detector,
 )
+from ..core.unicode_utils import safe_print, print_content, print_status, print_activity
 # from ..plugins import example_policy  # ensure example plugin registers on import
 
 
@@ -355,7 +356,7 @@ def main(argv=None):
                     questions=questions,
                 )
                 gate_system.create_gate(gate_request)
-                print("📋 Gate created for Optimization Strategist proposals: .ai_onboard/gates/current_gate.md")
+                print_content("Gate created for Optimization Strategist proposals: .ai_onboard/gates/current_gate.md", "status")
                 print("Run 'ai_onboard gate respond' after answering the questions")
                 return
 
@@ -394,7 +395,7 @@ def main(argv=None):
                     questions=questions,
                 )
                 gate_system.create_gate(gate_request)
-                print("📋 Gate created for Optimization Sandbox Plan: .ai_onboard/gates/current_gate.md")
+                print_content("Gate created for Optimization Sandbox Plan: .ai_onboard/gates/current_gate.md", "status")
                 print("Run 'ai_onboard gate respond' after answering the questions")
                 return
 
@@ -436,7 +437,7 @@ def main(argv=None):
 
         # Clean, early handler for cleanup to avoid legacy garbled prints below
         if args.cmd == "cleanup":
-            print("Scanning for files to clean up...")
+            print_activity("Scanning for files to clean up...", "search")
 
             # Always start with dry-run to show what would be deleted
             result = cleanup.safe_cleanup(root, dry_run=True)
@@ -626,12 +627,12 @@ def main(argv=None):
                 )
 
                 gate_result = gate_system.create_gate(gate_request)
-                print(f"📋 Gate created for user confirmation: {gate_id}")
+                print_content(f"Gate created for user confirmation: {gate_id}", "status")
                 print("Please check .ai_onboard/gates/current_gate.md for questions")
                 print("Run 'ai_onboard gate respond' after answering the questions")
 
             else:
-                print("✅ No new completed tasks detected")
+                print_status("No new completed tasks detected", "success")
 
             return
 
@@ -770,7 +771,7 @@ def main(argv=None):
                     print("Run 'ai_onboard gate respond' after answering the questions")
 
                 else:
-                    print("✅ No new completed tasks detected")
+                    print_status("No new completed tasks detected", "success")
 
                 return
             elif pcmd == "add-milestone":
@@ -1021,22 +1022,22 @@ def main(argv=None):
             return
 
         if args.cmd == "cleanup":
-            print("🔍 Scanning for files to clean up...")
+            print_activity("Scanning for files to clean up...", "search")
 
             # Always start with dry-run to show what would be deleted
             result = cleanup.safe_cleanup(root, dry_run=True)
 
-            print(f"\n📊 Scan Results:")
-            print(f"  🛡️  Protected (critical): {result['protected']} files")
-            print(f"  🗑️  Would delete: {result['would_delete']} files")
-            print(f"  ❓ Unknown: {result['unknown']} files")
+            print_content("Scan Results:", "stats")
+            safe_print(f"  [PROTECTED] Protected (critical): {result['protected']} files")
+            safe_print(f"  [DELETE] Would delete: {result['would_delete']} files")
+            safe_print(f"  [UNKNOWN] Unknown: {result['unknown']} files")
 
             if result["would_delete"] == 0:
                 print("\n✨ No files to clean up!")
                 return
 
             if args.dry_run:
-                print("\n🔍 DRY RUN MODE - No files will be deleted")
+                print_activity("DRY RUN MODE - No files will be deleted", "search")
                 print("Files that would be deleted:")
                 for path in result["scan_result"]["non_critical"][:10]:  # Show first 10
                     print(f"  - {path.relative_to(root)}")
@@ -1052,22 +1053,22 @@ def main(argv=None):
                     f"\n⚠️  Are you sure you want to delete {result['would_delete']} files? (y/N): "
                 )
                 if response.lower() != "y":
-                    print("❌ Cleanup cancelled.")
+                    print_status("Cleanup cancelled.", "error")
                     return
 
             # Create backup if requested
             if args.backup:
                 print("💾 Creating backup...")
                 backup_dir = cleanup.create_backup(root)
-                print(f"✅ Backup created at: {backup_dir}")
+                print_status(f"Backup created at: {backup_dir}", "success")
 
             print("🧹 Performing cleanup...")
             result = cleanup.safe_cleanup(root, dry_run=False)
 
-            print(f"\n✅ Cleanup completed!")
-            print(f"  🗑️  Deleted: {result['deleted_count']} files")
+            print_status("Cleanup completed!", "success")
+            safe_print(f"  [DELETED] Deleted: {result['deleted_count']} files")
             if result["errors"]:
-                print(f"  ⚠️  Errors: {len(result['errors'])} files failed to delete")
+                safe_print(f"  [WARN] Errors: {len(result['errors'])} files failed to delete")
                 for error in result["errors"][:5]:
                     print(f"    - {error}")
             return

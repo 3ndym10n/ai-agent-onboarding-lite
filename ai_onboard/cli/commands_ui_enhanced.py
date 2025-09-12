@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Optional
 
 from ..core.ui_enhancement_system import get_ui_enhancement_system, CommandCategory, InterfaceMode
+from ..core.unicode_utils import safe_print, print_content, get_safe_formatter
 from .help_system import get_help_system
 from .visual_components import (
     create_dashboard, create_status_indicator, create_progress_bar,
@@ -568,7 +569,7 @@ def _show_visual_status(root: Path, user_id: str, compact: bool = False) -> None
     ui_system = get_ui_enhancement_system(root)
     project_data = _get_project_data(root)
     
-    print(ui_system.format_output("📊 Project Status", "primary", user_id))
+    print_content("Project Status", "status")
     print("=" * 40)
     print()
     
@@ -614,7 +615,7 @@ def _show_standard_status(root: Path, user_id: str) -> None:
     ui_system = get_ui_enhancement_system(root)
     status = create_status_indicator(root, user_id)
     
-    print(ui_system.format_output("📋 Project Status", "primary", user_id))
+    print_content("Project Status", "status")
     print("=" * 30)
     print()
     
@@ -634,15 +635,15 @@ def _show_standard_status(root: Path, user_id: str) -> None:
         if "completion_percentage" in progress:
             percentage = progress["completion_percentage"]
             if percentage >= 80:
-                print(status.success(f"Progress: {percentage:.1f}% - Excellent!"))
+                safe_print(f"Progress: {percentage:.1f}% - Excellent!")
             elif percentage >= 60:
-                print(status.info(f"Progress: {percentage:.1f}% - Good progress"))
+                safe_print(f"Progress: {percentage:.1f}% - Good progress")
             elif percentage >= 40:
-                print(status.warning(f"Progress: {percentage:.1f}% - Moderate progress"))
+                safe_print(f"Progress: {percentage:.1f}% - Moderate progress")
             else:
-                print(status.error(f"Progress: {percentage:.1f}% - Needs attention"))
+                safe_print(f"Progress: {percentage:.1f}% - Needs attention")
     
     print()
-    print("💡 Use 'dashboard' for detailed visual status")
-    print("💡 Use 'suggest' for personalized recommendations")
+    print_content("Use 'dashboard' for detailed visual status", "tip")
+    print_content("Use 'suggest' for personalized recommendations", "tip")
 
