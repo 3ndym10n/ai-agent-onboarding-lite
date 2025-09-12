@@ -1,3 +1,14 @@
+"""
+DEPRECATED: This file is deprecated and no longer used.
+
+The functionality has been refactored into modular command files:
+- commands_refactored.py (main entry point)
+- commands_*.py (individual command modules)
+
+This file is kept for reference only and will be removed in a future version.
+Use ai_onboard.cli.commands_refactored.main() instead.
+"""
+
 import argparse
 import json
 from pathlib import Path

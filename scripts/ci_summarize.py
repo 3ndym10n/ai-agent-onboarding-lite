@@ -12,7 +12,7 @@ from __future__ import annotations
 import json
 import re
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Set
 
 LOG_DIR = Path(".ai_onboard/logs")
 SUMMARY_PATH = LOG_DIR / "summary.json"
@@ -43,7 +43,7 @@ def _extract_hits(lines: List[str]) -> List[str]:
                 hits.append(line.strip())
                 break
     # Deduplicate, preserve order
-    seen: set[str] = set()
+    seen: Set[str] = set()
     unique = []
     for h in hits:
         if h not in seen:

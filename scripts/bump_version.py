@@ -21,8 +21,8 @@ def main() -> int:
         f'__version__ = "{new}"\n', encoding="utf-8"
     )
 
-    # ai_onboard/VERSION
-    (root / "ai_onboard" / "VERSION").write_text(new + "\n", encoding="utf-8")
+    # ai_onboard/VERSION.txt
+    (root / "ai_onboard" / "VERSION.txt").write_text(new + "\n", encoding="utf-8")
 
     print(new)
     return 0

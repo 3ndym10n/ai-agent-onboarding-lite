@@ -17,10 +17,10 @@ PROTECTED_FILES = {
     # Package identity
     "ai_onboard/__init__.py",
     "ai_onboard/__main__.py",
-    "ai_onboard/VERSION",
+    "ai_onboard/VERSION.txt",
     # CLI entry
     "ai_onboard/cli/__init__.py",
-    "ai_onboard/cli/commands.py",
+    "ai_onboard/cli/commands_refactored.py",
     # Core runtime (minimum viable)
     "ai_onboard/core/__init__.py",
     "ai_onboard/core/utils.py",

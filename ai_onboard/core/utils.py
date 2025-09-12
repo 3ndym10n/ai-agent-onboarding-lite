@@ -81,13 +81,13 @@ def read_json(path: Path, default=None):
     return read_json_cached(path, default)
 
 
-async def read_multiple_json(paths: list[Path], default=None) -> list[Any]:
+async def read_multiple_json(paths: List[Path], default=None) -> List[Any]:
     """Read multiple JSON files concurrently using asyncio."""
     tasks = [read_json_async(path, default) for path in paths]
     return await asyncio.gather(*tasks, return_exceptions=True)
 
 
-def read_multiple_json_sync(paths: list[Path], default=None) -> list[Any]:
+def read_multiple_json_sync(paths: List[Path], default=None) -> List[Any]:
     """Synchronous wrapper for concurrent JSON reading."""
     try:
         # Try to run in an existing event loop

@@ -14,6 +14,8 @@ import time
 from pathlib import Path
 from typing import Optional
 
+from ..core.unicode_utils import print_activity, print_content, print_status, safe_print
+
 try:
     import requests
 
@@ -97,7 +99,7 @@ def _handle_api_start(args: argparse.Namespace, root: Path) -> None:
     try:
         from ..api.server import get_api_server
 
-        print(f"🚀 Starting AI Onboard API server...")
+        print_activity(f"Starting AI Onboard API server...", "start")
         print(f"   Host: {args.host}")
         print(f"   Port: {args.port}")
         print(f"   Project: {root}")
@@ -106,9 +108,9 @@ def _handle_api_start(args: argparse.Namespace, root: Path) -> None:
         server = get_api_server(root, args.host, args.port)
 
         if args.background:
-            print("❌ Background mode not yet implemented")
+            print_status("Background mode not yet implemented", "error")
             print(
-                "💡 Use a process manager like PM2 or systemd for production deployment"
+                "Use a process manager like PM2 or systemd for production deployment"
             )
             return
 
@@ -117,20 +119,20 @@ def _handle_api_start(args: argparse.Namespace, root: Path) -> None:
 
         if args.reload:
             server_config["reload"] = True
-            print("🔄 Auto-reload enabled (development mode)")
+            print_activity("Auto-reload enabled (development mode)", "sync")
 
-        print("\n📚 API Documentation will be available at:")
+        print_content("\nAPI Documentation will be available at:", "docs")
         print(f"   Swagger UI: http://{args.host}:{args.port}/docs")
         print(f"   ReDoc: http://{args.host}:{args.port}/redoc")
 
-        print("\n🔗 Key Endpoints:")
+        print_content("\nKey Endpoints:", "link")
         print(f"   Health Check: http://{args.host}:{args.port}/health")
         print(
             f"   Project Status: http://{args.host}:{args.port}/api/v1/project/status"
         )
         print(f"   WebSocket: ws://{args.host}:{args.port}/api/v1/ws/{{client_id}}")
 
-        print(f"\n🎯 Ready for Cursor AI integration!")
+        print_content(f"\nReady for Cursor AI integration!", "target")
         print("Press Ctrl+C to stop the server\n")
 
         # Run the server
