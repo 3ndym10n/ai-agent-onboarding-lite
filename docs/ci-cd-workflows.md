@@ -81,7 +81,7 @@ The system includes protection for critical files:
 - `.ai_onboard/policies/` - System policies
 - `.ai_onboard/charter.json` - Project charter
 - `pyproject.toml` - Project configuration
-- `README_ai_onboard.md` - System documentation
+- `README.md` - System documentation
 - `AGENTS.md` - Agent guidelines
 
 ## Testing Strategy

@@ -13,7 +13,7 @@ class AgentsGuidancePresent:
         issues: List[Issue] = []
 
         agents_md = os.path.join(root, "AGENTS.md")
-        readme_md = os.path.join(root, "README_ai_onboard.md")
+        readme_md = os.path.join(root, "README.md")
         cursorrules = os.path.join(root, ".cursorrules")
 
         if not os.path.exists(agents_md):

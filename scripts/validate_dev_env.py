@@ -153,7 +153,7 @@ class DevEnvironmentValidator:
 
         required_files = [
             "pyproject.toml",
-            "README_ai_onboard.md",
+            "README.md",
             "DEVELOPMENT.md",
             ".pre-commit-config.yaml",
             "dev-config.yaml",

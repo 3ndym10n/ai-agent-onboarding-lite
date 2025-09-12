@@ -23,7 +23,6 @@ CRITICAL_PATTERNS = {
     # Documentation (NEVER DELETE)
     "README*",
     "README.md",
-    "README_ai_onboard.md",
     "AGENTS.md",
     "LICENSE*",
     "CHANGELOG*",

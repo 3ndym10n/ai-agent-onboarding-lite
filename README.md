@@ -1,6 +1,6 @@
 # AI Onboard - AI Agent Alignment Tool
 
-**AI Onboard** is a drop-in tool that helps vibe coders create real working projects more efficiently by providing AI agent alignment, vision tracking, and continuous improvement capabilities.
+**AI Onboard** is a drop-in tool that helps developers create real working projects more efficiently by providing AI agent alignment, vision tracking, and continuous improvement capabilities.
 
 ## 🎯 What It Does
 
@@ -28,35 +28,34 @@ pip install -e .
 pip install -e ".[dev]"
 ```
 
-### Basic Usage
+### Essential Commands
 
 ```bash
-# Analyze your project
-python -m ai_onboard analyze
+# Core workflow commands
+python -m ai_onboard analyze      # Analyze current project state
+python -m ai_onboard charter      # Create or update project charter
+python -m ai_onboard plan         # Generate development roadmap
+python -m ai_onboard align        # Check alignment with project vision
+python -m ai_onboard validate     # Pre-flight validation of changes
+python -m ai_onboard kaizen       # Continuous improvement cycle
+python -m ai_onboard metrics      # View project metrics and progress
 
-# Create a project charter
-python -m ai_onboard charter
+# Safe cleanup
+python -m ai_onboard cleanup --dry-run  # See what would be cleaned
 
-# Generate a development plan
-python -m ai_onboard plan
-
-# Validate changes before applying
-python -m ai_onboard validate
-
-# Continuous improvement
-python -m ai_onboard kaizen
-
-# View metrics and progress
-python -m ai_onboard metrics
+# Agent-facing commands (feature-flagged)
+python -m ai_onboard prompt state|rules|summary|propose
+python -m ai_onboard checkpoint create|list|restore
 ```
 
 ## 📋 Core Commands
 
-### Project Setup
+### Project Management
 - `analyze` - Analyze current project state
 - `charter` - Create or update project charter
 - `plan` - Generate development roadmap
 - `align` - Check alignment with project vision
+- `dashboard` - Visual project status overview
 
 ### Development Workflow
 - `validate` - Pre-flight validation of changes
@@ -69,37 +68,15 @@ python -m ai_onboard metrics
 - `checkpoint` - Create and manage project checkpoints
 - `ai-agent` - AI agent collaboration tools
 - `enhanced-vision` - Advanced vision interrogation
-
-## 🛡️ Safety Features
-
-### Protected Paths
-The system automatically protects critical files and directories:
-- `ai_onboard/` - The system itself
-- `.ai_onboard/` - Project data
-- `.git/` - Version control
-- Configuration files (`pyproject.toml`, `requirements.txt`)
-- Documentation (`README*`, `AGENTS.md`)
-- CI/CD files (`.github/`)
-
-### Safe Cleanup
-```bash
-# See what would be deleted (safe)
-python -m ai_onboard cleanup --dry-run
-
-# Actually clean up (with confirmation)
-python -m ai_onboard cleanup
-
-# Create backup before cleanup
-python -m ai_onboard cleanup --backup
-```
+- `cursor` - Cursor AI integration commands
 
 ## 🤖 AI Agent Integration
 
-AI Onboard is designed to work seamlessly with AI coding agents like Cursor, providing:
+AI Onboard is designed to work seamlessly with AI coding agents like Cursor, providing shared context, safety rails, and structured improvement loops.
 
 ### Prompt Bridge
 ```bash
-# Get current project state
+# Get current project state for AI agents
 python -m ai_onboard prompt state
 
 # Check rules for a specific path
@@ -124,6 +101,62 @@ python -m ai_onboard checkpoint list
 python -m ai_onboard checkpoint restore <checkpoint-id>
 ```
 
+### Natural Language Mode
+
+For Cursor/LLM agents, use the prompt-first workflow with no CLI required:
+
+**Key Components:**
+- `ai_onboard/core/cursor_rules.py` - System prompt + logging helpers
+- `.ai_onboard/agent_profile.json` - Focus include/exclude for the agent
+- Logs: `.ai_onboard/conversation.jsonl`, `.ai_onboard/decisions.jsonl`, `.ai_onboard/obs/*.md`
+
+**Quick Start:**
+```bash
+# 1. Print system prompt for your agent
+python examples/cursor_prompt_loop.py --print-prompt
+
+# 2. Log observations and decisions
+python examples/cursor_prompt_loop.py --observe "Found README with goals A/B" --rule readme
+python examples/cursor_prompt_loop.py --decide allow --why "docs sufficient to proceed"
+
+# 3. Check status/checklist
+python examples/cursor_prompt_loop.py --status
+```
+
+**Agent Profile (Optional):**
+- Edit `.ai_onboard/agent_profile.json` to constrain what the agent reads
+- The system prompt embeds Include/Exclude lists to reduce distraction
+
+**Safety:**
+- The NL system only writes under `.ai_onboard/`
+- Use `AGENTS.md` for repo rules/guardrails
+
+## 🛡️ Safety Features
+
+### Protected Paths
+The system automatically protects critical files and directories:
+- `ai_onboard/` - The system itself
+- `.ai_onboard/` - Project data
+- `.git/` - Version control
+- Configuration files (`pyproject.toml`, `requirements.txt`)
+- Documentation (`README*`, `AGENTS.md`)
+- CI/CD files (`.github/`)
+
+### Safe Cleanup
+```bash
+# See what would be deleted (safe)
+python -m ai_onboard cleanup --dry-run
+
+# Actually clean up (with confirmation)
+python -m ai_onboard cleanup
+
+# Force cleanup without confirmation
+python -m ai_onboard cleanup --force
+
+# Create backup before cleanup
+python -m ai_onboard cleanup --backup
+```
+
 ## 📊 Alignment System
 
 ### Preview Changes
@@ -131,6 +164,7 @@ Use the intelligent alignment preview to assess confidence before executing:
 
 ```bash
 python -m ai_onboard align --preview
+# -> prints JSON and writes .ai_onboard/alignment_report.json
 ```
 
 This generates a report with:
@@ -138,6 +172,8 @@ This generates a report with:
 - `decision` (proceed|quick_confirm|clarify)
 - Component scores
 - Detected ambiguities
+
+Thresholds are configured in `ai_onboard/policies/alignment_rules.yaml`.
 
 ### Configuration
 Set feature flags in `ai_onboard.json`:
@@ -154,22 +190,6 @@ Set feature flags in `ai_onboard.json`:
     "REQUIRES_TEST_COVERAGE": true
   }
 }
-```
-
-## 🎨 Natural Language Mode
-
-For Cursor/LLM agents, use the prompt-first workflow:
-
-```bash
-# Print system prompt for your agent
-python examples/cursor_prompt_loop.py --print-prompt
-
-# Log observations and decisions
-python examples/cursor_prompt_loop.py --observe "Found README with goals A/B" --rule readme
-python examples/cursor_prompt_loop.py --decide allow --why "docs sufficient to proceed"
-
-# Check status
-python examples/cursor_prompt_loop.py --status
 ```
 
 ## 📁 Project Structure
@@ -221,6 +241,29 @@ pytest --cov=ai_onboard
 # Run specific test categories
 pytest -m "not slow"  # Skip slow tests
 pytest -m integration  # Only integration tests
+```
+
+## 🚀 AI Agent Capabilities
+
+This project acts as a meta-tool for AI coding agents (Cursor, Codex, GPTs, etc.) by providing:
+
+**Where it fits well:**
+- **Memory**: `ai_onboard.json` + JSONL telemetry gives agents persistent state across runs
+- **Safety**: Protected paths + safe cleanup reduce destructive actions
+- **Guardrails**: Policy engine + validation runtime enforce pre-flight sanity checks
+- **Kaizen**: Plan/Do/Check/Act loop scaffolds self-correction instead of blind retries
+
+**Advanced Features:**
+- **Intent checks**: Meta-policy for "should the agent do this task now?"
+- **Prompt feedback**: Feed telemetry/state back into agent prompts, not just logs
+- **Nonlinear work**: Lightweight checkpoints/rollback and branch comparison for approaches
+- **Cross-model context**: Shared memory usable by different models/context windows
+
+**PowerShell Tip:**
+```powershell
+# Assign JSON to variable to avoid quoting issues
+$diff = '{"files_changed":["a.py","b.py"],"lines_deleted":200,"has_tests":false,"subsystems":["core","ui"]}'
+python -m ai_onboard prompt propose --diff $diff
 ```
 
 ## 📈 Roadmap

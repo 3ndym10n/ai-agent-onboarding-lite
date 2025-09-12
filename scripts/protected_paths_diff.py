@@ -9,7 +9,7 @@ import sys
 PROTECTED = [
     ".github/**",
     "pyproject.toml",
-    "README_ai_onboard.md",
+    "README.md",
     "AGENTS.md",
     "ai_onboard/__init__.py",
     "ai_onboard/__main__.py",

@@ -28,7 +28,7 @@ The repository functions both as a utility and as a proving ground for disciplin
 2.2 High-Level Components
 - Core package: `ai_onboard/` including runtime modules, CLI, plugins, policies, overlays, and schemas.
 - Tooling and configuration: `pyproject.toml`, `requirements.txt`, `.github/workflows/`, `scripts/`.
-- Docs and guidance: `README_ai_onboard.md`, `AGENTS.md`.
+- Docs and guidance: `README.md`, `AGENTS.md`.
 
 2.3 Execution Environment
 - Target OS: Windows 10+ (PowerShell), but generally platform-independent Python.
@@ -39,7 +39,7 @@ The repository functions both as a utility and as a proving ground for disciplin
 - `ai_onboard/`: core runtime, CLI, plugins, policies, schemas.
 - `.github/` and workflows: CI enforcement.
 - `scripts/`: protection and validation utilities.
-- `pyproject.toml`, `README_ai_onboard.md`, `AGENTS.md`, `ai_onboard/VERSION`.
+- `pyproject.toml`, `README.md`, `AGENTS.md`, `ai_onboard/VERSION`.
 
 3.1.1 Directory Model (canonical)
 - `ai_onboard/`            # package: runtime, CLI, plugins, canonical policies, schemas
@@ -150,7 +150,7 @@ Ensure no secrets are committed. Validate that logs and artifacts exclude sensit
 
 11. Documentation Policy
 11.1 User-Facing Docs
-Update `README_ai_onboard.md` for any user-visible changes. Provide minimal, high-signal diffs.
+Update `README.md` for any user-visible changes. Provide minimal, high-signal diffs.
 
 11.2 Change Records
 Document rationale in PRs; if adopting a CHANGELOG, keep entries concise and factual.

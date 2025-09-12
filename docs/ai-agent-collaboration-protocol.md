@@ -210,7 +210,7 @@ The following files and directories are protected from modification without expl
 - `.ai_onboard/policies/` - System policies
 - `.ai_onboard/charter.json` - Project charter
 - `pyproject.toml` - Project configuration
-- `README_ai_onboard.md` - System documentation
+- `README.md` - System documentation
 - `AGENTS.md` - Agent guidelines
 
 ### Dangerous Commands

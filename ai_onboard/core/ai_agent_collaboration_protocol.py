@@ -16,8 +16,10 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from . import utils
+
 # from .ai_agent_wrapper import AIAgentIASWrapper, IASGuardrails
 from .enhanced_vision_interrogator import ProjectType, get_enhanced_vision_interrogator
+
 # from .gate_system import GateRequest, GateType
 from .universal_error_monitor import get_error_monitor
 
@@ -598,7 +600,7 @@ class AIAgentCollaborationProtocol:
             ".ai_onboard/policies/",
             ".ai_onboard/charter.json",
             "pyproject.toml",
-            "README_ai_onboard.md",
+            "README.md",
             "AGENTS.md",
         ]
 

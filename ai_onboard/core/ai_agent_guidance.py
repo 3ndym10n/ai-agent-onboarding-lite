@@ -13,9 +13,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from . import utils
-from .ai_agent_collaboration_protocol import (
-    get_collaboration_protocol,
-)
+from .ai_agent_collaboration_protocol import get_collaboration_protocol
 
 
 class GuidanceType(Enum):
@@ -132,7 +130,7 @@ Never modify these files without explicit user permission:
 - `.ai_onboard/policies/` - System policies
 - `.ai_onboard/charter.json` - Project charter
 - `pyproject.toml` - Project configuration
-- `README_ai_onboard.md` - System documentation
+- `README.md` - System documentation
 - `AGENTS.md` - Agent guidelines
 
 ## Dangerous Commands

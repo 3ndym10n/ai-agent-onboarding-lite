@@ -3,8 +3,9 @@ rules:
   - id: protect-core-system
     conditions:
       any:
-        - deletes_globs: ["ai_onboard/**", "ai_onboard.py", "ai_onboard/**/*.py"]
-        - deletes_globs: ["pyproject.toml", "AGENTS.md", "README_ai_onboard.md"]
+        - deletes_globs:
+            ["ai_onboard/**", "ai_onboard.py", "ai_onboard/**/*.py"]
+        - deletes_globs: ["pyproject.toml", "AGENTS.md", "README.md"]
         - deletes_globs: [".github/workflows/**", "scripts/protected_paths.py"]
     action: block
     message: "Core ai-onboard system files are protected from deletion."
@@ -16,9 +17,9 @@ rules:
       all:
         - operation: cleanup
         - any:
-          - deletes_globs: ["ai_onboard/**"]
-          - deletes_globs: ["**/ai_onboard/**"]
-          - deletes_globs: ["pyproject.toml"]
+            - deletes_globs: ["ai_onboard/**"]
+            - deletes_globs: ["**/ai_onboard/**"]
+            - deletes_globs: ["pyproject.toml"]
     action: block
     message: "Self-preservation: Cannot delete ai-onboard system during cleanup."
     severity: critical
@@ -103,7 +104,7 @@ rules:
     conditions:
       any:
         - deletes_globs: ["**/*.md", "**/docs/**", "**/README*"]
-        - modifies_globs: ["AGENTS.md", "README_ai_onboard.md"]
+        - modifies_globs: ["AGENTS.md", "README.md"]
     action: warn
     message: "Documentation helps maintain project clarity and continuity."
     severity: medium
@@ -112,7 +113,8 @@ rules:
   - id: prevent-dependency-corruption
     conditions:
       any:
-        - deletes_globs: ["requirements.txt", "pyproject.toml", "setup.py", "Pipfile"]
+        - deletes_globs:
+            ["requirements.txt", "pyproject.toml", "setup.py", "Pipfile"]
         - modifies_globs: ["pyproject.toml", "requirements.txt"]
     action: require_approval
     message: "Dependency files affect project build and deployment."

@@ -118,7 +118,7 @@ mypy>=1.0.0
 REQUIRED_FILES = [
     # Top-level project metadata
     "pyproject.toml",
-    "README_ai_onboard.md",
+    "README.md",
     "AGENTS.md",
 
     # Package identity

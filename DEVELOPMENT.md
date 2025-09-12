@@ -356,4 +356,4 @@ The `dev-config.yaml` file contains development-specific settings:
 
 ---
 
-For more information, see the main [README](README_ai_onboard.md) or check the [documentation](docs/) directory.
+For more information, see the main [README](README.md) or check the [documentation](docs/) directory.
