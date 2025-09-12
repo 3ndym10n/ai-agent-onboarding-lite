@@ -27,6 +27,7 @@ from ai_onboard.core.smart_debugger import SmartDebugger
 # Optional psutil import for enhanced metrics
 try:
     import psutil
+
     HAS_PSUTIL = True
 except ImportError:
     HAS_PSUTIL = False
@@ -42,7 +43,7 @@ class EnhancedMetricsCollector:
             "performance_data": {},
             "confidence_scores": {},
             "resource_usage": {},
-            "error_analysis": {}
+            "error_analysis": {},
         }
         self.smart_debugger = SmartDebugger(project_root)
 
@@ -66,7 +67,7 @@ class EnhancedMetricsCollector:
             "start_time": datetime.now().isoformat(),
             "baseline_memory_mb": start_memory,
             "baseline_cpu_percent": start_cpu,
-            "psutil_available": HAS_PSUTIL
+            "psutil_available": HAS_PSUTIL,
         }
 
         try:
@@ -89,32 +90,40 @@ class EnhancedMetricsCollector:
             cpu_delta = end_cpu - start_cpu
 
             # Enhanced analysis
-            confidence_score = self._calculate_confidence_score(test_name, result, execution_time)
-            performance_score = self._calculate_performance_score(execution_time, memory_delta)
+            confidence_score = self._calculate_confidence_score(
+                test_name, result, execution_time
+            )
+            performance_score = self._calculate_performance_score(
+                execution_time, memory_delta
+            )
 
-            test_metrics.update({
-                "success": result,
-                "execution_time_seconds": execution_time,
-                "memory_usage_mb": memory_delta,
-                "cpu_usage_percent": cpu_delta,
-                "confidence_score": confidence_score,
-                "performance_score": performance_score,
-                "end_time": datetime.now().isoformat(),
-                "status": "PASSED" if result else "FAILED"
-            })
+            test_metrics.update(
+                {
+                    "success": result,
+                    "execution_time_seconds": execution_time,
+                    "memory_usage_mb": memory_delta,
+                    "cpu_usage_percent": cpu_delta,
+                    "confidence_score": confidence_score,
+                    "performance_score": performance_score,
+                    "end_time": datetime.now().isoformat(),
+                    "status": "PASSED" if result else "FAILED",
+                }
+            )
 
         except Exception as e:
             # Error analysis
             error_analysis = self._analyze_error(test_name, str(e))
-            test_metrics.update({
-                "success": False,
-                "error": str(e),
-                "error_analysis": error_analysis,
-                "execution_time_seconds": time.time() - start_time,
-                "status": "ERROR",
-                "confidence_score": 0.0,
-                "performance_score": 0.0
-            })
+            test_metrics.update(
+                {
+                    "success": False,
+                    "error": str(e),
+                    "error_analysis": error_analysis,
+                    "execution_time_seconds": time.time() - start_time,
+                    "status": "ERROR",
+                    "confidence_score": 0.0,
+                    "performance_score": 0.0,
+                }
+            )
 
         # Store metrics
         self.metrics["test_results"].append(test_metrics)
@@ -125,7 +134,9 @@ class EnhancedMetricsCollector:
 
         return test_metrics
 
-    def _calculate_confidence_score(self, test_name: str, result: bool, execution_time: float) -> float:
+    def _calculate_confidence_score(
+        self, test_name: str, result: bool, execution_time: float
+    ) -> float:
         """Calculate confidence score for test results."""
         base_score = 0.9 if result else 0.3
 
@@ -139,13 +150,15 @@ class EnhancedMetricsCollector:
         elif test_name == "Vision System":
             base_score *= 0.95  # Slightly lower for vision complexity
         elif test_name == "Alignment System":
-            base_score *= 0.9   # Moderate confidence for alignment
+            base_score *= 0.9  # Moderate confidence for alignment
         elif test_name == "Project Plan":
-            base_score *= 1.0   # High confidence for planning
+            base_score *= 1.0  # High confidence for planning
 
         return round(base_score, 2)
 
-    def _calculate_performance_score(self, execution_time: float, memory_delta: float) -> float:
+    def _calculate_performance_score(
+        self, execution_time: float, memory_delta: float
+    ) -> float:
         """Calculate performance score from 0-100."""
         time_score = max(0, 100 - (execution_time * 25))
         memory_score = max(0, 100 - (memory_delta * 1.5))
@@ -154,7 +167,9 @@ class EnhancedMetricsCollector:
     def _analyze_error(self, test_name: str, error_msg: str) -> Dict[str, Any]:
         """Analyze errors using SmartDebugger with enhanced integration."""
         try:
-            analysis = self.smart_debugger.analyze_error(error_msg, context=f"Test: {test_name}")
+            analysis = self.smart_debugger.analyze_error(
+                error_msg, context=f"Test: {test_name}"
+            )
 
             # Enhanced analysis with more details
             enhanced_analysis = {
@@ -163,9 +178,11 @@ class EnhancedMetricsCollector:
                 "solutions_available": len(analysis.get("solutions", [])),
                 "error_category": analysis.get("category", "unknown"),
                 "severity_level": analysis.get("severity", "medium"),
-                "recommended_actions": analysis.get("solutions", [])[:3],  # Top 3 solutions
+                "recommended_actions": analysis.get("solutions", [])[
+                    :3
+                ],  # Top 3 solutions
                 "similar_incidents": analysis.get("similar_count", 0),
-                "analysis_timestamp": datetime.now().isoformat()
+                "analysis_timestamp": datetime.now().isoformat(),
             }
 
             # Add SmartDebugger insights to global metrics
@@ -173,7 +190,7 @@ class EnhancedMetricsCollector:
                 self.metrics["error_analysis"][test_name] = {
                     "high_confidence_analysis": True,
                     "patterns": analysis.get("patterns", []),
-                    "automated_solutions": analysis.get("solutions", [])
+                    "automated_solutions": analysis.get("solutions", []),
                 }
 
             return enhanced_analysis
@@ -182,7 +199,7 @@ class EnhancedMetricsCollector:
             return {
                 "fallback_analysis": "SmartDebugger unavailable",
                 "error": str(e),
-                "basic_pattern_matching": self._basic_error_pattern_matching(error_msg)
+                "basic_pattern_matching": self._basic_error_pattern_matching(error_msg),
             }
 
     def _basic_error_pattern_matching(self, error_msg: str) -> Dict[str, Any]:
@@ -200,20 +217,20 @@ class EnhancedMetricsCollector:
         else:
             patterns.append("unknown_error")
 
-        return {
-            "patterns": patterns,
-            "severity": "medium",
-            "confidence": 0.5
-        }
+        return {"patterns": patterns, "severity": "medium", "confidence": 0.5}
 
     def _update_global_metrics(self, test_name: str, test_metrics: Dict[str, Any]):
         """Update global metrics collection."""
         self.metrics["performance_data"][test_name] = {
             "execution_time": test_metrics.get("execution_time_seconds", 0),
-            "memory_usage": test_metrics.get("memory_usage_mb", 0)
+            "memory_usage": test_metrics.get("memory_usage_mb", 0),
         }
-        self.metrics["confidence_scores"][test_name] = test_metrics.get("confidence_score", 0)
-        self.metrics["resource_usage"]["total_tests"] = len(self.metrics["test_results"])
+        self.metrics["confidence_scores"][test_name] = test_metrics.get(
+            "confidence_score", 0
+        )
+        self.metrics["resource_usage"]["total_tests"] = len(
+            self.metrics["test_results"]
+        )
 
     def _print_enhanced_results(self, test_metrics: Dict[str, Any]):
         """Print enhanced test results with metrics."""
@@ -221,10 +238,14 @@ class EnhancedMetricsCollector:
         print(f"{status_icon} {test_metrics['test_name']}: {test_metrics['status']}")
 
         if test_metrics["success"]:
-            print(f"      ⏱️  Execution: {test_metrics.get('execution_time_seconds', 0):.3f}s")
+            print(
+                f"      ⏱️  Execution: {test_metrics.get('execution_time_seconds', 0):.3f}s"
+            )
             print(f"      💾 Memory: {test_metrics.get('memory_usage_mb', 0):.1f}MB")
             print(f"      🎯 Confidence: {test_metrics.get('confidence_score', 0):.1f}")
-            print(f"      ⚡ Performance: {test_metrics.get('performance_score', 0):.1f}/100")
+            print(
+                f"      ⚡ Performance: {test_metrics.get('performance_score', 0):.1f}/100"
+            )
         else:
             print(f"   ❌ Error: {test_metrics.get('error', 'Unknown')}")
 
@@ -241,11 +262,11 @@ class EnhancedMetricsCollector:
                 "total_tests": total_tests,
                 "passed_tests": passed_tests,
                 "success_rate": (passed_tests / max(total_tests, 1)) * 100,
-                "timestamp": datetime.now().isoformat()
+                "timestamp": datetime.now().isoformat(),
             },
             "metrics": self.metrics,
             "smart_debugger_analysis": smart_debugger_insights,
-            "insights": self._generate_insights()
+            "insights": self._generate_insights(),
         }
 
     def _analyze_smart_debugger_effectiveness(self) -> Dict[str, Any]:
@@ -257,44 +278,80 @@ class EnhancedMetricsCollector:
             return {"status": "no_data"}
 
         # Analyze confidence scores
-        confidence_scores = [r.get("confidence_score", 0) for r in test_results if r.get("confidence_score", 0) > 0]
-        avg_confidence = sum(confidence_scores) / len(confidence_scores) if confidence_scores else 0.0
+        confidence_scores = [
+            r.get("confidence_score", 0)
+            for r in test_results
+            if r.get("confidence_score", 0) > 0
+        ]
+        avg_confidence = (
+            sum(confidence_scores) / len(confidence_scores)
+            if confidence_scores
+            else 0.0
+        )
 
         # Analyze error analysis effectiveness
-        high_confidence_analyses = len([ea for ea in error_analyses.values() if ea.get("high_confidence_analysis", False)])
+        high_confidence_analyses = len(
+            [
+                ea
+                for ea in error_analyses.values()
+                if ea.get("high_confidence_analysis", False)
+            ]
+        )
         total_analyses = len(error_analyses)
 
         # Calculate SmartDebugger health score
-        effectiveness_score = min(100, (avg_confidence * 50) + (high_confidence_analyses / max(total_analyses, 1) * 50))
+        effectiveness_score = min(
+            100,
+            (avg_confidence * 50)
+            + (high_confidence_analyses / max(total_analyses, 1) * 50),
+        )
 
         return {
             "average_confidence_score": round(avg_confidence, 2),
             "high_confidence_analyses": high_confidence_analyses,
             "total_error_analyses": total_analyses,
             "effectiveness_score": round(effectiveness_score, 1),
-            "status": "excellent" if effectiveness_score >= 80 else "good" if effectiveness_score >= 60 else "needs_improvement",
-            "insights": self._generate_smart_debugger_insights(avg_confidence, high_confidence_analyses, total_analyses)
+            "status": (
+                "excellent"
+                if effectiveness_score >= 80
+                else "good" if effectiveness_score >= 60 else "needs_improvement"
+            ),
+            "insights": self._generate_smart_debugger_insights(
+                avg_confidence, high_confidence_analyses, total_analyses
+            ),
         }
 
-    def _generate_smart_debugger_insights(self, avg_confidence: float, high_conf_analyses: int, total_analyses: int) -> List[str]:
+    def _generate_smart_debugger_insights(
+        self, avg_confidence: float, high_conf_analyses: int, total_analyses: int
+    ) -> List[str]:
         """Generate insights about SmartDebugger performance."""
         insights = []
 
         if avg_confidence >= 0.8:
-            insights.append("🎯 SmartDebugger showing excellent confidence in error analysis")
+            insights.append(
+                "🎯 SmartDebugger showing excellent confidence in error analysis"
+            )
         elif avg_confidence >= 0.6:
-            insights.append("✅ SmartDebugger performing well with good confidence levels")
+            insights.append(
+                "✅ SmartDebugger performing well with good confidence levels"
+            )
         else:
             insights.append("⚠️ SmartDebugger confidence levels could be improved")
 
         if high_conf_analyses > 0:
-            insights.append(f"🔍 SmartDebugger provided high-confidence analysis for {high_conf_analyses} error cases")
+            insights.append(
+                f"🔍 SmartDebugger provided high-confidence analysis for {high_conf_analyses} error cases"
+            )
         else:
-            insights.append("📊 SmartDebugger analysis opportunities available for improvement")
+            insights.append(
+                "📊 SmartDebugger analysis opportunities available for improvement"
+            )
 
         if total_analyses > 0:
             coverage = (high_conf_analyses / total_analyses) * 100
-            insights.append(f"📊 SmartDebugger coverage: {coverage:.1f}% of error cases analyzed")
+            insights.append(
+                f"📊 SmartDebugger coverage: {coverage:.1f}% of error cases analyzed"
+            )
         return insights
 
     def _generate_insights(self) -> List[str]:
@@ -313,7 +370,9 @@ class EnhancedMetricsCollector:
             insights.append("✅ Good test coverage with acceptable performance")
 
         # Performance insights
-        avg_time = sum(r.get("execution_time_seconds", 0) for r in results) / len(results)
+        avg_time = sum(r.get("execution_time_seconds", 0) for r in results) / len(
+            results
+        )
         if avg_time > 1.0:
             insights.append(f"🐌 Average execution time: {avg_time:.2f}s")
 
@@ -344,7 +403,7 @@ class PerformanceBaselineMonitor:
                 "performance_baseline": metrics.get("performance_score", 0),
                 "confidence_baseline": metrics.get("confidence_score", 0),
                 "samples": 1,
-                "established_at": datetime.now().isoformat()
+                "established_at": datetime.now().isoformat(),
             }
         else:
             # Update rolling average
@@ -354,22 +413,32 @@ class PerformanceBaselineMonitor:
             # Update execution time (rolling average)
             current_time = metrics.get("execution_time_seconds", 0)
             baseline_time = baseline["execution_time_baseline"]
-            baseline["execution_time_baseline"] = (baseline_time * samples + current_time) / (samples + 1)
+            baseline["execution_time_baseline"] = (
+                baseline_time * samples + current_time
+            ) / (samples + 1)
 
             # Update other metrics
             current_memory = metrics.get("memory_usage_mb", 0)
-            baseline["memory_baseline"] = (baseline["memory_baseline"] * samples + current_memory) / (samples + 1)
+            baseline["memory_baseline"] = (
+                baseline["memory_baseline"] * samples + current_memory
+            ) / (samples + 1)
 
             current_perf = metrics.get("performance_score", 0)
-            baseline["performance_baseline"] = (baseline["performance_baseline"] * samples + current_perf) / (samples + 1)
+            baseline["performance_baseline"] = (
+                baseline["performance_baseline"] * samples + current_perf
+            ) / (samples + 1)
 
             current_conf = metrics.get("confidence_score", 0)
-            baseline["confidence_baseline"] = (baseline["confidence_baseline"] * samples + current_conf) / (samples + 1)
+            baseline["confidence_baseline"] = (
+                baseline["confidence_baseline"] * samples + current_conf
+            ) / (samples + 1)
 
             baseline["samples"] = samples + 1
             baseline["last_updated"] = datetime.now().isoformat()
 
-    def monitor_performance(self, test_name: str, metrics: Dict[str, Any]) -> Dict[str, Any]:
+    def monitor_performance(
+        self, test_name: str, metrics: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Monitor current performance against baseline."""
         if test_name not in self.baselines:
             return {"status": "no_baseline", "alerts": []}
@@ -384,15 +453,17 @@ class PerformanceBaselineMonitor:
         if baseline_time > 0:
             time_ratio = current_time / baseline_time
             if time_ratio > 1.5:  # 50% slower
-                alerts.append({
-                    "type": "performance_degradation",
-                    "metric": "execution_time",
-                    "severity": "high" if time_ratio > 2.0 else "medium",
-                    "current": current_time,
-                    "baseline": baseline_time,
-                    "ratio": time_ratio,
-                    "message": f"Execution time degraded by {time_ratio:.2f}x (from {baseline_time:.3f}s to {current_time:.3f}s)"
-                })
+                alerts.append(
+                    {
+                        "type": "performance_degradation",
+                        "metric": "execution_time",
+                        "severity": "high" if time_ratio > 2.0 else "medium",
+                        "current": current_time,
+                        "baseline": baseline_time,
+                        "ratio": time_ratio,
+                        "message": f"Execution time degraded by {time_ratio:.2f}x (from {baseline_time:.3f}s to {current_time:.3f}s)",
+                    }
+                )
 
         # Check memory usage increase (more than 100% increase)
         current_memory = metrics.get("memory_usage_mb", 0)
@@ -401,45 +472,51 @@ class PerformanceBaselineMonitor:
         if baseline_memory > 0:
             memory_ratio = current_memory / baseline_memory
             if memory_ratio > 2.0:  # 100% increase
-                alerts.append({
-                    "type": "memory_increase",
-                    "metric": "memory_usage",
-                    "severity": "high",
-                    "current": current_memory,
-                    "baseline": baseline_memory,
-                    "ratio": memory_ratio,
-                    "message": f"Memory usage increased by {memory_ratio:.1f}x (from {baseline_memory:.1f}MB to {current_memory:.1f}MB)"
-                })
+                alerts.append(
+                    {
+                        "type": "memory_increase",
+                        "metric": "memory_usage",
+                        "severity": "high",
+                        "current": current_memory,
+                        "baseline": baseline_memory,
+                        "ratio": memory_ratio,
+                        "message": f"Memory usage increased by {memory_ratio:.1f}x (from {baseline_memory:.1f}MB to {current_memory:.1f}MB)",
+                    }
+                )
 
         # Check performance score degradation
         current_perf = metrics.get("performance_score", 0)
         baseline_perf = baseline["performance_baseline"]
 
         if current_perf < baseline_perf * 0.8:  # 20% degradation
-            alerts.append({
-                "type": "performance_score_drop",
-                "metric": "performance_score",
-                "severity": "medium",
-                "current": current_perf,
-                "baseline": baseline_perf,
-                "ratio": current_perf / baseline_perf,
-                "message": f"Performance score dropped by {current_perf / baseline_perf:.1f}x (from {baseline_perf:.1f} to {current_perf:.1f})"
-            })
+            alerts.append(
+                {
+                    "type": "performance_score_drop",
+                    "metric": "performance_score",
+                    "severity": "medium",
+                    "current": current_perf,
+                    "baseline": baseline_perf,
+                    "ratio": current_perf / baseline_perf,
+                    "message": f"Performance score dropped by {current_perf / baseline_perf:.1f}x (from {baseline_perf:.1f} to {current_perf:.1f})",
+                }
+            )
 
         # Check confidence degradation
         current_conf = metrics.get("confidence_score", 0)
         baseline_conf = baseline["confidence_baseline"]
 
         if current_conf < baseline_conf * 0.7:  # 30% degradation
-            alerts.append({
-                "type": "confidence_degradation",
-                "metric": "confidence_score",
-                "severity": "medium",
-                "current": current_conf,
-                "baseline": baseline_conf,
-                "ratio": current_conf / baseline_conf,
-                "message": f"Confidence score degraded by {current_conf / baseline_conf:.1f}x (from {baseline_conf:.1f} to {current_conf:.1f})"
-            })
+            alerts.append(
+                {
+                    "type": "confidence_degradation",
+                    "metric": "confidence_score",
+                    "severity": "medium",
+                    "current": current_conf,
+                    "baseline": baseline_conf,
+                    "ratio": current_conf / baseline_conf,
+                    "message": f"Confidence score degraded by {current_conf / baseline_conf:.1f}x (from {baseline_conf:.1f} to {current_conf:.1f})",
+                }
+            )
 
         # Store alerts
         self.alerts.extend(alerts)
@@ -448,7 +525,7 @@ class PerformanceBaselineMonitor:
             "status": "monitored",
             "alerts": alerts,
             "alert_count": len(alerts),
-            "baseline_age_days": self._calculate_baseline_age(baseline)
+            "baseline_age_days": self._calculate_baseline_age(baseline),
         }
 
     def _calculate_baseline_age(self, baseline: Dict[str, Any]) -> int:
@@ -485,11 +562,11 @@ class PerformanceBaselineMonitor:
                 "high_severity_alerts": high_severity,
                 "medium_severity_alerts": medium_severity,
                 "performance_health_score": health_score,
-                "health_status": health_status
+                "health_status": health_status,
             },
             "alerts": self.alerts[-10:],  # Last 10 alerts
             "baselines": self.baselines,
-            "recommendations": self._generate_performance_recommendations()
+            "recommendations": self._generate_performance_recommendations(),
         }
 
     def _generate_performance_recommendations(self) -> List[str]:
@@ -497,24 +574,35 @@ class PerformanceBaselineMonitor:
         recommendations = []
 
         if not self.baselines:
-            recommendations.append("Establish performance baselines by running tests multiple times")
+            recommendations.append(
+                "Establish performance baselines by running tests multiple times"
+            )
             return recommendations
 
         # Check for common issues
         high_alerts = [a for a in self.alerts if a.get("severity") == "high"]
         if high_alerts:
-            recommendations.append(f"Address {len(high_alerts)} high-severity performance issues")
+            recommendations.append(
+                f"Address {len(high_alerts)} high-severity performance issues"
+            )
 
         # Check baseline age
-        old_baselines = [name for name, baseline in self.baselines.items()
-                        if self._calculate_baseline_age(baseline) > 30]
+        old_baselines = [
+            name
+            for name, baseline in self.baselines.items()
+            if self._calculate_baseline_age(baseline) > 30
+        ]
         if old_baselines:
-            recommendations.append(f"Update baselines for {len(old_baselines)} tests (older than 30 days)")
+            recommendations.append(
+                f"Update baselines for {len(old_baselines)} tests (older than 30 days)"
+            )
 
         # Check for tests with no recent monitoring
         stale_tests = []
         for name, baseline in self.baselines.items():
-            last_updated = baseline.get("last_updated", baseline.get("established_at", ""))
+            last_updated = baseline.get(
+                "last_updated", baseline.get("established_at", "")
+            )
             if last_updated:
                 try:
                     last_date = datetime.fromisoformat(last_updated)
@@ -525,7 +613,9 @@ class PerformanceBaselineMonitor:
                     pass
 
         if stale_tests:
-            recommendations.append(f"Re-run performance monitoring for {len(stale_tests)} stale tests")
+            recommendations.append(
+                f"Re-run performance monitoring for {len(stale_tests)} stale tests"
+            )
 
         return recommendations
 
@@ -533,7 +623,7 @@ class PerformanceBaselineMonitor:
         """Load existing performance baselines from file."""
         if self.baseline_file.exists():
             try:
-                with open(self.baseline_file, 'r') as f:
+                with open(self.baseline_file, "r") as f:
                     self.baselines = json.load(f)
             except:
                 self.baselines = {}
@@ -541,7 +631,7 @@ class PerformanceBaselineMonitor:
     def _save_baselines(self):
         """Save performance baselines to file."""
         try:
-            with open(self.baseline_file, 'w') as f:
+            with open(self.baseline_file, "w") as f:
                 json.dump(self.baselines, f, indent=2)
         except:
             pass
@@ -587,7 +677,8 @@ def test_error_monitoring():
 
         # In CI environments, always pass error monitoring if no exceptions thrown
         import os
-        is_ci = os.getenv('CI') == 'true' or os.getenv('GITHUB_ACTIONS') == 'true'
+
+        is_ci = os.getenv("CI") == "true" or os.getenv("GITHUB_ACTIONS") == "true"
         if is_ci:
             print("   - Note: Error monitoring functional in CI environment")
         return True
@@ -612,9 +703,12 @@ def test_vision_system():
 
         # In CI environments, pass if system is working (even if not "ready" due to missing files)
         import os
-        is_ci = os.getenv('CI') == 'true' or os.getenv('GITHUB_ACTIONS') == 'true'
+
+        is_ci = os.getenv("CI") == "true" or os.getenv("GITHUB_ACTIONS") == "true"
         if is_ci and not readiness["ready_for_agents"]:
-            print("   - Note: Not ready due to missing .ai_onboard files (expected in CI)")
+            print(
+                "   - Note: Not ready due to missing .ai_onboard files (expected in CI)"
+            )
             return True  # Pass in CI if system works but isn't ready
         return readiness["ready_for_agents"]
     except Exception as e:
@@ -639,10 +733,13 @@ def test_alignment_system():
 
         # In CI environments, pass if system is working (even with low confidence due to missing files)
         import os
-        is_ci = os.getenv('CI') == 'true' or os.getenv('GITHUB_ACTIONS') == 'true'
+
+        is_ci = os.getenv("CI") == "true" or os.getenv("GITHUB_ACTIONS") == "true"
         confidence_threshold = 0.3 if is_ci else 0.7  # Lower threshold for CI
         if is_ci and alignment_data["confidence"] < 0.7:
-            print(f"   - Note: Low confidence due to missing .ai_onboard files (expected in CI)")
+            print(
+                f"   - Note: Low confidence due to missing .ai_onboard files (expected in CI)"
+            )
             return alignment_data["confidence"] > confidence_threshold
         return alignment_data["confidence"] > 0.7
     except Exception as e:
@@ -703,7 +800,7 @@ def test_smart_debugger_integration():
                     "type": error_msg.split(":")[0] if ":" in error_msg else "unknown",
                     "message": error_msg,
                     "context": f"Test scenario {i}",
-                    "timestamp": datetime.now().isoformat()
+                    "timestamp": datetime.now().isoformat(),
                 }
 
                 analysis = smart_debugger.analyze_error(error_data)
@@ -779,7 +876,9 @@ def main():
                 severity_icon = "🔴" if alert["severity"] == "high" else "🟡"
                 print(f"      {severity_icon} {alert['message']}")
         else:
-            print(f"   ✅ Performance within baseline (age: {performance_result.get('baseline_age_days', 0)} days)")
+            print(
+                f"   ✅ Performance within baseline (age: {performance_result.get('baseline_age_days', 0)} days)"
+            )
 
     # Generate comprehensive report
     print("\n" + "=" * 60)
@@ -795,8 +894,10 @@ def main():
     performance_report = performance_monitor.get_performance_report()
 
     # Calculate totals for display
-    total_tests = summary.get('total_tests', len(metrics_collector.metrics["test_results"]))
-    passed_tests = summary['passed_tests']
+    total_tests = summary.get(
+        "total_tests", len(metrics_collector.metrics["test_results"])
+    )
+    passed_tests = summary["passed_tests"]
     failed_tests = total_tests - passed_tests
 
     # Display summary
@@ -808,10 +909,18 @@ def main():
     # Display SmartDebugger analysis
     if smart_debugger_analysis and smart_debugger_analysis.get("status") != "no_data":
         print("\n🤖 SMARTDEBUGGER ANALYSIS:")
-        print(f"   🎯 Average confidence: {smart_debugger_analysis.get('average_confidence_score', 0):.1f}")
-        print(f"   📊 High-confidence analyses: {smart_debugger_analysis.get('high_confidence_analyses', 0)}")
-        print(f"   🔍 Total error analyses: {smart_debugger_analysis.get('total_error_analyses', 0)}")
-        print(f"   📈 Effectiveness: {smart_debugger_analysis.get('effectiveness_score', 0):.1f}/100")
+        print(
+            f"   🎯 Average confidence: {smart_debugger_analysis.get('average_confidence_score', 0):.1f}"
+        )
+        print(
+            f"   📊 High-confidence analyses: {smart_debugger_analysis.get('high_confidence_analyses', 0)}"
+        )
+        print(
+            f"   🔍 Total error analyses: {smart_debugger_analysis.get('total_error_analyses', 0)}"
+        )
+        print(
+            f"   📈 Effectiveness: {smart_debugger_analysis.get('effectiveness_score', 0):.1f}/100"
+        )
 
         smart_insights = smart_debugger_analysis.get("insights", [])
         if smart_insights:
@@ -822,11 +931,17 @@ def main():
     perf_summary = performance_report.get("summary", {})
     if perf_summary:
         print("\n⚡ PERFORMANCE MONITORING:")
-        print(f"   🎯 Performance health: {perf_summary.get('performance_health_score', 0):.1f}/100 ({perf_summary.get('health_status', 'unknown')})")
+        print(
+            f"   🎯 Performance health: {perf_summary.get('performance_health_score', 0):.1f}/100 ({perf_summary.get('health_status', 'unknown')})"
+        )
         print(f"   📊 Baselines established: {perf_summary.get('total_baselines', 0)}")
         print(f"   🚨 Performance alerts: {perf_summary.get('total_alerts', 0)}")
-        print(f"   🔴 High severity alerts: {perf_summary.get('high_severity_alerts', 0)}")
-        print(f"   🟡 Medium severity alerts: {perf_summary.get('medium_severity_alerts', 0)}")
+        print(
+            f"   🔴 High severity alerts: {perf_summary.get('high_severity_alerts', 0)}"
+        )
+        print(
+            f"   🟡 Medium severity alerts: {perf_summary.get('medium_severity_alerts', 0)}"
+        )
 
         # Display performance recommendations
         perf_recommendations = performance_report.get("recommendations", [])
@@ -852,10 +967,15 @@ def main():
             print(f"      🎯 Confidence: {result.get('confidence_score', 0):.1f}")
             print(f"      ⚡ Performance: {result.get('performance_score', 0):.1f}/100")
     # Save report to file
-    report_path = project_root / ".ai_onboard" / "test_reports" / f"enhanced_test_report_{int(time.time())}.json"
+    report_path = (
+        project_root
+        / ".ai_onboard"
+        / "test_reports"
+        / f"enhanced_test_report_{int(time.time())}.json"
+    )
     report_path.parent.mkdir(parents=True, exist_ok=True)
 
-    with open(report_path, 'w') as f:
+    with open(report_path, "w") as f:
         json.dump(report, f, indent=2)
 
     print("\n📄 Detailed report saved to:")

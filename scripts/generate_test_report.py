@@ -23,7 +23,9 @@ class ComprehensiveTestReporter:
         self.reports_dir = reports_dir
         self.reports_dir.mkdir(parents=True, exist_ok=True)
 
-    def generate_comprehensive_report(self, current_report: Dict[str, Any]) -> Dict[str, Any]:
+    def generate_comprehensive_report(
+        self, current_report: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Generate a comprehensive report with historical trends."""
         # Load historical reports
         historical_reports = self._load_historical_reports()
@@ -41,13 +43,19 @@ class ComprehensiveTestReporter:
             "current_run": current_report,
             "historical_analysis": trend_analysis,
             "insights": insights,
-            "recommendations": self._generate_recommendations(current_report, trend_analysis),
-            "visualizations": self._generate_visualizations(current_report, historical_reports),
+            "recommendations": self._generate_recommendations(
+                current_report, trend_analysis
+            ),
+            "visualizations": self._generate_visualizations(
+                current_report, historical_reports
+            ),
             "metadata": {
                 "total_historical_reports": len(historical_reports),
-                "analysis_period_days": self._calculate_analysis_period(historical_reports),
-                "report_version": "1.0"
-            }
+                "analysis_period_days": self._calculate_analysis_period(
+                    historical_reports
+                ),
+                "report_version": "1.0",
+            },
         }
 
         return comprehensive_report
@@ -65,11 +73,13 @@ class ComprehensiveTestReporter:
 
         for report_file in report_files[:limit]:
             try:
-                with open(report_file, 'r') as f:
+                with open(report_file, "r") as f:
                     report_data = json.load(f)
                     # Add file metadata
                     report_data["_file_path"] = str(report_file)
-                    report_data["_timestamp"] = datetime.fromtimestamp(report_file.stat().st_mtime).isoformat()
+                    report_data["_timestamp"] = datetime.fromtimestamp(
+                        report_file.stat().st_mtime
+                    ).isoformat()
                     reports.append(report_data)
             except:
                 continue
@@ -87,22 +97,28 @@ class ComprehensiveTestReporter:
             summary = report.get("summary", {})
             timestamp = report.get("_timestamp", datetime.now().isoformat())
 
-            timeline_data.append({
-                "timestamp": timestamp,
-                "success_rate": summary.get("success_rate", 0),
-                "total_tests": summary.get("total_tests", 0),
-                "passed_tests": summary.get("passed_tests", 0)
-            })
+            timeline_data.append(
+                {
+                    "timestamp": timestamp,
+                    "success_rate": summary.get("success_rate", 0),
+                    "total_tests": summary.get("total_tests", 0),
+                    "passed_tests": summary.get("passed_tests", 0),
+                }
+            )
 
         # Sort by timestamp
         timeline_data.sort(key=lambda x: x["timestamp"])
 
         # Calculate trends
         trends = {
-            "success_rate_trend": self._calculate_trend([d["success_rate"] for d in timeline_data]),
-            "test_count_trend": self._calculate_trend([d["total_tests"] for d in timeline_data]),
+            "success_rate_trend": self._calculate_trend(
+                [d["success_rate"] for d in timeline_data]
+            ),
+            "test_count_trend": self._calculate_trend(
+                [d["total_tests"] for d in timeline_data]
+            ),
             "timeline_data": timeline_data,
-            "analysis_period": f"{len(timeline_data)} test runs"
+            "analysis_period": f"{len(timeline_data)} test runs",
         }
 
         return trends
@@ -146,10 +162,12 @@ class ComprehensiveTestReporter:
             "slope": round(slope, 3),
             "start_value": round(values[0], 2),
             "end_value": round(values[-1], 2),
-            "change": round(values[-1] - values[0], 2)
+            "change": round(values[-1] - values[0], 2),
         }
 
-    def _generate_comprehensive_insights(self, current_report: Dict[str, Any], trends: Dict[str, Any]) -> List[str]:
+    def _generate_comprehensive_insights(
+        self, current_report: Dict[str, Any], trends: Dict[str, Any]
+    ) -> List[str]:
         """Generate comprehensive insights from current report and trends."""
         insights = []
 
@@ -158,9 +176,13 @@ class ComprehensiveTestReporter:
         success_rate = summary.get("success_rate", 0)
 
         if success_rate == 100:
-            insights.append("🎯 PERFECT: All tests passing - system operating at peak performance")
+            insights.append(
+                "🎯 PERFECT: All tests passing - system operating at peak performance"
+            )
         elif success_rate >= 90:
-            insights.append("✅ EXCELLENT: High test success rate indicates robust system health")
+            insights.append(
+                "✅ EXCELLENT: High test success rate indicates robust system health"
+            )
         elif success_rate >= 75:
             insights.append("⚠️ GOOD: Acceptable performance with room for improvement")
         else:
@@ -180,16 +202,22 @@ class ComprehensiveTestReporter:
         if perf_analysis:
             avg_confidence = perf_analysis.get("average_confidence_score", 0)
             if avg_confidence >= 0.8:
-                insights.append("🤖 EXCELLENT: SmartDebugger confidence indicates strong error analysis")
+                insights.append(
+                    "🤖 EXCELLENT: SmartDebugger confidence indicates strong error analysis"
+                )
             elif avg_confidence >= 0.6:
                 insights.append("🤖 GOOD: SmartDebugger performing adequately")
             else:
-                insights.append("🤖 IMPROVEMENT NEEDED: SmartDebugger confidence could be higher")
+                insights.append(
+                    "🤖 IMPROVEMENT NEEDED: SmartDebugger confidence could be higher"
+                )
 
         # Test coverage insights
         total_tests = summary.get("total_tests", 0)
         if total_tests >= 10:
-            insights.append("📊 COMPREHENSIVE: Good test coverage across system components")
+            insights.append(
+                "📊 COMPREHENSIVE: Good test coverage across system components"
+            )
         elif total_tests >= 5:
             insights.append("📊 MODERATE: Basic test coverage in place")
         else:
@@ -197,7 +225,9 @@ class ComprehensiveTestReporter:
 
         return insights
 
-    def _generate_recommendations(self, current_report: Dict[str, Any], trends: Dict[str, Any]) -> List[str]:
+    def _generate_recommendations(
+        self, current_report: Dict[str, Any], trends: Dict[str, Any]
+    ) -> List[str]:
         """Generate actionable recommendations."""
         recommendations = []
 
@@ -208,39 +238,51 @@ class ComprehensiveTestReporter:
         if success_rate < 90:
             recommendations.append("Investigate failing tests and address root causes")
         elif success_rate < 100:
-            recommendations.append("Review remaining test failures for potential improvements")
+            recommendations.append(
+                "Review remaining test failures for potential improvements"
+            )
 
         # Based on trends
         success_trend = trends.get("success_rate_trend", {})
         if success_trend.get("direction") == "degrading":
-            recommendations.append("Monitor performance degradation and identify contributing factors")
+            recommendations.append(
+                "Monitor performance degradation and identify contributing factors"
+            )
 
         # SmartDebugger recommendations
         smart_analysis = current_report.get("smart_debugger_analysis", {})
         if smart_analysis:
             avg_confidence = smart_analysis.get("average_confidence_score", 0)
             if avg_confidence < 0.7:
-                recommendations.append("Consider enhancing SmartDebugger training data for better accuracy")
+                recommendations.append(
+                    "Consider enhancing SmartDebugger training data for better accuracy"
+                )
 
         # Test coverage recommendations
         total_tests = summary.get("total_tests", 0)
         if total_tests < 8:
-            recommendations.append("Expand test coverage to include more system components")
+            recommendations.append(
+                "Expand test coverage to include more system components"
+            )
 
         # Performance recommendations
         if not recommendations:  # If no issues found
-            recommendations.append("Continue monitoring system performance and test reliability")
+            recommendations.append(
+                "Continue monitoring system performance and test reliability"
+            )
             recommendations.append("Consider adding performance regression tests")
 
         return recommendations
 
-    def _generate_visualizations(self, current_report: Dict[str, Any], historical_reports: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def _generate_visualizations(
+        self, current_report: Dict[str, Any], historical_reports: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
         """Generate text-based visualizations."""
         visualizations = {
             "performance_chart": self._generate_performance_chart(current_report),
             "trend_chart": self._generate_trend_chart(historical_reports),
             "health_gauge": self._generate_health_gauge(current_report),
-            "test_distribution": self._generate_test_distribution(current_report)
+            "test_distribution": self._generate_test_distribution(current_report),
         }
 
         return visualizations
@@ -358,11 +400,13 @@ Total:   {'█' * width} 100.0% ({total_tests})
         date_range = max(timestamps) - min(timestamps)
         return max(1, date_range.days)
 
-    def generate_html_report(self, comprehensive_report: Dict[str, Any], output_path: Path) -> None:
+    def generate_html_report(
+        self, comprehensive_report: Dict[str, Any], output_path: Path
+    ) -> None:
         """Generate an HTML report from the comprehensive data."""
         html_content = self._generate_html_content(comprehensive_report)
 
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             f.write(html_content)
 
     def _generate_html_content(self, report: Dict[str, Any]) -> str:
@@ -440,7 +484,9 @@ Total:   {'█' * width} 100.0% ({total_tests})
 """
 
         # Add trend chart
-        trend_chart = report.get("visualizations", {}).get("trend_chart", "No trend data")
+        trend_chart = report.get("visualizations", {}).get(
+            "trend_chart", "No trend data"
+        )
         html += trend_chart
 
         html += """
@@ -453,7 +499,9 @@ Total:   {'█' * width} 100.0% ({total_tests})
 """
 
         # Add health gauge
-        health_gauge = report.get("visualizations", {}).get("health_gauge", "No health data")
+        health_gauge = report.get("visualizations", {}).get(
+            "health_gauge", "No health data"
+        )
         html += health_gauge
 
         html += """
@@ -466,7 +514,9 @@ Total:   {'█' * width} 100.0% ({total_tests})
         return html
 
 
-def generate_comprehensive_test_report(reports_dir: Path, output_dir: Path = None) -> Dict[str, Any]:
+def generate_comprehensive_test_report(
+    reports_dir: Path, output_dir: Path = None
+) -> Dict[str, Any]:
     """
     Generate a comprehensive test report from the latest test run.
 
@@ -490,7 +540,7 @@ def generate_comprehensive_test_report(reports_dir: Path, output_dir: Path = Non
     # Get the most recent report
     latest_report = max(report_files, key=lambda x: x.stat().st_mtime)
 
-    with open(latest_report, 'r') as f:
+    with open(latest_report, "r") as f:
         current_report = json.load(f)
 
     # Generate comprehensive report
@@ -502,7 +552,7 @@ def generate_comprehensive_test_report(reports_dir: Path, output_dir: Path = Non
     html_output = output_dir / f"comprehensive_test_report_{timestamp}.html"
 
     # Save JSON report
-    with open(json_output, 'w') as f:
+    with open(json_output, "w") as f:
         json.dump(comprehensive_report, f, indent=2)
 
     # Generate and save HTML report
@@ -510,7 +560,7 @@ def generate_comprehensive_test_report(reports_dir: Path, output_dir: Path = Non
 
     comprehensive_report["file_paths"] = {
         "json_report": str(json_output),
-        "html_report": str(html_output)
+        "html_report": str(html_output),
     }
 
     return comprehensive_report
@@ -537,7 +587,9 @@ if __name__ == "__main__":
     print("\n📈 CURRENT RUN SUMMARY:")
     print(f"   Success Rate: {summary.get('success_rate', 0):.1f}%")
     print(f"   ✅ Passed: {summary.get('passed_tests', 0)}")
-    print(f"   ❌ Failed: {summary.get('total_tests', 0) - summary.get('passed_tests', 0)}")
+    print(
+        f"   ❌ Failed: {summary.get('total_tests', 0) - summary.get('passed_tests', 0)}"
+    )
 
     print("\n💡 KEY INSIGHTS:")
     for insight in comprehensive_report.get("insights", [])[:3]:

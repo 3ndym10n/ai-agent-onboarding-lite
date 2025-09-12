@@ -19,7 +19,9 @@ sys.path.insert(0, str(project_root))
 from ai_onboard.core.alignment import preview
 from ai_onboard.core.universal_error_monitor import get_error_monitor
 from ai_onboard.core.vision_interrogator import get_vision_interrogator
-from ai_onboard.core.continuous_improvement_validator import ContinuousImprovementValidator
+from ai_onboard.core.continuous_improvement_validator import (
+    ContinuousImprovementValidator,
+)
 from ai_onboard.core.performance_optimizer import get_performance_optimizer
 from ai_onboard.core.system_health_monitor import get_system_health_monitor
 from ai_onboard.core.smart_debugger import SmartDebugger
@@ -27,17 +29,19 @@ from ai_onboard.core.smart_debugger import SmartDebugger
 
 class TestLevel(Enum):
     """Test complexity levels."""
-    SMOKE = "smoke"           # Basic functionality
+
+    SMOKE = "smoke"  # Basic functionality
     INTEGRATION = "integration"  # Cross-system testing
     PERFORMANCE = "performance"  # Performance benchmarks
-    STRESS = "stress"         # Load and stress testing
-    CHAOS = "chaos"           # Chaos engineering
-    SECURITY = "security"     # Security validation
+    STRESS = "stress"  # Load and stress testing
+    CHAOS = "chaos"  # Chaos engineering
+    SECURITY = "security"  # Security validation
 
 
 @dataclass
 class TestResult:
     """Enhanced test result with metrics and recommendations."""
+
     name: str
     level: TestLevel
     passed: bool
@@ -55,7 +59,7 @@ class EnhancedSystemTester:
         self.root = root
         self.results: List[TestResult] = []
         self.test_config = self._load_test_config()
-        
+
         # Initialize advanced components
         self.debugger = SmartDebugger(root)
         self.validator = None  # Lazy load to handle CI environment
@@ -71,22 +75,22 @@ class EnhancedSystemTester:
             "performance_thresholds": {
                 "response_time_ms": 1000,
                 "memory_usage_mb": 100,
-                "confidence_threshold": 0.8
+                "confidence_threshold": 0.8,
             },
             "chaos_testing": False,
             "security_testing": False,
             "auto_healing": True,
-            "benchmark_mode": False
+            "benchmark_mode": False,
         }
-        
+
         if config_path.exists():
             try:
-                with open(config_path, 'r') as f:
+                with open(config_path, "r") as f:
                     user_config = json.load(f)
                 default_config.update(user_config)
             except Exception:
                 pass  # Use defaults if config is invalid
-                
+
         return default_config
 
     def _init_advanced_components(self):
@@ -101,25 +105,25 @@ class EnhancedSystemTester:
     def run_smoke_tests(self) -> List[TestResult]:
         """Run basic smoke tests (current functionality)."""
         results = []
-        
+
         # Error Monitoring Test
         results.append(self._test_error_monitoring())
-        
-        # Vision System Test  
+
+        # Vision System Test
         results.append(self._test_vision_system())
-        
+
         # Alignment System Test
         results.append(self._test_alignment_system())
-        
+
         # Project Planning Test
         results.append(self._test_project_planning())
-        
+
         return results
 
     def run_integration_tests(self) -> List[TestResult]:
         """Run advanced integration tests."""
         results = []
-        
+
         if self.validator:
             # Comprehensive system validation
             results.append(self._test_comprehensive_validation())
@@ -127,122 +131,126 @@ class EnhancedSystemTester:
             results.append(self._test_data_integrity())
             # Component integration slice from validation
             results.append(self._test_component_integration())
-        
+
         # Smart debugging integration
         results.append(self._test_smart_debugging_integration())
-        
+
         return results
 
     def run_performance_tests(self) -> List[TestResult]:
         """Run performance benchmark tests."""
         results = []
-        
+
         # System response time
         results.append(self._test_system_response_time())
-        
+
         # Memory usage profiling
         results.append(self._test_memory_usage())
-        
+
         # Concurrent operation handling
         results.append(self._test_concurrent_operations())
-        
+
         if self.performance_optimizer:
             # Performance optimization effectiveness
             results.append(self._test_performance_optimization())
-        
+
         return results
 
     def run_stress_tests(self) -> List[TestResult]:
         """Run stress and load tests."""
         results = []
-        
+
         # High load simulation
         results.append(self._test_high_load_simulation())
-        
+
         # Resource exhaustion handling
         results.append(self._test_resource_exhaustion())
-        
+
         # Recovery from failures
         results.append(self._test_failure_recovery())
-        
+
         return results
 
     def run_chaos_tests(self) -> List[TestResult]:
         """Run chaos engineering tests."""
         results = []
-        
+
         if not self.test_config.get("chaos_testing", False):
             return results
-            
+
         # Random component failures
         results.append(self._test_random_component_failures())
-        
+
         # Network partition simulation
         results.append(self._test_network_partitions())
-        
+
         # Disk space exhaustion
         results.append(self._test_disk_exhaustion())
-        
+
         return results
 
     def run_security_tests(self) -> List[TestResult]:
         """Run security validation tests."""
         results = []
-        
+
         if not self.test_config.get("security_testing", False):
             return results
-            
+
         # Input validation
         results.append(self._test_input_validation())
-        
+
         # Path traversal protection
         results.append(self._test_path_traversal_protection())
-        
+
         # Configuration security
         results.append(self._test_configuration_security())
-        
+
         return results
 
     def _test_error_monitoring(self) -> TestResult:
         """Enhanced error monitoring test."""
         start_time = time.time()
-        
+
         try:
             monitor = get_error_monitor(self.root)
-            
+
             # Test error interception with metrics
-            error_count_before = len(monitor.get_usage_report().get('recent_errors', []))
-            
+            error_count_before = len(
+                monitor.get_usage_report().get("recent_errors", [])
+            )
+
             try:
-                with monitor.monitor_command_execution("test_command", "test_agent", "test_session"):
+                with monitor.monitor_command_execution(
+                    "test_command", "test_agent", "test_session"
+                ):
                     raise ValueError("Test error for enhanced validation")
             except ValueError:
                 pass
-            
-            error_count_after = len(monitor.get_usage_report().get('recent_errors', []))
-            
+
+            error_count_after = len(monitor.get_usage_report().get("recent_errors", []))
+
             # Verify error was captured
             error_captured = error_count_after > error_count_before
-            
+
             # Get comprehensive metrics
             report = monitor.get_usage_report()
-            
+
             duration_ms = (time.time() - start_time) * 1000
-            
+
             return TestResult(
                 name="Enhanced Error Monitoring",
                 level=TestLevel.SMOKE,
                 passed=error_captured,
                 duration_ms=duration_ms,
                 metrics={
-                    "total_capability_uses": report.get('total_capability_uses', 0),
-                    "error_rate": report.get('error_rate', 0),
-                    "recent_errors_count": len(report.get('recent_errors', [])),
-                    "error_capture_working": error_captured
+                    "total_capability_uses": report.get("total_capability_uses", 0),
+                    "error_rate": report.get("error_rate", 0),
+                    "recent_errors_count": len(report.get("recent_errors", [])),
+                    "error_capture_working": error_captured,
                 },
-                confidence_score=0.95 if error_captured else 0.3
+                confidence_score=0.95 if error_captured else 0.3,
             )
-            
+
         except Exception as e:
             duration_ms = (time.time() - start_time) * 1000
             return TestResult(
@@ -252,46 +260,50 @@ class EnhancedSystemTester:
                 duration_ms=duration_ms,
                 error=f"CI environment: {e}",
                 confidence_score=0.8,  # Lower confidence but still passing
-                recommendations=["Initialize .ai_onboard directory for full functionality"]
+                recommendations=[
+                    "Initialize .ai_onboard directory for full functionality"
+                ],
             )
 
     def _test_smart_debugging_integration(self) -> TestResult:
         """Test smart debugging system integration."""
         start_time = time.time()
-        
+
         try:
             # Test debugging system with a mock error
             error_data = {
-                'type': 'TestError',
-                'message': 'Enhanced system test validation error',
-                'context': {
-                    'test_suite': 'enhanced_system_tests',
-                    'component': 'integration_testing'
-                }
+                "type": "TestError",
+                "message": "Enhanced system test validation error",
+                "context": {
+                    "test_suite": "enhanced_system_tests",
+                    "component": "integration_testing",
+                },
             }
-            
+
             result = self.debugger.analyze_error(error_data)
-            
+
             duration_ms = (time.time() - start_time) * 1000
-            
-            has_solution = 'solution' in result and result['solution']
-            confidence_acceptable = result.get('confidence', 0) > 0.5
-            
+
+            has_solution = "solution" in result and result["solution"]
+            confidence_acceptable = result.get("confidence", 0) > 0.5
+
             return TestResult(
                 name="Smart Debugging Integration",
                 level=TestLevel.INTEGRATION,
                 passed=has_solution and confidence_acceptable,
                 duration_ms=duration_ms,
                 metrics={
-                    "confidence": result.get('confidence', 0),
-                    "pattern_id": result.get('pattern_id'),
+                    "confidence": result.get("confidence", 0),
+                    "pattern_id": result.get("pattern_id"),
                     "has_solution": has_solution,
-                    "solution_steps": len(result.get('solution', {}).get('steps', []))
+                    "solution_steps": len(result.get("solution", {}).get("steps", [])),
                 },
-                confidence_score=result.get('confidence', 0),
-                recommendations=result.get('solution', {}).get('steps', [])[:3]  # Top 3 steps
+                confidence_score=result.get("confidence", 0),
+                recommendations=result.get("solution", {}).get("steps", [])[
+                    :3
+                ],  # Top 3 steps
             )
-            
+
         except Exception as e:
             duration_ms = (time.time() - start_time) * 1000
             return TestResult(
@@ -300,17 +312,17 @@ class EnhancedSystemTester:
                 passed=True,  # Pass in CI
                 duration_ms=duration_ms,
                 error=f"CI environment: {e}",
-                confidence_score=0.7
+                confidence_score=0.7,
             )
 
     def _test_system_response_time(self) -> TestResult:
         """Test system response time performance."""
         start_time = time.time()
-        
+
         try:
             # Test multiple operations and measure response time
             operations = []
-            
+
             # Vision system check
             op_start = time.time()
             try:
@@ -319,15 +331,17 @@ class EnhancedSystemTester:
                 operations.append(("vision_check", (time.time() - op_start) * 1000))
             except:
                 operations.append(("vision_check", 0))  # Skip in CI
-            
+
             # Alignment preview
             op_start = time.time()
             try:
                 preview(self.root)
-                operations.append(("alignment_preview", (time.time() - op_start) * 1000))
+                operations.append(
+                    ("alignment_preview", (time.time() - op_start) * 1000)
+                )
             except:
                 operations.append(("alignment_preview", 0))  # Skip in CI
-            
+
             # Error monitoring
             op_start = time.time()
             try:
@@ -336,13 +350,17 @@ class EnhancedSystemTester:
                 operations.append(("error_monitoring", (time.time() - op_start) * 1000))
             except:
                 operations.append(("error_monitoring", 0))  # Skip in CI
-            
+
             total_duration = (time.time() - start_time) * 1000
-            avg_response_time = sum(op[1] for op in operations) / len(operations) if operations else 0
-            
+            avg_response_time = (
+                sum(op[1] for op in operations) / len(operations) if operations else 0
+            )
+
             threshold = self.test_config["performance_thresholds"]["response_time_ms"]
-            performance_acceptable = avg_response_time < threshold or avg_response_time == 0  # 0 means CI skip
-            
+            performance_acceptable = (
+                avg_response_time < threshold or avg_response_time == 0
+            )  # 0 means CI skip
+
             return TestResult(
                 name="System Response Time",
                 level=TestLevel.PERFORMANCE,
@@ -352,12 +370,18 @@ class EnhancedSystemTester:
                     "avg_response_time_ms": avg_response_time,
                     "threshold_ms": threshold,
                     "operations": dict(operations),
-                    "performance_ratio": avg_response_time / threshold if threshold > 0 else 0
+                    "performance_ratio": (
+                        avg_response_time / threshold if threshold > 0 else 0
+                    ),
                 },
                 confidence_score=0.9 if performance_acceptable else 0.4,
-                recommendations=["Consider caching optimizations"] if not performance_acceptable else []
+                recommendations=(
+                    ["Consider caching optimizations"]
+                    if not performance_acceptable
+                    else []
+                ),
             )
-            
+
         except Exception as e:
             duration_ms = (time.time() - start_time) * 1000
             return TestResult(
@@ -366,7 +390,7 @@ class EnhancedSystemTester:
                 passed=True,  # Pass in CI
                 duration_ms=duration_ms,
                 error=str(e),
-                confidence_score=0.7
+                confidence_score=0.7,
             )
 
     # --- Missing legacy helpers implemented below ---
@@ -378,7 +402,11 @@ class EnhancedSystemTester:
             interrogator = get_vision_interrogator(self.root)
             status = interrogator.check_vision_readiness()
             duration_ms = (time.time() - start_time) * 1000
-            ready = bool(status.get("ready_for_agents", False)) if isinstance(status, dict) else bool(status)
+            ready = (
+                bool(status.get("ready_for_agents", False))
+                if isinstance(status, dict)
+                else bool(status)
+            )
             return TestResult(
                 name="Vision System",
                 level=TestLevel.SMOKE,
@@ -429,6 +457,7 @@ class EnhancedSystemTester:
         start_time = time.time()
         try:
             from ai_onboard.core import progress_utils
+
             plan = progress_utils.load_plan(self.root)
             overall = progress_utils.compute_overall_progress(plan)
             duration_ms = (time.time() - start_time) * 1000
@@ -482,9 +511,7 @@ class EnhancedSystemTester:
             # dataclass with attributes
             health = getattr(rep, "system_health_score", 0)
             total = getattr(rep, "total_tests", 0)
-            passed_ratio = (
-                getattr(rep, "passed_tests", 0) / total if total else 1
-            )
+            passed_ratio = getattr(rep, "passed_tests", 0) / total if total else 1
             ok = health >= 50 or passed_ratio >= 0.7
             return TestResult(
                 name="Comprehensive Validation",
@@ -602,43 +629,43 @@ class EnhancedSystemTester:
                 error=str(e),
                 confidence_score=0.7,
             )
-    
+
     def run_all_tests(self) -> Dict[str, Any]:
         """Run comprehensive test suite based on configuration."""
         print("🚀 Running Enhanced AI-Onboard System Tests")
         print("=" * 60)
-        
+
         # Initialize advanced components
         self._init_advanced_components()
-        
+
         all_results = []
         test_levels = self.test_config.get("test_levels", ["smoke"])
-        
+
         # Run tests based on configuration
         if "smoke" in test_levels:
             print("\n💨 Running Smoke Tests...")
             all_results.extend(self.run_smoke_tests())
-            
+
         if "integration" in test_levels:
             print("\n🔗 Running Integration Tests...")
             all_results.extend(self.run_integration_tests())
-            
+
         if "performance" in test_levels:
             print("\n⚡ Running Performance Tests...")
             all_results.extend(self.run_performance_tests())
-            
+
         if "stress" in test_levels:
             print("\n💪 Running Stress Tests...")
             all_results.extend(self.run_stress_tests())
-            
+
         if "chaos" in test_levels:
             print("\n🌪️  Running Chaos Tests...")
             all_results.extend(self.run_chaos_tests())
-            
+
         if "security" in test_levels:
             print("\n🔒 Running Security Tests...")
             all_results.extend(self.run_security_tests())
-        
+
         # Analyze results
         self.results = all_results
         return self._generate_comprehensive_report()
@@ -647,7 +674,7 @@ class EnhancedSystemTester:
         """Generate comprehensive test report with insights."""
         total_tests = len(self.results)
         passed_tests = len([r for r in self.results if r.passed])
-        
+
         # Calculate metrics by test level
         level_stats = {}
         for level in TestLevel:
@@ -656,34 +683,42 @@ class EnhancedSystemTester:
                 level_stats[level.value] = {
                     "total": len(level_results),
                     "passed": len([r for r in level_results if r.passed]),
-                    "avg_duration_ms": sum(r.duration_ms for r in level_results) / len(level_results),
-                    "avg_confidence": sum(r.confidence_score for r in level_results) / len(level_results)
+                    "avg_duration_ms": sum(r.duration_ms for r in level_results)
+                    / len(level_results),
+                    "avg_confidence": sum(r.confidence_score for r in level_results)
+                    / len(level_results),
                 }
-        
+
         # Collect all recommendations
         all_recommendations = []
         for result in self.results:
             all_recommendations.extend(result.recommendations)
-        
+
         # Remove duplicates while preserving order
         unique_recommendations = list(dict.fromkeys(all_recommendations))
-        
+
         # Calculate overall system health score
         if total_tests > 0:
-            confidence_scores = [r.confidence_score for r in self.results if r.confidence_score > 0]
-            avg_confidence = sum(confidence_scores) / len(confidence_scores) if confidence_scores else 0
+            confidence_scores = [
+                r.confidence_score for r in self.results if r.confidence_score > 0
+            ]
+            avg_confidence = (
+                sum(confidence_scores) / len(confidence_scores)
+                if confidence_scores
+                else 0
+            )
             pass_rate = passed_tests / total_tests
             system_health_score = (pass_rate * 0.7 + avg_confidence * 0.3) * 100
         else:
             system_health_score = 0
-        
+
         report = {
             "summary": {
                 "total_tests": total_tests,
                 "passed_tests": passed_tests,
                 "failed_tests": total_tests - passed_tests,
                 "pass_rate": passed_tests / total_tests if total_tests > 0 else 0,
-                "system_health_score": system_health_score
+                "system_health_score": system_health_score,
             },
             "level_breakdown": level_stats,
             "recommendations": unique_recommendations[:10],  # Top 10
@@ -695,21 +730,21 @@ class EnhancedSystemTester:
                     "duration_ms": r.duration_ms,
                     "confidence_score": r.confidence_score,
                     "metrics": r.metrics,
-                    "error": r.error
+                    "error": r.error,
                 }
                 for r in self.results
-            ]
+            ],
         }
-        
+
         # Save report
         report_path = self.root / ".ai_onboard" / "enhanced_test_report.json"
         try:
             report_path.parent.mkdir(parents=True, exist_ok=True)
-            with open(report_path, 'w') as f:
+            with open(report_path, "w") as f:
                 json.dump(report, f, indent=2)
         except Exception:
             pass  # Don't fail if we can't save report
-        
+
         return report
 
 
@@ -717,32 +752,34 @@ def main():
     """Run enhanced system tests."""
     root = Path.cwd()
     tester = EnhancedSystemTester(root)
-    
+
     report = tester.run_all_tests()
-    
+
     # Print summary
     print("\n" + "=" * 60)
     print("📊 Enhanced Test Results Summary")
     print("=" * 60)
-    
+
     summary = report["summary"]
     print(f"Total Tests: {summary['total_tests']}")
     print(f"Passed: {summary['passed_tests']}")
     print(f"Failed: {summary['failed_tests']}")
     print(f"Pass Rate: {summary['pass_rate']:.1%}")
     print(f"System Health Score: {summary['system_health_score']:.1f}/100")
-    
+
     if report["recommendations"]:
         print(f"\n🎯 Top Recommendations:")
         for i, rec in enumerate(report["recommendations"][:5], 1):
             print(f"  {i}. {rec}")
-    
+
     # Print level breakdown
     print(f"\n📈 Performance by Test Level:")
     for level, stats in report["level_breakdown"].items():
-        print(f"  {level.upper()}: {stats['passed']}/{stats['total']} passed "
-              f"(avg: {stats['avg_duration_ms']:.1f}ms, confidence: {stats['avg_confidence']:.2f})")
-    
+        print(
+            f"  {level.upper()}: {stats['passed']}/{stats['total']} passed "
+            f"(avg: {stats['avg_duration_ms']:.1f}ms, confidence: {stats['avg_confidence']:.2f})"
+        )
+
     # Exit with appropriate code
     if summary["pass_rate"] >= 0.8:  # 80% pass rate threshold
         print(f"\n🎉 Enhanced system tests PASSED!")
@@ -754,4 +791,3 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
-
