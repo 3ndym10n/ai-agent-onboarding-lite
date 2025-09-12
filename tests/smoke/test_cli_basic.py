@@ -59,4 +59,6 @@ def test_help_command_smoke():
         check=False,
     )
     assert cp.returncode == 0, f"Help command failed: {cp.stderr}"
-    assert "usage:" in cp.stdout.lower(), "Help output doesn't contain usage information"
+    assert (
+        "usage:" in cp.stdout.lower()
+    ), "Help output doesn't contain usage information"

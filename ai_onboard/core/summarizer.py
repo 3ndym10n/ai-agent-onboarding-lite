@@ -15,6 +15,7 @@ def _brief(last: Dict[str, Any], changed: List[str]) -> Dict[str, Any]:
     # Include canonical progress snapshot
     try:
         from . import progress_utils
+
         root = Path.cwd()
         plan = progress_utils.load_plan(root)
         overall = progress_utils.compute_overall_progress(plan)
@@ -32,6 +33,7 @@ def _brief(last: Dict[str, Any], changed: List[str]) -> Dict[str, Any]:
 def _full(last: Dict[str, Any], changed: List[str]) -> Dict[str, Any]:
     try:
         from . import progress_utils
+
         root = Path.cwd()
         plan = progress_utils.load_plan(root)
         overall = progress_utils.compute_overall_progress(plan)

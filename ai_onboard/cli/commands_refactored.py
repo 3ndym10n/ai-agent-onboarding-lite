@@ -25,17 +25,44 @@ from .commands_prompt import add_prompt_commands, handle_prompt_commands
 from .commands_metrics import add_metrics_commands, handle_metrics_commands
 from .commands_cursor import add_cursor_commands, handle_cursor_commands
 from .commands_api import add_api_commands, handle_api_commands
-from .commands_enhanced_context import add_enhanced_context_commands, handle_enhanced_context_commands
-from .commands_decision_pipeline import add_decision_pipeline_commands, handle_decision_pipeline_commands
+from .commands_enhanced_context import (
+    add_enhanced_context_commands,
+    handle_enhanced_context_commands,
+)
+from .commands_decision_pipeline import (
+    add_decision_pipeline_commands,
+    handle_decision_pipeline_commands,
+)
 from .commands_kaizen import add_kaizen_commands, handle_kaizen_commands
-from .commands_optimization_experiments import add_optimization_experiment_commands, handle_optimization_experiment_commands
+from .commands_optimization_experiments import (
+    add_optimization_experiment_commands,
+    handle_optimization_experiment_commands,
+)
 from .commands_ui_enhanced import add_ui_enhanced_commands, handle_ui_enhanced_commands
-from .commands_ux_enhancements import add_ux_enhancement_commands, handle_ux_enhancement_commands
-from .commands_capability_tracking import add_capability_tracking_commands, handle_capability_tracking_commands
-from .commands_background_agents import add_background_agent_commands, handle_background_agent_commands
-from .commands_enhanced_testing import add_enhanced_testing_commands, handle_enhanced_testing_commands
-from .commands_performance_trends import add_performance_trend_commands, handle_performance_trend_commands
-from .commands_advanced_test_reporting import add_advanced_test_reporting_commands, handle_advanced_test_reporting_commands
+from .commands_ux_enhancements import (
+    add_ux_enhancement_commands,
+    handle_ux_enhancement_commands,
+)
+from .commands_capability_tracking import (
+    add_capability_tracking_commands,
+    handle_capability_tracking_commands,
+)
+from .commands_background_agents import (
+    add_background_agent_commands,
+    handle_background_agent_commands,
+)
+from .commands_enhanced_testing import (
+    add_enhanced_testing_commands,
+    handle_enhanced_testing_commands,
+)
+from .commands_performance_trends import (
+    add_performance_trend_commands,
+    handle_performance_trend_commands,
+)
+from .commands_advanced_test_reporting import (
+    add_advanced_test_reporting_commands,
+    handle_advanced_test_reporting_commands,
+)
 from .ux_middleware import get_ux_middleware, with_ux_enhancements
 
 
@@ -125,20 +152,21 @@ def main(argv=None):
 
     args = p.parse_args(argv)
     root = Path.cwd()
-    
+
     # Fast path for simple commands - avoid heavy initialization
     if args.cmd in ["version", "help"]:
         # Handle these directly without middleware overhead
         if args.cmd == "version":
             try:
                 from .. import __version__
+
                 print(f"ai-onboard {__version__}")
             except ImportError:
                 print("ai-onboard (version unknown)")
         elif args.cmd == "help":
             p.print_help()
         return
-    
+
     # Initialize UX middleware only for interactive commands
     if args.cmd not in ["status"]:
         ux_middleware = get_ux_middleware(root)
@@ -291,7 +319,15 @@ def main(argv=None):
             return
 
     # Handle UI-enhanced commands with error monitoring
-    if args.cmd in ["help", "dashboard", "suggest", "discover", "config", "wizard", "status"]:
+    if args.cmd in [
+        "help",
+        "dashboard",
+        "suggest",
+        "discover",
+        "config",
+        "wizard",
+        "status",
+    ]:
         with error_monitor.monitor_command_execution(
             args.cmd, "foreground", "cli_session"
         ):
@@ -300,9 +336,7 @@ def main(argv=None):
 
     # Handle UX enhancement commands with error monitoring
     if args.cmd == "ux":
-        with error_monitor.monitor_command_execution(
-            "ux", "foreground", "cli_session"
-        ):
+        with error_monitor.monitor_command_execution("ux", "foreground", "cli_session"):
             handle_ux_enhancement_commands(args, root)
             return
 
@@ -354,7 +388,7 @@ def main(argv=None):
     # Fallback for unimplemented commands
     print(f"Command '{args.cmd}' not yet implemented in refactored CLI.")
     print("Please use the original commands.py for now.")
-    
+
     # Show completion celebration for milestones
     # Only show completion celebration for interactive commands
     if ux_middleware is not None:

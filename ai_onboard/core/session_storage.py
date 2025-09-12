@@ -187,16 +187,16 @@ class SessionStorageManager:
     def get_user_sessions(self, user_id: str) -> List[Any]:
         """Get all sessions for a specific user as ConversationContext objects."""
         from .ai_agent_orchestration import ConversationContext
-        
+
         index = self._load_index()
         sessions = []
-        
+
         for session_id, info in index.items():
             if info["user_id"] == user_id:
                 session = self.load_session(session_id)
                 if session:
                     sessions.append(session)
-        
+
         return sessions
 
     def delete_session(self, session_id: str) -> bool:

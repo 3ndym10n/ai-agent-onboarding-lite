@@ -52,7 +52,7 @@ class TaskCompletionDetector:
                 "status": "completed",
                 "completion_date": datetime.now().isoformat(),
                 "verified_by": "directory_exists",
-                "evidence": "ai_onboard/ directory exists"
+                "evidence": "ai_onboard/ directory exists",
             }
 
         # T2: Configure development environment
@@ -61,7 +61,7 @@ class TaskCompletionDetector:
                 "status": "completed",
                 "completion_date": datetime.now().isoformat(),
                 "verified_by": "config_file_exists",
-                "evidence": "pyproject.toml exists"
+                "evidence": "pyproject.toml exists",
             }
 
         # T3: Set up version control and CI/CD
@@ -70,7 +70,7 @@ class TaskCompletionDetector:
                 "status": "completed",
                 "completion_date": datetime.now().isoformat(),
                 "verified_by": "ci_workflow_exists",
-                "evidence": ".github/workflows/ci.yml exists"
+                "evidence": ".github/workflows/ci.yml exists",
             }
 
         return completed
@@ -80,26 +80,30 @@ class TaskCompletionDetector:
         completed = {}
 
         # T4: Design vision interrogation system
-        vision_file = self.project_root / "ai_onboard" / "core" / "vision_interrogator.py"
+        vision_file = (
+            self.project_root / "ai_onboard" / "core" / "vision_interrogator.py"
+        )
         if vision_file.exists():
             completed["T4"] = {
                 "status": "completed",
                 "completion_date": datetime.now().isoformat(),
                 "verified_by": "file_exists",
-                "evidence": "vision_interrogator.py exists and implements vision system"
+                "evidence": "vision_interrogator.py exists and implements vision system",
             }
 
         # T5: Implement vision clarity scoring
         if vision_file.exists():
             try:
-                with open(vision_file, 'r') as f:
+                with open(vision_file, "r") as f:
                     content = f.read()
-                    if "clarity" in content.lower() and ("score" in content.lower() or "calculate" in content.lower()):
+                    if "clarity" in content.lower() and (
+                        "score" in content.lower() or "calculate" in content.lower()
+                    ):
                         completed["T5"] = {
                             "status": "completed",
                             "completion_date": datetime.now().isoformat(),
                             "verified_by": "functionality_check",
-                            "evidence": "Vision clarity scoring logic found in vision_interrogator.py"
+                            "evidence": "Vision clarity scoring logic found in vision_interrogator.py",
                         }
             except:
                 pass
@@ -107,14 +111,14 @@ class TaskCompletionDetector:
         # T6: Create vision validation logic
         if vision_file.exists():
             try:
-                with open(vision_file, 'r') as f:
+                with open(vision_file, "r") as f:
                     content = f.read()
                     if "validation" in content.lower() or "validate" in content.lower():
                         completed["T6"] = {
                             "status": "completed",
                             "completion_date": datetime.now().isoformat(),
                             "verified_by": "functionality_check",
-                            "evidence": "Vision validation logic found in vision_interrogator.py"
+                            "evidence": "Vision validation logic found in vision_interrogator.py",
                         }
             except:
                 pass
@@ -126,26 +130,31 @@ class TaskCompletionDetector:
         completed = {}
 
         # T7: Design AI agent collaboration protocol
-        ai_orchestrator = self.project_root / "ai_onboard" / "core" / "ai_agent_orchestration.py"
+        ai_orchestrator = (
+            self.project_root / "ai_onboard" / "core" / "ai_agent_orchestration.py"
+        )
         if ai_orchestrator.exists():
             completed["T7"] = {
                 "status": "completed",
                 "completion_date": datetime.now().isoformat(),
                 "verified_by": "file_exists",
-                "evidence": "ai_agent_orchestration.py exists"
+                "evidence": "ai_agent_orchestration.py exists",
             }
 
         # T8: Implement conversation context management
         if ai_orchestrator.exists():
             try:
-                with open(ai_orchestrator, 'r') as f:
+                with open(ai_orchestrator, "r") as f:
                     content = f.read()
-                    if "context" in content.lower() and "conversation" in content.lower():
+                    if (
+                        "context" in content.lower()
+                        and "conversation" in content.lower()
+                    ):
                         completed["T8"] = {
                             "status": "completed",
                             "completion_date": datetime.now().isoformat(),
                             "verified_by": "functionality_check",
-                            "evidence": "Conversation context management found in ai_agent_orchestration.py"
+                            "evidence": "Conversation context management found in ai_agent_orchestration.py",
                         }
             except:
                 pass
@@ -153,14 +162,14 @@ class TaskCompletionDetector:
         # T9: Create agent decision pipeline
         if ai_orchestrator.exists():
             try:
-                with open(ai_orchestrator, 'r') as f:
+                with open(ai_orchestrator, "r") as f:
                     content = f.read()
                     if "decision" in content.lower() or "pipeline" in content.lower():
                         completed["T9"] = {
                             "status": "completed",
                             "completion_date": datetime.now().isoformat(),
                             "verified_by": "functionality_check",
-                            "evidence": "Agent decision pipeline found in ai_agent_orchestration.py"
+                            "evidence": "Agent decision pipeline found in ai_agent_orchestration.py",
                         }
             except:
                 pass
@@ -168,14 +177,17 @@ class TaskCompletionDetector:
         # T10: Build user preference learning system
         if ai_orchestrator.exists():
             try:
-                with open(ai_orchestrator, 'r') as f:
+                with open(ai_orchestrator, "r") as f:
                     content = f.read()
-                    if "preference" in content.lower() and "learning" in content.lower():
+                    if (
+                        "preference" in content.lower()
+                        and "learning" in content.lower()
+                    ):
                         completed["T10"] = {
                             "status": "completed",
                             "completion_date": datetime.now().isoformat(),
                             "verified_by": "functionality_check",
-                            "evidence": "User preference learning system found in ai_agent_orchestration.py"
+                            "evidence": "User preference learning system found in ai_agent_orchestration.py",
                         }
             except:
                 pass
@@ -187,26 +199,28 @@ class TaskCompletionDetector:
         completed = {}
 
         # T11: Design metrics collection system
-        continuous_improvement = self.project_root / "ai_onboard" / "core" / "continuous_improvement.py"
+        continuous_improvement = (
+            self.project_root / "ai_onboard" / "core" / "continuous_improvement.py"
+        )
         if continuous_improvement.exists():
             completed["T11"] = {
                 "status": "completed",
                 "completion_date": datetime.now().isoformat(),
                 "verified_by": "file_exists",
-                "evidence": "continuous_improvement.py exists"
+                "evidence": "continuous_improvement.py exists",
             }
 
         # T12: Implement Kaizen cycle automation
         if continuous_improvement.exists():
             try:
-                with open(continuous_improvement, 'r') as f:
+                with open(continuous_improvement, "r") as f:
                     content = f.read()
                     if "kaizen" in content.lower() or "improvement" in content.lower():
                         completed["T12"] = {
                             "status": "completed",
                             "completion_date": datetime.now().isoformat(),
                             "verified_by": "functionality_check",
-                            "evidence": "Kaizen cycle automation found in continuous_improvement.py"
+                            "evidence": "Kaizen cycle automation found in continuous_improvement.py",
                         }
             except:
                 pass
@@ -214,14 +228,17 @@ class TaskCompletionDetector:
         # T13: Create optimization experiment framework
         if continuous_improvement.exists():
             try:
-                with open(continuous_improvement, 'r') as f:
+                with open(continuous_improvement, "r") as f:
                     content = f.read()
-                    if "optimization" in content.lower() or "experiment" in content.lower():
+                    if (
+                        "optimization" in content.lower()
+                        or "experiment" in content.lower()
+                    ):
                         completed["T13"] = {
                             "status": "completed",
                             "completion_date": datetime.now().isoformat(),
                             "verified_by": "functionality_check",
-                            "evidence": "Optimization experiment framework found in continuous_improvement.py"
+                            "evidence": "Optimization experiment framework found in continuous_improvement.py",
                         }
             except:
                 pass
@@ -239,20 +256,23 @@ class TaskCompletionDetector:
                 "status": "completed",
                 "completion_date": datetime.now().isoformat(),
                 "verified_by": "file_exists",
-                "evidence": "smart_debugger.py exists for error interception"
+                "evidence": "smart_debugger.py exists for error interception",
             }
 
         # T21: Create system capability usage tracking
         if smart_debugger.exists():
             try:
-                with open(smart_debugger, 'r') as f:
+                with open(smart_debugger, "r") as f:
                     content = f.read()
-                    if "capability" in content.lower() and "tracking" in content.lower():
+                    if (
+                        "capability" in content.lower()
+                        and "tracking" in content.lower()
+                    ):
                         completed["T21"] = {
                             "status": "completed",
                             "completion_date": datetime.now().isoformat(),
                             "verified_by": "functionality_check",
-                            "evidence": "System capability usage tracking found in smart_debugger.py"
+                            "evidence": "System capability usage tracking found in smart_debugger.py",
                         }
             except:
                 pass
@@ -264,7 +284,7 @@ class TaskCompletionDetector:
                 "status": "completed",
                 "completion_date": datetime.now().isoformat(),
                 "verified_by": "file_exists",
-                "evidence": "learning_events.jsonl exists for feedback loops"
+                "evidence": "learning_events.jsonl exists for feedback loops",
             }
 
         return completed
@@ -277,14 +297,14 @@ class TaskCompletionDetector:
         ci_workflow = self.project_root / ".github" / "workflows" / "ci.yml"
         if ci_workflow.exists():
             try:
-                with open(ci_workflow, 'r') as f:
+                with open(ci_workflow, "r") as f:
                     content = f.read()
                     if "black --check" in content or "black" in content:
                         completed["T24"] = {
                             "status": "completed",
                             "completion_date": datetime.now().isoformat(),
                             "verified_by": "ci_config_check",
-                            "evidence": "Black formatting checks configured in CI workflow"
+                            "evidence": "Black formatting checks configured in CI workflow",
                         }
             except:
                 pass
@@ -299,17 +319,21 @@ class TaskCompletionDetector:
         test_system_file = self.project_root / "scripts" / "test_system.py"
         if test_system_file.exists():
             try:
-                with open(test_system_file, 'r', encoding='utf-8', errors='ignore') as f:
+                with open(
+                    test_system_file, "r", encoding="utf-8", errors="ignore"
+                ) as f:
                     content = f.read()
                     # Look for enhanced metrics collection features
-                    if ("EnhancedMetricsCollector" in content and
-                            "collect_test_metrics" in content and
-                            "confidence_score" in content):
+                    if (
+                        "EnhancedMetricsCollector" in content
+                        and "collect_test_metrics" in content
+                        and "confidence_score" in content
+                    ):
                         completed["T29"] = {
                             "status": "completed",
                             "completion_date": datetime.now().isoformat(),
                             "verified_by": "code_analysis",
-                            "evidence": "Enhanced metrics collection system implemented in test_system.py"
+                            "evidence": "Enhanced metrics collection system implemented in test_system.py",
                         }
             except:
                 pass
@@ -317,17 +341,19 @@ class TaskCompletionDetector:
         # T30: Integrate SmartDebugger with system tests
         if test_system_file.exists():
             try:
-                with open(test_system_file, 'r') as f:
+                with open(test_system_file, "r") as f:
                     content = f.read()
                     # Look for SmartDebugger integration
-                    if ("SmartDebugger" in content and
-                            "analyze_error" in content and
-                            "test_smart_debugger_integration" in content):
+                    if (
+                        "SmartDebugger" in content
+                        and "analyze_error" in content
+                        and "test_smart_debugger_integration" in content
+                    ):
                         completed["T30"] = {
                             "status": "completed",
                             "completion_date": datetime.now().isoformat(),
                             "verified_by": "code_analysis",
-                            "evidence": "SmartDebugger integration implemented in system tests"
+                            "evidence": "SmartDebugger integration implemented in system tests",
                         }
             except:
                 pass
@@ -335,17 +361,19 @@ class TaskCompletionDetector:
         # T31: Add performance baseline monitoring
         if test_system_file.exists():
             try:
-                with open(test_system_file, 'r') as f:
+                with open(test_system_file, "r") as f:
                     content = f.read()
                     # Look for performance baseline monitoring
-                    if ("PerformanceBaselineMonitor" in content and
-                            "establish_baseline" in content and
-                            "monitor_performance" in content):
+                    if (
+                        "PerformanceBaselineMonitor" in content
+                        and "establish_baseline" in content
+                        and "monitor_performance" in content
+                    ):
                         completed["T31"] = {
                             "status": "completed",
                             "completion_date": datetime.now().isoformat(),
                             "verified_by": "code_analysis",
-                            "evidence": "Performance baseline monitoring system implemented"
+                            "evidence": "Performance baseline monitoring system implemented",
                         }
             except:
                 pass
@@ -354,24 +382,28 @@ class TaskCompletionDetector:
         report_generator = self.project_root / "scripts" / "generate_test_report.py"
         if report_generator.exists():
             try:
-                with open(report_generator, 'r') as f:
+                with open(report_generator, "r") as f:
                     content = f.read()
                     # Look for comprehensive reporting features
-                    if ("ComprehensiveTestReporter" in content and
-                            "generate_comprehensive_report" in content and
-                            "trend_analysis" in content):
+                    if (
+                        "ComprehensiveTestReporter" in content
+                        and "generate_comprehensive_report" in content
+                        and "trend_analysis" in content
+                    ):
                         completed["T32"] = {
                             "status": "completed",
                             "completion_date": datetime.now().isoformat(),
                             "verified_by": "file_exists",
-                            "evidence": "Comprehensive test reporting system implemented"
+                            "evidence": "Comprehensive test reporting system implemented",
                         }
             except:
                 pass
 
         return completed
 
-    def update_plan_with_completions(self, completed_tasks: Dict[str, Dict[str, Any]]) -> bool:
+    def update_plan_with_completions(
+        self, completed_tasks: Dict[str, Dict[str, Any]]
+    ) -> bool:
         """
         Update the project plan with detected task completions.
 
@@ -385,23 +417,25 @@ class TaskCompletionDetector:
             return False
 
         try:
-            with open(self.plan_path, 'r') as f:
+            with open(self.plan_path, "r") as f:
                 plan = json.load(f)
 
             # Update task statuses
-            for task in plan['tasks']:
-                task_id = task['id']
+            for task in plan["tasks"]:
+                task_id = task["id"]
                 if task_id in completed_tasks:
-                    task['status'] = 'completed'
-                    if 'completion_date' not in task:
-                        task['completion_date'] = completed_tasks[task_id]['completion_date']
-                    if 'verified_by' not in task:
-                        task['verified_by'] = completed_tasks[task_id]['verified_by']
-                    if 'evidence' not in task:
-                        task['evidence'] = completed_tasks[task_id]['evidence']
+                    task["status"] = "completed"
+                    if "completion_date" not in task:
+                        task["completion_date"] = completed_tasks[task_id][
+                            "completion_date"
+                        ]
+                    if "verified_by" not in task:
+                        task["verified_by"] = completed_tasks[task_id]["verified_by"]
+                    if "evidence" not in task:
+                        task["evidence"] = completed_tasks[task_id]["evidence"]
 
             # Write updated plan
-            with open(self.plan_path, 'w') as f:
+            with open(self.plan_path, "w") as f:
                 json.dump(plan, f, indent=2)
 
             return True
@@ -420,13 +454,17 @@ class TaskCompletionDetector:
         if not self.plan_path.exists():
             return {"error": "Plan file not found"}
 
-        with open(self.plan_path, 'r') as f:
+        with open(self.plan_path, "r") as f:
             plan = json.load(f)
 
-        total_tasks = len(plan['tasks'])
-        completed_tasks = len([t for t in plan['tasks'] if t.get('status') == 'completed'])
-        in_progress_tasks = len([t for t in plan['tasks'] if t.get('status') == 'in_progress'])
-        pending_tasks = len([t for t in plan['tasks'] if t.get('status') == 'pending'])
+        total_tasks = len(plan["tasks"])
+        completed_tasks = len(
+            [t for t in plan["tasks"] if t.get("status") == "completed"]
+        )
+        in_progress_tasks = len(
+            [t for t in plan["tasks"] if t.get("status") == "in_progress"]
+        )
+        pending_tasks = len([t for t in plan["tasks"] if t.get("status") == "pending"])
 
         # Calculate milestone progress
         milestone_progress = self._calculate_milestone_progress(plan)
@@ -437,54 +475,62 @@ class TaskCompletionDetector:
                 "completed_tasks": completed_tasks,
                 "in_progress_tasks": in_progress_tasks,
                 "pending_tasks": pending_tasks,
-                "completion_percentage": (completed_tasks / total_tasks) * 100 if total_tasks > 0 else 0
+                "completion_percentage": (
+                    (completed_tasks / total_tasks) * 100 if total_tasks > 0 else 0
+                ),
             },
             "milestone_progress": milestone_progress,
             "recent_completions": self._get_recent_completions(plan),
-            "blockers": self._identify_blockers(plan)
+            "blockers": self._identify_blockers(plan),
         }
 
-    def _calculate_milestone_progress(self, plan: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def _calculate_milestone_progress(
+        self, plan: Dict[str, Any]
+    ) -> List[Dict[str, Any]]:
         """Calculate progress for each milestone."""
         milestone_progress = []
 
-        for milestone in plan.get('milestones', []):
-            milestone_name = milestone['name']
-            tasks = milestone.get('tasks', [])
+        for milestone in plan.get("milestones", []):
+            milestone_name = milestone["name"]
+            tasks = milestone.get("tasks", [])
 
             if not tasks:
                 continue
 
             completed_count = 0
             for task_id in tasks:
-                task = next((t for t in plan['tasks'] if t['id'] == task_id), None)
-                if task and task.get('status') == 'completed':
+                task = next((t for t in plan["tasks"] if t["id"] == task_id), None)
+                if task and task.get("status") == "completed":
                     completed_count += 1
 
             progress_percentage = (completed_count / len(tasks)) * 100 if tasks else 0
 
-            milestone_progress.append({
-                "name": milestone_name,
-                "completed_tasks": completed_count,
-                "total_tasks": len(tasks),
-                "progress_percentage": progress_percentage,
-                "target_date": milestone.get('target_date'),
-                "status": "completed" if progress_percentage == 100 else "in_progress"
-            })
+            milestone_progress.append(
+                {
+                    "name": milestone_name,
+                    "completed_tasks": completed_count,
+                    "total_tasks": len(tasks),
+                    "progress_percentage": progress_percentage,
+                    "target_date": milestone.get("target_date"),
+                    "status": (
+                        "completed" if progress_percentage == 100 else "in_progress"
+                    ),
+                }
+            )
 
         return milestone_progress
 
     def _get_recent_completions(self, plan: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Get recently completed tasks."""
         completed_tasks = [
-            t for t in plan['tasks']
-            if t.get('status') == 'completed' and 'completion_date' in t
+            t
+            for t in plan["tasks"]
+            if t.get("status") == "completed" and "completion_date" in t
         ]
 
         # Sort by completion date (most recent first)
         completed_tasks.sort(
-            key=lambda x: x.get('completion_date', '2000-01-01'),
-            reverse=True
+            key=lambda x: x.get("completion_date", "2000-01-01"), reverse=True
         )
 
         return completed_tasks[:5]  # Return top 5 most recent
@@ -493,22 +539,26 @@ class TaskCompletionDetector:
         """Identify potential blockers in the project plan."""
         blockers = []
 
-        for task in plan['tasks']:
-            if task.get('status') == 'pending':
-                dependencies = task.get('dependencies', [])
+        for task in plan["tasks"]:
+            if task.get("status") == "pending":
+                dependencies = task.get("dependencies", [])
                 blocked_by = []
 
                 for dep_id in dependencies:
-                    dep_task = next((t for t in plan['tasks'] if t['id'] == dep_id), None)
-                    if dep_task and dep_task.get('status') != 'completed':
+                    dep_task = next(
+                        (t for t in plan["tasks"] if t["id"] == dep_id), None
+                    )
+                    if dep_task and dep_task.get("status") != "completed":
                         blocked_by.append(dep_id)
 
                 if blocked_by:
-                    blockers.append({
-                        "task_id": task['id'],
-                        "task_name": task['name'],
-                        "blocked_by": blocked_by
-                    })
+                    blockers.append(
+                        {
+                            "task_id": task["id"],
+                            "task_name": task["name"],
+                            "blocked_by": blocked_by,
+                        }
+                    )
 
         return blockers[:10]  # Return top 10 blockers
 
@@ -543,28 +593,28 @@ def run_task_completion_scan(project_root: Path) -> Dict[str, Any]:
         "findings": [
             f"Plan update successful: {plan_updated}",
             f"Completed tasks found: {len(completed_tasks)}",
-            f"Overall progress: {progress_report['overall_progress']['completion_percentage']:.1f}%"
+            f"Overall progress: {progress_report['overall_progress']['completion_percentage']:.1f}%",
         ],
         "impact": [
             "Project plan synchronized with actual implementation",
             "Progress metrics now reflect true completion status",
-            "Milestone tracking updated automatically"
-        ]
+            "Milestone tracking updated automatically",
+        ],
     }
 
     # Save learning event
     learning_log_path = project_root / ".ai_onboard" / "learning_events.jsonl"
-    with open(learning_log_path, 'a') as f:
-        f.write(json.dumps(learning_event) + '\n')
+    with open(learning_log_path, "a") as f:
+        f.write(json.dumps(learning_event) + "\n")
 
     return {
         "scan_results": {
             "completed_tasks_detected": len(completed_tasks),
             "plan_updated": plan_updated,
-            "completed_task_ids": list(completed_tasks.keys())
+            "completed_task_ids": list(completed_tasks.keys()),
         },
         "progress_report": progress_report,
-        "learning_event_logged": True
+        "learning_event_logged": True,
     }
 
 
@@ -574,7 +624,11 @@ if __name__ == "__main__":
     results = run_task_completion_scan(project_root)
 
     print("=== TASK COMPLETION SCAN RESULTS ===")
-    print(f"Completed tasks detected: {results['scan_results']['completed_tasks_detected']}")
+    print(
+        f"Completed tasks detected: {results['scan_results']['completed_tasks_detected']}"
+    )
     print(f"Plan updated: {results['scan_results']['plan_updated']}")
-    print(f"Overall progress: {results['progress_report']['overall_progress']['completion_percentage']:.1f}%")
+    print(
+        f"Overall progress: {results['progress_report']['overall_progress']['completion_percentage']:.1f}%"
+    )
     print("Learning event logged: True")

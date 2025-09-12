@@ -6,7 +6,7 @@ comprehensive workflow testing and simplified validation testing.
 
 Tests include:
 - Basic Cursor integration functionality
-- UX system integration  
+- UX system integration
 - Context management
 - Decision pipeline processing
 - API server functionality
@@ -31,6 +31,7 @@ class TestCursorIntegrationBasics:
     def cursor_integration(self):
         """Get Cursor integration instance for testing."""
         from ai_onboard.core.cursor_ai_integration import get_cursor_integration
+
         root = Path.cwd()
         return get_cursor_integration(root)
 
@@ -42,12 +43,14 @@ class TestCursorIntegrationBasics:
     def test_cursor_initialization(self, cursor_integration):
         """Test Cursor AI integration initialization."""
         config = cursor_integration.get_configuration()
-        
+
         # Validate configuration
         required_fields = ["agent_id", "safety_level", "max_autonomous_actions"]
         missing_fields = [f for f in required_fields if f not in config]
-        
-        assert len(missing_fields) == 0, f"Missing required config fields: {missing_fields}"
+
+        assert (
+            len(missing_fields) == 0
+        ), f"Missing required config fields: {missing_fields}"
         assert config["agent_id"] is not None
         assert config["safety_level"] in ["low", "medium", "high"]
         assert isinstance(config["max_autonomous_actions"], int)
@@ -63,10 +66,10 @@ class TestCursorIntegrationBasics:
         }
 
         profile = cursor_integration.create_agent_profile(test_user_id, profile_data)
-        
+
         assert profile is not None
         assert profile.get("agent_id") is not None
-        
+
         # Test profile retrieval
         retrieved_profile = cursor_integration.get_agent_profile(profile["agent_id"])
         assert retrieved_profile is not None
@@ -84,7 +87,7 @@ class TestCursorIntegrationBasics:
 
         assert session is not None
         assert "session_id" in session
-        
+
         # Test session retrieval
         retrieved_session = cursor_integration.get_session(session["session_id"])
         assert retrieved_session is not None
@@ -96,7 +99,10 @@ class TestUXSystemIntegration:
     @pytest.fixture
     def ux_system(self):
         """Get UX enhancement system for testing."""
-        from ai_onboard.core.user_experience_enhancements import get_ux_enhancement_system
+        from ai_onboard.core.user_experience_enhancements import (
+            get_ux_enhancement_system,
+        )
+
         root = Path.cwd()
         return get_ux_enhancement_system(root)
 
@@ -115,7 +121,7 @@ class TestUXSystemIntegration:
             test_user_id,
             command="cursor",
             success=True,
-            context={"integration_test": True, "duration_ms": 150}
+            context={"integration_test": True, "duration_ms": 150},
         )
 
         assert event is not None
@@ -130,7 +136,13 @@ class TestUXSystemIntegration:
         """Test satisfaction tracking and trend analysis."""
         # Record satisfaction feedback
         satisfaction_scores = [4, 5, 3, 4, 5]
-        contexts = ["testing", "integration", "documentation", "troubleshooting", "workflow"]
+        contexts = [
+            "testing",
+            "integration",
+            "documentation",
+            "troubleshooting",
+            "workflow",
+        ]
 
         for score, context in zip(satisfaction_scores, contexts):
             ux_system.satisfaction_tracker.record_satisfaction(
@@ -138,7 +150,9 @@ class TestUXSystemIntegration:
             )
 
         # Get satisfaction trend
-        trend_data = ux_system.satisfaction_tracker.get_satisfaction_trend(test_user_id, days=1)
+        trend_data = ux_system.satisfaction_tracker.get_satisfaction_trend(
+            test_user_id, days=1
+        )
 
         assert trend_data is not None
         assert trend_data.get("total_responses", 0) == len(satisfaction_scores)
@@ -151,7 +165,10 @@ class TestContextManagement:
     @pytest.fixture
     def context_manager(self):
         """Get enhanced conversation context manager."""
-        from ai_onboard.core.enhanced_conversation_context import get_enhanced_conversation_context
+        from ai_onboard.core.enhanced_conversation_context import (
+            get_enhanced_conversation_context,
+        )
+
         root = Path.cwd()
         return get_enhanced_conversation_context(root)
 
@@ -203,8 +220,14 @@ class TestContextManagement:
             session1_id,
             test_user_id,
             {
-                "project_insights": ["cursor_integration_complex", "api_testing_needed"],
-                "user_preferences": {"detail_level": "comprehensive", "format": "structured"},
+                "project_insights": [
+                    "cursor_integration_complex",
+                    "api_testing_needed",
+                ],
+                "user_preferences": {
+                    "detail_level": "comprehensive",
+                    "format": "structured",
+                },
             },
         )
 
@@ -234,7 +257,10 @@ class TestDecisionPipeline:
     @pytest.fixture
     def decision_pipeline(self):
         """Get advanced decision pipeline."""
-        from ai_onboard.core.advanced_agent_decision_pipeline import get_advanced_decision_pipeline
+        from ai_onboard.core.advanced_agent_decision_pipeline import (
+            get_advanced_decision_pipeline,
+        )
+
         root = Path.cwd()
         return get_advanced_decision_pipeline(root)
 
@@ -251,7 +277,11 @@ class TestDecisionPipeline:
             "context": {
                 "current_task": "cursor_integration_testing",
                 "project_phase": "validation",
-                "available_tools": ["api_server", "cursor_integration", "metrics_collector"],
+                "available_tools": [
+                    "api_server",
+                    "cursor_integration",
+                    "metrics_collector",
+                ],
             },
             "query": "What's the best approach to validate Cursor AI integration comprehensively?",
             "constraints": {
@@ -313,7 +343,7 @@ class TestDecisionPipeline:
 
         assert high_risk_result.get("success", False)
         assert low_risk_result.get("success", False)
-        
+
         # Results should be different for different risk contexts
         high_actions = high_risk_result.get("recommended_actions", [])
         low_actions = low_risk_result.get("recommended_actions", [])
@@ -327,12 +357,13 @@ class TestAPIServerFunctionality:
         """Test API server configuration and setup."""
         try:
             from ai_onboard.api.server import create_app
+
             app = create_app(Path.cwd())
-            
+
             assert app is not None
             # Test that FastAPI app was created successfully
-            assert hasattr(app, 'routes')
-            
+            assert hasattr(app, "routes")
+
         except ImportError:
             pytest.skip("API server components not available")
 
@@ -340,21 +371,21 @@ class TestAPIServerFunctionality:
         """Test API server health endpoint if server is running."""
         try:
             import requests
-            
+
             # Check if API server is running
             response = requests.get("http://127.0.0.1:8000/health", timeout=2)
-            
+
             if response.status_code == 200:
                 # Server is running, test endpoints
                 assert response.json().get("status") == "healthy"
-                
+
                 # Test API info endpoint
                 info_response = requests.get("http://127.0.0.1:8000/api/info")
                 assert info_response.status_code == 200
-                
+
             else:
                 pytest.skip("API server not running")
-                
+
         except (requests.exceptions.RequestException, ImportError):
             pytest.skip("API server not accessible or requests not available")
 
@@ -365,7 +396,10 @@ class TestMetricsCollection:
     @pytest.fixture
     def metrics_collector(self):
         """Get unified metrics collector."""
-        from ai_onboard.core.unified_metrics_collector import get_unified_metrics_collector
+        from ai_onboard.core.unified_metrics_collector import (
+            get_unified_metrics_collector,
+        )
+
         root = Path.cwd()
         return get_unified_metrics_collector(root)
 
@@ -374,8 +408,8 @@ class TestMetricsCollection:
         from ai_onboard.core.unified_metrics_collector import MetricCategory
 
         # Test metric collection capability
-        assert hasattr(metrics_collector, 'collect_metric')
-        
+        assert hasattr(metrics_collector, "collect_metric")
+
         # Test that collector is properly initialized
         assert metrics_collector is not None
 
@@ -388,26 +422,30 @@ class TestEndToEndWorkflows:
         """Initialize all systems for end-to-end testing."""
         root = Path.cwd()
         systems = {}
-        
+
         try:
             from ai_onboard.core.cursor_ai_integration import get_cursor_integration
-            systems['cursor_integration'] = get_cursor_integration(root)
+
+            systems["cursor_integration"] = get_cursor_integration(root)
         except ImportError:
-            systems['cursor_integration'] = None
-            
+            systems["cursor_integration"] = None
+
         try:
-            from ai_onboard.core.user_experience_enhancements import get_ux_enhancement_system
-            systems['ux_system'] = get_ux_enhancement_system(root)
+            from ai_onboard.core.user_experience_enhancements import (
+                get_ux_enhancement_system,
+            )
+
+            systems["ux_system"] = get_ux_enhancement_system(root)
         except ImportError:
-            systems['ux_system'] = None
-            
+            systems["ux_system"] = None
+
         return systems
 
     def test_project_setup_workflow(self, all_systems):
         """Test complete project setup workflow with Cursor integration."""
-        cursor_integration = all_systems['cursor_integration']
-        ux_system = all_systems['ux_system']
-        
+        cursor_integration = all_systems["cursor_integration"]
+        ux_system = all_systems["ux_system"]
+
         if not cursor_integration or not ux_system:
             pytest.skip("Required systems not available for end-to-end testing")
 
@@ -416,11 +454,13 @@ class TestEndToEndWorkflows:
 
         # Step 1: Initialize Cursor integration
         try:
-            cursor_init = cursor_integration.initialize_integration({
-                "user_id": test_user_id,
-                "project_name": "Test Project Setup",
-                "integration_level": "comprehensive",
-            })
+            cursor_init = cursor_integration.initialize_integration(
+                {
+                    "user_id": test_user_id,
+                    "project_name": "Test Project Setup",
+                    "integration_level": "comprehensive",
+                }
+            )
             workflow_steps.append(("cursor_init", cursor_init is not None))
         except Exception as e:
             workflow_steps.append(("cursor_init", False))
@@ -428,7 +468,7 @@ class TestEndToEndWorkflows:
         # Step 2: Record UX events
         try:
             from ai_onboard.core.user_experience_enhancements import UXEventType
-            
+
             ux_event = ux_system.record_ux_event(
                 UXEventType.WORKFLOW_COMPLETION,
                 test_user_id,
@@ -449,20 +489,23 @@ class TestEndToEndWorkflows:
         """Test basic Cursor integration functionality - simplified version."""
         try:
             from ai_onboard.core.cursor_ai_integration import get_cursor_integration
+
             root = Path.cwd()
-            
+
             # Test integration initialization
             cursor_integration = get_cursor_integration(root)
-            
+
             # Test configuration retrieval
             config = cursor_integration.get_configuration()
-            
+
             # Validate basic configuration
             required_fields = ["agent_id", "safety_level", "max_autonomous_actions"]
             missing_fields = [f for f in required_fields if f not in config]
-            
-            assert len(missing_fields) == 0, f"Missing configuration fields: {missing_fields}"
-            
+
+            assert (
+                len(missing_fields) == 0
+            ), f"Missing configuration fields: {missing_fields}"
+
         except Exception as e:
             pytest.fail(f"Basic Cursor integration validation failed: {e}")
 
@@ -472,19 +515,19 @@ def run_comprehensive_cursor_testing(root: Path) -> Dict[str, Any]:
     """Run comprehensive Cursor workflow testing - legacy function for compatibility."""
     import subprocess
     import sys
-    
+
     # Run pytest on this module
-    result = subprocess.run([
-        sys.executable, "-m", "pytest", 
-        str(Path(__file__)), 
-        "-v", "--tb=short"
-    ], capture_output=True, text=True)
-    
+    result = subprocess.run(
+        [sys.executable, "-m", "pytest", str(Path(__file__)), "-v", "--tb=short"],
+        capture_output=True,
+        text=True,
+    )
+
     return {
         "overall_success": result.returncode == 0,
         "output": result.stdout,
         "errors": result.stderr,
-        "timestamp": datetime.now().isoformat()
+        "timestamp": datetime.now().isoformat(),
     }
 
 
@@ -492,19 +535,19 @@ if __name__ == "__main__":
     # Run the comprehensive test suite
     root = Path.cwd()
     results = run_comprehensive_cursor_testing(root)
-    
+
     print("🧪 Cursor Integration Test Results")
     print("=" * 50)
     print(f"Overall Success: {'✅' if results['overall_success'] else '❌'}")
     print(f"Timestamp: {results['timestamp']}")
-    
-    if results['output']:
+
+    if results["output"]:
         print("\nTest Output:")
-        print(results['output'])
-    
-    if results['errors']:
+        print(results["output"])
+
+    if results["errors"]:
         print("\nErrors:")
-        print(results['errors'])
-    
+        print(results["errors"])
+
     # Exit with appropriate code
     exit(0 if results["overall_success"] else 1)

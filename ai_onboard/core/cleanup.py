@@ -171,12 +171,14 @@ def safe_cleanup(
     # CRITICAL: Check dependencies for all files before deletion
     if not force and scan_result["non_critical"]:
         print_content("Running dependency check on files to be deleted...", "search")
-        
+
         # Check dependencies for all non-critical files
         is_safe = check_cleanup_dependencies(root, scan_result["non_critical"])
-        
+
         if not is_safe:
-            print_status("❌ Dependency check failed - cleanup aborted for safety", "error")
+            print_status(
+                "❌ Dependency check failed - cleanup aborted for safety", "error"
+            )
             return {
                 "mode": "dependency_check_failed",
                 "scan_result": scan_result,
@@ -184,7 +186,7 @@ def safe_cleanup(
                 "protected": len(scan_result["critical"]),
                 "unknown": len(scan_result["unknown"]),
                 "error": "Files have dependencies - cannot safely delete",
-                "recommendation": "Fix dependencies first or use --force flag (not recommended)"
+                "recommendation": "Fix dependencies first or use --force flag (not recommended)",
             }
 
     if dry_run:

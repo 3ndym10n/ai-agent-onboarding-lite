@@ -193,10 +193,14 @@ class GateSystem:
                     prompt += totals_line
 
                 # Optional progress visualization
-                new_progress = exec_summary.get("new_progress_percentage") if isinstance(exec_summary, dict) else None
+                new_progress = (
+                    exec_summary.get("new_progress_percentage")
+                    if isinstance(exec_summary, dict)
+                    else None
+                )
                 try:
                     if isinstance(new_progress, str) and new_progress.endswith("%"):
-                        progress_pct = float(new_progress.rstrip('%'))
+                        progress_pct = float(new_progress.rstrip("%"))
                         progress_bar = create_progress_bar(progress_pct)
                         prompt += f"- **New Progress Level**: {new_progress}\n"
                         prompt += f"- **Progress Visualization**: {progress_bar}\n"
@@ -210,7 +214,9 @@ class GateSystem:
                     if categories.get("infrastructure", 0) > 0:
                         prompt += f"  • Infrastructure: {categories['infrastructure']} tasks\n"
                     if categories.get("vision_system", 0) > 0:
-                        prompt += f"  • Vision System: {categories['vision_system']} tasks\n"
+                        prompt += (
+                            f"  • Vision System: {categories['vision_system']} tasks\n"
+                        )
                     if categories.get("system_robustness", 0) > 0:
                         prompt += f"  • System Robustness: {categories['system_robustness']} tasks\n"
                     if categories.get("testing_foundation", 0) > 0:
@@ -224,7 +230,9 @@ class GateSystem:
                         for milestone in progress_report["milestone_progress"]:
                             name = milestone["name"]
                             pct = milestone["progress_percentage"]
-                            status = "✅" if milestone["status"] == "completed" else "🔄"
+                            status = (
+                                "✅" if milestone["status"] == "completed" else "🔄"
+                            )
                             bar = create_progress_bar(pct, 15)
                             prompt += f"  {status} {name}: {bar}\n"
                         prompt += "\n"
@@ -239,7 +247,9 @@ class GateSystem:
             else:
                 # Fallback to generic context display
                 for key, value in gate_request.context.items():
-                    if key != "executive_summary":  # Skip the executive summary since we handled it above
+                    if (
+                        key != "executive_summary"
+                    ):  # Skip the executive summary since we handled it above
                         prompt += f"- **{key}**: {value}\n"
                 prompt += "\n"
 

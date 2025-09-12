@@ -42,6 +42,7 @@ def nudge_from_metrics(root: Path) -> None:
 
 # ===== Optimization Strategist MVP: proposal generation =====
 
+
 def _find_latest_test_report(root: Path) -> Optional[Path]:
     reports_dir = root / ".ai_onboard" / "test_reports"
     if not reports_dir.exists():
@@ -68,11 +69,17 @@ def _extract_hotspots(report: Dict[str, Any]) -> List[Tuple[str, float]]:
     """
     hotspots: List[Tuple[str, float]] = []
     # Shape 1: metrics -> test_results: [{name, execution_time_s}]
-    results = (report.get("metrics") or {}).get("test_results") if isinstance(report, dict) else None
+    results = (
+        (report.get("metrics") or {}).get("test_results")
+        if isinstance(report, dict)
+        else None
+    )
     if isinstance(results, list):
         for item in results:
             name = str(item.get("name", "unknown"))
-            secs = float(item.get("execution_time_s", item.get("execution_time", 0.0)) or 0.0)
+            secs = float(
+                item.get("execution_time_s", item.get("execution_time", 0.0)) or 0.0
+            )
             hotspots.append((name, secs))
 
     # Shape 2: direct list under detailed_metrics
@@ -81,7 +88,9 @@ def _extract_hotspots(report: Dict[str, Any]) -> List[Tuple[str, float]]:
         if isinstance(dm, list):
             for item in dm:
                 name = str(item.get("name", "unknown"))
-                secs = float(item.get("execution_time_s", item.get("execution_time", 0.0)) or 0.0)
+                secs = float(
+                    item.get("execution_time_s", item.get("execution_time", 0.0)) or 0.0
+                )
                 hotspots.append((name, secs))
 
     hotspots.sort(key=lambda x: x[1], reverse=True)
@@ -106,60 +115,86 @@ def _ensure_prefs(root: Path, prefs: Dict[str, Any]) -> Path:
     return prefs_path
 
 
-def _analyze_hotspot_patterns(hotspots: List[Tuple[str, float]]) -> List[Dict[str, Any]]:
+def _analyze_hotspot_patterns(
+    hotspots: List[Tuple[str, float]],
+) -> List[Dict[str, Any]]:
     """Analyze hotspot patterns to recommend optimization strategies."""
     patterns = []
 
     for func_name, exec_time in hotspots:
         # CPU-bound patterns
-        if any(keyword in func_name.lower() for keyword in ['loop', 'calculate', 'compute', 'process', 'math']):
-            patterns.append({
-                "type": "cpu_bound",
-                "function": func_name,
-                "time": exec_time,
-                "recommendations": ["cpu_bound"]
-            })
+        if any(
+            keyword in func_name.lower()
+            for keyword in ["loop", "calculate", "compute", "process", "math"]
+        ):
+            patterns.append(
+                {
+                    "type": "cpu_bound",
+                    "function": func_name,
+                    "time": exec_time,
+                    "recommendations": ["cpu_bound"],
+                }
+            )
 
         # Memory-bound patterns
-        elif any(keyword in func_name.lower() for keyword in ['dict', 'list', 'object', 'memory', 'cache']):
-            patterns.append({
-                "type": "memory_bound",
-                "function": func_name,
-                "time": exec_time,
-                "recommendations": ["memory_bound"]
-            })
+        elif any(
+            keyword in func_name.lower()
+            for keyword in ["dict", "list", "object", "memory", "cache"]
+        ):
+            patterns.append(
+                {
+                    "type": "memory_bound",
+                    "function": func_name,
+                    "time": exec_time,
+                    "recommendations": ["memory_bound"],
+                }
+            )
 
         # I/O-bound patterns
-        elif any(keyword in func_name.lower() for keyword in ['read', 'write', 'file', 'network', 'db', 'open']):
-            patterns.append({
-                "type": "io_bound",
-                "function": func_name,
-                "time": exec_time,
-                "recommendations": ["io_bound"]
-            })
+        elif any(
+            keyword in func_name.lower()
+            for keyword in ["read", "write", "file", "network", "db", "open"]
+        ):
+            patterns.append(
+                {
+                    "type": "io_bound",
+                    "function": func_name,
+                    "time": exec_time,
+                    "recommendations": ["io_bound"],
+                }
+            )
 
         # Algorithm patterns
-        elif any(keyword in func_name.lower() for keyword in ['search', 'sort', 'filter', 'find', 'lookup']):
-            patterns.append({
-                "type": "algorithm",
-                "function": func_name,
-                "time": exec_time,
-                "recommendations": ["algorithm"]
-            })
+        elif any(
+            keyword in func_name.lower()
+            for keyword in ["search", "sort", "filter", "find", "lookup"]
+        ):
+            patterns.append(
+                {
+                    "type": "algorithm",
+                    "function": func_name,
+                    "time": exec_time,
+                    "recommendations": ["algorithm"],
+                }
+            )
 
         # Default to creative techniques if no pattern matches
         else:
-            patterns.append({
-                "type": "general",
-                "function": func_name,
-                "time": exec_time,
-                "recommendations": ["creative"]
-            })
+            patterns.append(
+                {
+                    "type": "general",
+                    "function": func_name,
+                    "time": exec_time,
+                    "recommendations": ["creative"],
+                }
+            )
 
     return patterns
 
 
-def generate_optimization_proposals(root: Path, budget_seconds: int, preferences: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+def generate_optimization_proposals(
+    root: Path, budget_seconds: int, preferences: Optional[Dict[str, Any]] = None
+) -> Dict[str, Any]:
     """Create grounded optimization proposals based on latest evidence.
 
     Returns a dict: { proposals: [...], evidence_summary: {...} }
@@ -167,18 +202,49 @@ def generate_optimization_proposals(root: Path, budget_seconds: int, preferences
     prefs = preferences or {
         "risk_mode": "balanced_creative",
         "allowed_tech": [
-            "Numba", "Cython", "Rust/WASM", "PyPy", "asyncio", "C", "C++", "C#",
-            "NumPy", "Pandas", "Joblib", "NumExpr", "Dask", "Ray", "CuPy",
-            "aiofiles", "concurrent.futures", "multiprocessing", "weakref"
+            "Numba",
+            "Cython",
+            "Rust/WASM",
+            "PyPy",
+            "asyncio",
+            "C",
+            "C++",
+            "C#",
+            "NumPy",
+            "Pandas",
+            "Joblib",
+            "NumExpr",
+            "Dask",
+            "Ray",
+            "CuPy",
+            "aiofiles",
+            "concurrent.futures",
+            "multiprocessing",
+            "weakref",
         ],
         "experiment_budget_default_minutes": max(1, budget_seconds // 60) or 10,
         "optimization_categories": {
             "cpu_bound": ["numba_jit", "vectorize_numpy", "cython_compile", "pypy_jit"],
-            "memory_bound": ["weakref_cache", "object_pool", "memoryview", "slots_optimization"],
+            "memory_bound": [
+                "weakref_cache",
+                "object_pool",
+                "memoryview",
+                "slots_optimization",
+            ],
             "io_bound": ["async_io", "concurrent_futures", "aiofiles", "mmap_files"],
-            "algorithm": ["bisect_search", "heapq_priority", "set_lookup", "dict_comprehension"],
-            "creative": ["rust_microkernel", "c_extension", "numexpr_eval", "joblib_parallel"]
-        }
+            "algorithm": [
+                "bisect_search",
+                "heapq_priority",
+                "set_lookup",
+                "dict_comprehension",
+            ],
+            "creative": [
+                "rust_microkernel",
+                "c_extension",
+                "numexpr_eval",
+                "joblib_parallel",
+            ],
+        },
     }
     _ensure_prefs(root, prefs)
 
@@ -203,34 +269,130 @@ def generate_optimization_proposals(root: Path, budget_seconds: int, preferences
         # Enhanced idea bank with more sophisticated optimizations
         idea_bank: List[Tuple[str, str, str, str]] = [
             # CPU-bound optimizations
-            ("numba_jit", "Numba JIT hot loops", "Apply @njit/@jit to CPU-bound sections and avoid Python overhead", "cpu_bound"),
-            ("vectorize_numpy", "NumPy vectorization", "Replace Python loops with NumPy vector ops for 10-100x speedup", "cpu_bound"),
-            ("cython_compile", "Cython compilation", "Compile performance-critical sections to C extensions", "cpu_bound"),
-            ("pypy_jit", "PyPy JIT compilation", "Use PyPy's tracing JIT for automatic optimization", "cpu_bound"),
-
+            (
+                "numba_jit",
+                "Numba JIT hot loops",
+                "Apply @njit/@jit to CPU-bound sections and avoid Python overhead",
+                "cpu_bound",
+            ),
+            (
+                "vectorize_numpy",
+                "NumPy vectorization",
+                "Replace Python loops with NumPy vector ops for 10-100x speedup",
+                "cpu_bound",
+            ),
+            (
+                "cython_compile",
+                "Cython compilation",
+                "Compile performance-critical sections to C extensions",
+                "cpu_bound",
+            ),
+            (
+                "pypy_jit",
+                "PyPy JIT compilation",
+                "Use PyPy's tracing JIT for automatic optimization",
+                "cpu_bound",
+            ),
             # Memory optimizations
-            ("weakref_cache", "Weak reference caching", "Use weakref for memory-efficient caching without leaks", "memory_bound"),
-            ("object_pool", "Object pooling", "Reuse objects to reduce GC pressure and allocation overhead", "memory_bound"),
-            ("memoryview", "Memory views", "Use memoryview for zero-copy buffer access", "memory_bound"),
-            ("slots_optimization", "Slots optimization", "Use __slots__ to reduce memory footprint", "memory_bound"),
-
+            (
+                "weakref_cache",
+                "Weak reference caching",
+                "Use weakref for memory-efficient caching without leaks",
+                "memory_bound",
+            ),
+            (
+                "object_pool",
+                "Object pooling",
+                "Reuse objects to reduce GC pressure and allocation overhead",
+                "memory_bound",
+            ),
+            (
+                "memoryview",
+                "Memory views",
+                "Use memoryview for zero-copy buffer access",
+                "memory_bound",
+            ),
+            (
+                "slots_optimization",
+                "Slots optimization",
+                "Use __slots__ to reduce memory footprint",
+                "memory_bound",
+            ),
             # I/O optimizations
-            ("async_io", "Async I/O refactoring", "Convert blocking I/O to async/await patterns", "io_bound"),
-            ("concurrent_futures", "Thread pool execution", "Use concurrent.futures for parallel I/O operations", "io_bound"),
-            ("aiofiles", "Async file operations", "Replace sync file ops with aiofiles for non-blocking I/O", "io_bound"),
-            ("mmap_files", "Memory-mapped files", "Use mmap for efficient large file access", "io_bound"),
-
+            (
+                "async_io",
+                "Async I/O refactoring",
+                "Convert blocking I/O to async/await patterns",
+                "io_bound",
+            ),
+            (
+                "concurrent_futures",
+                "Thread pool execution",
+                "Use concurrent.futures for parallel I/O operations",
+                "io_bound",
+            ),
+            (
+                "aiofiles",
+                "Async file operations",
+                "Replace sync file ops with aiofiles for non-blocking I/O",
+                "io_bound",
+            ),
+            (
+                "mmap_files",
+                "Memory-mapped files",
+                "Use mmap for efficient large file access",
+                "io_bound",
+            ),
             # Algorithm optimizations
-            ("bisect_search", "Binary search optimization", "Replace linear searches with bisect for O(log n) lookup", "algorithm"),
-            ("heapq_priority", "Priority queue optimization", "Use heapq for efficient priority-based operations", "algorithm"),
-            ("set_lookup", "Set-based lookups", "Replace list membership tests with set lookups", "algorithm"),
-            ("dict_comprehension", "Dict comprehensions", "Use dict comprehensions for memory-efficient dict building", "algorithm"),
-
+            (
+                "bisect_search",
+                "Binary search optimization",
+                "Replace linear searches with bisect for O(log n) lookup",
+                "algorithm",
+            ),
+            (
+                "heapq_priority",
+                "Priority queue optimization",
+                "Use heapq for efficient priority-based operations",
+                "algorithm",
+            ),
+            (
+                "set_lookup",
+                "Set-based lookups",
+                "Replace list membership tests with set lookups",
+                "algorithm",
+            ),
+            (
+                "dict_comprehension",
+                "Dict comprehensions",
+                "Use dict comprehensions for memory-efficient dict building",
+                "algorithm",
+            ),
             # Creative techniques
-            ("rust_microkernel", "Rust/WASM micro-kernel", "Move tight numeric loop to Rust compiled to native/WASM and call via FFI", "creative"),
-            ("c_extension", "C extension modules", "Write performance-critical code in C with Python bindings", "creative"),
-            ("numexpr_eval", "NumExpr evaluation", "Use numexpr for efficient numerical expression evaluation", "creative"),
-            ("joblib_parallel", "Joblib parallelization", "Parallelize independent computations with joblib", "creative"),
+            (
+                "rust_microkernel",
+                "Rust/WASM micro-kernel",
+                "Move tight numeric loop to Rust compiled to native/WASM and call via FFI",
+                "creative",
+            ),
+            (
+                "c_extension",
+                "C extension modules",
+                "Write performance-critical code in C with Python bindings",
+                "creative",
+            ),
+            (
+                "numexpr_eval",
+                "NumExpr evaluation",
+                "Use numexpr for efficient numerical expression evaluation",
+                "creative",
+            ),
+            (
+                "joblib_parallel",
+                "Joblib parallelization",
+                "Parallelize independent computations with joblib",
+                "creative",
+            ),
         ]
 
         # Filter ideas based on pattern recommendations or use all if no patterns
@@ -251,13 +413,21 @@ def generate_optimization_proposals(root: Path, budget_seconds: int, preferences
                     "evidence": {
                         "source": str(report_path) if report_path else "n/a",
                         "hotspot_seconds": secs,
-                        "hotspot_rank": next((i for i, h in enumerate(hotspots, 1) if h[0] == name), 1),
+                        "hotspot_rank": next(
+                            (i for i, h in enumerate(hotspots, 1) if h[0] == name), 1
+                        ),
                     },
                     "estimated_gain": "10-50%",
-                    "risk": "balanced" if pid in ("numba_jit", "vectorize_numpy", "asyncio_refactor") else "creative",
+                    "risk": (
+                        "balanced"
+                        if pid in ("numba_jit", "vectorize_numpy", "asyncio_refactor")
+                        else "creative"
+                    ),
                     "tech": pid,
                     "branch_required": pid in ("rust_microkernel",),
-                    "confidence": 0.55 if pid in ("numba_jit", "vectorize_numpy") else 0.4,
+                    "confidence": (
+                        0.55 if pid in ("numba_jit", "vectorize_numpy") else 0.4
+                    ),
                 }
             )
 

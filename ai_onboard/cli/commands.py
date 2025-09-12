@@ -28,7 +28,10 @@ from ..core import (
 from ..core.unicode_utils import print_activity, print_content, print_status, safe_print
 
 # Import CLI command modules
-from .commands_cleanup_safety import add_cleanup_safety_commands, handle_cleanup_safety_commands
+from .commands_cleanup_safety import (
+    add_cleanup_safety_commands,
+    handle_cleanup_safety_commands,
+)
 
 # from ..plugins import example_policy  # ensure example plugin registers on import
 
@@ -81,8 +84,14 @@ def main(argv=None):
     so_sub = s_o.add_subparsers(dest="opt_cmd", required=False)
     s_o.add_argument("--budget", default="5m", help="Time budget (e.g., 5m)")
     so_sub.add_parser("propose", help="Generate optimization proposals and open gate")
-    s_sbx = so_sub.add_parser("sandbox", help="Create sandbox plan for a proposal and open gate")
-    s_sbx.add_argument("--proposal-id", default="", help="Proposal ID (optional; defaults to top proposal)")
+    s_sbx = so_sub.add_parser(
+        "sandbox", help="Create sandbox plan for a proposal and open gate"
+    )
+    s_sbx.add_argument(
+        "--proposal-id",
+        default="",
+        help="Proposal ID (optional; defaults to top proposal)",
+    )
 
     s_ver = sub.add_parser("version", help="Show or bump ai_onboard version")
     s_ver.add_argument("--bump", choices=["major", "minor", "patch"])
@@ -146,7 +155,10 @@ def main(argv=None):
     )
 
     # Progress tracking command
-    sub.add_parser("progress-scan", help="Scan for completed tasks and update plan with gate confirmation")
+    sub.add_parser(
+        "progress-scan",
+        help="Scan for completed tasks and update plan with gate confirmation",
+    )
 
     # Vision and planning commands
     s_vision = sub.add_parser("vision", help="Vision alignment and scope management")
@@ -206,7 +218,10 @@ def main(argv=None):
     progress_parser.add_argument("--progress", help="Progress data (JSON)")
 
     sp_sub.add_parser("auto-update", help="Auto-update plan based on progress")
-    sp_sub.add_parser("progress-scan", help="Scan for completed tasks and update plan with gate confirmation")
+    sp_sub.add_parser(
+        "progress-scan",
+        help="Scan for completed tasks and update plan with gate confirmation",
+    )
 
     add_milestone_parser = sp_sub.add_parser(
         "add-milestone", help="Add new milestone to plan"
@@ -242,16 +257,24 @@ def main(argv=None):
     # User preference learning commands
     s_prefs = sub.add_parser("user-prefs", help="User preference learning commands")
     sprefs = s_prefs.add_subparsers(dest="prefs_cmd", required=True)
-    rec_parser = sprefs.add_parser("record", help="Record a user interaction for learning")
+    rec_parser = sprefs.add_parser(
+        "record", help="Record a user interaction for learning"
+    )
     rec_parser.add_argument("--user", required=True, help="User ID")
-    rec_parser.add_argument("--type", required=True, help="Interaction type (enum value)")
+    rec_parser.add_argument(
+        "--type", required=True, help="Interaction type (enum value)"
+    )
     rec_parser.add_argument("--context", default="{}", help="Context JSON")
     rec_parser.add_argument("--duration", type=float)
     rec_parser.add_argument("--outcome", default="{}", help="Outcome JSON")
     rec_parser.add_argument("--satisfaction", type=float)
     rec_parser.add_argument("--feedback", default="")
-    sprefs.add_parser("summary", help="Show user profile summary").add_argument("--user", required=True)
-    sprefs.add_parser("recommend", help="Get user recommendations").add_argument("--user", required=True)
+    sprefs.add_parser("summary", help="Show user profile summary").add_argument(
+        "--user", required=True
+    )
+    sprefs.add_parser("recommend", help="Get user recommendations").add_argument(
+        "--user", required=True
+    )
     s_interrogate = sub.add_parser("interrogate", help="Vision interrogation system")
     si_sub = s_interrogate.add_subparsers(dest="interrogate_cmd", required=True)
     si_sub.add_parser("check", help="Check if vision is ready for AI agents")
@@ -331,7 +354,9 @@ def main(argv=None):
                 from ..core.gate_system import GateRequest, GateSystem, GateType
 
                 budget_seconds = optimizer.parse_budget(args.budget)
-                proposals = optimizer.generate_optimization_proposals(root, budget_seconds)
+                proposals = optimizer.generate_optimization_proposals(
+                    root, budget_seconds
+                )
 
                 # Build executive summary
                 summary_lines = []
@@ -363,7 +388,10 @@ def main(argv=None):
                     questions=questions,
                 )
                 gate_system.create_gate(gate_request)
-                print_content("Gate created for Optimization Strategist proposals: .ai_onboard/gates/current_gate.md", "status")
+                print_content(
+                    "Gate created for Optimization Strategist proposals: .ai_onboard/gates/current_gate.md",
+                    "status",
+                )
                 print("Run 'ai_onboard gate respond' after answering the questions")
                 return
 
@@ -371,12 +399,15 @@ def main(argv=None):
                 from ..core.gate_system import GateRequest, GateSystem, GateType
 
                 budget_seconds = optimizer.parse_budget(args.budget)
-                plan = optimizer.create_sandbox_plan(root, getattr(args, "proposal_id", "") or None, budget_seconds)
+                plan = optimizer.create_sandbox_plan(
+                    root, getattr(args, "proposal_id", "") or None, budget_seconds
+                )
 
                 selected = plan.get("selected_proposal", {})
                 sel_line = (
                     f"• {selected.get('id','?')} → {selected.get('title','?')} (risk={selected.get('risk','?')}, est_gain={selected.get('estimated_gain','?')}, conf={selected.get('confidence','?')})"
-                    if selected else "• No proposal selected"
+                    if selected
+                    else "• No proposal selected"
                 )
 
                 questions = [
@@ -393,8 +424,9 @@ def main(argv=None):
                     context={
                         "executive_summary": {
                             "total_proposals": 1 if selected else 0,
-                            "task_descriptions": [sel_line] + [f"  - {s}" for s in plan.get('steps', [])],
-                            "categories": {"steps": len(plan.get('steps', []))},
+                            "task_descriptions": [sel_line]
+                            + [f"  - {s}" for s in plan.get("steps", [])],
+                            "categories": {"steps": len(plan.get("steps", []))},
                         },
                         "evidence": plan.get("evidence", {}),
                         "branch": plan.get("branch"),
@@ -402,7 +434,10 @@ def main(argv=None):
                     questions=questions,
                 )
                 gate_system.create_gate(gate_request)
-                print_content("Gate created for Optimization Sandbox Plan: .ai_onboard/gates/current_gate.md", "status")
+                print_content(
+                    "Gate created for Optimization Sandbox Plan: .ai_onboard/gates/current_gate.md",
+                    "status",
+                )
                 print("Run 'ai_onboard gate respond' after answering the questions")
                 return
 
@@ -562,7 +597,9 @@ def main(argv=None):
             scan_results = run_task_completion_scan(root)
 
             if scan_results["scan_results"]["completed_tasks_detected"] > 0:
-                print(f"🎯 Found {scan_results['scan_results']['completed_tasks_detected']} completed tasks!")
+                print(
+                    f"🎯 Found {scan_results['scan_results']['completed_tasks_detected']} completed tasks!"
+                )
 
                 # Use gate system for user confirmation
                 gate_system = GateSystem(root)
@@ -580,35 +617,39 @@ def main(argv=None):
                         "T5": "Vision Validation Logic - Quality scoring and validation for AI agent vision",
                         "T6": "Vision Implementation - Complete vision interrogation system deployment",
                         "T7": "AI Agent Collaboration - Multi-agent communication and orchestration protocols",
-
                         # System Robustness & Quality (T20-T24)
                         "T20": "Error Handling System - Automatic error interception and intelligent debugging",
                         "T22": "Learning Feedback Loops - Continuous improvement through system learning",
                         "T24": "Code Quality Standards - Black formatting and pre-commit hooks enforcement",
-
                         # Enhanced Testing Foundation (T29-T32)
                         "T29": "Advanced Test Metrics - Enhanced performance monitoring and confidence scoring",
                         "T30": "Intelligent Test Integration - SmartDebugger integration for error analysis",
                         "T31": "Performance Monitoring - Baseline monitoring and degradation alerts",
-                        "T32": "Comprehensive Reporting - JSON/HTML reports with trend analysis"
+                        "T32": "Comprehensive Reporting - JSON/HTML reports with trend analysis",
                     }
 
                     descriptions = []
                     for task_id in task_ids:
                         if task_id in task_descriptions:
-                            descriptions.append(f"• {task_id}: {task_descriptions[task_id]}")
+                            descriptions.append(
+                                f"• {task_id}: {task_descriptions[task_id]}"
+                            )
                         else:
-                            descriptions.append(f"• {task_id}: Task details not available")
+                            descriptions.append(
+                                f"• {task_id}: Task details not available"
+                            )
 
                     return descriptions
 
                 # Get executive-level task descriptions
-                task_descriptions = get_task_descriptions(scan_results["scan_results"]["completed_task_ids"])
+                task_descriptions = get_task_descriptions(
+                    scan_results["scan_results"]["completed_task_ids"]
+                )
 
                 questions = [
                     f"Confirm updating project plan with {scan_results['scan_results']['completed_tasks_detected']} detected task completions?",
                     f"This will update progress to ~{scan_results['progress_report']['overall_progress']['completion_percentage']:.1f}% completion.",
-                    "Review the executive summary of completed work below:"
+                    "Review the executive summary of completed work below:",
                 ]
 
                 # Use gate system for user confirmation
@@ -622,24 +663,62 @@ def main(argv=None):
                     context={
                         "scan_results": scan_results["scan_results"],
                         "progress_report": scan_results["progress_report"],
-                        "completed_task_ids": scan_results["scan_results"]["completed_task_ids"],
+                        "completed_task_ids": scan_results["scan_results"][
+                            "completed_task_ids"
+                        ],
                         "executive_summary": {
-                            "total_tasks_completed": scan_results['scan_results']['completed_tasks_detected'],
+                            "total_tasks_completed": scan_results["scan_results"][
+                                "completed_tasks_detected"
+                            ],
                             "new_progress_percentage": f"{scan_results['progress_report']['overall_progress']['completion_percentage']:.1f}%",
                             "task_descriptions": task_descriptions,
                             "categories": {
-                                "infrastructure": len([t for t in scan_results["scan_results"]["completed_task_ids"] if t in ["T1", "T2", "T3"]]),
-                                "vision_system": len([t for t in scan_results["scan_results"]["completed_task_ids"] if t in ["T4", "T5", "T6", "T7"]]),
-                                "system_robustness": len([t for t in scan_results["scan_results"]["completed_task_ids"] if t in ["T20", "T22", "T24"]]),
-                                "testing_foundation": len([t for t in scan_results["scan_results"]["completed_task_ids"] if t in ["T29", "T30", "T31", "T32"]])
-                            }
-                        }
+                                "infrastructure": len(
+                                    [
+                                        t
+                                        for t in scan_results["scan_results"][
+                                            "completed_task_ids"
+                                        ]
+                                        if t in ["T1", "T2", "T3"]
+                                    ]
+                                ),
+                                "vision_system": len(
+                                    [
+                                        t
+                                        for t in scan_results["scan_results"][
+                                            "completed_task_ids"
+                                        ]
+                                        if t in ["T4", "T5", "T6", "T7"]
+                                    ]
+                                ),
+                                "system_robustness": len(
+                                    [
+                                        t
+                                        for t in scan_results["scan_results"][
+                                            "completed_task_ids"
+                                        ]
+                                        if t in ["T20", "T22", "T24"]
+                                    ]
+                                ),
+                                "testing_foundation": len(
+                                    [
+                                        t
+                                        for t in scan_results["scan_results"][
+                                            "completed_task_ids"
+                                        ]
+                                        if t in ["T29", "T30", "T31", "T32"]
+                                    ]
+                                ),
+                            },
+                        },
                     },
-                    questions=questions
+                    questions=questions,
                 )
 
                 gate_result = gate_system.create_gate(gate_request)
-                print_content(f"Gate created for user confirmation: {gate_id}", "status")
+                print_content(
+                    f"Gate created for user confirmation: {gate_id}", "status"
+                )
                 print("Please check .ai_onboard/gates/current_gate.md for questions")
                 print("Run 'ai_onboard gate respond' after answering the questions")
 
@@ -753,7 +832,9 @@ def main(argv=None):
                 scan_results = run_task_completion_scan(root)
 
                 if scan_results["scan_results"]["completed_tasks_detected"] > 0:
-                    print(f"🎯 Found {scan_results['scan_results']['completed_tasks_detected']} completed tasks!")
+                    print(
+                        f"🎯 Found {scan_results['scan_results']['completed_tasks_detected']} completed tasks!"
+                    )
 
                     # Use gate system for user confirmation
                     gate_system = GateSystem(root)
@@ -762,7 +843,7 @@ def main(argv=None):
                     questions = [
                         f"Confirm updating project plan with {scan_results['scan_results']['completed_tasks_detected']} detected task completions?",
                         "This will change progress from 0% to ~20.8% completion.",
-                        "Review the detected completions before proceeding?"
+                        "Review the detected completions before proceeding?",
                     ]
 
                     # Create gate for user confirmation
@@ -772,14 +853,18 @@ def main(argv=None):
                         "context": {
                             "scan_results": scan_results["scan_results"],
                             "progress_report": scan_results["progress_report"],
-                            "completed_task_ids": scan_results["scan_results"]["completed_task_ids"]
-                        }
+                            "completed_task_ids": scan_results["scan_results"][
+                                "completed_task_ids"
+                            ],
+                        },
                     }
 
                     # Submit gate for user confirmation
                     gate_result = gate_system.submit_gate(gate_data)
                     print(f"📋 Gate created for user confirmation: {gate_id}")
-                    print("Please check .ai_onboard/gates/current_gate.md for questions")
+                    print(
+                        "Please check .ai_onboard/gates/current_gate.md for questions"
+                    )
                     print("Run 'ai_onboard gate respond' after answering the questions")
 
                 else:
@@ -938,6 +1023,7 @@ def main(argv=None):
         # User preference learning commands
         if args.cmd == "user-prefs":
             from ..core import user_preference_learning as upl
+
             psys = upl.get_user_preference_learning_system(root)
             pcmd = getattr(args, "prefs_cmd", None)
 
@@ -1040,7 +1126,9 @@ def main(argv=None):
             result = cleanup.safe_cleanup(root, dry_run=True)
 
             print_content("Scan Results:", "stats")
-            safe_print(f"  [PROTECTED] Protected (critical): {result['protected']} files")
+            safe_print(
+                f"  [PROTECTED] Protected (critical): {result['protected']} files"
+            )
             safe_print(f"  [DELETE] Would delete: {result['would_delete']} files")
             safe_print(f"  [UNKNOWN] Unknown: {result['unknown']} files")
 
@@ -1080,7 +1168,9 @@ def main(argv=None):
             print_status("Cleanup completed!", "success")
             safe_print(f"  [DELETED] Deleted: {result['deleted_count']} files")
             if result["errors"]:
-                safe_print(f"  [WARN] Errors: {len(result['errors'])} files failed to delete")
+                safe_print(
+                    f"  [WARN] Errors: {len(result['errors'])} files failed to delete"
+                )
                 for error in result["errors"][:5]:
                     safe_print(f"    - {error}")
             return

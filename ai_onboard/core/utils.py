@@ -15,7 +15,7 @@ def ensure_dir(path: Path):
 def generate_id(length: int = 8) -> str:
     """Generate a random alphanumeric ID of specified length."""
     chars = string.ascii_letters + string.digits
-    return ''.join(random.choice(chars) for _ in range(length))
+    return "".join(random.choice(chars) for _ in range(length))
 
 
 def write_json(path: Path, data):
@@ -28,11 +28,14 @@ _json_cache: Dict[str, Any] = {}
 _json_cache_access: Dict[str, float] = {}
 _JSON_CACHE_MAX_SIZE = 128
 
+
 def _cleanup_json_cache():
     """Remove oldest entries if cache is too large."""
     if len(_json_cache) > _JSON_CACHE_MAX_SIZE:
         # Remove oldest entries
-        oldest_keys = sorted(_json_cache_access.items(), key=lambda x: x[1])[:len(_json_cache) - _JSON_CACHE_MAX_SIZE]
+        oldest_keys = sorted(_json_cache_access.items(), key=lambda x: x[1])[
+            : len(_json_cache) - _JSON_CACHE_MAX_SIZE
+        ]
         for key, _ in oldest_keys:
             del _json_cache[key]
             del _json_cache_access[key]
@@ -60,6 +63,7 @@ def read_json_cached(path: Path, default=None) -> Any:
     except (json.JSONDecodeError, OSError):
         return default
 
+
 async def read_json_async(path: Path, default=None) -> Any:
     """Async version of JSON reading for concurrent file operations."""
     if not path.exists():
@@ -75,6 +79,8 @@ async def read_json_async(path: Path, default=None) -> Any:
 def read_json(path: Path, default=None):
     """Backward-compatible JSON reading - now uses optimized cached version."""
     return read_json_cached(path, default)
+
+
 async def read_multiple_json(paths: list[Path], default=None) -> list[Any]:
     """Read multiple JSON files concurrently using asyncio."""
     tasks = [read_json_async(path, default) for path in paths]
@@ -119,10 +125,10 @@ def random_string(length: int = 8) -> str:
 def append_jsonl(path: Path, data: Dict[str, Any]):
     """Append a JSON object to a JSONL file."""
     ensure_dir(path.parent)
-    
+
     # Convert data to JSON string
-    json_line = json.dumps(data, ensure_ascii=False, default=str) + '\n'
-    
+    json_line = json.dumps(data, ensure_ascii=False, default=str) + "\n"
+
     # Append to file
-    with open(path, 'a', encoding='utf-8') as f:
+    with open(path, "a", encoding="utf-8") as f:
         f.write(json_line)

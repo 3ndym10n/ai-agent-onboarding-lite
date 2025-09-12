@@ -15,7 +15,9 @@ from . import utils
 
 def load_plan(root: Path) -> Dict[str, Any]:
     """Load the plan JSON from .ai_onboard/plan.json, or an empty stub."""
-    return utils.read_json(root / ".ai_onboard" / "plan.json", default={"tasks": [], "milestones": []})
+    return utils.read_json(
+        root / ".ai_onboard" / "plan.json", default={"tasks": [], "milestones": []}
+    )
 
 
 def create_progress_bar(percentage: float, width: int = 20) -> str:
@@ -62,13 +64,17 @@ def compute_overall_progress(plan: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def compute_milestone_progress(plan: Dict[str, Any], width: int = 15) -> List[Dict[str, Any]]:
+def compute_milestone_progress(
+    plan: Dict[str, Any], width: int = 15
+) -> List[Dict[str, Any]]:
     """Compute progress for each milestone in the plan.
 
     Progress is task-count based to match existing semantics.
     """
     milestones: List[Dict[str, Any]] = plan.get("milestones", [])
-    tasks_index: Dict[str, Dict[str, Any]] = {t.get("id"): t for t in plan.get("tasks", [])}
+    tasks_index: Dict[str, Dict[str, Any]] = {
+        t.get("id"): t for t in plan.get("tasks", [])
+    }
 
     results: List[Dict[str, Any]] = []
     for ms in milestones:
@@ -102,6 +108,3 @@ def compute_milestone_progress(plan: Dict[str, Any], width: int = 15) -> List[Di
     # Sort by most complete first
     results.sort(key=lambda x: x["progress_percentage"], reverse=True)
     return results
-
-
-

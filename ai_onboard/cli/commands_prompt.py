@@ -27,9 +27,7 @@ def add_prompt_commands(subparsers):
     )
 
     # progress (canonical progress snapshot)
-    sp_sub.add_parser(
-        "progress", help="Show canonical project progress from plan.json"
-    )
+    sp_sub.add_parser("progress", help="Show canonical project progress from plan.json")
 
     # sweep (consistency sweep)
     sp_sub.add_parser(
@@ -67,6 +65,7 @@ def handle_prompt_commands(args, root: Path):
         # Canonical progress snapshot via progress_utils
         try:
             from ..core import progress_utils
+
             plan = progress_utils.load_plan(root)
             overall = progress_utils.compute_overall_progress(plan)
             milestones = progress_utils.compute_milestone_progress(plan)
@@ -80,6 +79,7 @@ def handle_prompt_commands(args, root: Path):
         # Consistency sweep: compare gate visualization vs canonical progress
         try:
             from ..core import progress_utils
+
             gates_dir = root / ".ai_onboard" / "gates"
             current_gate = gates_dir / "current_gate.md"
             plan = progress_utils.load_plan(root)
@@ -90,17 +90,23 @@ def handle_prompt_commands(args, root: Path):
                 "gate_present": current_gate.exists(),
                 "gate_contains_progress": False,
                 "gate_progress_snapshot": None,
-                "status": "ok"
+                "status": "ok",
             }
             if current_gate.exists():
                 content = current_gate.read_text(encoding="utf-8", errors="ignore")
                 # crude parse for a percentage line
                 for line in content.splitlines():
-                    if "%" in line and ("Progress" in line or "progress" in line or "New Progress Level" in line):
+                    if "%" in line and (
+                        "Progress" in line
+                        or "progress" in line
+                        or "New Progress Level" in line
+                    ):
                         report["gate_contains_progress"] = True
                         report["gate_progress_snapshot"] = line.strip()
                         break
-                report["status"] = "drift_possible" if report["gate_contains_progress"] else "ok"
+                report["status"] = (
+                    "drift_possible" if report["gate_contains_progress"] else "ok"
+                )
             print(prompt_bridge.dumps_json(report))
         except Exception as e:
             print(f'{"error":"sweep failed: {str(e)}"}')
