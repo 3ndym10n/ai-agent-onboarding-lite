@@ -1,6 +1,5 @@
 """AI Agent CLI commands for collaborative IAS interaction."""
 
-import argparse
 from pathlib import Path
 
 from ..core.ai_agent_wrapper import create_ai_agent_wrapper

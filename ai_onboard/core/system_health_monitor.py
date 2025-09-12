@@ -55,7 +55,7 @@ class HealthMetric(Enum):
     USER_SATISFACTION = "user_satisfaction"
 
 
-class HealthIssue(Enum):
+class HealthIssueType(Enum):
     """Types of health issues."""
 
     PERFORMANCE_DEGRADATION = "performance_degradation"
@@ -103,7 +103,7 @@ class HealthIssue:
     """A detected health issue."""
 
     issue_id: str
-    issue_type: HealthIssue
+    issue_type: HealthIssueType
     severity: HealthStatus
     description: str
     affected_components: List[str]
@@ -740,7 +740,7 @@ class SystemHealthMonitor:
 
         start_time = time.time()
         success = False
-        result = {}
+        result: Dict[str, Any] = {}
 
         try:
             if action_type == SelfHealingAction.CLEAR_CACHE:
@@ -900,7 +900,7 @@ class SystemHealthMonitor:
 
         # Calculate summary statistics
         health_scores = [snapshot.health_score for snapshot in recent_snapshots]
-        status_counts = {}
+        status_counts: Dict[str, int] = {}
         for snapshot in recent_snapshots:
             status = snapshot.overall_status.value
             status_counts[status] = status_counts.get(status, 0) + 1

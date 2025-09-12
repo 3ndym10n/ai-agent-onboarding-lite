@@ -12,18 +12,40 @@ def _brief(last: Dict[str, Any], changed: List[str]) -> Dict[str, Any]:
         {"name": c.get("name"), "score": c.get("score"), "issues": c.get("issue_count")}
         for c in comps[:5]
     ]
+    # Include canonical progress snapshot
+    try:
+        from . import progress_utils
+        root = Path.cwd()
+        plan = progress_utils.load_plan(root)
+        overall = progress_utils.compute_overall_progress(plan)
+    except Exception:
+        overall = {}
     return {
         "ts": last.get("ts"),
         "pass": last.get("pass"),
         "top_components": top,
         "recent_changed_files": changed[:10],
+        "progress": overall,
     }
 
 
 def _full(last: Dict[str, Any], changed: List[str]) -> Dict[str, Any]:
+    try:
+        from . import progress_utils
+        root = Path.cwd()
+        plan = progress_utils.load_plan(root)
+        overall = progress_utils.compute_overall_progress(plan)
+        milestones = progress_utils.compute_milestone_progress(plan)
+    except Exception:
+        overall = {}
+        milestones = []
     return {
         "last_run": last,
         "recent_changed_files": changed,
+        "progress": {
+            "overall": overall,
+            "milestones": milestones,
+        },
     }
 
 

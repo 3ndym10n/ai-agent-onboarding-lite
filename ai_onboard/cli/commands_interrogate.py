@@ -1,6 +1,5 @@
 """Interrogate commands for ai-onboard CLI."""
 
-import argparse
 import json
 import os
 from pathlib import Path

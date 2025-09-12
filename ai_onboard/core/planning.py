@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Any, Dict, List
 
 from . import utils
 
@@ -403,7 +404,7 @@ def _calculate_critical_path(tasks: list, dependencies: list) -> list:
     critical_tasks = []
 
     # Group by WBS to find critical path
-    wbs_groups = {}
+    wbs_groups: Dict[str, List[Dict[str, Any]]] = {}
     for task in tasks:
         wbs_id = task["wbs_id"]
         if wbs_id not in wbs_groups:
@@ -424,7 +425,7 @@ def _identify_parallel_work(tasks: list, dependencies: list) -> list:
     parallel_groups = []
 
     # Group tasks by type that can be done in parallel
-    type_groups = {}
+    type_groups: Dict[str, List[Dict[str, Any]]] = {}
     for task in tasks:
         task_type = task["type"]
         if task_type not in type_groups:

@@ -58,7 +58,7 @@ def run(root: Path) -> Dict[str, Any]:
             prof[rid] = {"p50_time": optimizer_state.avg_time(opt_state, rid)}
         ordered = scheduler.order_rules(rules, hist, prof)
 
-        issues = []
+        issues: List[str] = []
         for r in ordered:
             impacted = cache.rule_impacted(idx, r["id"], changed)
             if scheduler.should_skip(r, hist, impacted):

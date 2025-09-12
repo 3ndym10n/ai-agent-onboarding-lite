@@ -39,6 +39,17 @@ class GateRequest:
     issues: Optional[List[str]] = None
 
 
+def create_progress_bar(percentage: float, width: int = 20) -> str:
+    """Create an ASCII progress bar for the given percentage.
+
+    Delegates to canonical utils to ensure consistency across the system.
+    """
+    # Local import to avoid circulars for CLI init
+    from . import progress_utils
+
+    return progress_utils.create_progress_bar(percentage, width)
+
+
 class GateSystem:
     """Manages file-based communication between ai-onboard and AI agents."""
 
@@ -166,9 +177,71 @@ class GateSystem:
         # Add context if available
         if gate_request.context:
             prompt += "### Current Context:\n"
-            for key, value in gate_request.context.items():
-                prompt += f"- **{key}**: {value}\n"
-            prompt += "\n"
+
+            # Special handling for executive summary
+            if "executive_summary" in gate_request.context:
+                exec_summary = gate_request.context["executive_summary"]
+
+                # Flexible totals line
+                totals_line = None
+                if isinstance(exec_summary, dict):
+                    if "total_tasks_completed" in exec_summary:
+                        totals_line = f"- **Total Tasks Completed**: {exec_summary.get('total_tasks_completed')}\n"
+                    elif "total_proposals" in exec_summary:
+                        totals_line = f"- **Total Proposals**: {exec_summary.get('total_proposals')}\n"
+                if totals_line:
+                    prompt += totals_line
+
+                # Optional progress visualization
+                new_progress = exec_summary.get("new_progress_percentage") if isinstance(exec_summary, dict) else None
+                try:
+                    if isinstance(new_progress, str) and new_progress.endswith("%"):
+                        progress_pct = float(new_progress.rstrip('%'))
+                        progress_bar = create_progress_bar(progress_pct)
+                        prompt += f"- **New Progress Level**: {new_progress}\n"
+                        prompt += f"- **Progress Visualization**: {progress_bar}\n"
+                except Exception:
+                    pass
+
+                # Add category breakdown
+                categories = exec_summary.get("categories", {})
+                if categories:
+                    prompt += "- **Work Categories**:\n"
+                    if categories.get("infrastructure", 0) > 0:
+                        prompt += f"  • Infrastructure: {categories['infrastructure']} tasks\n"
+                    if categories.get("vision_system", 0) > 0:
+                        prompt += f"  • Vision System: {categories['vision_system']} tasks\n"
+                    if categories.get("system_robustness", 0) > 0:
+                        prompt += f"  • System Robustness: {categories['system_robustness']} tasks\n"
+                    if categories.get("testing_foundation", 0) > 0:
+                        prompt += f"  • Testing Foundation: {categories['testing_foundation']} tasks\n"
+
+                # Add milestone progress if available
+                if "progress_report" in gate_request.context:
+                    progress_report = gate_request.context["progress_report"]
+                    if "milestone_progress" in progress_report:
+                        prompt += "- **Milestone Progress**:\n"
+                        for milestone in progress_report["milestone_progress"]:
+                            name = milestone["name"]
+                            pct = milestone["progress_percentage"]
+                            status = "✅" if milestone["status"] == "completed" else "🔄"
+                            bar = create_progress_bar(pct, 15)
+                            prompt += f"  {status} {name}: {bar}\n"
+                        prompt += "\n"
+
+                # Add detailed task descriptions
+                task_descriptions = exec_summary.get("task_descriptions", [])
+                if task_descriptions:
+                    prompt += "- **Completed Tasks**:\n"
+                    for desc in task_descriptions:
+                        prompt += f"  {desc}\n"
+                prompt += "\n"
+            else:
+                # Fallback to generic context display
+                for key, value in gate_request.context.items():
+                    if key != "executive_summary":  # Skip the executive summary since we handled it above
+                        prompt += f"- **{key}**: {value}\n"
+                prompt += "\n"
 
         # Add confidence score if available
         if gate_request.confidence is not None:

@@ -16,7 +16,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 from . import (
     adaptive_config_manager,
@@ -25,7 +25,6 @@ from . import (
     knowledge_base_evolution,
     performance_optimizer,
     system_health_monitor,
-    telemetry,
     user_preference_learning,
     utils,
 )
@@ -722,12 +721,25 @@ class ContinuousImprovementValidator:
             response_times = {}
             for name, operation in operations:
                 op_start = time.time()
-                operation()
-                response_times[name] = (time.time() - op_start) * 1000  # Convert to ms
+                try:
+                    operation()
+                    response_times[name] = (
+                        time.time() - op_start
+                    ) * 1000  # Convert to ms
+                except Exception as e:
+                    # If operation fails, record a high response time to indicate the issue
+                    response_times[name] = 10000  # 10 seconds to indicate failure
+                    response_times[f"{name}_error"] = str(e)
 
             # Check against threshold
             threshold = self.test_config["performance_thresholds"]["response_time_ms"]
-            max_response_time = max(response_times.values())
+            # Only consider numeric response times (exclude error messages)
+            numeric_times = [
+                v
+                for k, v in response_times.items()
+                if not k.endswith("_error") and isinstance(v, (int, float))
+            ]
+            max_response_time = max(numeric_times) if numeric_times else 0
 
             result = (
                 TestResult.PASS
@@ -947,7 +959,7 @@ class ContinuousImprovementValidator:
             )
 
             # Record analytics metric
-            self.analytics.record_metric(
+            self.analytics.collect_metric(
                 name="recommendation_workflow_test",
                 value=len(recommendations),
                 tags={"workflow": "recommendation"},
@@ -1022,7 +1034,7 @@ class ContinuousImprovementValidator:
 
         try:
             # Record metrics
-            self.analytics.record_metric("e2e_test_metric", 100.0)
+            self.analytics.collect_metric("e2e_test_metric", 100.0)
 
             # Generate report
             report_id = self.analytics.generate_report(

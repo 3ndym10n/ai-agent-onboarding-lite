@@ -15,7 +15,6 @@ from pathlib import Path
 from typing import Any, Dict
 
 from .enhanced_vision_interrogator import (
-    EnhancedVisionInterrogator,
     ProjectType,
     get_enhanced_vision_interrogator,
 )

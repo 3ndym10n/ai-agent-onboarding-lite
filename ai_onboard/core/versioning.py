@@ -21,7 +21,7 @@ def set_version(root: Path, v: str) -> None:
 def bump(version: str, kind: str) -> str:
     major, minor, patch = [int(x) for x in version.split(".")]
     if kind == "major":
-        return f"{major+1}.0.0"
+        return f"{major + 1}.0.0"
     if kind == "minor":
-        return f"{major}.{minor+1}.0"
-    return f"{major}.{minor}.{patch+1}"
+        return f"{major}.{minor + 1}.0"
+    return f"{major}.{minor}.{patch + 1}"

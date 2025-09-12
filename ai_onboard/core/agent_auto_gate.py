@@ -8,7 +8,7 @@ automatically detect and handle any active gates.
 import json
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 
 def auto_handle_gates(project_root: Path = None) -> bool:

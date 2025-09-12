@@ -372,7 +372,7 @@ class ContinuousImprovementAnalytics:
                 except (json.JSONDecodeError, KeyError, ValueError):
                     continue
 
-    def record_metric(
+    def collect_metric(
         self,
         name: str,
         value: float,

@@ -1,0 +1,31 @@
+name: Nightly Consistency Sweep
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # 06:00 UTC daily
+  workflow_dispatch: {}
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install package (editable)
+        run: |
+          pip install -e .
+      - name: Run consistency sweep
+        run: |
+          python -m ai_onboard prompt sweep > sweep.json || true
+          echo "Sweep output:" && cat sweep.json || true
+      - name: Upload sweep artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sweep-report
+          path: sweep.json
+
+

@@ -6,20 +6,14 @@ collaborate with the ai-onboard system, including best practices, examples,
 and automated guidance generation.
 """
 
-import json
-import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 from . import utils
 from .ai_agent_collaboration_protocol import (
-    AgentCapability,
-    AgentProfile,
-    CollaborationMode,
-    SafetyLevel,
     get_collaboration_protocol,
 )
 

@@ -209,7 +209,7 @@ class EnhancedVisionInterrogator:
             project_type = ProjectType.GENERIC
 
         # Initialize enhanced interrogation
-        interrogation = {
+        interrogation: Dict[str, Any] = {
             "status": "in_progress",
             "started_at": utils.now_iso(),
             "project_type": project_type.value,
@@ -1030,7 +1030,7 @@ class EnhancedVisionInterrogator:
         ambiguities = interrogation_data.get("ambiguities", [])
 
         # Categorize insights
-        insight_categories = {}
+        insight_categories: Dict[str, List[str]] = {}
         for insight in insights:
             category = insight.get("category", "other")
             if category not in insight_categories:

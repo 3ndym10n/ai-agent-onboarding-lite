@@ -6,9 +6,9 @@ import hashlib
 import json
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
-from . import charter, planning, utils, vision_guardian
+from . import utils, vision_guardian
 
 
 class ContextContinuityManager:
@@ -312,7 +312,7 @@ class ContextContinuityManager:
             all_decisions.extend(session.get("key_decisions", []))
 
         # Count decision types
-        decision_types = {}
+        decision_types: Dict[str, int] = {}
         for decision in all_decisions:
             decision_type = decision.get("type", "unknown")
             decision_types[decision_type] = decision_types.get(decision_type, 0) + 1

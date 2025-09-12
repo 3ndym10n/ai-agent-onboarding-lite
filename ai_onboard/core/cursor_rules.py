@@ -16,7 +16,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from . import alignment, prompt_bridge, utils
+from . import prompt_bridge, utils
 
 CONVO_FILE = ".ai_onboard/conversation.jsonl"
 DECISIONS_FILE = ".ai_onboard/decisions.jsonl"
@@ -144,7 +144,7 @@ def generate_system_prompt(root: Path) -> str:
     items = _compute_checklist(root)
     profile = load_agent_profile(root)
     checklist_lines = "\n".join(
-        [f"- [{ 'x' if it.done else ' ' }] {it.label}" for it in items]
+        [f"- [{'x' if it.done else ' '}] {it.label}" for it in items]
     )
     include_lines = (
         "\n".join([f"  - {p}" for p in profile.get("include", [])]) or "  - (none)"

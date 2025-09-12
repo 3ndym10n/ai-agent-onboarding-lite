@@ -132,6 +132,11 @@ def handle_continuous_improvement_commands(
     args: argparse.Namespace, root: Path
 ) -> None:
     """Handle continuous improvement commands."""
+    # Handle user-prefs as top-level command (quick-path routing)
+    if args.cmd == "user-prefs":
+        _handle_user_preference_commands(args, root)
+        return
+
     if args.improvement_cmd == "learn":
         _handle_learning_commands(args, root)
     elif args.improvement_cmd == "recommendations":
@@ -158,6 +163,46 @@ def handle_continuous_improvement_commands(
         _handle_test_commands(args, root)
     elif args.improvement_cmd == "validate":
         _handle_validation_commands(args, root)
+    elif args.cmd == "user-prefs":
+        # Quick-path handler for user preference learning
+        from ..core import user_preference_learning as upl
+
+        psys = upl.get_user_preference_learning_system(root)
+        pcmd = getattr(args, "prefs_cmd", None)
+        if pcmd == "record":
+            try:
+                context = json.loads(getattr(args, "context", "") or "{}")
+            except Exception:
+                print('{"error":"invalid context JSON"}')
+                return
+            try:
+                outcome = json.loads(getattr(args, "outcome", "") or "{}")
+            except Exception:
+                print('{"error":"invalid outcome JSON"}')
+                return
+            interaction_id = psys.record_user_interaction(
+                user_id=args.user,
+                interaction_type=args.type,
+                context=context,
+                duration=getattr(args, "duration", None),
+                outcome=outcome,
+                satisfaction_score=getattr(args, "satisfaction", None),
+                feedback=getattr(args, "feedback", None),
+            )
+            print(json.dumps({"interaction_id": interaction_id}))
+            return
+        if pcmd == "summary":
+            print(json.dumps(psys.get_user_profile_summary(args.user)))
+            return
+        if pcmd == "recommend":
+            print(
+                json.dumps(
+                    {"recommendations": psys.get_user_recommendations(args.user)}
+                )
+            )
+            return
+        print('{"error":"unknown user-prefs subcommand"}')
+        return
     else:
         print(f"Unknown improvement command: {args.improvement_cmd}")
 
@@ -780,26 +825,22 @@ def _handle_user_preference_commands(args: argparse.Namespace, root: Path) -> No
     """Handle user preference learning commands."""
     preference_system = get_user_preference_learning_system(root)
 
-    if args.user_pref_action == "record":
+    if args.prefs_cmd == "record":
         _handle_record_interaction(args, preference_system)
-    elif args.user_pref_action == "preferences":
-        _handle_user_preferences(args, preference_system)
-    elif args.user_pref_action == "profile":
-        _handle_user_profile(args, preference_system)
-    elif args.user_pref_action == "recommendations":
+    elif args.prefs_cmd == "summary":
+        _handle_user_summary(args, preference_system)
+    elif args.prefs_cmd == "recommend":
         _handle_user_recommendations(args, preference_system)
-    elif args.user_pref_action == "patterns":
-        _handle_behavior_patterns(args, preference_system)
     else:
-        print(f"Unknown user preference action: {args.user_pref_action}")
+        print(f"Unknown user preference action: {args.prefs_cmd}")
 
 
 def _handle_record_interaction(args: argparse.Namespace, preference_system) -> None:
     """Handle recording user interactions."""
     try:
-        interaction_type = InteractionType(args.interaction_type)
+        interaction_type = InteractionType(args.type)
     except ValueError:
-        print(f"Invalid interaction type: {args.interaction_type}")
+        print(f"Invalid interaction type: {args.type}")
         print(f"Available types: {', '.join([it.value for it in InteractionType])}")
         return
 
@@ -820,7 +861,7 @@ def _handle_record_interaction(args: argparse.Namespace, preference_system) -> N
 
     # Record the interaction
     interaction_id = preference_system.record_user_interaction(
-        user_id=args.user_id,
+        user_id=args.user,
         interaction_type=interaction_type,
         context=context,
         duration=args.duration,
@@ -830,10 +871,44 @@ def _handle_record_interaction(args: argparse.Namespace, preference_system) -> N
     )
 
     print(f"✅ User interaction recorded: {interaction_id}")
-    print(f"User: {args.user_id}")
+    print(f"User: {args.user}")
     print(f"Type: {interaction_type.value}")
     if args.satisfaction is not None:
         print(f"Satisfaction: {args.satisfaction}")
+
+
+def _handle_user_summary(args: argparse.Namespace, preference_system) -> None:
+    """Handle user summary command."""
+    user_id = args.user
+
+    # Get user profile summary
+    try:
+        summary = preference_system.get_user_profile_summary(user_id)
+        print(f"📊 User Profile Summary for {user_id}")
+        print("=" * 50)
+        print(summary)
+    except Exception as e:
+        print(f"❌ Failed to generate user summary: {e}")
+
+
+def _handle_user_recommendations(args: argparse.Namespace, preference_system) -> None:
+    """Handle user recommendations command."""
+    user_id = args.user
+
+    # Get user recommendations
+    try:
+        recommendations = preference_system.get_user_recommendations(user_id)
+        print(f"🎯 Recommendations for {user_id}")
+        print("=" * 50)
+        if recommendations:
+            for i, rec in enumerate(recommendations, 1):
+                print(f"{i}. {rec}")
+        else:
+            print(
+                "No recommendations available yet. Record more interactions to get personalized suggestions."
+            )
+    except Exception as e:
+        print(f"❌ Failed to generate recommendations: {e}")
 
 
 def _handle_user_preferences(args: argparse.Namespace, preference_system) -> None:
@@ -936,28 +1011,6 @@ def _handle_user_profile(args: argparse.Namespace, preference_system) -> None:
             print(
                 f"    Confidence: {pattern['confidence']:.2f}, Frequency: {pattern['frequency']:.2f}"
             )
-
-
-def _handle_user_recommendations(args: argparse.Namespace, preference_system) -> None:
-    """Handle user recommendations."""
-    user_id = args.user_id
-
-    recommendations = preference_system.get_user_recommendations(user_id)
-
-    if not recommendations:
-        print(f"📋 No recommendations found for user {user_id}")
-        return
-
-    print(f"📋 User Recommendations: {user_id}")
-    print("=" * 35)
-
-    for i, rec in enumerate(recommendations, 1):
-        print(f"{i}. {rec['title']}")
-        print(f"   Description: {rec['description']}")
-        print(f"   Type: {rec['type']}")
-        print(f"   Category: {rec['category']}")
-        print(f"   Confidence: {rec['confidence']:.2f}")
-        print()
 
 
 def _handle_behavior_patterns(args: argparse.Namespace, preference_system) -> None:
@@ -1654,7 +1707,7 @@ def _handle_record_metric(args: argparse.Namespace, analytics) -> None:
     tags = json.loads(args.tags) if args.tags else {}
     metadata = json.loads(args.metadata) if args.metadata else {}
 
-    metric_id = analytics.record_metric(
+    metric_id = analytics.collect_metric(
         name=args.name,
         value=args.value,
         metric_type=metric_type,
@@ -2191,6 +2244,28 @@ def add_continuous_improvement_parser(subparsers) -> None:
         dest="issues_action", help="Issues actions"
     )
     health_issues_subparsers.add_parser("list", help="List active health issues")
+
+    # User preference learning (quick path exposure)
+    prefs_parser = subparsers.add_parser(
+        "user-prefs", help="User preference learning commands"
+    )
+    prefs_sub = prefs_parser.add_subparsers(dest="prefs_cmd", required=True)
+    pref_rec = prefs_sub.add_parser(
+        "record", help="Record a user interaction for learning"
+    )
+    pref_rec.add_argument("--user", required=True)
+    pref_rec.add_argument("--type", required=True)
+    pref_rec.add_argument("--context", default="{}")
+    pref_rec.add_argument("--duration", type=float)
+    pref_rec.add_argument("--outcome", default="{}")
+    pref_rec.add_argument("--satisfaction", type=float)
+    pref_rec.add_argument("--feedback", default="")
+    prefs_sub.add_parser("summary", help="Show user profile summary").add_argument(
+        "--user", required=True
+    )
+    prefs_sub.add_parser("recommend", help="Get user recommendations").add_argument(
+        "--user", required=True
+    )
 
     health_issues_show_parser = health_issues_subparsers.add_parser(
         "show", help="Show specific health issue"

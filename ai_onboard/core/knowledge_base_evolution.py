@@ -534,7 +534,7 @@ class KnowledgeBaseEvolution:
         )
 
         # Check tag relevance
-        tag_relevance = 0
+        tag_relevance = 0.0
         for tag in knowledge_item.tags:
             if any(word in tag.lower() for word in query_words):
                 tag_relevance += 0.2

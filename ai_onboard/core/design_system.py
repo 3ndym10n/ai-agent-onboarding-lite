@@ -9,7 +9,7 @@ import json
 import logging
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ class DesignToken:
     category: str  # "color", "typography", "spacing", "border", "shadow"
     value: str
     description: str
-    usage: List[str] = None
+    usage: Optional[List[str]] = None
 
 
 @dataclass

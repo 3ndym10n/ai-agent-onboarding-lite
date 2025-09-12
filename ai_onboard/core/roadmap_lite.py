@@ -21,7 +21,7 @@ def build(root: Path, goal: str = "") -> Dict[str, Any]:
     for qw in analysis.get("quick_wins", []):
         tasks.append(
             {
-                "id": f"qw-{len(tasks)+1}",
+                "id": f"qw-{len(tasks) + 1}",
                 "title": qw,
                 "type": "quick_win",
                 "refs": ["analysis.quick_wins"],
@@ -33,7 +33,7 @@ def build(root: Path, goal: str = "") -> Dict[str, Any]:
     if (root / "README.md").exists() is False:
         tasks.append(
             {
-                "id": f"doc-{len(tasks)+1}",
+                "id": f"doc-{len(tasks) + 1}",
                 "title": "Create README.md with setup and run steps",
                 "type": "doc",
                 "refs": ["files.README.md"],

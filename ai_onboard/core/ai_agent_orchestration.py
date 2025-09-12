@@ -12,18 +12,16 @@ This system provides:
 
 from __future__ import annotations
 
-import hashlib
 import json
 import threading
 import time
 import uuid
-from contextlib import contextmanager
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
-from . import alignment, utils
+from . import alignment
 from .ai_agent_wrapper import IASGuardrails
 from .session_storage import SessionStorageManager
 
@@ -486,7 +484,7 @@ class AIAgentOrchestrationLayer:
         self, context: ConversationContext, user_input: str
     ) -> Dict[str, Any]:
         """Run the multi-stage decision pipeline."""
-        pipeline_results = {
+        pipeline_results: Dict[str, Any] = {
             "session_id": context.session_id,
             "pipeline_stages": {},
             "final_decision": None,

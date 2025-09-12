@@ -1,6 +1,5 @@
 """CLI commands for AI Agent Orchestration Layer (AAOL)."""
 
-import argparse
 import json
 import time
 from pathlib import Path

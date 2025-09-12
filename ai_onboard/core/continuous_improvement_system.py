@@ -15,7 +15,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Union
 
 from . import smart_debugger, telemetry, universal_error_monitor, utils
 
@@ -848,18 +848,18 @@ class ContinuousImprovementSystem:
             }
 
         # Categorize by learning type
-        by_type = {}
+        by_type: Dict[str, List[Dict[str, Any]]] = {}
         for event in learning_events:
-            learning_type = event["learning_type"]
+            learning_type = event.get("learning_type", "unknown")
             if learning_type not in by_type:
                 by_type[learning_type] = []
             by_type[learning_type].append(event)
 
         # Calculate summary statistics
-        avg_confidence = sum(e["confidence"] for e in learning_events) / len(
+        avg_confidence = sum(e.get("confidence", 0.0) for e in learning_events) / len(
             learning_events
         )
-        avg_impact = sum(e["impact_score"] for e in learning_events) / len(
+        avg_impact = sum(e.get("impact_score", 0.0) for e in learning_events) / len(
             learning_events
         )
 
@@ -880,7 +880,7 @@ class ContinuousImprovementSystem:
         """Get top sources of learning events."""
         source_counts = {}
         for event in learning_events:
-            source = event["source"]
+            source = event.get("source", "unknown")
             if source not in source_counts:
                 source_counts[source] = 0
             source_counts[source] += 1

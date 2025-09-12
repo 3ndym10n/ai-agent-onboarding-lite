@@ -52,7 +52,7 @@ class _ApprovalHandler(BaseHTTPRequestHandler):
         inputs = []
         for idx, q in enumerate(questions):
             inputs.append(
-                f"<div style='margin:12px 0'><div><strong>Q{idx+1}.</strong> {q}</div>"
+                f"<div style='margin:12px 0'><div><strong>Q{idx + 1}.</strong> {q}</div>"
                 f"<textarea name='answer_{idx}' rows='3' style='width:100%;margin-top:6px'></textarea></div>"
             )
 

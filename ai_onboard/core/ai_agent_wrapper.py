@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-import json
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Set, Tuple
 
-from . import alignment, utils
+from . import alignment
 
 
 @dataclass
@@ -49,7 +48,7 @@ class AIAgentIASWrapper:
         self.root = root
         self.guardrails = IASGuardrails()
         self.conversation_rounds = 0
-        self.resolved_ambiguities = set()
+        self.resolved_ambiguities: Set[str] = set()
 
     def get_alignment_preview(self) -> Dict[str, Any]:
         """Get alignment data without running commands (safe preview)."""

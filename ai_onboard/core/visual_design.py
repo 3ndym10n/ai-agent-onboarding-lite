@@ -152,7 +152,7 @@ class VisualDesignValidator:
         accessibility = 0.6  # Placeholder
         ux_score = 0.75  # Placeholder
 
-        issues = []
+        issues: List[str] = []
         suggestions = []
 
         # Generate contextual feedback based on project vision

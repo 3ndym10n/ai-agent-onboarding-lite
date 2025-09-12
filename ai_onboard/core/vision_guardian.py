@@ -42,7 +42,7 @@ class VisionGuardian:
         scope_change = decision.get("scope_change", False)
         risk_level = decision.get("risk_level", "low")
 
-        alignment_score = 0
+        alignment_score = 0.0
         issues = []
         warnings = []
 

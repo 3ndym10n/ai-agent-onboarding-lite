@@ -1,0 +1,216 @@
+{
+    "name": "AI Agent Onboarding - Development Environment",
+    "dockerFile": "Dockerfile",
+    // Development container configuration
+    "context": "..",
+    "workspaceFolder": "/workspace",
+    // Container settings
+    "shutdownAction": "stopContainer",
+    "updateContentCommand": "pip install -e .[dev]",
+    "postCreateCommand": "bash .devcontainer/post-create.sh",
+    // Development server ports
+    "forwardPorts": [
+        8000, // AI Onboard API server
+        8080, // Alternative API port
+        3000, // Development server
+        5000 // Debug server
+    ],
+    // Port attributes
+    "portsAttributes": {
+        "8000": {
+            "label": "AI Onboard API",
+            "onAutoForward": "notify"
+        },
+        "8080": {
+            "label": "Alternative API",
+            "onAutoForward": "ignore"
+        },
+        "3000": {
+            "label": "Development Server",
+            "onAutoForward": "ignore"
+        },
+        "5000": {
+            "label": "Debug Server",
+            "onAutoForward": "ignore"
+        }
+    },
+    // VS Code specific settings
+    "customizations": {
+        "vscode": {
+            // Extensions to install automatically
+            "extensions": [
+                // Python development
+                "ms-python.python",
+                "ms-python.flake8",
+                "ms-python.black-formatter",
+                "ms-python.isort",
+                "ms-python.mypy-type-checker",
+                // Development tools
+                "ms-vscode.vscode-json",
+                "redhat.vscode-yaml",
+                "ms-vscode.vscode-markdown",
+                "ms-vscode.vscode-markdown-math",
+                // Git and version control
+                "eamodio.gitlens",
+                "github.vscode-pull-request-github",
+                // Code quality and testing
+                "ms-python.pytest",
+                "hbenl.vscode-test-explorer",
+                "littlefoxteam.vscode-python-test-adapter",
+                // AI and productivity
+                "github.copilot",
+                "ms-vscode.vscode-ai",
+                // Docker and containers
+                "ms-vscode-remote.remote-containers",
+                "ms-azuretools.vscode-docker",
+                // Documentation
+                "yzhang.markdown-all-in-one",
+                "davidanson.vscode-markdownlint"
+            ],
+            // VS Code settings
+            "settings": {
+                // Python configuration
+                "python.defaultInterpreterPath": "/usr/local/bin/python",
+                "python.linting.enabled": true,
+                "python.linting.flake8Enabled": true,
+                "python.linting.mypyEnabled": true,
+                "python.formatting.provider": "black",
+                "python.sortImports.provider": "isort",
+                "python.testing.pytestEnabled": true,
+                "python.testing.unittestEnabled": false,
+                "python.testing.pytestArgs": [
+                    "tests/"
+                ],
+                // Editor settings
+                "editor.formatOnSave": true,
+                "editor.codeActionsOnSave": {
+                    "source.organizeImports": "explicit"
+                },
+                "editor.rulers": [
+                    88
+                ],
+                "editor.tabSize": 4,
+                "editor.insertSpaces": true,
+                "editor.trimAutoWhitespace": true,
+                // File associations
+                "files.associations": {
+                    "*.yaml": "yaml",
+                    "*.yml": "yaml",
+                    "*.md": "markdown",
+                    "*.json": "jsonc",
+                    "Dockerfile*": "dockerfile",
+                    ".devcontainer/*": "jsonc"
+                },
+                // Terminal settings
+                "terminal.integrated.defaultProfile.linux": "bash",
+                "terminal.integrated.profiles.linux": {
+                    "bash": {
+                        "path": "/bin/bash",
+                        "args": [
+                            "-l"
+                        ]
+                    }
+                },
+                // Git settings
+                "git.enableSmartCommit": true,
+                "git.confirmSync": false,
+                "git.autofetch": true,
+                // Workspace settings
+                "workbench.colorTheme": "Default Dark+",
+                "workbench.iconTheme": "vs-seti",
+                // Search and files
+                "search.exclude": {
+                    "**/.ai_onboard": true,
+                    "**/__pycache__": true,
+                    "**/*.pyc": true,
+                    "**/venv": true,
+                    "**/env": true,
+                    "**/.git": true,
+                    "**/node_modules": true,
+                    "**/dist": true,
+                    "**/build": true
+                },
+                "files.exclude": {
+                    "**/__pycache__": true,
+                    "**/*.pyc": true
+                },
+                // AI Onboard specific settings
+                "python.analysis.extraPaths": [
+                    "/workspace"
+                ],
+                "python.analysis.autoImportCompletions": true,
+                "python.analysis.typeCheckingMode": "basic"
+            }
+        }
+    },
+    // Container user configuration
+    "remoteUser": "vscode",
+    "containerUser": "vscode",
+    // Mount points and volumes
+    "mounts": [
+        // Mount git credentials
+        "source=${localEnv:HOME}${localEnv:USERPROFILE}/.gitconfig,target=/home/vscode/.gitconfig,type=bind,consistency=cached",
+        // Mount SSH keys if they exist
+        "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached",
+        // Persist command history
+        "source=ai-onboard-bash-history,target=/home/vscode/.bash_history,type=volume",
+        // Persist VS Code extensions
+        "source=ai-onboard-vscode-extensions,target=/home/vscode/.vscode-server/extensions,type=volume",
+        // Cache pip packages
+        "source=ai-onboard-pip-cache,target=/home/vscode/.cache/pip,type=volume"
+    ],
+    // Environment variables
+    "containerEnv": {
+        "AI_ONBOARD_DEBUG": "true",
+        "AI_ONBOARD_ENV": "development",
+        "PYTHONPATH": "/workspace",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONUNBUFFERED": "1",
+        "PIP_DISABLE_PIP_VERSION_CHECK": "1",
+        "PIP_NO_CACHE_DIR": "0"
+    },
+    // Additional features
+    "features": {
+        // Common utilities
+        "ghcr.io/devcontainers/features/common-utils:2": {
+            "installZsh": true,
+            "configureZshAsDefaultShell": false,
+            "installOhMyZsh": true,
+            "upgradePackages": true
+        },
+        // Git (latest version)
+        "ghcr.io/devcontainers/features/git:1": {
+            "ppa": true,
+            "version": "latest"
+        },
+        // GitHub CLI
+        "ghcr.io/devcontainers/features/github-cli:1": {
+            "version": "latest"
+        },
+        // Node.js (for some development tools)
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "18",
+            "nodeGypDependencies": true,
+            "installYarnUsingApt": true
+        },
+        // Docker in Docker (for container testing)
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {
+            "version": "latest",
+            "enableNonRootDocker": true,
+            "moby": true
+        }
+    },
+    // Lifecycle scripts
+    "initializeCommand": "echo 'Initializing AI Onboard development environment...'",
+    "onCreateCommand": "echo 'Development container created successfully!'",
+    // Security and capabilities
+    "capAdd": [
+        "SYS_PTRACE"
+    ],
+    "securityOpt": [
+        "seccomp=unconfined"
+    ],
+    // Development container metadata
+    "overrideCommand": false,
+    "privileged": false
+}

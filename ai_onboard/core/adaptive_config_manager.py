@@ -9,7 +9,6 @@ This module provides adaptive configuration management that:
 - Maintains configuration history and rollback capabilities
 """
 
-import copy
 import json
 import logging
 import time
@@ -17,9 +16,9 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional
 
-from . import continuous_improvement_system, telemetry, utils
+from . import continuous_improvement_system, utils
 
 
 class ConfigurationCategory(Enum):

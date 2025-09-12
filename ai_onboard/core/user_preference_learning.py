@@ -15,7 +15,7 @@ import statistics
 import time
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -665,7 +665,7 @@ class UserPreferenceLearningSystem:
             return
 
         # Analyze command patterns
-        command_types = defaultdict(int)
+        command_types: Dict[str, int] = defaultdict(int)
         for interaction in command_interactions[-20:]:
             command_type = interaction.context.get("command_type", "unknown")
             command_types[command_type] += 1
@@ -847,7 +847,7 @@ class UserPreferenceLearningSystem:
 
         # Detect common sequences
         if command_sequences:
-            sequence_counts = defaultdict(int)
+            sequence_counts: Dict[str, int] = defaultdict(int)
             for seq in command_sequences:
                 sequence_counts[seq] += 1
 
@@ -884,7 +884,7 @@ class UserPreferenceLearningSystem:
             return
 
         # Analyze error patterns
-        error_types = defaultdict(int)
+        error_types: Dict[str, int] = defaultdict(int)
         for interaction in error_interactions:
             error_type = interaction.context.get("error_type", "unknown")
             error_types[error_type] += 1

@@ -23,8 +23,9 @@ from ..core import (
     vision_guardian,
     vision_interrogator,
     visual_design,
+    task_completion_detector,
 )
-from ..plugins import example_policy  # ensure example plugin registers on import
+# from ..plugins import example_policy  # ensure example plugin registers on import
 
 
 def main(argv=None):
@@ -71,8 +72,12 @@ def main(argv=None):
     s_k = sub.add_parser("kaizen", help="Run a kaizen cycle (metrics-driven nudges)")
     s_k.add_argument("--once", action="store_true")
 
-    s_o = sub.add_parser("optimize", help="Run quick optimization experiments")
+    s_o = sub.add_parser("optimize", help="Optimization Strategist (MVP)")
+    so_sub = s_o.add_subparsers(dest="opt_cmd", required=False)
     s_o.add_argument("--budget", default="5m", help="Time budget (e.g., 5m)")
+    so_sub.add_parser("propose", help="Generate optimization proposals and open gate")
+    s_sbx = so_sub.add_parser("sandbox", help="Create sandbox plan for a proposal and open gate")
+    s_sbx.add_argument("--proposal-id", default="", help="Proposal ID (optional; defaults to top proposal)")
 
     s_ver = sub.add_parser("version", help="Show or bump ai_onboard version")
     s_ver.add_argument("--bump", choices=["major", "minor", "patch"])
@@ -132,6 +137,9 @@ def main(argv=None):
         help="JSON {files_changed, lines_deleted, has_tests, subsystems}",
     )
 
+    # Progress tracking command
+    sub.add_parser("progress-scan", help="Scan for completed tasks and update plan with gate confirmation")
+
     # Vision and planning commands
     s_vision = sub.add_parser("vision", help="Vision alignment and scope management")
     sv_sub = s_vision.add_subparsers(dest="vision_cmd", required=True)
@@ -190,6 +198,7 @@ def main(argv=None):
     progress_parser.add_argument("--progress", help="Progress data (JSON)")
 
     sp_sub.add_parser("auto-update", help="Auto-update plan based on progress")
+    sp_sub.add_parser("progress-scan", help="Scan for completed tasks and update plan with gate confirmation")
 
     add_milestone_parser = sp_sub.add_parser(
         "add-milestone", help="Add new milestone to plan"
@@ -222,6 +231,19 @@ def main(argv=None):
     resolve_parser.add_argument("--resolution", help="Resolution data (JSON)")
 
     # Vision interrogation commands
+    # User preference learning commands
+    s_prefs = sub.add_parser("user-prefs", help="User preference learning commands")
+    sprefs = s_prefs.add_subparsers(dest="prefs_cmd", required=True)
+    rec_parser = sprefs.add_parser("record", help="Record a user interaction for learning")
+    rec_parser.add_argument("--user", required=True, help="User ID")
+    rec_parser.add_argument("--type", required=True, help="Interaction type (enum value)")
+    rec_parser.add_argument("--context", default="{}", help="Context JSON")
+    rec_parser.add_argument("--duration", type=float)
+    rec_parser.add_argument("--outcome", default="{}", help="Outcome JSON")
+    rec_parser.add_argument("--satisfaction", type=float)
+    rec_parser.add_argument("--feedback", default="")
+    sprefs.add_parser("summary", help="Show user profile summary").add_argument("--user", required=True)
+    sprefs.add_parser("recommend", help="Get user recommendations").add_argument("--user", required=True)
     s_interrogate = sub.add_parser("interrogate", help="Vision interrogation system")
     si_sub = s_interrogate.add_subparsers(dest="interrogate_cmd", required=True)
     si_sub.add_parser("check", help="Check if vision is ready for AI agents")
@@ -295,6 +317,88 @@ def main(argv=None):
             return
 
         if args.cmd == "optimize":
+            # Subcommands
+            ocmd = getattr(args, "opt_cmd", None)
+            if ocmd == "propose":
+                from ..core.gate_system import GateSystem, GateRequest, GateType
+
+                budget_seconds = optimizer.parse_budget(args.budget)
+                proposals = optimizer.generate_optimization_proposals(root, budget_seconds)
+
+                # Build executive summary
+                summary_lines = []
+                for pz in proposals.get("proposals", [])[:5]:
+                    summary_lines.append(
+                        f"• {pz['id']} → {pz['title']} (risk={pz['risk']}, est_gain={pz['estimated_gain']}, conf={pz['confidence']})"
+                    )
+
+                questions = [
+                    "Approve pursuing selected optimization proposals?",
+                    f"Default experiment budget is {args.budget}. Allow override per run?",
+                    "Proceed on separate branches for high-risk/low-confidence items?",
+                ]
+
+                gate_system = GateSystem(root)
+                gate_request = GateRequest(
+                    gate_type=GateType.CONFIRMATION_REQUIRED,
+                    title="Optimization Strategist Proposals",
+                    description="Review and approve optimization proposals grounded in latest evidence.",
+                    context={
+                        "executive_summary": {
+                            "total_proposals": len(proposals.get("proposals", [])),
+                            "new_progress_percentage": "N/A",
+                            "task_descriptions": summary_lines,
+                            "categories": {"proposals": len(summary_lines)},
+                        },
+                        "evidence": proposals.get("evidence_summary", {}),
+                    },
+                    questions=questions,
+                )
+                gate_system.create_gate(gate_request)
+                print("📋 Gate created for Optimization Strategist proposals: .ai_onboard/gates/current_gate.md")
+                print("Run 'ai_onboard gate respond' after answering the questions")
+                return
+
+            if ocmd == "sandbox":
+                from ..core.gate_system import GateSystem, GateRequest, GateType
+
+                budget_seconds = optimizer.parse_budget(args.budget)
+                plan = optimizer.create_sandbox_plan(root, getattr(args, "proposal_id", "") or None, budget_seconds)
+
+                selected = plan.get("selected_proposal", {})
+                sel_line = (
+                    f"• {selected.get('id','?')} → {selected.get('title','?')} (risk={selected.get('risk','?')}, est_gain={selected.get('estimated_gain','?')}, conf={selected.get('confidence','?')})"
+                    if selected else "• No proposal selected"
+                )
+
+                questions = [
+                    f"Approve sandboxing proposal '{selected.get('id','?')}' on branch {plan.get('branch','?')}?",
+                    f"Use budget {args.budget} (override allowed)?",
+                    "Proceed only if tests pass and gains are measurable?",
+                ]
+
+                gate_system = GateSystem(root)
+                gate_request = GateRequest(
+                    gate_type=GateType.CONFIRMATION_REQUIRED,
+                    title="Optimization Sandbox Plan",
+                    description="Approve sandbox plan (branch + steps) for selected optimization proposal.",
+                    context={
+                        "executive_summary": {
+                            "total_proposals": 1 if selected else 0,
+                            "task_descriptions": [sel_line] + [f"  - {s}" for s in plan.get('steps', [])],
+                            "categories": {"steps": len(plan.get('steps', []))},
+                        },
+                        "evidence": plan.get("evidence", {}),
+                        "branch": plan.get("branch"),
+                    },
+                    questions=questions,
+                )
+                gate_system.create_gate(gate_request)
+                print("📋 Gate created for Optimization Sandbox Plan: .ai_onboard/gates/current_gate.md")
+                print("Run 'ai_onboard gate respond' after answering the questions")
+                return
+
+            # Default quick optimize stub
             optimizer.quick_optimize(root, args.budget)
             return
 
@@ -435,6 +539,102 @@ def main(argv=None):
             print('{"error":"unknown prompt subcommand"}')
             return
 
+        # Progress scanning command
+        if args.cmd == "progress-scan":
+            # Scan for completed tasks with gate confirmation
+            from ..core.gate_system import GateSystem
+            from ..core.task_completion_detector import run_task_completion_scan
+
+            # Run task completion scan
+            scan_results = run_task_completion_scan(root)
+
+            if scan_results["scan_results"]["completed_tasks_detected"] > 0:
+                print(f"🎯 Found {scan_results['scan_results']['completed_tasks_detected']} completed tasks!")
+
+                # Use gate system for user confirmation
+                gate_system = GateSystem(root)
+                gate_id = "progress_scan_confirmation"
+
+                # Create executive-level task descriptions function
+                def get_task_descriptions(task_ids):
+                    """Convert task IDs to executive-level descriptions."""
+                    task_descriptions = {
+                        # Core Infrastructure (T1-T7)
+                        "T1": "Project Structure & Setup - Basic project foundation and directory structure",
+                        "T2": "Development Environment Configuration - Python virtual environment and dependency management",
+                        "T3": "CI/CD Pipeline Setup - GitHub Actions workflows for automated testing and deployment",
+                        "T4": "Vision System Design - Core AI agent vision and alignment framework architecture",
+                        "T5": "Vision Validation Logic - Quality scoring and validation for AI agent vision",
+                        "T6": "Vision Implementation - Complete vision interrogation system deployment",
+                        "T7": "AI Agent Collaboration - Multi-agent communication and orchestration protocols",
+
+                        # System Robustness & Quality (T20-T24)
+                        "T20": "Error Handling System - Automatic error interception and intelligent debugging",
+                        "T22": "Learning Feedback Loops - Continuous improvement through system learning",
+                        "T24": "Code Quality Standards - Black formatting and pre-commit hooks enforcement",
+
+                        # Enhanced Testing Foundation (T29-T32)
+                        "T29": "Advanced Test Metrics - Enhanced performance monitoring and confidence scoring",
+                        "T30": "Intelligent Test Integration - SmartDebugger integration for error analysis",
+                        "T31": "Performance Monitoring - Baseline monitoring and degradation alerts",
+                        "T32": "Comprehensive Reporting - JSON/HTML reports with trend analysis"
+                    }
+
+                    descriptions = []
+                    for task_id in task_ids:
+                        if task_id in task_descriptions:
+                            descriptions.append(f"• {task_id}: {task_descriptions[task_id]}")
+                        else:
+                            descriptions.append(f"• {task_id}: Task details not available")
+
+                    return descriptions
+
+                # Get executive-level task descriptions
+                task_descriptions = get_task_descriptions(scan_results["scan_results"]["completed_task_ids"])
+
+                questions = [
+                    f"Confirm updating project plan with {scan_results['scan_results']['completed_tasks_detected']} detected task completions?",
+                    f"This will update progress to ~{scan_results['progress_report']['overall_progress']['completion_percentage']:.1f}% completion.",
+                    "Review the executive summary of completed work below:"
+                ]
+
+                # Use gate system for user confirmation
+                from ..core.gate_system import GateRequest, GateType
+
+                # Create GateRequest object for user confirmation
+                gate_request = GateRequest(
+                    gate_type=GateType.CONFIRMATION_REQUIRED,
+                    title="Project Plan Update Confirmation",
+                    description=f"Update project plan with {scan_results['scan_results']['completed_tasks_detected']} detected task completions",
+                    context={
+                        "scan_results": scan_results["scan_results"],
+                        "progress_report": scan_results["progress_report"],
+                        "completed_task_ids": scan_results["scan_results"]["completed_task_ids"],
+                        "executive_summary": {
+                            "total_tasks_completed": scan_results['scan_results']['completed_tasks_detected'],
+                            "new_progress_percentage": f"{scan_results['progress_report']['overall_progress']['completion_percentage']:.1f}%",
+                            "task_descriptions": task_descriptions,
+                            "categories": {
+                                "infrastructure": len([t for t in scan_results["scan_results"]["completed_task_ids"] if t in ["T1", "T2", "T3"]]),
+                                "vision_system": len([t for t in scan_results["scan_results"]["completed_task_ids"] if t in ["T4", "T5", "T6", "T7"]]),
+                                "system_robustness": len([t for t in scan_results["scan_results"]["completed_task_ids"] if t in ["T20", "T22", "T24"]]),
+                                "testing_foundation": len([t for t in scan_results["scan_results"]["completed_task_ids"] if t in ["T29", "T30", "T31", "T32"]])
+                            }
+                        }
+                    },
+                    questions=questions
+                )
+
+                gate_result = gate_system.create_gate(gate_request)
+                print(f"📋 Gate created for user confirmation: {gate_id}")
+                print("Please check .ai_onboard/gates/current_gate.md for questions")
+                print("Run 'ai_onboard gate respond' after answering the questions")
+
+            else:
+                print("✅ No new completed tasks detected")
+
+            return
+
         # Vision alignment commands
         if args.cmd == "vision":
             vcmd = getattr(args, "vision_cmd", None)
@@ -530,6 +730,48 @@ def main(argv=None):
                 # Auto-update plan
                 result = planner.auto_update_plan()
                 print(prompt_bridge.dumps_json(result))
+                return
+            elif pcmd == "progress-scan":
+                # Scan for completed tasks with gate confirmation
+                from ..core.gate_system import GateSystem
+                from ..core.task_completion_detector import run_task_completion_scan
+
+                # Run task completion scan
+                scan_results = run_task_completion_scan(root)
+
+                if scan_results["scan_results"]["completed_tasks_detected"] > 0:
+                    print(f"🎯 Found {scan_results['scan_results']['completed_tasks_detected']} completed tasks!")
+
+                    # Use gate system for user confirmation
+                    gate_system = GateSystem(root)
+                    gate_id = "progress_scan_confirmation"
+
+                    questions = [
+                        f"Confirm updating project plan with {scan_results['scan_results']['completed_tasks_detected']} detected task completions?",
+                        "This will change progress from 0% to ~20.8% completion.",
+                        "Review the detected completions before proceeding?"
+                    ]
+
+                    # Create gate for user confirmation
+                    gate_data = {
+                        "gate_id": gate_id,
+                        "questions": questions,
+                        "context": {
+                            "scan_results": scan_results["scan_results"],
+                            "progress_report": scan_results["progress_report"],
+                            "completed_task_ids": scan_results["scan_results"]["completed_task_ids"]
+                        }
+                    }
+
+                    # Submit gate for user confirmation
+                    gate_result = gate_system.submit_gate(gate_data)
+                    print(f"📋 Gate created for user confirmation: {gate_id}")
+                    print("Please check .ai_onboard/gates/current_gate.md for questions")
+                    print("Run 'ai_onboard gate respond' after answering the questions")
+
+                else:
+                    print("✅ No new completed tasks detected")
+
                 return
             elif pcmd == "add-milestone":
                 # Add new milestone
@@ -678,6 +920,49 @@ def main(argv=None):
                 print(prompt_bridge.dumps_json(result))
                 return
             print('{"error":"unknown interrogate subcommand"}')
+            return
+
+        # User preference learning commands
+        if args.cmd == "user-prefs":
+            from ..core import user_preference_learning as upl
+            psys = upl.get_user_preference_learning_system(root)
+            pcmd = getattr(args, "prefs_cmd", None)
+
+            if pcmd == "record":
+                user_id = args.user
+                interaction_type = args.type
+                try:
+                    context = json.loads(args.context) if args.context else {}
+                except json.JSONDecodeError:
+                    print('{"error":"invalid context JSON"}')
+                    return
+                try:
+                    outcome = json.loads(args.outcome) if args.outcome else {}
+                except json.JSONDecodeError:
+                    print('{"error":"invalid outcome JSON"}')
+                    return
+                interaction_id = psys.record_user_interaction(
+                    user_id=user_id,
+                    interaction_type=interaction_type,
+                    context=context,
+                    duration=getattr(args, "duration", None),
+                    outcome=outcome,
+                    satisfaction_score=getattr(args, "satisfaction", None),
+                    feedback=getattr(args, "feedback", None),
+                )
+                print(prompt_bridge.dumps_json({"interaction_id": interaction_id}))
+                return
+            elif pcmd == "summary":
+                user_id = args.user
+                out = psys.get_user_profile_summary(user_id)
+                print(prompt_bridge.dumps_json(out))
+                return
+            elif pcmd == "recommend":
+                user_id = args.user
+                recs = psys.get_user_recommendations(user_id)
+                print(prompt_bridge.dumps_json({"recommendations": recs}))
+                return
+            print('{"error":"unknown user-prefs subcommand"}')
             return
 
         # UI/UX Design commands

@@ -1,0 +1,17 @@
+{
+    "request": {
+        "method": "GET",
+        "urlPath": "/api/v1/example"
+    },
+    "response": {
+        "status": 200,
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "jsonBody": {
+            "message": "Mock API response",
+            "timestamp": "{{now}}",
+            "environment": "development"
+        }
+    }
+}
