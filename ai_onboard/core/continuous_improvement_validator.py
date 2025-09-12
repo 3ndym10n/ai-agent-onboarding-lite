@@ -1095,7 +1095,7 @@ class ContinuousImprovementValidator:
         """Run a test function with timeout handling."""
         import signal
         import time
-        from threading import Thread, Event
+        from threading import Event, Thread
 
         start_time = time.time()
         result = None
