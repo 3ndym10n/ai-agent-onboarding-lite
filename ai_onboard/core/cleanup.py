@@ -3,6 +3,8 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 from . import utils
+from .dependency_checker import check_cleanup_dependencies
+from .unicode_utils import safe_print, print_status, print_content
 
 # CRITICAL: Never delete these files/directories
 CRITICAL_PATTERNS = {
@@ -163,10 +165,30 @@ def scan_for_cleanup(root: Path) -> Dict[str, List[Path]]:
 def safe_cleanup(
     root: Path, dry_run: bool = True, force: bool = False
 ) -> Dict[str, Any]:
-    """Perform safe cleanup of non-critical files."""
+    """Perform safe cleanup of non-critical files with dependency checking."""
     scan_result = scan_for_cleanup(root)
 
+    # CRITICAL: Check dependencies for all files before deletion
+    if not force and scan_result["non_critical"]:
+        print_content("Running dependency check on files to be deleted...", "search")
+        
+        # Check dependencies for all non-critical files
+        is_safe = check_cleanup_dependencies(root, scan_result["non_critical"])
+        
+        if not is_safe:
+            print_status("❌ Dependency check failed - cleanup aborted for safety", "error")
+            return {
+                "mode": "dependency_check_failed",
+                "scan_result": scan_result,
+                "would_delete": len(scan_result["non_critical"]),
+                "protected": len(scan_result["critical"]),
+                "unknown": len(scan_result["unknown"]),
+                "error": "Files have dependencies - cannot safely delete",
+                "recommendation": "Fix dependencies first or use --force flag (not recommended)"
+            }
+
     if dry_run:
+        print_status("✅ Dependency check passed - files are safe to delete", "success")
         return {
             "mode": "dry_run",
             "scan_result": scan_result,
