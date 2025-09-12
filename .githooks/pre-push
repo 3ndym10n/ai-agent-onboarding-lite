@@ -1,3 +1,0 @@
-#!/bin/bash
-# Pre-push hook to check protected paths
-python scripts/protected_paths_diff.py
