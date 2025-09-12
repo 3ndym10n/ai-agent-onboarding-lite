@@ -103,7 +103,7 @@ jobs:
 
         # Run mypy type checking with our enhanced configuration
         echo "Running mypy type checking..."
-        mypy ai_onboard/ --show-error-codes
+        mypy ai_onboard/ --config-file config/mypy.ini --show-error-codes
 
         # Run pre-commit hooks validation
         echo "Running pre-commit hooks validation..."
@@ -111,7 +111,7 @@ jobs:
 
         # Generate quality reports
         echo "Generating quality reports..."
-        mypy ai_onboard/ --show-error-codes > mypy-report.txt 2>&1 || true
+        mypy ai_onboard/ --config-file config/mypy.ini --show-error-codes > mypy-report.txt 2>&1 || true
         flake8 ai_onboard/ tests/ scripts/ > flake8-report.txt 2>&1 || true
 
         # Quality gate: Fail build if critical quality issues found

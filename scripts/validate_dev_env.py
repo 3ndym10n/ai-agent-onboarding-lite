@@ -154,9 +154,9 @@ class DevEnvironmentValidator:
         required_files = [
             "pyproject.toml",
             "README.md",
-            "DEVELOPMENT.md",
+            "docs/developer/DEVELOPMENT.md",
             ".pre-commit-config.yaml",
-            "dev-config.yaml",
+            "config/dev-config.yaml",
             "scripts/setup_dev_env.py",
             "scripts/validate_dev_env.py",
             "scripts/test_system.py",
@@ -312,7 +312,7 @@ class DevEnvironmentValidator:
         else:
             print("1. You're ready to start developing!")
             print("2. Run 'python -m ai_onboard --help' to test the CLI")
-            print("3. Check out DEVELOPMENT.md for more information")
+            print("3. Check out docs/developer/DEVELOPMENT.md for more information")
 
 
 def main():

@@ -203,7 +203,15 @@ ai-agent-onboarding-lite/
 │   ├── policies/        # Configuration policies
 │   └── schemas/         # Data schemas
 ├── .ai_onboard/         # Project data (auto-generated)
-├── docs/                # Documentation
+├── config/              # Configuration files
+│   ├── dev-config.yaml  # Development settings
+│   ├── mypy.ini         # Type checking config
+│   └── tox.ini          # Testing config
+├── docs/                # Documentation (organized by audience)
+│   ├── user/            # User documentation
+│   ├── developer/       # Developer documentation
+│   ├── design/          # Architecture & research
+│   └── project/         # Project management
 ├── examples/            # Usage examples
 ├── scripts/             # Utility scripts
 └── tests/               # Test suite

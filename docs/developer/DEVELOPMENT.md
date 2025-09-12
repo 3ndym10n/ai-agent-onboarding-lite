@@ -75,7 +75,8 @@ ai-onboard-lite/
 ├── tests/                     # Test suite
 ├── .github/workflows/         # CI/CD configuration
 ├── .pre-commit-config.yaml    # Pre-commit hooks
-├── dev-config.yaml           # Development configuration
+├── config/
+│   └── dev-config.yaml       # Development configuration
 └── pyproject.toml            # Project configuration
 ```
 
@@ -241,7 +242,7 @@ twine upload dist/*
 
 ### Debug Mode
 
-Enable debug mode in `dev-config.yaml`:
+Enable debug mode in `config/dev-config.yaml`:
 
 ```yaml
 development:
@@ -260,7 +261,7 @@ development:
 
 1. **Import Errors**: Ensure virtual environment is activated
 2. **Permission Errors**: Check file permissions and paths
-3. **Gate Timeouts**: Adjust timeout in `dev-config.yaml`
+3. **Gate Timeouts**: Adjust timeout in `config/dev-config.yaml`
 
 ## 📚 Documentation
 
@@ -298,7 +299,7 @@ development:
 
 ### Development Configuration
 
-The `dev-config.yaml` file contains development-specific settings:
+The `config/dev-config.yaml` file contains development-specific settings:
 
 - **Debug mode**: Enable/disable debug features
 - **Logging**: Configure log levels and handlers
@@ -324,7 +325,7 @@ The `dev-config.yaml` file contains development-specific settings:
 ### Development Support
 
 - **System Health**: `python scripts/test_system.py`
-- **Debug Mode**: Set `debug: true` in `dev-config.yaml`
+- **Debug Mode**: Set `debug: true` in `config/dev-config.yaml`
 - **Error Logs**: Check `.ai_onboard/logs/`
 - **System Status**: `python -m ai_onboard validate`
 
