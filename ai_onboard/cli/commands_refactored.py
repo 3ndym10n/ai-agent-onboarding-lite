@@ -6,62 +6,62 @@ from pathlib import Path
 from ..core.universal_error_monitor import get_error_monitor
 from ..plugins import example_policy  # ensure example plugin registers on import
 from .commands_aaol import add_aaol_commands, handle_aaol_commands
+from .commands_advanced_test_reporting import (
+    add_advanced_test_reporting_commands,
+    handle_advanced_test_reporting_commands,
+)
 from .commands_ai_agent import add_ai_agent_commands, handle_ai_agent_commands
 from .commands_ai_agent_collaboration import (
     add_ai_agent_collaboration_parser,
     handle_ai_agent_collaboration_commands,
+)
+from .commands_api import add_api_commands, handle_api_commands
+from .commands_background_agents import (
+    add_background_agent_commands,
+    handle_background_agent_commands,
+)
+from .commands_capability_tracking import (
+    add_capability_tracking_commands,
+    handle_capability_tracking_commands,
 )
 from .commands_continuous_improvement import (
     add_continuous_improvement_parser,
     handle_continuous_improvement_commands,
 )
 from .commands_core import add_core_commands, handle_core_commands
-from .commands_enhanced_vision import (
-    add_enhanced_vision_parser,
-    handle_enhanced_vision_commands,
-)
-from .commands_interrogate import add_interrogate_commands, handle_interrogate_commands
-from .commands_prompt import add_prompt_commands, handle_prompt_commands
-from .commands_metrics import add_metrics_commands, handle_metrics_commands
 from .commands_cursor import add_cursor_commands, handle_cursor_commands
-from .commands_api import add_api_commands, handle_api_commands
-from .commands_enhanced_context import (
-    add_enhanced_context_commands,
-    handle_enhanced_context_commands,
-)
 from .commands_decision_pipeline import (
     add_decision_pipeline_commands,
     handle_decision_pipeline_commands,
 )
-from .commands_kaizen import add_kaizen_commands, handle_kaizen_commands
-from .commands_optimization_experiments import (
-    add_optimization_experiment_commands,
-    handle_optimization_experiment_commands,
-)
-from .commands_ui_enhanced import add_ui_enhanced_commands, handle_ui_enhanced_commands
-from .commands_ux_enhancements import (
-    add_ux_enhancement_commands,
-    handle_ux_enhancement_commands,
-)
-from .commands_capability_tracking import (
-    add_capability_tracking_commands,
-    handle_capability_tracking_commands,
-)
-from .commands_background_agents import (
-    add_background_agent_commands,
-    handle_background_agent_commands,
+from .commands_enhanced_context import (
+    add_enhanced_context_commands,
+    handle_enhanced_context_commands,
 )
 from .commands_enhanced_testing import (
     add_enhanced_testing_commands,
     handle_enhanced_testing_commands,
 )
+from .commands_enhanced_vision import (
+    add_enhanced_vision_parser,
+    handle_enhanced_vision_commands,
+)
+from .commands_interrogate import add_interrogate_commands, handle_interrogate_commands
+from .commands_kaizen import add_kaizen_commands, handle_kaizen_commands
+from .commands_metrics import add_metrics_commands, handle_metrics_commands
+from .commands_optimization_experiments import (
+    add_optimization_experiment_commands,
+    handle_optimization_experiment_commands,
+)
 from .commands_performance_trends import (
     add_performance_trend_commands,
     handle_performance_trend_commands,
 )
-from .commands_advanced_test_reporting import (
-    add_advanced_test_reporting_commands,
-    handle_advanced_test_reporting_commands,
+from .commands_prompt import add_prompt_commands, handle_prompt_commands
+from .commands_ui_enhanced import add_ui_enhanced_commands, handle_ui_enhanced_commands
+from .commands_ux_enhancements import (
+    add_ux_enhancement_commands,
+    handle_ux_enhancement_commands,
 )
 from .ux_middleware import get_ux_middleware, with_ux_enhancements
 

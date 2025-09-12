@@ -13,13 +13,13 @@ import json
 from pathlib import Path
 from typing import Optional
 
+from ..core.ui_enhancement_system import get_ui_enhancement_system
 from ..core.user_experience_enhancements import (
-    get_ux_enhancement_system,
     UXEventType,
     UXSatisfactionLevel,
+    get_ux_enhancement_system,
 )
-from ..core.ui_enhancement_system import get_ui_enhancement_system
-from .visual_components import create_status_indicator, create_table, create_chart
+from .visual_components import create_chart, create_status_indicator, create_table
 
 
 def add_ux_enhancement_commands(subparsers):

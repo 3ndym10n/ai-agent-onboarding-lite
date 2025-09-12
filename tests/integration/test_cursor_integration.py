@@ -17,9 +17,9 @@ Tests include:
 
 import json
 import time
-from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Any, Optional
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 import pytest
 

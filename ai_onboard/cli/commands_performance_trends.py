@@ -9,15 +9,15 @@ import argparse
 import json
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Any, Dict, List, Optional
 
+from ..core import utils
 from ..core.performance_trend_analyzer import (
-    get_performance_trend_analyzer,
+    ForecastConfidence,
     TrendDirection,
     TrendSeverity,
-    ForecastConfidence,
+    get_performance_trend_analyzer,
 )
-from ..core import utils
 
 
 def add_performance_trend_commands(subparsers):

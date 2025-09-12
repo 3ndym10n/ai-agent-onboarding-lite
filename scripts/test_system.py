@@ -8,21 +8,21 @@ performance monitoring, confidence scoring, and detailed reporting.
 """
 
 import json
+import os
 import sys
 import time
-import os
-from pathlib import Path
-from typing import Dict, List, Any
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List
 
 # Add the project root to the Python path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 from ai_onboard.core.alignment import preview
+from ai_onboard.core.smart_debugger import SmartDebugger
 from ai_onboard.core.universal_error_monitor import get_error_monitor
 from ai_onboard.core.vision_interrogator import get_vision_interrogator
-from ai_onboard.core.smart_debugger import SmartDebugger
 
 # Optional psutil import for enhanced metrics
 try:

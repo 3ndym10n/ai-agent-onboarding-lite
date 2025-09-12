@@ -6,19 +6,20 @@ class, testing individual methods and components in isolation.
 """
 
 import json
-import pytest
 import time
-from pathlib import Path
 from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional
-from unittest.mock import Mock, patch, MagicMock
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+from unittest.mock import MagicMock, Mock, patch
+
+import pytest
 
 from ai_onboard.core.continuous_improvement_validator import (
     ContinuousImprovementValidator,
-    TestResult,
-    TestCategory,
-    ValidationReport,
     TestCase,
+    TestCategory,
+    TestResult,
+    ValidationReport,
 )
 
 

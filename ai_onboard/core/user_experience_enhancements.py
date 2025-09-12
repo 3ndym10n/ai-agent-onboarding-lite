@@ -12,18 +12,18 @@ This module implements comprehensive user experience enhancements that:
 
 import json
 import time
+import traceback
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Callable, Tuple
-import traceback
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from . import utils
+from .kaizen_automation import get_kaizen_automation
 from .ui_enhancement_system import get_ui_enhancement_system
 from .user_preference_learning import get_user_preference_learning_system
-from .kaizen_automation import get_kaizen_automation
 
 
 class UXEventType(Enum):

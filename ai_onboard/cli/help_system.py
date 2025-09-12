@@ -16,10 +16,10 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 from ..core.ui_enhancement_system import (
-    get_ui_enhancement_system,
     CommandCategory,
-    UserExpertiseLevel,
     InterfaceMode,
+    UserExpertiseLevel,
+    get_ui_enhancement_system,
 )
 
 

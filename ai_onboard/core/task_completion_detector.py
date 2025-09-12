@@ -9,9 +9,9 @@ progress, ensuring accurate progress tracking and milestone completion.
 """
 
 import json
-from pathlib import Path
-from typing import Dict, List, Any
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List
 
 
 class TaskCompletionDetector:

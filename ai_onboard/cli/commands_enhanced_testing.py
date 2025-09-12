@@ -11,15 +11,15 @@ import json
 import subprocess
 import sys
 import time
-from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Any, Optional
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 from ..core import utils
 from ..core.continuous_improvement_validator import (
     ContinuousImprovementValidator,
-    TestResult,
     TestCategory,
+    TestResult,
     ValidationReport,
 )
 

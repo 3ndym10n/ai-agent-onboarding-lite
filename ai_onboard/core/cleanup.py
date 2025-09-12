@@ -4,7 +4,7 @@ from typing import Any, Dict, List
 
 from . import utils
 from .dependency_checker import check_cleanup_dependencies
-from .unicode_utils import safe_print, print_status, print_content
+from .unicode_utils import print_content, print_status, safe_print
 
 # CRITICAL: Never delete these files/directories
 CRITICAL_PATTERNS = {

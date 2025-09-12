@@ -16,19 +16,19 @@ from pathlib import Path
 from typing import Optional
 
 from ..core.ui_enhancement_system import (
-    get_ui_enhancement_system,
     CommandCategory,
     InterfaceMode,
+    get_ui_enhancement_system,
 )
-from ..core.unicode_utils import safe_print, print_content, get_safe_formatter
+from ..core.unicode_utils import get_safe_formatter, print_content, safe_print
 from .help_system import get_help_system
 from .visual_components import (
-    create_dashboard,
-    create_status_indicator,
-    create_progress_bar,
-    create_table,
     create_chart,
+    create_dashboard,
+    create_progress_bar,
     create_spinner,
+    create_status_indicator,
+    create_table,
 )
 
 
@@ -551,9 +551,9 @@ def _handle_profile_config(args: argparse.Namespace, ui_system, user_id: str) ->
     if args.reset:
         # Reset profile to defaults
         from ..core.ui_enhancement_system import (
-            UserProfile,
-            UserExpertiseLevel,
             InterfaceMode,
+            UserExpertiseLevel,
+            UserProfile,
         )
 
         ui_system.user_profiles[user_id] = UserProfile(

@@ -7,21 +7,21 @@ including integration with the ContinuousImprovementValidator system.
 
 import json
 import os
-import pytest
 import tempfile
 import time
-from pathlib import Path
-from typing import Dict, List, Any, Optional
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+import pytest
 
 from ai_onboard.core.continuous_improvement_validator import (
     ContinuousImprovementValidator,
-    TestResult,
-    TestCategory,
-    ValidationReport,
     TestCase,
+    TestCategory,
+    TestResult,
+    ValidationReport,
 )
-
 
 # Global test configuration
 TEST_CONFIG = {

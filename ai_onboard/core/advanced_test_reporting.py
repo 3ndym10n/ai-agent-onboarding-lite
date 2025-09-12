@@ -17,33 +17,33 @@ import json
 import math
 import statistics
 import time
-from collections import defaultdict, Counter
-from dataclasses import dataclass, field, asdict
+import warnings
+from collections import Counter, defaultdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union, Tuple, Callable
-import warnings
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
-from . import utils, telemetry
+from . import telemetry, utils
+from .continuous_improvement_analytics import (
+    ContinuousImprovementAnalytics,
+    MetricType,
+    ReportType,
+)
 from .continuous_improvement_validator import (
     ContinuousImprovementValidator,
     TestCase,
-    TestResult,
     TestCategory,
+    TestResult,
     ValidationReport,
 )
 from .performance_trend_analyzer import (
-    get_performance_trend_analyzer,
-    PerformanceTrendAnalyzer,
-    TrendAnalysis,
     AnomalyDetection,
     PerformanceInsight,
-)
-from .continuous_improvement_analytics import (
-    ContinuousImprovementAnalytics,
-    ReportType,
-    MetricType,
+    PerformanceTrendAnalyzer,
+    TrendAnalysis,
+    get_performance_trend_analyzer,
 )
 
 
@@ -420,9 +420,9 @@ class AdvancedTestReportGenerator:
         self, test_results: List[TestCase]
     ) -> TestExecutionContext:
         """Generate execution context information."""
+        import os
         import platform
         import sys
-        import os
 
         return TestExecutionContext(
             environment=os.getenv("ENVIRONMENT", "development"),

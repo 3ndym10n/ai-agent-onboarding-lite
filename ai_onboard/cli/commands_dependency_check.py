@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import List
 
 from ..core.dependency_checker import DependencyChecker, check_cleanup_dependencies
-from ..core.unicode_utils import safe_print, print_status, print_content
+from ..core.unicode_utils import print_content, print_status, safe_print
 
 
 def add_dependency_check_commands(subparsers):

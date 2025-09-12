@@ -13,16 +13,16 @@ from pathlib import Path
 from unittest.mock import Mock, patch
 
 from ai_onboard.core.cleanup_safety_gates import (
-    CleanupSafetyGateFramework,
+    BackupExecuteGate,
     CleanupOperation,
+    CleanupSafetyGateFramework,
+    DependencyAnalysisGate,
+    HumanConfirmationGate,
+    PostOperationGate,
+    PreFlightGate,
+    RiskAssessmentGate,
     RiskLevel,
     safe_cleanup_operation,
-    PreFlightGate,
-    DependencyAnalysisGate,
-    RiskAssessmentGate,
-    HumanConfirmationGate,
-    BackupExecuteGate,
-    PostOperationGate,
 )
 
 

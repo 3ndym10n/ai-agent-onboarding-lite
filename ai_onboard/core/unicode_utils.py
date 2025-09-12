@@ -6,10 +6,9 @@ platforms and terminal encodings, particularly for Windows systems that may not
 support Unicode emojis in the console.
 """
 
-import sys
 import os
-from typing import Dict, Any, Optional
-
+import sys
+from typing import Any, Dict, Optional
 
 # Emoji fallbacks for systems that don't support Unicode
 EMOJI_FALLBACKS = {

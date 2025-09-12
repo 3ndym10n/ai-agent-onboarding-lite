@@ -9,10 +9,10 @@ and helps identify areas needing attention.
 """
 
 import json
-from pathlib import Path
-from typing import Dict, List, Any, Optional
-from datetime import datetime, timedelta
 from collections import defaultdict
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 
 class ProgressDashboard:

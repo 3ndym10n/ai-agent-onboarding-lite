@@ -15,16 +15,16 @@ from typing import Any, Dict, List, Optional
 
 try:
     from fastapi import (
+        BackgroundTasks,
+        Depends,
         FastAPI,
         HTTPException,
-        Depends,
-        BackgroundTasks,
         WebSocket,
         WebSocketDisconnect,
     )
     from fastapi.middleware.cors import CORSMiddleware
     from fastapi.responses import JSONResponse
-    from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+    from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
     FASTAPI_AVAILABLE = True
 except ImportError:
@@ -36,11 +36,11 @@ from ..core import (
     planning,
     state,
     telemetry,
-    validation_runtime,
     utils,
+    validation_runtime,
 )
-from ..core.cursor_ai_integration import get_cursor_integration
 from ..core.ai_agent_collaboration_protocol import get_collaboration_protocol
+from ..core.cursor_ai_integration import get_cursor_integration
 from ..core.unified_metrics_collector import get_unified_metrics_collector
 from .models import *
 
@@ -258,9 +258,9 @@ class AIOnboardAPIServer:
             try:
                 # Create agent profile
                 from ..core.ai_agent_collaboration_protocol import (
+                    AgentCapability,
                     AgentProfile,
                     CollaborationMode,
-                    AgentCapability,
                     SafetyLevel,
                 )
 
@@ -415,9 +415,9 @@ class AIOnboardAPIServer:
             """Query collected metrics."""
             try:
                 from ..core.unified_metrics_collector import (
+                    MetricCategory,
                     MetricQuery,
                     MetricSource,
-                    MetricCategory,
                 )
 
                 # Build metric query

@@ -8,19 +8,20 @@ Note: Unit tests have been moved to tests/unit/test_ci_validator_unit.py
 """
 
 import json
-import pytest
 import time
-from pathlib import Path
 from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional
-from unittest.mock import Mock, patch, MagicMock
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+from unittest.mock import MagicMock, Mock, patch
+
+import pytest
 
 from ai_onboard.core.continuous_improvement_validator import (
     ContinuousImprovementValidator,
-    TestResult,
-    TestCategory,
-    ValidationReport,
     TestCase,
+    TestCategory,
+    TestResult,
+    ValidationReport,
 )
 
 
@@ -536,8 +537,9 @@ class TestPerformanceValidation:
     @pytest.mark.integration
     def test_memory_usage_during_validation(self):
         """Test that memory usage stays within reasonable bounds during validation."""
-        import psutil
         import os
+
+        import psutil
 
         process = psutil.Process(os.getpid())
         initial_memory = process.memory_info().rss / 1024 / 1024  # MB

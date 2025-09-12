@@ -8,6 +8,8 @@ The system extends the existing AAOL to support long-running, autonomous operati
 
 import asyncio
 import json
+import signal
+import sys
 import threading
 import time
 import uuid
@@ -16,15 +18,14 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Callable, Set
+from typing import Any, Callable, Dict, List, Optional, Set
+
 import psutil
-import signal
-import sys
 
 from . import utils
 from .ai_agent_orchestration import create_ai_agent_orchestrator
-from .unified_metrics_collector import get_unified_metrics_collector, MetricCategory
-from .user_experience_enhancements import get_ux_enhancement_system, UXEventType
+from .unified_metrics_collector import MetricCategory, get_unified_metrics_collector
+from .user_experience_enhancements import UXEventType, get_ux_enhancement_system
 
 
 class AgentState(Enum):

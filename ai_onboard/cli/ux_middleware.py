@@ -16,13 +16,13 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional
 
-from ..core.user_experience_enhancements import get_ux_enhancement_system, UXEventType
-from ..core.ui_enhancement_system import get_ui_enhancement_system
 from ..core.system_capability_tracker import (
-    get_system_capability_tracker,
     UsageContext,
     UsagePattern,
+    get_system_capability_tracker,
 )
+from ..core.ui_enhancement_system import get_ui_enhancement_system
+from ..core.user_experience_enhancements import UXEventType, get_ux_enhancement_system
 from .visual_components import create_status_indicator
 
 

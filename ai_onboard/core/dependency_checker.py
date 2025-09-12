@@ -10,13 +10,14 @@ were nearly broken.
 import ast
 import json
 import re
-import yaml
-from pathlib import Path
-from typing import Dict, List, Set, Tuple, Any, Optional
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Set, Tuple
 
-from .unicode_utils import safe_print, print_status, print_content
+import yaml
+
+from .unicode_utils import print_content, print_status, safe_print
 
 
 class DependencyType(Enum):

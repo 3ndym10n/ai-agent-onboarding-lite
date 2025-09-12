@@ -10,17 +10,17 @@ This module provides command-line interfaces for:
 
 import argparse
 import json
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
-from datetime import datetime, timedelta
 
 from ..core.system_capability_tracker import (
-    get_system_capability_tracker,
     CapabilityCategory,
     UsageContext,
     UsagePattern,
+    get_system_capability_tracker,
 )
-from .visual_components import create_status_indicator, create_table, create_chart
+from .visual_components import create_chart, create_status_indicator, create_table
 
 
 def add_capability_tracking_commands(subparsers):

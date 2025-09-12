@@ -11,13 +11,13 @@ This module provides intelligent UI enhancements that:
 
 import json
 import re
+import shutil
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Set
-import shutil
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from . import utils
 from .user_preference_learning import get_user_preference_learning_system

@@ -7,24 +7,24 @@ Comprehensive testing with advanced capabilities and self-healing.
 import json
 import sys
 import time
-from pathlib import Path
-from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, field
 from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 # Add the project root to the Python path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 from ai_onboard.core.alignment import preview
-from ai_onboard.core.universal_error_monitor import get_error_monitor
-from ai_onboard.core.vision_interrogator import get_vision_interrogator
 from ai_onboard.core.continuous_improvement_validator import (
     ContinuousImprovementValidator,
 )
 from ai_onboard.core.performance_optimizer import get_performance_optimizer
-from ai_onboard.core.system_health_monitor import get_system_health_monitor
 from ai_onboard.core.smart_debugger import SmartDebugger
+from ai_onboard.core.system_health_monitor import get_system_health_monitor
+from ai_onboard.core.universal_error_monitor import get_error_monitor
+from ai_onboard.core.vision_interrogator import get_vision_interrogator
 
 
 class TestLevel(Enum):

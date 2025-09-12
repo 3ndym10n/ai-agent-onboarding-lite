@@ -9,15 +9,15 @@ This module provides command-line interfaces for:
 """
 
 import argparse
-import json
 import csv
 import io
+import json
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List
 
 from ..core import unified_metrics_collector
-from ..core.unified_metrics_collector import MetricQuery, MetricSource, MetricCategory
+from ..core.unified_metrics_collector import MetricCategory, MetricQuery, MetricSource
 
 
 def add_metrics_commands(subparsers):

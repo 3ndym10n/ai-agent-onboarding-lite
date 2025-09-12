@@ -10,10 +10,10 @@ This is part of Phase 1: Enhanced Testing Foundation (T32)
 
 import json
 import sys
-from pathlib import Path
-from typing import Dict, List, Any
-from datetime import datetime, timedelta
 from collections import defaultdict
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Any, Dict, List
 
 
 class ComprehensiveTestReporter:

@@ -7,16 +7,17 @@ correctly in realistic scenarios.
 """
 
 import json
-import pytest
 import time
-from pathlib import Path
 from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+import pytest
 
 from ai_onboard.core.continuous_improvement_validator import (
     ContinuousImprovementValidator,
-    TestResult,
     TestCategory,
+    TestResult,
     ValidationReport,
 )
 
@@ -183,8 +184,9 @@ version = "0.1.0"
     @pytest.mark.performance
     def test_validation_performance_characteristics(self, real_validator):
         """Test performance characteristics of validation system."""
-        import psutil
         import os
+
+        import psutil
 
         process = psutil.Process(os.getpid())
         initial_memory = process.memory_info().rss / 1024 / 1024  # MB
@@ -330,8 +332,8 @@ version = "0.1.0"
 
     def test_concurrent_validation_safety(self, real_validator, temp_project_root):
         """Test that concurrent validation runs don't interfere with each other."""
-        import threading
         import concurrent.futures
+        import threading
 
         results = []
         errors = []

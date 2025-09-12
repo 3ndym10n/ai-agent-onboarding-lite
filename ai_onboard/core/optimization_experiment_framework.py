@@ -10,27 +10,27 @@ This module provides a comprehensive framework for:
 """
 
 import json
+import math
+import statistics
+import threading
 import time
 import uuid
-import threading
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Callable, Tuple
-from concurrent.futures import ThreadPoolExecutor
-import statistics
-import math
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
-from . import utils, telemetry
+from . import telemetry, utils
+from .kaizen_automation import get_kaizen_automation
+from .performance_optimizer import get_performance_optimizer
 from .unified_metrics_collector import (
-    get_unified_metrics_collector,
+    MetricCategory,
     MetricEvent,
     MetricSource,
-    MetricCategory,
+    get_unified_metrics_collector,
 )
-from .performance_optimizer import get_performance_optimizer
-from .kaizen_automation import get_kaizen_automation
 
 
 class ExperimentType(Enum):
