@@ -16,6 +16,7 @@ from ..core import (
     prompt_bridge,
     smart_debugger,
     state,
+    task_completion_detector,
     telemetry,
     utils,
     validation_runtime,
@@ -23,9 +24,12 @@ from ..core import (
     vision_guardian,
     vision_interrogator,
     visual_design,
-    task_completion_detector,
 )
-from ..core.unicode_utils import safe_print, print_content, print_status, print_activity
+from ..core.unicode_utils import print_activity, print_content, print_status, safe_print
+
+# Import CLI command modules
+from .commands_cleanup_safety import add_cleanup_safety_commands, handle_cleanup_safety_commands
+
 # from ..plugins import example_policy  # ensure example plugin registers on import
 
 
@@ -101,6 +105,9 @@ def main(argv=None):
     s_clean.add_argument(
         "--backup", action="store_true", help="Create backup before cleanup"
     )
+
+    # Cleanup Safety Gates
+    add_cleanup_safety_commands(sub)
 
     # Checkpoints (agent-aware snapshots)
     s_ck = sub.add_parser("checkpoint", help="Manage lightweight checkpoints")
@@ -321,7 +328,7 @@ def main(argv=None):
             # Subcommands
             ocmd = getattr(args, "opt_cmd", None)
             if ocmd == "propose":
-                from ..core.gate_system import GateSystem, GateRequest, GateType
+                from ..core.gate_system import GateRequest, GateSystem, GateType
 
                 budget_seconds = optimizer.parse_budget(args.budget)
                 proposals = optimizer.generate_optimization_proposals(root, budget_seconds)
@@ -361,7 +368,7 @@ def main(argv=None):
                 return
 
             if ocmd == "sandbox":
-                from ..core.gate_system import GateSystem, GateRequest, GateType
+                from ..core.gate_system import GateRequest, GateSystem, GateType
 
                 budget_seconds = optimizer.parse_budget(args.budget)
                 plan = optimizer.create_sandbox_plan(root, getattr(args, "proposal_id", "") or None, budget_seconds)
@@ -486,6 +493,11 @@ def main(argv=None):
                 print(f"  Errors: {len(result['errors'])} files failed to delete")
                 for error in result["errors"][:5]:
                     print(f"    - {error}")
+            return
+
+        # Cleanup Safety Gates
+        if args.cmd == "cleanup-safety":
+            handle_cleanup_safety_commands(args, root)
             return
 
         if args.cmd == "checkpoint":
@@ -1070,8 +1082,14 @@ def main(argv=None):
             if result["errors"]:
                 safe_print(f"  [WARN] Errors: {len(result['errors'])} files failed to delete")
                 for error in result["errors"][:5]:
-                    print(f"    - {error}")
+                    safe_print(f"    - {error}")
             return
+
+        # Cleanup Safety Gates
+        if args.cmd == "cleanup-safety":
+            handle_cleanup_safety_commands(args, root)
+            return
+
     except state.StateError as e:
         print(e)
         return
