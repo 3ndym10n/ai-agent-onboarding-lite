@@ -1,10 +1,8 @@
 """
-Comprehensive test suite for ContinuousImprovementValidator.
+Unit tests for ContinuousImprovementValidator.
 
-This module provides comprehensive pytest integration for the ContinuousImprovementValidator,
-including integration tests, performance tests, and validation reporting.
-
-Note: Unit tests have been moved to tests/unit/test_ci_validator_unit.py
+This module contains focused unit tests for the ContinuousImprovementValidator
+class, testing individual methods and components in isolation.
 """
 
 import json
@@ -24,8 +22,8 @@ from ai_onboard.core.continuous_improvement_validator import (
 )
 
 
-class TestContinuousImprovementValidator:
-    """Test suite for ContinuousImprovementValidator."""
+class TestContinuousImprovementValidatorUnit:
+    """Unit tests for ContinuousImprovementValidator."""
     
     @pytest.fixture
     def root_path(self, tmp_path):
@@ -129,94 +127,6 @@ class TestContinuousImprovementValidator:
         assert report.system_health_score == 95.0
         assert len(report.recommendations) == 1
 
-    @pytest.mark.integration
-    def test_comprehensive_validation_structure(self, validator, mock_subsystems):
-        """Test the structure of comprehensive validation."""
-        # Mock the subsystem methods to return success
-        for system_name, mock_system in mock_subsystems.items():
-            if hasattr(mock_system, 'get_system_health'):
-                mock_system.get_system_health.return_value = {"status": "healthy", "score": 0.95}
-        
-        with patch.object(validator, '_run_integration_tests') as mock_integration, \
-             patch.object(validator, '_run_data_integrity_tests') as mock_data_integrity, \
-             patch.object(validator, '_run_performance_tests') as mock_performance, \
-             patch.object(validator, '_run_end_to_end_tests') as mock_end_to_end:
-            
-            # Mock test results
-            mock_integration.return_value = [
-                TestCase("integration_test", TestCategory.INTEGRATION, TestResult.PASS, 100.0)
-            ]
-            mock_data_integrity.return_value = [
-                TestCase("data_test", TestCategory.DATA_INTEGRITY, TestResult.PASS, 50.0)
-            ]
-            mock_performance.return_value = [
-                TestCase("perf_test", TestCategory.PERFORMANCE, TestResult.PASS, 200.0)
-            ]
-            mock_end_to_end.return_value = [
-                TestCase("e2e_test", TestCategory.END_TO_END, TestResult.PASS, 500.0)
-            ]
-            
-            report = validator.run_comprehensive_validation()
-            
-            assert isinstance(report, ValidationReport)
-            assert report.total_tests == 4
-            assert report.passed_tests == 4
-            assert report.failed_tests == 0
-            assert report.system_health_score > 0
-            assert len(report.test_results) == 4
-
-    @pytest.mark.integration
-    def test_integration_test_execution(self, validator, mock_subsystems):
-        """Test that integration tests execute properly."""
-        # Mock all subsystem methods
-        for system_name, mock_system in mock_subsystems.items():
-            mock_system.get_system_health = Mock(return_value={"status": "healthy"})
-            mock_system.get_configuration = Mock(return_value={"enabled": True})
-            mock_system.validate_configuration = Mock(return_value=True)
-        
-        tests = validator._run_integration_tests()
-        
-        assert isinstance(tests, list)
-        assert len(tests) > 0
-        
-        for test in tests:
-            assert isinstance(test, TestCase)
-            assert test.category == TestCategory.INTEGRATION
-            assert test.result in [TestResult.PASS, TestResult.FAIL, TestResult.WARNING, TestResult.SKIP]
-
-    @pytest.mark.integration
-    def test_data_integrity_test_execution(self, validator, mock_subsystems):
-        """Test that data integrity tests execute properly."""
-        tests = validator._run_data_integrity_tests()
-        
-        assert isinstance(tests, list)
-        
-        for test in tests:
-            assert isinstance(test, TestCase)
-            assert test.category == TestCategory.DATA_INTEGRITY
-
-    @pytest.mark.integration
-    def test_performance_test_execution(self, validator, mock_subsystems):
-        """Test that performance tests execute properly."""
-        tests = validator._run_performance_tests()
-        
-        assert isinstance(tests, list)
-        
-        for test in tests:
-            assert isinstance(test, TestCase)
-            assert test.category == TestCategory.PERFORMANCE
-
-    @pytest.mark.integration
-    def test_end_to_end_test_execution(self, validator, mock_subsystems):
-        """Test that end-to-end tests execute properly."""
-        tests = validator._run_end_to_end_tests()
-        
-        assert isinstance(tests, list)
-        
-        for test in tests:
-            assert isinstance(test, TestCase)
-            assert test.category == TestCategory.END_TO_END
-
     @pytest.mark.unit
     def test_system_health_calculation(self, validator):
         """Test system health score calculation."""
@@ -303,25 +213,6 @@ class TestContinuousImprovementValidator:
             assert report_data["total_tests"] == 2
             assert report_data["system_health_score"] == 75.0
 
-    @pytest.mark.slow
-    @pytest.mark.integration
-    def test_full_validation_with_real_systems(self, validator):
-        """Test full validation with real system components (slow test)."""
-        try:
-            report = validator.run_comprehensive_validation()
-            
-            # Basic validation of report structure
-            assert isinstance(report, ValidationReport)
-            assert report.total_tests > 0
-            assert isinstance(report.system_health_score, float)
-            assert 0.0 <= report.system_health_score <= 100.0
-            assert isinstance(report.recommendations, list)
-            assert isinstance(report.summary, str)
-            assert len(report.summary) > 0
-            
-        except Exception as e:
-            pytest.skip(f"Real systems not available for testing: {e}")
-
     @pytest.mark.unit
     def test_test_timeout_handling(self, validator):
         """Test that test timeouts are handled properly."""
@@ -357,27 +248,6 @@ class TestContinuousImprovementValidator:
         assert test_case.error_message is not None
         assert "ValueError" in test_case.error_message
         assert "Test error" in test_case.error_message
-
-    @pytest.mark.integration
-    def test_cli_integration(self, validator, root_path):
-        """Test integration with CLI commands."""
-        # This would test the CLI integration points
-        from ai_onboard.cli.commands_continuous_improvement import (
-            _handle_validation_commands
-        )
-        
-        # Mock the args
-        class MockArgs:
-            validation_action = "run"
-        
-        args = MockArgs()
-        
-        # Test that CLI can call the validator without errors
-        try:
-            # This should not raise an exception
-            validator.run_comprehensive_validation()
-        except Exception as e:
-            pytest.fail(f"CLI integration failed: {e}")
 
     @pytest.mark.unit
     def test_test_configuration_validation(self, validator):
@@ -423,7 +293,7 @@ class TestContinuousImprovementValidator:
 
 
 class TestValidationReporting:
-    """Test suite for validation reporting functionality."""
+    """Unit tests for validation reporting functionality."""
     
     @pytest.fixture
     def sample_report(self):
@@ -475,132 +345,125 @@ class TestValidationReporting:
             pytest.fail(f"Report formatting failed: {e}")
 
 
-class TestPerformanceValidation:
-    """Test suite for performance-related validation."""
+class TestValidatorHelperMethods:
+    """Unit tests for validator helper methods."""
     
-    @pytest.mark.slow
-    @pytest.mark.integration
-    def test_performance_test_execution_time(self):
-        """Test that performance tests complete within reasonable time."""
-        validator = ContinuousImprovementValidator(Path("/tmp"))
-        
-        start_time = time.time()
-        tests = validator._run_performance_tests()
-        execution_time = time.time() - start_time
-        
-        # Performance tests should complete within 60 seconds
-        assert execution_time < 60.0, f"Performance tests took too long: {execution_time}s"
-        assert len(tests) > 0
+    @pytest.fixture
+    def validator(self, tmp_path):
+        """Create validator instance for testing."""
+        return ContinuousImprovementValidator(tmp_path)
 
-    @pytest.mark.integration
-    def test_memory_usage_during_validation(self):
-        """Test that memory usage stays within reasonable bounds during validation."""
-        import psutil
-        import os
+    @pytest.mark.unit
+    def test_test_case_factory_method(self, validator):
+        """Test helper method for creating test cases."""
+        test_case = validator._create_test_case(
+            name="helper_test",
+            category=TestCategory.INTEGRATION,
+            result=TestResult.PASS,
+            duration=150.0,
+            error_message=None
+        )
         
-        process = psutil.Process(os.getpid())
-        initial_memory = process.memory_info().rss / 1024 / 1024  # MB
+        assert isinstance(test_case, TestCase)
+        assert test_case.name == "helper_test"
+        assert test_case.category == TestCategory.INTEGRATION
+        assert test_case.result == TestResult.PASS
+        assert test_case.duration == 150.0
+
+    @pytest.mark.unit
+    def test_metric_threshold_validation(self, validator):
+        """Test validation of performance metric thresholds."""
+        thresholds = validator.test_config["performance_thresholds"]
         
-        validator = ContinuousImprovementValidator(Path("/tmp"))
+        # Test that threshold validation works
+        test_metrics = {
+            "response_time_ms": 250,  # Under threshold
+            "memory_usage_mb": 100,   # Over threshold  
+            "cpu_usage_percent": 45   # Under threshold
+        }
         
-        # Run a subset of tests to avoid long execution
-        with patch.object(validator, '_run_integration_tests') as mock_integration:
-            mock_integration.return_value = [
-                TestCase("test1", TestCategory.INTEGRATION, TestResult.PASS, 100.0)
-            ]
-            
-            report = validator.run_comprehensive_validation()
-            
-            final_memory = process.memory_info().rss / 1024 / 1024  # MB
-            memory_increase = final_memory - initial_memory
-            
-            # Memory increase should be reasonable (less than 100MB)
-            assert memory_increase < 100.0, f"Memory usage increased by {memory_increase}MB"
+        violations = validator._check_threshold_violations(test_metrics, thresholds)
+        
+        assert isinstance(violations, list)
+        # Should detect memory usage violation
+        assert any("memory" in str(v).lower() for v in violations)
+
+    @pytest.mark.unit
+    def test_report_id_generation(self, validator):
+        """Test that report IDs are generated correctly."""
+        report_id = validator._generate_report_id()
+        
+        assert isinstance(report_id, str)
+        assert len(report_id) > 0
+        assert "validation_" in report_id
+        
+        # Should be unique
+        report_id2 = validator._generate_report_id()
+        assert report_id != report_id2
 
 
-# Pytest hooks and fixtures for CI/CD integration
-def pytest_configure(config):
-    """Configure pytest for continuous improvement validation."""
-    config.addinivalue_line(
-        "markers", "ci_validator: marks tests as CI validator integration tests"
+# Helper functions for unit testing
+def create_mock_test_case(name: str, result: TestResult, duration: float = 100.0,
+                         category: TestCategory = TestCategory.INTEGRATION,
+                         error_message: Optional[str] = None) -> TestCase:
+    """Create a mock test case for testing purposes."""
+    return TestCase(
+        test_id=f"mock_{name}",
+        name=name,
+        description=f"Mock test case: {name}",
+        category=category,
+        result=result,
+        duration=duration,
+        error_message=error_message
     )
 
 
-def pytest_collection_modifyitems(config, items):
-    """Modify test collection for CI integration."""
-    # Add CI validator marker to all tests in this module
-    for item in items:
-        if "test_continuous_improvement_validator" in str(item.fspath):
-            item.add_marker(pytest.mark.ci_validator)
-
-
-# Custom pytest plugin for validation reporting
-class ValidationReportPlugin:
-    """Pytest plugin for integrating validation reports with test results."""
+def create_mock_validation_report(test_results: List[TestCase]) -> ValidationReport:
+    """Create a mock validation report for testing purposes."""
+    total_tests = len(test_results)
+    passed_tests = sum(1 for t in test_results if t.result == TestResult.PASS)
+    failed_tests = sum(1 for t in test_results if t.result == TestResult.FAIL)
+    warning_tests = sum(1 for t in test_results if t.result == TestResult.WARNING)
+    skipped_tests = sum(1 for t in test_results if t.result == TestResult.SKIP)
     
-    def __init__(self):
-        self.validation_results = []
+    health_score = (passed_tests / total_tests * 100.0) if total_tests > 0 else 0.0
     
-    def pytest_runtest_logreport(self, report):
-        """Collect test results for validation reporting."""
-        if report.when == "call":
-            self.validation_results.append({
-                "nodeid": report.nodeid,
-                "outcome": report.outcome,
-                "duration": report.duration,
-                "keywords": list(report.keywords)
-            })
-    
-    def pytest_sessionfinish(self, session, exitstatus):
-        """Generate validation report at end of test session."""
-        if hasattr(session.config, "option") and getattr(session.config.option, "generate_validation_report", False):
-            self._generate_validation_report(exitstatus)
-    
-    def _generate_validation_report(self, exitstatus):
-        """Generate a validation report based on pytest results."""
-        total_tests = len(self.validation_results)
-        passed_tests = sum(1 for r in self.validation_results if r["outcome"] == "passed")
-        failed_tests = sum(1 for r in self.validation_results if r["outcome"] == "failed")
-        
-        print(f"\n🧪 Validation Report Summary:")
-        print(f"   Total Tests: {total_tests}")
-        print(f"   Passed: {passed_tests}")
-        print(f"   Failed: {failed_tests}")
-        print(f"   Exit Status: {exitstatus}")
-
-
-# Register the plugin
-def pytest_configure(config):
-    """Register the validation report plugin."""
-    config.pluginmanager.register(ValidationReportPlugin(), "validation_report")
-
-
-# Custom command line options
-def pytest_addoption(parser):
-    """Add custom command line options for validation."""
-    parser.addoption(
-        "--generate-validation-report",
-        action="store_true",
-        default=False,
-        help="Generate validation report at end of test session"
-    )
-    parser.addoption(
-        "--validation-timeout",
-        action="store",
-        default=300,
-        type=int,
-        help="Timeout for validation tests in seconds"
+    return ValidationReport(
+        report_id=f"mock_report_{int(time.time())}",
+        generated_at=datetime.now(),
+        total_tests=total_tests,
+        passed_tests=passed_tests,
+        failed_tests=failed_tests,
+        warning_tests=warning_tests,
+        skipped_tests=skipped_tests,
+        test_results=test_results,
+        system_health_score=health_score,
+        recommendations=[],
+        summary=f"Mock report with {total_tests} tests"
     )
 
 
-# Fixtures for integration with the validation system
-@pytest.fixture(scope="session")
-def validation_timeout(request):
-    """Provide validation timeout from command line."""
-    return request.config.getoption("--validation-timeout")
-
-
-@pytest.fixture(scope="session")
-def generate_validation_report(request):
-    """Provide validation report generation flag from command line."""
-    return request.config.getoption("--generate-validation-report")
+if __name__ == "__main__":
+    # Run unit tests
+    import subprocess
+    import sys
+    
+    result = subprocess.run([
+        sys.executable, "-m", "pytest", 
+        str(Path(__file__)), 
+        "-v", "--tb=short", "-m", "unit"
+    ], capture_output=True, text=True)
+    
+    print("🧪 CI Validator Unit Test Results")
+    print("=" * 50)
+    print(f"Success: {'✅' if result.returncode == 0 else '❌'}")
+    
+    if result.stdout:
+        print("\nOutput:")
+        print(result.stdout)
+    
+    if result.stderr:
+        print("\nErrors:")
+        print(result.stderr)
+    
+    exit(result.returncode)
