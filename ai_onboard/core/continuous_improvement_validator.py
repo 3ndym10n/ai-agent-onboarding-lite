@@ -1076,48 +1076,48 @@ class ContinuousImprovementValidator:
         """Calculate system health score based on test results."""
         if not test_results:
             return 0.0
-            
+
         total_tests = len(test_results)
         passed_tests = len([t for t in test_results if t.result == TestResult.PASS])
         warning_tests = len([t for t in test_results if t.result == TestResult.WARNING])
-        
+
         # Calculate weighted score: pass=100%, warning=50%, fail=0%
         score = (passed_tests + (warning_tests * 0.5)) / total_tests * 100
         return round(score, 1)
 
     def _run_test_with_timeout(
-        self, 
-        test_name: str, 
-        test_func: callable, 
-        category: TestCategory, 
-        timeout_seconds: int = 30
+        self,
+        test_name: str,
+        test_func: callable,
+        category: TestCategory,
+        timeout_seconds: int = 30,
     ) -> TestCase:
         """Run a test function with timeout handling."""
         import signal
         import time
         from threading import Thread, Event
-        
+
         start_time = time.time()
         result = None
         error_message = None
         timeout_occurred = Event()
-        
+
         def run_test():
             nonlocal result, error_message
             try:
                 result = test_func()
             except Exception as e:
                 error_message = str(e)
-        
+
         # Start test in thread
         thread = Thread(target=run_test)
         thread.daemon = True
         thread.start()
-        
+
         # Wait for completion or timeout
         thread.join(timeout_seconds)
         duration = (time.time() - start_time) * 1000  # Convert to ms
-        
+
         if thread.is_alive():
             # Timeout occurred
             return TestCase(
@@ -1127,7 +1127,7 @@ class ContinuousImprovementValidator:
                 category=category,
                 result=TestResult.FAIL,
                 duration=duration,
-                error_message=f"Test timeout after {timeout_seconds} seconds"
+                error_message=f"Test timeout after {timeout_seconds} seconds",
             )
         elif error_message:
             # Test failed with error
@@ -1138,7 +1138,7 @@ class ContinuousImprovementValidator:
                 category=category,
                 result=TestResult.FAIL,
                 duration=duration,
-                error_message=error_message
+                error_message=error_message,
             )
         else:
             # Test passed
@@ -1148,7 +1148,7 @@ class ContinuousImprovementValidator:
                 description=f"Test completed successfully",
                 category=category,
                 result=TestResult.PASS,
-                duration=duration
+                duration=duration,
             )
 
     def _create_test_case(
@@ -1157,7 +1157,7 @@ class ContinuousImprovementValidator:
         category: TestCategory,
         result: TestResult,
         duration: float,
-        error_message: Optional[str] = None
+        error_message: Optional[str] = None,
     ) -> TestCase:
         """Helper method for creating test cases."""
         return TestCase(
@@ -1167,17 +1167,15 @@ class ContinuousImprovementValidator:
             category=category,
             result=result,
             duration=duration,
-            error_message=error_message
+            error_message=error_message,
         )
 
     def _check_threshold_violations(
-        self, 
-        test_metrics: Dict[str, Any], 
-        thresholds: Dict[str, Any]
+        self, test_metrics: Dict[str, Any], thresholds: Dict[str, Any]
     ) -> List[str]:
         """Check for performance metric threshold violations."""
         violations = []
-        
+
         for metric_name, metric_value in test_metrics.items():
             if metric_name in thresholds:
                 threshold = thresholds[metric_name]
@@ -1185,14 +1183,14 @@ class ContinuousImprovementValidator:
                     violations.append(
                         f"{metric_name} exceeded threshold: {metric_value} >= {threshold}"
                     )
-        
+
         return violations
 
     def _generate_report_id(self) -> str:
         """Generate a unique report ID."""
         import uuid
         from datetime import datetime
-        
+
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         unique_id = str(uuid.uuid4())[:8]
         return f"validation_report_{timestamp}_{unique_id}"

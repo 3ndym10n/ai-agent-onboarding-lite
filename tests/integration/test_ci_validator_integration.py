@@ -125,8 +125,22 @@ version = "0.1.0"
         from ai_onboard.core.continuous_improvement_validator import TestCase
 
         test_results = [
-            TestCase("test1", "test1", "Test case 1", TestCategory.INTEGRATION, TestResult.PASS, 100.0),
-            TestCase("test2", "test2", "Test case 2", TestCategory.PERFORMANCE, TestResult.WARNING, 200.0),
+            TestCase(
+                "test1",
+                "test1",
+                "Test case 1",
+                TestCategory.INTEGRATION,
+                TestResult.PASS,
+                100.0,
+            ),
+            TestCase(
+                "test2",
+                "test2",
+                "Test case 2",
+                TestCategory.PERFORMANCE,
+                TestResult.WARNING,
+                200.0,
+            ),
         ]
 
         report = ValidationReport(
@@ -295,7 +309,7 @@ version = "0.1.0"
             return [
                 TestCase(
                     test_id="mock_failing_integration",
-                    name="mock_failing_integration", 
+                    name="mock_failing_integration",
                     description="Mock failing integration test",
                     category=TestCategory.INTEGRATION,
                     result=TestResult.FAIL,
@@ -305,7 +319,7 @@ version = "0.1.0"
                 TestCase(
                     test_id="mock_warning_performance",
                     name="mock_warning_performance",
-                    description="Mock warning performance test", 
+                    description="Mock warning performance test",
                     category=TestCategory.PERFORMANCE,
                     result=TestResult.WARNING,
                     duration=800.0,

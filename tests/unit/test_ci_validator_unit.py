@@ -137,10 +137,38 @@ class TestContinuousImprovementValidatorUnit:
     def test_system_health_calculation(self, validator):
         """Test system health score calculation."""
         test_results = [
-            TestCase("test1", "test1", "Test case 1", TestCategory.INTEGRATION, TestResult.PASS, 100.0),
-            TestCase("test2", "test2", "Test case 2", TestCategory.INTEGRATION, TestResult.PASS, 150.0),
-            TestCase("test3", "test3", "Test case 3", TestCategory.INTEGRATION, TestResult.FAIL, 200.0),
-            TestCase("test4", "test4", "Test case 4", TestCategory.INTEGRATION, TestResult.WARNING, 75.0),
+            TestCase(
+                "test1",
+                "test1",
+                "Test case 1",
+                TestCategory.INTEGRATION,
+                TestResult.PASS,
+                100.0,
+            ),
+            TestCase(
+                "test2",
+                "test2",
+                "Test case 2",
+                TestCategory.INTEGRATION,
+                TestResult.PASS,
+                150.0,
+            ),
+            TestCase(
+                "test3",
+                "test3",
+                "Test case 3",
+                TestCategory.INTEGRATION,
+                TestResult.FAIL,
+                200.0,
+            ),
+            TestCase(
+                "test4",
+                "test4",
+                "Test case 4",
+                TestCategory.INTEGRATION,
+                TestResult.WARNING,
+                75.0,
+            ),
         ]
 
         health_score = validator._calculate_system_health_score(test_results)
@@ -189,8 +217,22 @@ class TestContinuousImprovementValidatorUnit:
     def test_summary_generation(self, validator):
         """Test summary generation for validation reports."""
         test_results = [
-            TestCase("test1", "test1", "Test case 1", TestCategory.INTEGRATION, TestResult.PASS, 100.0),
-            TestCase("test2", "test2", "Test case 2", TestCategory.INTEGRATION, TestResult.FAIL, 150.0),
+            TestCase(
+                "test1",
+                "test1",
+                "Test case 1",
+                TestCategory.INTEGRATION,
+                TestResult.PASS,
+                100.0,
+            ),
+            TestCase(
+                "test2",
+                "test2",
+                "Test case 2",
+                TestCategory.INTEGRATION,
+                TestResult.FAIL,
+                150.0,
+            ),
         ]
 
         summary = validator._generate_summary(test_results, 75.0)
@@ -325,11 +367,18 @@ class TestValidationReporting:
             warning_tests=1,
             skipped_tests=0,
             test_results=[
-                TestCase("test1", "test1", "Test case 1", TestCategory.INTEGRATION, TestResult.PASS, 100.0),
+                TestCase(
+                    "test1",
+                    "test1",
+                    "Test case 1",
+                    TestCategory.INTEGRATION,
+                    TestResult.PASS,
+                    100.0,
+                ),
                 TestCase(
                     "test2",
                     "test2",
-                    "Test case 2", 
+                    "Test case 2",
                     TestCategory.PERFORMANCE,
                     TestResult.FAIL,
                     200.0,
