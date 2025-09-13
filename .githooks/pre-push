@@ -1,3 +1,16 @@
-#!/bin/bash
-# Pre-push hook to check protected paths
-python scripts/protected_paths_diff.py
+#!/bin/sh
+# Pre-push hook that runs local CI validation
+
+echo "🚀 Running local CI validation before push..."
+
+# Run local CI validation
+python scripts/local_ci_validation.py --no-fast-fail
+
+if [ $? -ne 0 ]; then
+    echo "❌ Local CI validation failed!"
+    echo "   Fix issues before pushing or use --no-verify to bypass"
+    exit 1
+fi
+
+echo "✅ Local CI validation passed!"
+exit 0

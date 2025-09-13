@@ -842,7 +842,8 @@ def test_smart_debugger_integration():
 
 def main():
     """Run enhanced system tests with comprehensive metrics."""
-    print("🚀 Enhanced AI Onboarding System Tests")
+    # Use ASCII characters for Windows compatibility
+    print("Enhanced AI Onboarding System Tests")
     print("=" * 60)
     print("Phase 1: Enhanced Testing Foundation")
     print("Collecting detailed metrics, performance data, and confidence scores")
@@ -857,7 +858,7 @@ def main():
     ]
 
     # Run all tests with enhanced metrics collection
-    print("🧪 Executing enhanced test suite...\n")
+    print("Executing enhanced test suite...\n")
 
     for name, test_func in tests:
         # Run test with enhanced metrics collection

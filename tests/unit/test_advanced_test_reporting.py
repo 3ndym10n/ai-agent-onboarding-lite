@@ -92,8 +92,13 @@ def sample_test_results():
 @pytest.fixture
 def report_generator(temp_root, mock_validator, mock_trend_analyzer):
     """Provide an AdvancedTestReportGenerator with mocked dependencies."""
-    with patch('ai_onboard.core.advanced_test_reporting.ContinuousImprovementValidator', return_value=mock_validator), \
-         patch('ai_onboard.core.advanced_test_reporting.get_performance_trend_analyzer', return_value=mock_trend_analyzer):
+    with patch(
+        "ai_onboard.core.advanced_test_reporting.ContinuousImprovementValidator",
+        return_value=mock_validator,
+    ), patch(
+        "ai_onboard.core.advanced_test_reporting.get_performance_trend_analyzer",
+        return_value=mock_trend_analyzer,
+    ):
         generator = AdvancedTestReportGenerator(temp_root)
         return generator
 
@@ -103,20 +108,26 @@ class TestAdvancedTestReportGenerator:
 
     def test_initialization(self, temp_root):
         """Test that AdvancedTestReportGenerator initializes correctly."""
-        with patch('ai_onboard.core.advanced_test_reporting.ContinuousImprovementValidator'), \
-             patch('ai_onboard.core.advanced_test_reporting.get_performance_trend_analyzer'):
+        with patch(
+            "ai_onboard.core.advanced_test_reporting.ContinuousImprovementValidator"
+        ), patch(
+            "ai_onboard.core.advanced_test_reporting.get_performance_trend_analyzer"
+        ):
             generator = AdvancedTestReportGenerator(temp_root)
-            
+
             assert generator.root == temp_root
             assert generator.reports_path == temp_root / ".ai_onboard" / "test_reports"
-            assert generator.config_path == temp_root / ".ai_onboard" / "test_reporting_config.json"
+            assert (
+                generator.config_path
+                == temp_root / ".ai_onboard" / "test_reporting_config.json"
+            )
             assert isinstance(generator.config, dict)
             assert isinstance(generator.quality_benchmarks, dict)
 
     def test_calculate_test_metrics(self, report_generator, sample_test_results):
         """Test test metrics calculation."""
         metrics = report_generator._calculate_test_metrics(sample_test_results)
-        
+
         assert isinstance(metrics, TestMetrics)
         assert metrics.total_tests == 3
         assert metrics.passed_tests == 1
@@ -131,7 +142,7 @@ class TestAdvancedTestReportGenerator:
         """Test quality assessment functionality."""
         metrics = report_generator._calculate_test_metrics(sample_test_results)
         quality = report_generator._assess_test_quality(metrics, sample_test_results)
-        
+
         assert isinstance(quality, QualityAssessment)
         assert 0 <= quality.overall_score <= 100
         assert isinstance(quality.coverage_score, float)
@@ -142,7 +153,7 @@ class TestAdvancedTestReportGenerator:
     def test_generate_execution_context(self, report_generator, sample_test_results):
         """Test execution context generation."""
         context = report_generator._generate_execution_context(sample_test_results)
-        
+
         assert isinstance(context, TestExecutionContext)
         assert isinstance(context.test_environment, dict)
         assert isinstance(context.system_info, dict)
@@ -155,9 +166,9 @@ class TestAdvancedTestReportGenerator:
         report = report_generator.generate_comprehensive_report(
             test_results=sample_test_results,
             report_level=ReportLevel.DETAILED,
-            output_formats=[ReportFormat.JSON]
+            output_formats=[ReportFormat.JSON],
         )
-        
+
         assert isinstance(report, AdvancedTestReport)
         assert report.report_id is not None
         assert isinstance(report.generated_at, datetime)
@@ -171,36 +182,38 @@ class TestAdvancedTestReportGenerator:
     def test_report_persistence(self, report_generator, sample_test_results):
         """Test that reports are properly persisted."""
         report = report_generator.generate_comprehensive_report(
-            test_results=sample_test_results,
-            output_formats=[ReportFormat.JSON]
+            test_results=sample_test_results, output_formats=[ReportFormat.JSON]
         )
-        
+
         # Check that report file was created
         report_file = report_generator.reports_path / f"{report.report_id}.json"
         assert report_file.exists()
-        
+
         # Verify report content
-        with open(report_file, 'r') as f:
+        with open(report_file, "r") as f:
             saved_data = json.load(f)
-            assert saved_data['report_id'] == report.report_id
-            assert saved_data['test_metrics']['total_tests'] == 3
+            assert saved_data["report_id"] == report.report_id
+            assert saved_data["test_metrics"]["total_tests"] == 3
 
     def test_historical_comparison(self, report_generator, sample_test_results):
         """Test historical comparison functionality."""
         # Generate first report
         report1 = report_generator.generate_comprehensive_report(sample_test_results)
-        
+
         # Generate second report
         report2 = report_generator.generate_comprehensive_report(sample_test_results)
-        
+
         # Check historical comparison
         assert isinstance(report2.historical_comparison, dict)
         # Should have comparison data since we have history now
-        
+
     def test_factory_function(self, temp_root):
         """Test the factory function."""
-        with patch('ai_onboard.core.advanced_test_reporting.ContinuousImprovementValidator'), \
-             patch('ai_onboard.core.advanced_test_reporting.get_performance_trend_analyzer'):
+        with patch(
+            "ai_onboard.core.advanced_test_reporting.ContinuousImprovementValidator"
+        ), patch(
+            "ai_onboard.core.advanced_test_reporting.get_performance_trend_analyzer"
+        ):
             generator = get_advanced_test_report_generator(temp_root)
             assert isinstance(generator, AdvancedTestReportGenerator)
             assert generator.root == temp_root
@@ -215,18 +228,21 @@ class TestAdvancedTestReportGenerator:
         # Create a custom config
         config_path = temp_root / ".ai_onboard" / "test_reporting_config.json"
         config_path.parent.mkdir(parents=True, exist_ok=True)
-        
+
         custom_config = {
             "reporting_enabled": True,
             "max_report_history": 50,
-            "default_output_formats": ["html", "json"]
+            "default_output_formats": ["html", "json"],
         }
-        
-        with open(config_path, 'w') as f:
+
+        with open(config_path, "w") as f:
             json.dump(custom_config, f)
-        
-        with patch('ai_onboard.core.advanced_test_reporting.ContinuousImprovementValidator'), \
-             patch('ai_onboard.core.advanced_test_reporting.get_performance_trend_analyzer'):
+
+        with patch(
+            "ai_onboard.core.advanced_test_reporting.ContinuousImprovementValidator"
+        ), patch(
+            "ai_onboard.core.advanced_test_reporting.get_performance_trend_analyzer"
+        ):
             generator = AdvancedTestReportGenerator(temp_root)
             assert generator.config["reporting_enabled"] is True
             assert generator.config["max_report_history"] == 50
@@ -234,35 +250,40 @@ class TestAdvancedTestReportGenerator:
     def test_quality_benchmarks_initialization(self, report_generator):
         """Test quality benchmarks initialization."""
         benchmarks = report_generator.quality_benchmarks
-        
+
         assert isinstance(benchmarks, dict)
         assert "success_rate_threshold" in benchmarks
         assert "performance_threshold" in benchmarks
         assert "coverage_threshold" in benchmarks
-        
+
         # All benchmarks should be numeric
         for key, value in benchmarks.items():
             assert isinstance(value, (int, float))
 
-    @pytest.mark.parametrize("report_level", [ReportLevel.SUMMARY, ReportLevel.DETAILED, ReportLevel.COMPREHENSIVE])
-    def test_different_report_levels(self, report_generator, sample_test_results, report_level):
+    @pytest.mark.parametrize(
+        "report_level",
+        [ReportLevel.SUMMARY, ReportLevel.DETAILED, ReportLevel.COMPREHENSIVE],
+    )
+    def test_different_report_levels(
+        self, report_generator, sample_test_results, report_level
+    ):
         """Test report generation with different detail levels."""
         report = report_generator.generate_comprehensive_report(
-            test_results=sample_test_results,
-            report_level=report_level
+            test_results=sample_test_results, report_level=report_level
         )
-        
+
         assert report.report_level == report_level
         assert isinstance(report, AdvancedTestReport)
 
     @pytest.mark.parametrize("output_format", [ReportFormat.JSON, ReportFormat.HTML])
-    def test_different_output_formats(self, report_generator, sample_test_results, output_format):
+    def test_different_output_formats(
+        self, report_generator, sample_test_results, output_format
+    ):
         """Test report generation with different output formats."""
         report = report_generator.generate_comprehensive_report(
-            test_results=sample_test_results,
-            output_formats=[output_format]
+            test_results=sample_test_results, output_formats=[output_format]
         )
-        
+
         assert isinstance(report, AdvancedTestReport)
         # Check that appropriate output file was created
         if output_format == ReportFormat.JSON:
@@ -277,7 +298,7 @@ class TestTestMetrics:
         """Test metrics calculation with edge cases."""
         # Empty test results
         empty_results = []
-        
+
         # Single test result
         single_result = [
             ValidationTestCase(
@@ -289,7 +310,7 @@ class TestTestMetrics:
                 duration=1.0,
             )
         ]
-        
+
         # Test with empty results should handle gracefully
         # (This would be tested in the actual implementation)
         assert len(empty_results) == 0
@@ -313,11 +334,14 @@ class TestAdvancedTestReportingIntegration:
 
     def test_end_to_end_report_generation(self, temp_root):
         """Test complete end-to-end report generation."""
-        with patch('ai_onboard.core.advanced_test_reporting.ContinuousImprovementValidator'), \
-             patch('ai_onboard.core.advanced_test_reporting.get_performance_trend_analyzer'):
-            
+        with patch(
+            "ai_onboard.core.advanced_test_reporting.ContinuousImprovementValidator"
+        ), patch(
+            "ai_onboard.core.advanced_test_reporting.get_performance_trend_analyzer"
+        ):
+
             generator = AdvancedTestReportGenerator(temp_root)
-            
+
             # Create realistic test results
             test_results = [
                 ValidationTestCase(
@@ -325,25 +349,27 @@ class TestAdvancedTestReportingIntegration:
                     name=f"integration_test_{i}",
                     description=f"Integration test {i}",
                     category=ValidationCategory.INTEGRATION,
-                    result=ValidationResult.PASS if i % 2 == 0 else ValidationResult.FAIL,
+                    result=(
+                        ValidationResult.PASS if i % 2 == 0 else ValidationResult.FAIL
+                    ),
                     duration=0.1 * i,
                 )
                 for i in range(10)
             ]
-            
+
             # Generate comprehensive report
             report = generator.generate_comprehensive_report(
                 test_results=test_results,
                 report_level=ReportLevel.COMPREHENSIVE,
-                output_formats=[ReportFormat.JSON, ReportFormat.HTML]
+                output_formats=[ReportFormat.JSON, ReportFormat.HTML],
             )
-            
+
             # Verify report structure
             assert isinstance(report, AdvancedTestReport)
             assert report.test_metrics.total_tests == 10
             assert report.test_metrics.passed_tests == 5
             assert report.test_metrics.failed_tests == 5
-            
+
             # Verify files were created
             json_file = generator.reports_path / f"{report.report_id}.json"
             assert json_file.exists()

@@ -33,10 +33,10 @@ from .continuous_improvement_analytics import (
 )
 from .continuous_improvement_validator import (
     ContinuousImprovementValidator,
-    ValidationTestCase,
     ValidationCategory,
-    ValidationResult,
     ValidationReport,
+    ValidationResult,
+    ValidationTestCase,
 )
 from .performance_trend_analyzer import (
     AnomalyDetection,
@@ -358,7 +358,9 @@ class AdvancedTestReportGenerator:
             telemetry.log_event("test_report_generation_error", error=str(e))
             raise
 
-    def _calculate_test_metrics(self, test_results: List[ValidationTestCase]) -> TestMetrics:
+    def _calculate_test_metrics(
+        self, test_results: List[ValidationTestCase]
+    ) -> TestMetrics:
         """Calculate comprehensive test execution metrics."""
         if not test_results:
             return TestMetrics(
@@ -382,8 +384,12 @@ class AdvancedTestReportGenerator:
         total_tests = len(test_results)
         passed_tests = sum(1 for t in test_results if t.result == ValidationResult.PASS)
         failed_tests = sum(1 for t in test_results if t.result == ValidationResult.FAIL)
-        skipped_tests = sum(1 for t in test_results if t.result == ValidationResult.SKIP)
-        warning_tests = sum(1 for t in test_results if t.result == ValidationResult.WARNING)
+        skipped_tests = sum(
+            1 for t in test_results if t.result == ValidationResult.SKIP
+        )
+        warning_tests = sum(
+            1 for t in test_results if t.result == ValidationResult.WARNING
+        )
 
         # Calculate rates
         success_rate = passed_tests / total_tests if total_tests > 0 else 0.0
@@ -554,7 +560,9 @@ class AdvancedTestReportGenerator:
         else:
             return 0.2
 
-    def _calculate_coverage_score(self, test_results: List[ValidationTestCase]) -> float:
+    def _calculate_coverage_score(
+        self, test_results: List[ValidationTestCase]
+    ) -> float:
         """Calculate test coverage score based on test categories."""
         if not test_results:
             return 0.0
@@ -590,7 +598,9 @@ class AdvancedTestReportGenerator:
 
         return min(1.0, base_score)
 
-    def _calculate_maintainability_score(self, test_results: List[ValidationTestCase]) -> float:
+    def _calculate_maintainability_score(
+        self, test_results: List[ValidationTestCase]
+    ) -> float:
         """Calculate maintainability score based on test characteristics."""
         if not test_results:
             return 0.0

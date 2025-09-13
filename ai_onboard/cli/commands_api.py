@@ -109,9 +109,7 @@ def _handle_api_start(args: argparse.Namespace, root: Path) -> None:
 
         if args.background:
             print_status("Background mode not yet implemented", "error")
-            print(
-                "Use a process manager like PM2 or systemd for production deployment"
-            )
+            print("Use a process manager like PM2 or systemd for production deployment")
             return
 
         # Server configuration (don't include host/port since they're already set in constructor)

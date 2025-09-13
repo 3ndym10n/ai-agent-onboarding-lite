@@ -22,9 +22,9 @@ from ..core.advanced_test_reporting import (
 )
 from ..core.continuous_improvement_validator import (
     ContinuousImprovementValidator,
-    TestCase,
-    TestCategory,
-    TestResult,
+    ValidationCategory,
+    ValidationResult,
+    ValidationTestCase,
 )
 
 
@@ -588,7 +588,7 @@ def _handle_config(args: argparse.Namespace, root: Path) -> None:
 # Helper functions
 def _run_tests_for_report(
     root: Path, categories: Optional[List[str]]
-) -> List[TestCase]:
+) -> List[ValidationTestCase]:
     """Run tests and return results."""
     try:
         validator = ContinuousImprovementValidator(root)
