@@ -3,7 +3,7 @@ import json
 import random
 import string
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
@@ -103,7 +103,7 @@ def read_multiple_json_sync(paths: List[Path], default=None) -> List[Any]:
 
 
 def now_iso() -> str:
-    return datetime.utcnow().isoformat() + "Z"
+    return datetime.now(timezone.utc).isoformat() + "Z"
 
 
 def dumps_json(data) -> str:

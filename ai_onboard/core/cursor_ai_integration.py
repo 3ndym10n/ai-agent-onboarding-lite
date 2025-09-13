@@ -363,6 +363,119 @@ class CursorAIIntegration:
             # Don't let metric collection errors break integration
             pass
 
+    def get_configuration(self) -> Dict[str, Any]:
+        """Get current configuration as dictionary."""
+        return {
+            "enabled": self.config.enabled,
+            "auto_analyze": self.config.auto_analyze,
+            "show_status_bar": self.config.show_status_bar,
+            "show_sidebar": self.config.show_sidebar,
+            "agent_id": self.config.agent_id,
+            "safety_level": self.config.safety_level,
+            "max_autonomous_actions": self.config.max_autonomous_actions,
+            "require_confirmation": self.config.require_confirmation,
+            "session_timeout": self.config.session_timeout,
+            "api_enabled": self.config.api_enabled,
+            "api_port": self.config.api_port,
+        }
+
+    def create_agent_profile(
+        self, user_id: str, profile_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Create an agent profile for a user."""
+        try:
+            # Create agent profile using collaboration protocol
+            agent_profile = AgentProfile(
+                agent_id=f"{user_id}_{profile_data.get('name', 'agent').lower().replace(' ', '_')}",
+                name=profile_data.get("name", "Cursor Agent"),
+                version="1.0.0",
+                capabilities=[
+                    AgentCapability(cap) for cap in profile_data.get("capabilities", [])
+                ],
+                collaboration_mode=CollaborationMode(
+                    profile_data.get("collaboration_style", "collaborative")
+                ),
+                safety_level=SafetyLevel(profile_data.get("safety_level", "medium")),
+            )
+
+            # Register with collaboration protocol
+            result = self.collaboration_protocol.register_agent(agent_profile)
+
+            if result.get("status") == "success":
+                self._record_metric("agent_profile_created", 1)
+                return {
+                    "agent_id": agent_profile.agent_id,
+                    "name": agent_profile.name,
+                    "user_id": user_id,
+                    "status": "created",
+                    "created_at": datetime.now().isoformat(),
+                }
+            else:
+                raise Exception(
+                    f"Failed to register agent: {result.get('message', 'Unknown error')}"
+                )
+
+        except Exception as e:
+            self._record_metric("agent_profile_creation_error", 1)
+            raise Exception(f"Failed to create agent profile: {e}")
+
+    def get_agent_profile(self, agent_id: str) -> Optional[Dict[str, Any]]:
+        """Get an agent profile by ID."""
+        try:
+            # This would typically query the collaboration protocol
+            # For now, return a basic profile structure
+            return {
+                "agent_id": agent_id,
+                "name": f"Agent {agent_id}",
+                "status": "active",
+                "retrieved_at": datetime.now().isoformat(),
+            }
+        except Exception as e:
+            self._record_metric("agent_profile_retrieval_error", 1)
+            return None
+
+    def create_session(
+        self, user_id: str, project_context: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Create a new collaboration session."""
+        try:
+            session_id = f"session_{user_id}_{int(time.time())}"
+
+            session_data = {
+                "session_id": session_id,
+                "user_id": user_id,
+                "project_context": project_context,
+                "created_at": datetime.now().isoformat(),
+                "status": "active",
+                "timeout": self.config.session_timeout,
+            }
+
+            # Store session data (in a real implementation, this would be persisted)
+            session_path = self.root / ".ai_onboard" / "sessions" / f"{session_id}.json"
+            utils.ensure_dir(session_path.parent)
+            utils.write_json(session_path, session_data)
+
+            self._record_metric("session_created", 1)
+            return session_data
+
+        except Exception as e:
+            self._record_metric("session_creation_error", 1)
+            raise Exception(f"Failed to create session: {e}")
+
+    def get_session(self, session_id: str) -> Optional[Dict[str, Any]]:
+        """Get a session by ID."""
+        try:
+            session_path = self.root / ".ai_onboard" / "sessions" / f"{session_id}.json"
+            if session_path.exists():
+                session_data = utils.read_json(session_path)
+                self._record_metric("session_retrieved", 1)
+                return session_data
+            else:
+                return None
+        except Exception as e:
+            self._record_metric("session_retrieval_error", 1)
+            return None
+
     def get_integration_status(self) -> Dict[str, Any]:
         """Get current integration status."""
         return {

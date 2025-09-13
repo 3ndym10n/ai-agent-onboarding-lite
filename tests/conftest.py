@@ -17,10 +17,10 @@ import pytest
 
 from ai_onboard.core.continuous_improvement_validator import (
     ContinuousImprovementValidator,
-    TestCase,
-    TestCategory,
-    TestResult,
+    ValidationCategory,
     ValidationReport,
+    ValidationResult,
+    ValidationTestCase,
 )
 
 # Global test configuration
@@ -105,39 +105,39 @@ def mock_validation_config():
 def sample_test_results():
     """Provide sample test results for testing validation functionality."""
     return [
-        TestCase(
+        ValidationTestCase(
             test_id="test_integration_basic_001",
             name="test_integration_basic",
             description="Basic integration test",
-            category=TestCategory.INTEGRATION,
-            result=TestResult.PASS,
+            category=ValidationCategory.INTEGRATION,
+            result=ValidationResult.PASS,
             duration=0.1205,
             error_message=None,
         ),
-        TestCase(
+        ValidationTestCase(
             test_id="test_performance_response_time_002",
             name="test_performance_response_time",
             description="Performance response time test",
-            category=TestCategory.PERFORMANCE,
-            result=TestResult.WARNING,
+            category=ValidationCategory.PERFORMANCE,
+            result=ValidationResult.WARNING,
             duration=0.8,
             error_message="Response time exceeded threshold",
         ),
-        TestCase(
+        ValidationTestCase(
             test_id="test_data_integrity_check_003",
             name="test_data_integrity_check",
             description="Data integrity check test",
-            category=TestCategory.DATA_INTEGRITY,
-            result=TestResult.PASS,
+            category=ValidationCategory.DATA_INTEGRITY,
+            result=ValidationResult.PASS,
             duration=0.045,
             error_message=None,
         ),
-        TestCase(
+        ValidationTestCase(
             test_id="test_end_to_end_workflow_004",
             name="test_end_to_end_workflow",
             description="End-to-end workflow test",
-            category=TestCategory.END_TO_END,
-            result=TestResult.FAIL,
+            category=ValidationCategory.END_TO_END,
+            result=ValidationResult.FAIL,
             duration=2.0,
             error_message="Authentication failed: invalid credentials",
         ),

@@ -59,9 +59,9 @@ class TestCursorIntegrationBasics:
         """Test creating and managing agent profiles."""
         profile_data = {
             "name": "Test Cursor Agent",
-            "capabilities": ["code_generation", "planning", "analysis"],
+            "capabilities": ["code_generation", "planning", "project_analysis"],
             "specializations": ["python", "javascript", "project_management"],
-            "collaboration_style": "pair_programming",
+            "collaboration_style": "collaborative",
             "safety_level": "medium",
         }
 

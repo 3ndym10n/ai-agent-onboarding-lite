@@ -18,10 +18,10 @@ import pytest
 
 from ai_onboard.core.continuous_improvement_validator import (
     ContinuousImprovementValidator,
-    TestCase,
-    TestCategory,
-    TestResult,
+    ValidationCategory,
     ValidationReport,
+    ValidationResult,
+    ValidationTestCase,
 )
 
 
@@ -85,20 +85,20 @@ class TestContinuousImprovementValidator:
 
     @pytest.mark.unit
     def test_test_case_creation(self):
-        """Test TestCase dataclass creation."""
-        test_case = TestCase(
+        """Test ValidationTestCase dataclass creation."""
+        test_case = ValidationTestCase(
             test_id="test_example_001",
             name="test_example",
             description="Example test case",
-            category=TestCategory.INTEGRATION,
-            result=TestResult.PASS,
+            category=ValidationCategory.INTEGRATION,
+            result=ValidationResult.PASS,
             duration=0.1505,
             error_message=None,
         )
 
         assert test_case.name == "test_example"
-        assert test_case.category == TestCategory.INTEGRATION
-        assert test_case.result == TestResult.PASS
+        assert test_case.category == ValidationCategory.INTEGRATION
+        assert test_case.result == ValidationResult.PASS
         assert test_case.duration == 0.1505
         assert test_case.error_message is None
 
@@ -106,12 +106,12 @@ class TestContinuousImprovementValidator:
     def test_validation_report_creation(self):
         """Test ValidationReport dataclass creation."""
         test_results = [
-            TestCase(
+            ValidationTestCase(
                 test_id="test1_001",
                 name="test1",
                 description="Test case 1",
-                category=TestCategory.INTEGRATION,
-                result=TestResult.PASS,
+                category=ValidationCategory.INTEGRATION,
+                result=ValidationResult.PASS,
                 duration=0.1,
             )
         ]
@@ -158,42 +158,42 @@ class TestContinuousImprovementValidator:
 
             # Mock test results
             mock_integration.return_value = [
-                TestCase(
+                ValidationTestCase(
                     "integration_test",
                     "integration_test",
                     "Integration test",
-                    TestCategory.INTEGRATION,
-                    TestResult.PASS,
+                    ValidationCategory.INTEGRATION,
+                    ValidationResult.PASS,
                     100.0,
                 )
             ]
             mock_data_integrity.return_value = [
-                TestCase(
+                ValidationTestCase(
                     "data_test",
                     "data_test",
                     "Data integrity test",
-                    TestCategory.DATA_INTEGRITY,
-                    TestResult.PASS,
+                    ValidationCategory.DATA_INTEGRITY,
+                    ValidationResult.PASS,
                     50.0,
                 )
             ]
             mock_performance.return_value = [
-                TestCase(
+                ValidationTestCase(
                     "perf_test",
                     "perf_test",
                     "Performance test",
-                    TestCategory.PERFORMANCE,
-                    TestResult.PASS,
+                    ValidationCategory.PERFORMANCE,
+                    ValidationResult.PASS,
                     200.0,
                 )
             ]
             mock_end_to_end.return_value = [
-                TestCase(
+                ValidationTestCase(
                     "e2e_test",
                     "e2e_test",
                     "End-to-end test",
-                    TestCategory.END_TO_END,
-                    TestResult.PASS,
+                    ValidationCategory.END_TO_END,
+                    ValidationResult.PASS,
                     500.0,
                 )
             ]
@@ -222,13 +222,13 @@ class TestContinuousImprovementValidator:
         assert len(tests) > 0
 
         for test in tests:
-            assert isinstance(test, TestCase)
-            assert test.category == TestCategory.INTEGRATION
+            assert isinstance(test, ValidationTestCase)
+            assert test.category == ValidationCategory.INTEGRATION
             assert test.result in [
-                TestResult.PASS,
-                TestResult.FAIL,
-                TestResult.WARNING,
-                TestResult.SKIP,
+                ValidationResult.PASS,
+                ValidationResult.FAIL,
+                ValidationResult.WARNING,
+                ValidationResult.SKIP,
             ]
 
     @pytest.mark.integration
@@ -239,8 +239,8 @@ class TestContinuousImprovementValidator:
         assert isinstance(tests, list)
 
         for test in tests:
-            assert isinstance(test, TestCase)
-            assert test.category == TestCategory.DATA_INTEGRITY
+            assert isinstance(test, ValidationTestCase)
+            assert test.category == ValidationCategory.DATA_INTEGRITY
 
     @pytest.mark.integration
     def test_performance_test_execution(self, validator, mock_subsystems):
@@ -250,8 +250,8 @@ class TestContinuousImprovementValidator:
         assert isinstance(tests, list)
 
         for test in tests:
-            assert isinstance(test, TestCase)
-            assert test.category == TestCategory.PERFORMANCE
+            assert isinstance(test, ValidationTestCase)
+            assert test.category == ValidationCategory.PERFORMANCE
 
     @pytest.mark.integration
     def test_end_to_end_test_execution(self, validator, mock_subsystems):
@@ -261,43 +261,43 @@ class TestContinuousImprovementValidator:
         assert isinstance(tests, list)
 
         for test in tests:
-            assert isinstance(test, TestCase)
-            assert test.category == TestCategory.END_TO_END
+            assert isinstance(test, ValidationTestCase)
+            assert test.category == ValidationCategory.END_TO_END
 
     @pytest.mark.unit
     def test_system_health_calculation(self, validator):
         """Test system health score calculation."""
         test_results = [
-            TestCase(
+            ValidationTestCase(
                 "test1",
                 "test1",
                 "Test case 1",
-                TestCategory.INTEGRATION,
-                TestResult.PASS,
+                ValidationCategory.INTEGRATION,
+                ValidationResult.PASS,
                 100.0,
             ),
-            TestCase(
+            ValidationTestCase(
                 "test2",
                 "test2",
                 "Test case 2",
-                TestCategory.INTEGRATION,
-                TestResult.PASS,
+                ValidationCategory.INTEGRATION,
+                ValidationResult.PASS,
                 150.0,
             ),
-            TestCase(
+            ValidationTestCase(
                 "test3",
                 "test3",
                 "Test case 3",
-                TestCategory.INTEGRATION,
-                TestResult.FAIL,
+                ValidationCategory.INTEGRATION,
+                ValidationResult.FAIL,
                 200.0,
             ),
-            TestCase(
+            ValidationTestCase(
                 "test4",
                 "test4",
                 "Test case 4",
-                TestCategory.INTEGRATION,
-                TestResult.WARNING,
+                ValidationCategory.INTEGRATION,
+                ValidationResult.WARNING,
                 75.0,
             ),
         ]
@@ -313,17 +313,17 @@ class TestContinuousImprovementValidator:
     def test_recommendation_generation(self, validator):
         """Test that recommendations are generated based on test results."""
         test_results = [
-            TestCase(
+            ValidationTestCase(
                 "test1",
-                TestCategory.INTEGRATION,
-                TestResult.FAIL,
+                ValidationCategory.INTEGRATION,
+                ValidationResult.FAIL,
                 100.0,
                 error_message="Connection timeout",
             ),
-            TestCase(
+            ValidationTestCase(
                 "test2",
-                TestCategory.PERFORMANCE,
-                TestResult.WARNING,
+                ValidationCategory.PERFORMANCE,
+                ValidationResult.WARNING,
                 2000.0,
                 details={"threshold_exceeded": "response_time"},
             ),
@@ -348,20 +348,20 @@ class TestContinuousImprovementValidator:
     def test_summary_generation(self, validator):
         """Test summary generation for validation reports."""
         test_results = [
-            TestCase(
+            ValidationTestCase(
                 "test1",
                 "test1",
                 "Test case 1",
-                TestCategory.INTEGRATION,
-                TestResult.PASS,
+                ValidationCategory.INTEGRATION,
+                ValidationResult.PASS,
                 100.0,
             ),
-            TestCase(
+            ValidationTestCase(
                 "test2",
                 "test2",
                 "Test case 2",
-                TestCategory.INTEGRATION,
-                TestResult.FAIL,
+                ValidationCategory.INTEGRATION,
+                ValidationResult.FAIL,
                 150.0,
             ),
         ]
@@ -436,11 +436,11 @@ class TestContinuousImprovementValidator:
             test_case = validator._run_test_with_timeout(
                 "timeout_test",
                 lambda: time.sleep(40),  # Function that would take 40 seconds
-                TestCategory.INTEGRATION,
+                ValidationCategory.INTEGRATION,
                 timeout_seconds=30,
             )
 
-            assert test_case.result == TestResult.FAIL
+            assert test_case.result == ValidationResult.FAIL
             assert "timeout" in test_case.error_message.lower()
 
     @pytest.mark.unit
@@ -451,10 +451,13 @@ class TestContinuousImprovementValidator:
             raise ValueError("Test error")
 
         test_case = validator._run_test_with_timeout(
-            "error_test", failing_test, TestCategory.INTEGRATION, timeout_seconds=30
+            "error_test",
+            failing_test,
+            ValidationCategory.INTEGRATION,
+            timeout_seconds=30,
         )
 
-        assert test_case.result == TestResult.FAIL
+        assert test_case.result == ValidationResult.FAIL
         assert test_case.error_message is not None
         assert "ValueError" in test_case.error_message
         assert "Test error" in test_case.error_message
@@ -508,19 +511,19 @@ class TestContinuousImprovementValidator:
 
     @pytest.mark.unit
     def test_test_result_enum_values(self):
-        """Test TestResult enum values."""
-        assert TestResult.PASS.value == "pass"
-        assert TestResult.FAIL.value == "fail"
-        assert TestResult.WARNING.value == "warning"
-        assert TestResult.SKIP.value == "skip"
+        """Test ValidationResult enum values."""
+        assert ValidationResult.PASS.value == "pass"
+        assert ValidationResult.FAIL.value == "fail"
+        assert ValidationResult.WARNING.value == "warning"
+        assert ValidationResult.SKIP.value == "skip"
 
     @pytest.mark.unit
     def test_test_category_enum_values(self):
-        """Test TestCategory enum values."""
-        assert TestCategory.INTEGRATION.value == "integration"
-        assert TestCategory.DATA_INTEGRITY.value == "data_integrity"
-        assert TestCategory.PERFORMANCE.value == "performance"
-        assert TestCategory.END_TO_END.value == "end_to_end"
+        """Test ValidationCategory enum values."""
+        assert ValidationCategory.INTEGRATION.value == "integration"
+        assert ValidationCategory.DATA_INTEGRITY.value == "data_integrity"
+        assert ValidationCategory.PERFORMANCE.value == "performance"
+        assert ValidationCategory.END_TO_END.value == "end_to_end"
 
 
 class TestValidationReporting:
@@ -538,20 +541,20 @@ class TestValidationReporting:
             warning_tests=1,
             skipped_tests=0,
             test_results=[
-                TestCase(
+                ValidationTestCase(
                     "test1",
                     "test1",
                     "Test case 1",
-                    TestCategory.INTEGRATION,
-                    TestResult.PASS,
+                    ValidationCategory.INTEGRATION,
+                    ValidationResult.PASS,
                     100.0,
                 ),
-                TestCase(
+                ValidationTestCase(
                     "test2",
                     "test2",
                     "Test case 2",
-                    TestCategory.PERFORMANCE,
-                    TestResult.FAIL,
+                    ValidationCategory.PERFORMANCE,
+                    ValidationResult.FAIL,
                     200.0,
                     error_message="Performance threshold exceeded",
                 ),
@@ -624,12 +627,12 @@ class TestPerformanceValidation:
         # Run a subset of tests to avoid long execution
         with patch.object(validator, "_run_integration_tests") as mock_integration:
             mock_integration.return_value = [
-                TestCase(
+                ValidationTestCase(
                     "test1",
                     "test1",
                     "Test case 1",
-                    TestCategory.INTEGRATION,
-                    TestResult.PASS,
+                    ValidationCategory.INTEGRATION,
+                    ValidationResult.PASS,
                     100.0,
                 )
             ]

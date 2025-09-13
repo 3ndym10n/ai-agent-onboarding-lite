@@ -16,9 +16,10 @@ import pytest
 
 from ai_onboard.core.continuous_improvement_validator import (
     ContinuousImprovementValidator,
-    TestCategory,
-    TestResult,
+    ValidationCategory,
     ValidationReport,
+    ValidationResult,
+    ValidationTestCase,
 )
 
 
@@ -122,23 +123,23 @@ version = "0.1.0"
     def test_validation_report_persistence(self, real_validator, temp_project_root):
         """Test that validation reports are properly persisted."""
         # Create a mock report
-        from ai_onboard.core.continuous_improvement_validator import TestCase
+        from ai_onboard.core.continuous_improvement_validator import ValidationTestCase
 
         test_results = [
-            TestCase(
+            ValidationTestCase(
                 "test1",
                 "test1",
                 "Test case 1",
-                TestCategory.INTEGRATION,
-                TestResult.PASS,
+                ValidationCategory.INTEGRATION,
+                ValidationResult.PASS,
                 100.0,
             ),
-            TestCase(
+            ValidationTestCase(
                 "test2",
                 "test2",
                 "Test case 2",
-                TestCategory.PERFORMANCE,
-                TestResult.WARNING,
+                ValidationCategory.PERFORMANCE,
+                ValidationResult.WARNING,
                 200.0,
             ),
         ]
@@ -257,7 +258,9 @@ version = "0.1.0"
 
             # At least some tests should indicate the missing component
             missing_component_tests = [
-                t for t in tests if "not available" in t.error_message or ""
+                t
+                for t in tests
+                if t.error_message and "not available" in t.error_message
             ]
             # We expect some tests to detect missing components
 
@@ -307,21 +310,21 @@ version = "0.1.0"
         # Create a validator method that simulates failures
         def mock_failing_test():
             return [
-                TestCase(
+                ValidationTestCase(
                     test_id="mock_failing_integration",
                     name="mock_failing_integration",
                     description="Mock failing integration test",
-                    category=TestCategory.INTEGRATION,
-                    result=TestResult.FAIL,
+                    category=ValidationCategory.INTEGRATION,
+                    result=ValidationResult.FAIL,
                     duration=150.0,
                     error_message="Mock system failure for testing",
                 ),
-                TestCase(
+                ValidationTestCase(
                     test_id="mock_warning_performance",
                     name="mock_warning_performance",
                     description="Mock warning performance test",
-                    category=TestCategory.PERFORMANCE,
-                    result=TestResult.WARNING,
+                    category=ValidationCategory.PERFORMANCE,
+                    result=ValidationResult.WARNING,
                     duration=800.0,
                     error_message="Performance threshold exceeded",
                 ),
