@@ -67,11 +67,11 @@ def add_performance_trend_commands(subparsers):
         "--metrics", nargs="+", help="Specific metrics to analyze for anomalies"
     )
     anomaly_parser.add_argument(
-        "--lookback", type=int, default=24, help="Lookback period in hours"
+        "--lookback", type = int, default = 24, help="Lookback period in hours"
     )
     anomaly_parser.add_argument(
         "--threshold",
-        type=float,
+        type = float,
         help="Anomaly detection threshold (standard deviations)",
     )
     anomaly_parser.add_argument(
@@ -87,9 +87,9 @@ def add_performance_trend_commands(subparsers):
         help="Generate performance forecasts",
         description="Generate performance forecasts for capacity planning",
     )
-    forecast_parser.add_argument("--metric", required=True, help="Metric to forecast")
+    forecast_parser.add_argument("--metric", required = True, help="Metric to forecast")
     forecast_parser.add_argument(
-        "--horizon", type=int, default=30, help="Forecast horizon in days"
+        "--horizon", type = int, default = 30, help="Forecast horizon in days"
     )
     forecast_parser.add_argument(
         "--format",
@@ -108,7 +108,7 @@ def add_performance_trend_commands(subparsers):
         description="Generate actionable performance insights and recommendations",
     )
     insights_parser.add_argument(
-        "--lookback", type=int, default=30, help="Lookback period in days"
+        "--lookback", type = int, default = 30, help="Lookback period in days"
     )
     insights_parser.add_argument(
         "--category",
@@ -134,7 +134,7 @@ def add_performance_trend_commands(subparsers):
         description="Display comprehensive performance trend dashboard",
     )
     dashboard_parser.add_argument(
-        "--refresh", type=int, help="Auto - refresh interval in seconds"
+        "--refresh", type = int, help="Auto - refresh interval in seconds"
     )
     dashboard_parser.add_argument(
         "--compact", action="store_true", help="Compact dashboard view"
@@ -147,7 +147,7 @@ def add_performance_trend_commands(subparsers):
         description="View historical trend analysis results",
     )
     history_parser.add_argument(
-        "--days", type=int, default=7, help="Number of days of history to show"
+        "--days", type = int, default = 7, help="Number of days of history to show"
     )
     history_parser.add_argument("--metric", help="Filter by specific metric")
     history_parser.add_argument(
@@ -192,7 +192,7 @@ def _handle_analyze_trends(args: argparse.Namespace, root: Path) -> None:
 
         # Analyze trends
         trends = analyzer.analyze_performance_trends(
-            metric_names=args.metrics, time_period=args.period
+            metric_names = args.metrics, time_period = args.period
         )
 
         if not trends:
@@ -241,7 +241,7 @@ def _handle_detect_anomalies(args: argparse.Namespace, root: Path) -> None:
 
         # Detect anomalies
         anomalies = analyzer.detect_performance_anomalies(
-            metric_names=args.metrics, lookback_hours=args.lookback
+            metric_names = args.metrics, lookback_hours = args.lookback
         )
 
         if not anomalies:
@@ -285,7 +285,7 @@ def _handle_generate_forecast(args: argparse.Namespace, root: Path) -> None:
 
         # Generate forecast
         forecast = analyzer.generate_performance_forecast(
-            metric_name=args.metric, horizon_days=args.horizon
+            metric_name = args.metric, horizon_days = args.horizon
         )
 
         if not forecast:
@@ -300,7 +300,7 @@ def _handle_generate_forecast(args: argparse.Namespace, root: Path) -> None:
         elif args.format == "chart":
             _display_forecast_chart(forecast)
         else:
-            _display_forecast_table(forecast, include_confidence=args.confidence)
+            _display_forecast_table(forecast, include_confidence = args.confidence)
 
         print(f"\n✅ Generated {args.horizon}-day forecast for {args.metric}")
         print(f"📊 Confidence Level: {forecast.forecast_confidence.value}")
@@ -323,7 +323,7 @@ def _handle_generate_insights(args: argparse.Namespace, root: Path) -> None:
         analyzer = get_performance_trend_analyzer(root)
 
         # Generate insights
-        insights = analyzer.generate_performance_insights(lookback_days=args.lookback)
+        insights = analyzer.generate_performance_insights(lookback_days = args.lookback)
 
         if not insights:
             print("✅ No actionable insights found - system performance appears stable")
@@ -382,10 +382,10 @@ def _handle_show_dashboard(args: argparse.Namespace, root: Path) -> None:
         trends = analyzer.analyze_performance_trends(time_period="7d")
 
         # Get recent anomalies
-        anomalies = analyzer.detect_performance_anomalies(lookback_hours=24)
+        anomalies = analyzer.detect_performance_anomalies(lookback_hours = 24)
 
         # Get recent insights
-        insights = analyzer.generate_performance_insights(lookback_days=7)
+        insights = analyzer.generate_performance_insights(lookback_days = 7)
 
         # Display dashboard
         if args.compact:
@@ -411,7 +411,7 @@ def _handle_show_history(args: argparse.Namespace, root: Path) -> None:
             return
 
         # Read and filter historical data
-        cutoff_date = datetime.now() - timedelta(days=args.days)
+        cutoff_date = datetime.now() - timedelta(days = args.days)
         historical_trends = []
 
         with open(trends_file, "r") as f:
@@ -432,7 +432,7 @@ def _handle_show_history(args: argparse.Namespace, root: Path) -> None:
 
         # Display results
         if args.format == "json":
-            print(json.dumps(historical_trends, indent=2))
+            print(json.dumps(historical_trends, indent = 2))
         elif args.format == "timeline":
             _display_history_timeline(historical_trends)
         else:
@@ -526,7 +526,7 @@ def _display_trends_json(trends):
             }
         )
 
-    print(json.dumps(trends_data, indent=2))
+    print(json.dumps(trends_data, indent = 2))
 
 
 def _display_anomalies_table(anomalies):
@@ -603,10 +603,10 @@ def _display_anomalies_json(anomalies):
             }
         )
 
-    print(json.dumps(anomalies_data, indent=2))
+    print(json.dumps(anomalies_data, indent = 2))
 
 
-def _display_forecast_table(forecast, include_confidence=False):
+def _display_forecast_table(forecast, include_confidence = False):
     """Display forecast in table format."""
     print(f"\n🔮 Performance Forecast: {forecast.metric_name}")
     print("-" * 60)
@@ -644,7 +644,7 @@ def _display_forecast_json(forecast):
         "recommendations": forecast.recommendations,
     }
 
-    print(json.dumps(forecast_data, indent=2))
+    print(json.dumps(forecast_data, indent = 2))
 
 
 def _display_forecast_chart(forecast):
@@ -748,7 +748,7 @@ def _display_insights_json(insights):
             }
         )
 
-    print(json.dumps(insights_data, indent=2))
+    print(json.dumps(insights_data, indent = 2))
 
 
 def _display_full_dashboard(trends, anomalies, insights):
@@ -838,7 +838,7 @@ def _display_history_table(historical_trends):
     print("-" * 70)
 
     for trend_data in sorted(
-        historical_trends, key=lambda x: x["timestamp"], reverse=True
+        historical_trends, key = lambda x: x["timestamp"], reverse = True
     ):
         date_str = datetime.fromisoformat(trend_data["timestamp"]).strftime(
             "%m /% d %H:%M"
@@ -866,11 +866,11 @@ def _display_history_timeline(historical_trends):
 
     for trend_data in historical_trends:
         date_key = datetime.fromisoformat(trend_data["timestamp"]).strftime(
-            "%Y -% m-%d"
+            "%Y -% m -% d"
         )
         by_date[date_key].append(trend_data)
 
-    for date_key in sorted(by_date.keys(), reverse=True):
+    for date_key in sorted(by_date.keys(), reverse = True):
         print(f"\n📅 {date_key}")
         for trend_data in by_date[date_key]:
             time_str = datetime.fromisoformat(trend_data["timestamp"]).strftime("%H:%M")

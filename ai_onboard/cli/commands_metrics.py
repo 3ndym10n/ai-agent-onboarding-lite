@@ -27,7 +27,7 @@ def add_metrics_commands(subparsers):
     metrics_parser = subparsers.add_parser(
         "unified - metrics", help="Unified metrics collection and analysis"
     )
-    metrics_sub = metrics_parser.add_subparsers(dest="metrics_cmd", required=True)
+    metrics_sub = metrics_parser.add_subparsers(dest="metrics_cmd", required = True)
 
     # Query command
     query_parser = metrics_sub.add_parser("query", help="Query collected metrics")
@@ -43,7 +43,7 @@ def add_metrics_commands(subparsers):
     query_parser.add_argument("--last", help="Time period (e.g., '1h', '24h', '7d')")
     query_parser.add_argument("--start", help="Start time (ISO format)")
     query_parser.add_argument("--end", help="End time (ISO format)")
-    query_parser.add_argument("--limit", type=int, default=100, help="Maximum results")
+    query_parser.add_argument("--limit", type = int, default = 100, help="Maximum results")
     query_parser.add_argument(
         "--agg",
         choices=["sum", "avg", "min", "max", "count"],
@@ -61,9 +61,9 @@ def add_metrics_commands(subparsers):
 
     # Trend command
     trend_parser = metrics_sub.add_parser("trend", help="Show metric trends over time")
-    trend_parser.add_argument("--metric", required=True, help="Metric name")
+    trend_parser.add_argument("--metric", required = True, help="Metric name")
     trend_parser.add_argument(
-        "--days", type=int, default=7, help="Number of days to analyze"
+        "--days", type = int, default = 7, help="Number of days to analyze"
     )
     trend_parser.add_argument(
         "--interval", default="1h", help="Time interval for grouping"
@@ -83,7 +83,7 @@ def add_metrics_commands(subparsers):
 
     # Alert command
     alert_parser = metrics_sub.add_parser("alert", help="Manage metric alerts")
-    alert_sub = alert_parser.add_subparsers(dest="alert_action", required=True)
+    alert_sub = alert_parser.add_subparsers(dest="alert_action", required = True)
 
     # Alert list
     alert_list_parser = alert_sub.add_parser("list", help="List active alerts")
@@ -95,9 +95,9 @@ def add_metrics_commands(subparsers):
 
     # Alert create
     alert_create_parser = alert_sub.add_parser("create", help="Create alert rule")
-    alert_create_parser.add_argument("--metric", required=True, help="Metric name")
+    alert_create_parser.add_argument("--metric", required = True, help="Metric name")
     alert_create_parser.add_argument(
-        "--condition", required=True, help="Condition (e.g., '> 90')"
+        "--condition", required = True, help="Condition (e.g., '> 90')"
     )
     alert_create_parser.add_argument(
         "--severity", choices=["low", "medium", "high", "critical"], default="medium"
@@ -119,7 +119,7 @@ def add_metrics_commands(subparsers):
     # Export command
     export_parser = metrics_sub.add_parser("export", help="Export metrics data")
     export_parser.add_argument(
-        "--start", required=True, help="Start date (YYYY - MM - DD)"
+        "--start", required = True, help="Start date (YYYY - MM - DD)"
     )
     export_parser.add_argument(
         "--end", help="End date (YYYY - MM - DD, default: today)"
@@ -127,7 +127,7 @@ def add_metrics_commands(subparsers):
     export_parser.add_argument(
         "--format", choices=["json", "csv", "jsonl"], default="csv"
     )
-    export_parser.add_argument("--output", required=True, help="Output file path")
+    export_parser.add_argument("--output", required = True, help="Output file path")
     export_parser.add_argument("--metric", help="Specific metric to export")
 
 
@@ -204,13 +204,13 @@ def _handle_metrics_trend(args: argparse.Namespace, collector) -> None:
     """Handle metrics trend command."""
     # Query metrics for trend analysis
     end_time = datetime.now()
-    start_time = end_time - timedelta(days=args.days)
+    start_time = end_time - timedelta(days = args.days)
 
     query = MetricQuery(
-        name_pattern=args.metric,
-        start_time=start_time,
-        end_time=end_time,
-        limit=10000,  # Large limit for trend analysis
+        name_pattern = args.metric,
+        start_time = start_time,
+        end_time = end_time,
+        limit = 10000,  # Large limit for trend analysis
     )
 
     result = collector.query_metrics(query)
@@ -223,7 +223,7 @@ def _handle_metrics_trend(args: argparse.Namespace, collector) -> None:
     intervals = _group_by_interval(result.metrics, args.interval)
 
     if args.format == "json":
-        print(json.dumps(intervals, indent=2, default=str))
+        print(json.dumps(intervals, indent = 2, default = str))
     elif args.format == "chart":
         _display_ascii_chart(intervals, args.metric)
     else:  # table
@@ -235,7 +235,7 @@ def _handle_metrics_stats(args: argparse.Namespace, collector) -> None:
     stats = collector.get_collection_stats()
 
     if args.format == "json":
-        print(json.dumps(stats, indent=2, default=str))
+        print(json.dumps(stats, indent = 2, default = str))
     else:  # table
         print("📊 Metrics Collection Statistics")
         print("=" * 40)
@@ -264,7 +264,7 @@ def _handle_metrics_alert(args: argparse.Namespace, collector) -> None:
         print(f"🚨 Active Alerts ({len(alerts)})")
         print("=" * 60)
 
-        for alert in sorted(alerts, key=lambda a: a.timestamp, reverse=True):
+        for alert in sorted(alerts, key = lambda a: a.timestamp, reverse = True):
             severity_icon = {
                 "low": "🟡",
                 "medium": "🟠",
@@ -275,7 +275,7 @@ def _handle_metrics_alert(args: argparse.Namespace, collector) -> None:
 
             print(f"{icon} {alert.metric_name}: {alert.current_value}")
             print(f"   Condition: {alert.condition}")
-            print(f"   Time: {alert.timestamp.strftime('%Y -% m-%d %H:%M:%S')}")
+            print(f"   Time: {alert.timestamp.strftime('%Y -% m -% d %H:%M:%S')}")
             print(f"   Actions: {', '.join(alert.suggested_actions[:2])}")
             print()
 
@@ -303,7 +303,7 @@ def _handle_metrics_alert(args: argparse.Namespace, collector) -> None:
         # Save configuration
         collector.config["alert_rules"] = collector.alert_rules
         with open(collector.config_path, "w") as f:
-            json.dump(collector.config, f, indent=2)
+            json.dump(collector.config, f, indent = 2)
 
         print(
             f"✅ Alert rule created: {args.metric} {args.condition} (severity: {args.severity})"
@@ -328,7 +328,7 @@ def _handle_metrics_report(args: argparse.Namespace, collector) -> None:
 
     # Output report
     if args.format == "json":
-        output = json.dumps(report, indent=2, default=str)
+        output = json.dumps(report, indent = 2, default = str)
     elif args.format == "html":
         output = _generate_html_report(report, args.type)
     else:  # csv
@@ -345,15 +345,15 @@ def _handle_metrics_report(args: argparse.Namespace, collector) -> None:
 def _handle_metrics_export(args: argparse.Namespace, collector) -> None:
     """Handle metrics data export."""
     # Parse dates
-    start_date = datetime.strptime(args.start, "%Y -% m-%d")
-    end_date = datetime.strptime(args.end, "%Y -% m-%d") if args.end else datetime.now()
+    start_date = datetime.strptime(args.start, "%Y -% m -% d")
+    end_date = datetime.strptime(args.end, "%Y -% m -% d") if args.end else datetime.now()
 
     # Query metrics
     query = MetricQuery(
-        name_pattern=args.metric,
-        start_time=start_date,
-        end_time=end_date,
-        limit=100000,  # Large limit for export
+        name_pattern = args.metric,
+        start_time = start_date,
+        end_time = end_date,
+        limit = 100000,  # Large limit for export
     )
 
     result = collector.query_metrics(query)
@@ -379,7 +379,7 @@ def _handle_metrics_export(args: argparse.Namespace, collector) -> None:
             for m in result.metrics
         ]
         with open(args.output, "w") as f:
-            json.dump(data, f, indent=2)
+            json.dump(data, f, indent = 2)
 
     elif args.format == "csv":
         with open(args.output, "w", newline="") as f:
@@ -426,13 +426,13 @@ def _parse_time_period(period: str) -> datetime:
 
     if period.endswith("h"):
         hours = int(period[:-1])
-        return now - timedelta(hours=hours)
+        return now - timedelta(hours = hours)
     elif period.endswith("d"):
         days = int(period[:-1])
-        return now - timedelta(days=days)
+        return now - timedelta(days = days)
     elif period.endswith("m"):
         minutes = int(period[:-1])
-        return now - timedelta(minutes=minutes)
+        return now - timedelta(minutes = minutes)
     else:
         raise ValueError(f"Invalid time period: {period}")
 
@@ -457,7 +457,7 @@ def _output_json_result(result) -> None:
             for m in result.metrics
         ],
     }
-    print(json.dumps(data, indent=2))
+    print(json.dumps(data, indent = 2))
 
 
 def _output_csv_result(result) -> None:
@@ -527,10 +527,10 @@ def _group_by_interval(metrics, interval: str) -> Dict[str, List]:
         # Round timestamp to interval
         timestamp = metric.timestamp
         interval_start = timestamp.replace(
-            minute=0, second=0, microsecond=0
-        ) - timedelta(hours=timestamp.hour % interval_hours)
+            minute = 0, second = 0, microsecond = 0
+        ) - timedelta(hours = timestamp.hour % interval_hours)
 
-        key = interval_start.strftime("%Y -% m-%d %H:%M")
+        key = interval_start.strftime("%Y -% m -% d %H:%M")
         groups[key].append(metric.value)
 
     # Calculate aggregates for each interval
@@ -595,10 +595,10 @@ def _generate_performance_report(collector, start_time, end_time) -> Dict:
     """Generate performance metrics report."""
     # Query performance metrics
     query = MetricQuery(
-        source=MetricSource.PERFORMANCE,
-        start_time=start_time,
-        end_time=end_time,
-        limit=10000,
+        source = MetricSource.PERFORMANCE,
+        start_time = start_time,
+        end_time = end_time,
+        limit = 10000,
     )
 
     result = collector.query_metrics(query)
@@ -629,7 +629,7 @@ def _generate_performance_report(collector, start_time, end_time) -> Dict:
 def _generate_usage_report(collector, start_time, end_time) -> Dict:
     """Generate usage metrics report."""
     query = MetricQuery(
-        source=MetricSource.USER, start_time=start_time, end_time=end_time, limit=10000
+        source = MetricSource.USER, start_time = start_time, end_time = end_time, limit = 10000
     )
 
     result = collector.query_metrics(query)
@@ -646,10 +646,10 @@ def _generate_usage_report(collector, start_time, end_time) -> Dict:
 def _generate_health_report(collector, start_time, end_time) -> Dict:
     """Generate system health report."""
     query = MetricQuery(
-        source=MetricSource.SYSTEM,
-        start_time=start_time,
-        end_time=end_time,
-        limit=10000,
+        source = MetricSource.SYSTEM,
+        start_time = start_time,
+        end_time = end_time,
+        limit = 10000,
     )
 
     result = collector.query_metrics(query)

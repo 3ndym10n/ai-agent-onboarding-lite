@@ -18,10 +18,10 @@ def run_command(command: List[str], description: str) -> Tuple[bool, str]:
     try:
         result = subprocess.run(
             command,
-            capture_output=True,
-            text=True,
-            check=True,
-            shell=True,  # Use shell for Windows compatibility
+            capture_output = True,
+            text = True,
+            check = True,
+            shell = True,  # Use shell for Windows compatibility
         )
         print(f"✅ {description} - SUCCESS")
         return True, result.stdout

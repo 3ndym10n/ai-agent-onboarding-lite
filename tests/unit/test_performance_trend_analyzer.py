@@ -33,8 +33,8 @@ def temp_root():
 @pytest.fixture
 def mock_telemetry():
     """Provide mocked telemetry data."""
-    mock_data = Mock()
-    mock_data.get_performance_metrics.return_value = {
+    mock_data=Mock()
+    mock_data.get_performance_metrics.return_value={
         "response_time": [100, 120, 110, 130, 125],
         "memory_usage": [50, 55, 52, 60, 58],
         "cpu_usage": [30, 35, 32, 40, 38],
@@ -47,7 +47,7 @@ def mock_telemetry():
 def trend_analyzer(temp_root):
     """Provide a PerformanceTrendAnalyzer instance."""
     with patch("ai_onboard.core.performance_trend_analyzer.telemetry"):
-        analyzer = PerformanceTrendAnalyzer(temp_root)
+        analyzer=PerformanceTrendAnalyzer(temp_root)
         return analyzer
 
 
@@ -69,7 +69,7 @@ class TestPerformanceTrendAnalyzer:
     def test_initialization(self, temp_root):
         """Test that PerformanceTrendAnalyzer initializes correctly."""
         with patch("ai_onboard.core.performance_trend_analyzer.telemetry"):
-            analyzer = PerformanceTrendAnalyzer(temp_root)
+            analyzer=PerformanceTrendAnalyzer(temp_root)
 
             assert analyzer.root == temp_root
             assert analyzer.data_path == temp_root / ".ai_onboard" / "performance_data"
@@ -82,7 +82,7 @@ class TestPerformanceTrendAnalyzer:
 
     def test_analyze_trends_basic(self, trend_analyzer, sample_performance_data):
         """Test basic trend analysis functionality."""
-        trends = trend_analyzer.analyze_trends(
+        trends=trend_analyzer.analyze_trends(
             metric_name="response_time",
             data_points=sample_performance_data["response_times"],
             timestamps=sample_performance_data["timestamps"],
@@ -90,7 +90,7 @@ class TestPerformanceTrendAnalyzer:
 
         assert isinstance(trends, list)
         if trends:  # If trends were detected
-            trend = trends[0]
+            trend=trends[0]
             assert isinstance(trend, TrendAnalysis)
             assert trend.metric_name == "response_time"
             assert isinstance(trend.direction, TrendDirection)
@@ -99,7 +99,7 @@ class TestPerformanceTrendAnalyzer:
 
     def test_detect_anomalies_basic(self, trend_analyzer, sample_performance_data):
         """Test basic anomaly detection functionality."""
-        anomalies = trend_analyzer.detect_anomalies(
+        anomalies=trend_analyzer.detect_anomalies(
             metric_name="error_rate",
             data_points=sample_performance_data["error_rates"],
             timestamps=sample_performance_data["timestamps"],
@@ -118,21 +118,21 @@ class TestPerformanceTrendAnalyzer:
     ):
         """Test performance insights generation."""
         # First analyze trends
-        trends = trend_analyzer.analyze_trends(
+        trends=trend_analyzer.analyze_trends(
             metric_name="response_time",
             data_points=sample_performance_data["response_times"],
             timestamps=sample_performance_data["timestamps"],
         )
 
         # Then detect anomalies
-        anomalies = trend_analyzer.detect_anomalies(
+        anomalies=trend_analyzer.detect_anomalies(
             metric_name="response_time",
             data_points=sample_performance_data["response_times"],
             timestamps=sample_performance_data["timestamps"],
         )
 
         # Generate insights
-        insights = trend_analyzer.generate_performance_insights(trends, anomalies)
+        insights=trend_analyzer.generate_performance_insights(trends, anomalies)
 
         assert isinstance(insights, list)
         for insight in insights:
@@ -144,24 +144,24 @@ class TestPerformanceTrendAnalyzer:
 
     def test_statistical_analysis(self, trend_analyzer):
         """Test statistical analysis methods."""
-        data_points = [10, 12, 11, 13, 15, 14, 16, 18, 17, 19]
+        data_points=[10, 12, 11, 13, 15, 14, 16, 18, 17, 19]
 
         # Test trend detection
-        slope = trend_analyzer._calculate_trend_slope(data_points)
+        slope=trend_analyzer._calculate_trend_slope(data_points)
         assert isinstance(slope, float)
 
         # Test statistical measures
-        mean = sum(data_points) / len(data_points)
+        mean=sum(data_points) / len(data_points)
         assert mean > 0
 
         # Test outlier detection
-        outliers = trend_analyzer._detect_statistical_outliers(data_points)
+        outliers=trend_analyzer._detect_statistical_outliers(data_points)
         assert isinstance(outliers, list)
 
     def test_configuration_loading(self, temp_root):
         """Test configuration loading and defaults."""
         with patch("ai_onboard.core.performance_trend_analyzer.telemetry"):
-            analyzer = PerformanceTrendAnalyzer(temp_root)
+            analyzer=PerformanceTrendAnalyzer(temp_root)
 
             # Check default configuration
             assert isinstance(analyzer.config, dict)
@@ -172,27 +172,27 @@ class TestPerformanceTrendAnalyzer:
     def test_data_persistence(self, trend_analyzer, sample_performance_data):
         """Test that analysis results are properly persisted."""
         # Perform analysis
-        trends = trend_analyzer.analyze_trends(
+        trends=trend_analyzer.analyze_trends(
             metric_name="test_metric",
             data_points=sample_performance_data["response_times"],
             timestamps=sample_performance_data["timestamps"],
         )
 
         # Check that data was persisted
-        data_files = list(trend_analyzer.data_path.glob("*.json"))
+        data_files=list(trend_analyzer.data_path.glob("*.json"))
         assert len(data_files) > 0
 
     def test_factory_function(self, temp_root):
         """Test the factory function."""
         with patch("ai_onboard.core.performance_trend_analyzer.telemetry"):
-            analyzer = get_performance_trend_analyzer(temp_root)
+            analyzer=get_performance_trend_analyzer(temp_root)
             assert isinstance(analyzer, PerformanceTrendAnalyzer)
             assert analyzer.root == temp_root
 
     def test_error_handling_invalid_data(self, trend_analyzer):
         """Test error handling with invalid data."""
         # Empty data
-        trends = trend_analyzer.analyze_trends("test", [], [])
+        trends=trend_analyzer.analyze_trends("test", [], [])
         assert isinstance(trends, list)
 
         # Mismatched data lengths
@@ -204,24 +204,24 @@ class TestPerformanceTrendAnalyzer:
     def test_trend_direction_detection(self, trend_analyzer):
         """Test trend direction detection accuracy."""
         # Increasing trend
-        increasing_data = list(range(10, 20))
-        trends = trend_analyzer.analyze_trends(
+        increasing_data=list(range(10, 20))
+        trends=trend_analyzer.analyze_trends(
             "increasing",
             increasing_data,
             [datetime.now() + timedelta(hours=i) for i in range(10)],
         )
 
         # Decreasing trend
-        decreasing_data = list(range(20, 10, -1))
-        trends = trend_analyzer.analyze_trends(
+        decreasing_data=list(range(20, 10, -1))
+        trends=trend_analyzer.analyze_trends(
             "decreasing",
             decreasing_data,
             [datetime.now() + timedelta(hours=i) for i in range(10)],
         )
 
         # Stable trend
-        stable_data = [15] * 10
-        trends = trend_analyzer.analyze_trends(
+        stable_data=[15] * 10
+        trends=trend_analyzer.analyze_trends(
             "stable",
             stable_data,
             [datetime.now() + timedelta(hours=i) for i in range(10)],
@@ -235,7 +235,7 @@ class TestPerformanceTrendAnalyzer:
         # Update config for different window size
         trend_analyzer.config["trend_analysis_window"] = window_size
 
-        trends = trend_analyzer.analyze_trends(
+        trends=trend_analyzer.analyze_trends(
             metric_name="test_metric",
             data_points=sample_performance_data["response_times"][:window_size],
             timestamps=sample_performance_data["timestamps"][:window_size],
@@ -246,12 +246,12 @@ class TestPerformanceTrendAnalyzer:
     def test_anomaly_types_detection(self, trend_analyzer):
         """Test detection of different anomaly types."""
         # Spike anomaly
-        spike_data = [10] * 10 + [100] + [10] * 10
-        timestamps = [
+        spike_data=[10] * 10 + [100] + [10] * 10
+        timestamps=[
             datetime.now() + timedelta(hours=i) for i in range(len(spike_data))
         ]
 
-        anomalies = trend_analyzer.detect_anomalies(
+        anomalies=trend_analyzer.detect_anomalies(
             "spike_test", spike_data, timestamps
         )
 
@@ -261,7 +261,7 @@ class TestPerformanceTrendAnalyzer:
     def test_performance_insight_generation(self, trend_analyzer):
         """Test comprehensive performance insight generation."""
         # Create various trend patterns
-        trends = [
+        trends=[
             TrendAnalysis(
                 metric_name="response_time",
                 direction=TrendDirection.INCREASING,
@@ -273,7 +273,7 @@ class TestPerformanceTrendAnalyzer:
             )
         ]
 
-        anomalies = [
+        anomalies=[
             AnomalyDetection(
                 metric_name="response_time",
                 anomaly_type=AnomalyType.SPIKE,
@@ -285,7 +285,7 @@ class TestPerformanceTrendAnalyzer:
             )
         ]
 
-        insights = trend_analyzer.generate_performance_insights(trends, anomalies)
+        insights=trend_analyzer.generate_performance_insights(trends, anomalies)
 
         assert isinstance(insights, list)
         for insight in insights:
@@ -299,7 +299,7 @@ class TestTrendAnalysis:
 
     def test_trend_analysis_creation(self):
         """Test TrendAnalysis object creation."""
-        trend = TrendAnalysis(
+        trend=TrendAnalysis(
             metric_name="test_metric",
             direction=TrendDirection.INCREASING,
             confidence=0.85,
@@ -321,7 +321,7 @@ class TestAnomalyDetection:
 
     def test_anomaly_detection_creation(self):
         """Test AnomalyDetection object creation."""
-        anomaly = AnomalyDetection(
+        anomaly=AnomalyDetection(
             metric_name="test_metric",
             anomaly_type=AnomalyType.OUTLIER,
             timestamp=datetime.now(),
@@ -346,22 +346,22 @@ class TestPerformanceTrendAnalyzerIntegration:
     def test_end_to_end_analysis(self, temp_root):
         """Test complete end - to - end trend analysis."""
         with patch("ai_onboard.core.performance_trend_analyzer.telemetry"):
-            analyzer = PerformanceTrendAnalyzer(temp_root)
+            analyzer=PerformanceTrendAnalyzer(temp_root)
 
             # Generate realistic performance data
-            timestamps = [datetime.now() - timedelta(hours=i) for i in range(24, 0, -1)]
-            response_times = [
+            timestamps=[datetime.now() - timedelta(hours=i) for i in range(24, 0, -1)]
+            response_times=[
                 100 + i * 2 + (i % 3) * 10 for i in range(24)
             ]  # Trend with noise
 
             # Perform analysis
-            trends = analyzer.analyze_trends(
+            trends=analyzer.analyze_trends(
                 "response_time", response_times, timestamps
             )
-            anomalies = analyzer.detect_anomalies(
+            anomalies=analyzer.detect_anomalies(
                 "response_time", response_times, timestamps
             )
-            insights = analyzer.generate_performance_insights(trends, anomalies)
+            insights=analyzer.generate_performance_insights(trends, anomalies)
 
             # Verify results
             assert isinstance(trends, list)
@@ -369,5 +369,5 @@ class TestPerformanceTrendAnalyzerIntegration:
             assert isinstance(insights, list)
 
             # Check data persistence
-            data_files = list(analyzer.data_path.glob("*.json"))
+            data_files=list(analyzer.data_path.glob("*.json"))
             assert len(data_files) > 0

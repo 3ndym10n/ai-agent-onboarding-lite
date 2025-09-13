@@ -38,7 +38,7 @@ class VisionWebInterface:
 
             # Start server in a separate thread
             self.server = HTTPServer(("localhost", self.port), handler)
-            self.server_thread = threading.Thread(target=self.server.serve_forever)
+            self.server_thread = threading.Thread(target = self.server.serve_forever)
             self.server_thread.daemon = True
             self.server_thread.start()
 
@@ -196,7 +196,7 @@ class VisionWebInterface:
             margin: 0 auto;
             background: white;
             border - radius: 12px;
-            box - shadow: 0 20px 40px rgba(0, 0,0, 0.1);
+            box - shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
 

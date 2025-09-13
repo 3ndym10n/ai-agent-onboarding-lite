@@ -27,13 +27,13 @@ def add_ux_enhancement_commands(subparsers):
     ux_parser = subparsers.add_parser(
         "ux", help="User experience enhancements and analytics"
     )
-    ux_sub = ux_parser.add_subparsers(dest="ux_cmd", required=True)
+    ux_sub = ux_parser.add_subparsers(dest="ux_cmd", required = True)
 
     # Interventions command
     interventions_parser = ux_sub.add_parser(
         "interventions", help="Manage UX interventions"
     )
-    int_sub = interventions_parser.add_subparsers(dest="int_action", required=True)
+    int_sub = interventions_parser.add_subparsers(dest="int_action", required = True)
 
     # List interventions
     int_sub.add_parser("list", help="List pending interventions")
@@ -55,9 +55,9 @@ def add_ux_enhancement_commands(subparsers):
     )
     feedback_parser.add_argument(
         "--score",
-        type=int,
+        type = int,
         choices=[1, 2, 3, 4, 5],
-        required=True,
+        required = True,
         help="Satisfaction score (1 = very dissatisfied, 5 = very satisfied)",
     )
     feedback_parser.add_argument(
@@ -67,7 +67,7 @@ def add_ux_enhancement_commands(subparsers):
 
     # Journey command
     journey_parser = ux_sub.add_parser("journey", help="User journey tracking")
-    journey_sub = journey_parser.add_subparsers(dest="journey_action", required=True)
+    journey_sub = journey_parser.add_subparsers(dest="journey_action", required = True)
 
     # Show journey
     show_journey_parser = journey_sub.add_parser("show", help="Show current journey")
@@ -81,7 +81,7 @@ def add_ux_enhancement_commands(subparsers):
     # Analytics command
     analytics_parser = ux_sub.add_parser("analytics", help="UX analytics and metrics")
     analytics_sub = analytics_parser.add_subparsers(
-        dest="analytics_action", required=True
+        dest="analytics_action", required = True
     )
 
     # User analytics
@@ -100,7 +100,7 @@ def add_ux_enhancement_commands(subparsers):
 
     # Config command
     config_parser = ux_sub.add_parser("config", help="Configure UX enhancements")
-    config_sub = config_parser.add_subparsers(dest="config_action", required=True)
+    config_sub = config_parser.add_subparsers(dest="config_action", required = True)
 
     # Show config
     config_sub.add_parser("show", help="Show UX configuration")
@@ -108,14 +108,14 @@ def add_ux_enhancement_commands(subparsers):
     # Update config
     update_parser = config_sub.add_parser("update", help="Update UX configuration")
     update_parser.add_argument(
-        "--enable - proactive - help", type=bool, help="Enable proactive help"
+        "--enable - proactive - help", type = bool, help="Enable proactive help"
     )
     update_parser.add_argument(
-        "--enable - error - recovery", type=bool, help="Enable error recovery"
+        "--enable - error - recovery", type = bool, help="Enable error recovery"
     )
     update_parser.add_argument(
         "--enable - workflow - optimization",
-        type=bool,
+        type = bool,
         help="Enable workflow optimization",
     )
     update_parser.add_argument(
@@ -184,7 +184,7 @@ def _handle_interventions_commands(
             print(f"{priority_icon} {intervention.intervention_id}")
             print(f"   Type: {intervention.intervention_type.value}")
             print(f"   Priority: {intervention.priority}/5")
-            print(f"   Created: {intervention.created_at.strftime('%Y -% m-%d %H:%M')}")
+            print(f"   Created: {intervention.created_at.strftime('%Y -% m -% d %H:%M')}")
             print()
 
             # Show message preview
@@ -211,16 +211,16 @@ def _handle_interventions_commands(
         print(f"Type: {intervention.intervention_type.value}")
         print(f"Priority: {intervention.priority}/5")
         print(f"Trigger: {intervention.trigger_event}")
-        print(f"Created: {intervention.created_at.strftime('%Y -% m-%d %H:%M:%S')}")
+        print(f"Created: {intervention.created_at.strftime('%Y -% m -% d %H:%M:%S')}")
 
         if intervention.delivered_at:
             print(
-                f"Delivered: {intervention.delivered_at.strftime('%Y -% m-%d %H:%M:%S')}"
+                f"Delivered: {intervention.delivered_at.strftime('%Y -% m -% d %H:%M:%S')}"
             )
 
         if intervention.dismissed_at:
             print(
-                f"Dismissed: {intervention.dismissed_at.strftime('%Y -% m-%d %H:%M:%S')}"
+                f"Dismissed: {intervention.dismissed_at.strftime('%Y -% m -% d %H:%M:%S')}"
             )
             print(
                 f"User Followed: {'Yes' if intervention.user_followed_suggestion else 'No'}"
@@ -261,10 +261,10 @@ def _handle_feedback(
 
     # Record satisfaction
     ux_system.satisfaction_tracker.record_satisfaction(
-        user_id=user_id,
-        context=args.context,
-        score=args.score,
-        feedback=args.message or "",
+        user_id = user_id,
+        context = args.context,
+        score = args.score,
+        feedback = args.message or "",
     )
 
     # Provide feedback on the feedback
@@ -311,11 +311,11 @@ def _handle_journey_commands(
         print()
 
         print(f"Journey ID: {journey.journey_id}")
-        print(f"Started: {journey.started_at.strftime('%Y -% m-%d %H:%M:%S')}")
+        print(f"Started: {journey.started_at.strftime('%Y -% m -% d %H:%M:%S')}")
         print(f"Current Step: {journey.current_step}")
 
         if journey.completed_at:
-            print(f"Completed: {journey.completed_at.strftime('%Y -% m-%d %H:%M:%S')}")
+            print(f"Completed: {journey.completed_at.strftime('%Y -% m -% d %H:%M:%S')}")
             print(f"Success: {'Yes' if journey.success else 'No'}")
 
         print()
@@ -440,7 +440,7 @@ def _handle_analytics_commands(
                 for i, score in enumerate(satisfaction["recent_scores"][-5:])
             }
             print(f"\n📈 Recent Satisfaction Scores:")
-            print(chart.bar_chart(scores_dict, max_width=40))
+            print(chart.bar_chart(scores_dict, max_width = 40))
 
         print()
         print(f"🔔 Current State:")
@@ -506,7 +506,7 @@ def _handle_analytics_commands(
 
             if distribution:
                 print(f"\n📊 Satisfaction Distribution:")
-                print(chart.bar_chart(distribution, max_width=50))
+                print(chart.bar_chart(distribution, max_width = 50))
 
     elif args.analytics_action == "errors":
         print(ui_system.format_output("❌ Error Pattern Analysis", "primary", user_id))
@@ -613,7 +613,7 @@ def _handle_config_commands(
             # Save configuration
             config_file = ux_system.data_dir / "ux_config.json"
             with open(config_file, "w") as f:
-                json.dump(config, f, indent=2)
+                json.dump(config, f, indent = 2)
 
             print(status.success("UX configuration updated:"))
             for update in updates:
@@ -637,7 +637,7 @@ def _handle_test_commands(
             user_id,
             context={"error_type": "TestError", "test_mode": True},
             command="test - command",
-            success=False,
+            success = False,
             error_details="This is a test error for UX enhancement testing",
         )
 
@@ -685,7 +685,7 @@ def _handle_test_commands(
             ux_system.record_ux_event(
                 UXEventType.COMMAND_EXECUTION,
                 user_id,
-                command=cmd,
+                command = cmd,
                 context={"test_mode": True},
             )
 

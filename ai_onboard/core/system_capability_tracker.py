@@ -74,14 +74,14 @@ class CapabilityUsageEvent:
     # Execution details
     success: bool = True
     duration_ms: float = 0.0
-    parameters: Dict[str, Any] = field(default_factory=dict)
+    parameters: Dict[str, Any] = field(default_factory = dict)
     output_size: int = 0
     error_details: Optional[str] = None
 
     # User context
     user_expertise: Optional[str] = None
     workflow_step: Optional[str] = None
-    preceding_commands: List[str] = field(default_factory=list)
+    preceding_commands: List[str] = field(default_factory = list)
 
     # Performance metrics
     memory_usage_mb: Optional[float] = None
@@ -106,18 +106,18 @@ class CapabilityMetrics:
     max_duration_ms: float = 0.0
 
     # Usage patterns
-    common_contexts: Dict[str, int] = field(default_factory=dict)
-    common_patterns: Dict[str, int] = field(default_factory=dict)
-    peak_usage_hours: Dict[int, int] = field(default_factory=dict)
+    common_contexts: Dict[str, int] = field(default_factory = dict)
+    common_patterns: Dict[str, int] = field(default_factory = dict)
+    peak_usage_hours: Dict[int, int] = field(default_factory = dict)
 
     # Trends
-    daily_usage: Dict[str, int] = field(default_factory=dict)
+    daily_usage: Dict[str, int] = field(default_factory = dict)
     weekly_growth: float = 0.0
     user_retention: float = 0.0
 
     # Quality metrics
     error_rate: float = 0.0
-    common_errors: Dict[str, int] = field(default_factory=dict)
+    common_errors: Dict[str, int] = field(default_factory = dict)
     user_satisfaction: float = 0.0
 
 
@@ -357,7 +357,7 @@ class SystemCapabilityTracker:
     def __init__(self, root: Path):
         self.root = root
         self.data_dir = root / ".ai_onboard" / "capability_tracking"
-        self.data_dir.mkdir(parents=True, exist_ok=True)
+        self.data_dir.mkdir(parents = True, exist_ok = True)
 
         # Components
         self.registry = CapabilityRegistry()
@@ -367,7 +367,7 @@ class SystemCapabilityTracker:
         self.usage_log_file = self.data_dir / "usage_log.jsonl"
         self.metrics_file = self.data_dir / "capability_metrics.json"
         self.reports_dir = self.data_dir / "reports"
-        self.reports_dir.mkdir(exist_ok=True)
+        self.reports_dir.mkdir(exist_ok = True)
 
         # In - memory caches
         self.capability_metrics: Dict[str, CapabilityMetrics] = {}
@@ -411,7 +411,7 @@ class SystemCapabilityTracker:
 
         # Save default config
         with open(config_file, "w") as f:
-            json.dump(default_config, f, indent=2)
+            json.dump(default_config, f, indent = 2)
 
         return default_config
 
@@ -425,23 +425,23 @@ class SystemCapabilityTracker:
                 for capability_name, data in metrics_data.items():
                     # Convert dict back to CapabilityMetrics
                     metrics = CapabilityMetrics(
-                        capability_name=data["capability_name"],
-                        category=CapabilityCategory(data["category"]),
-                        total_uses=data.get("total_uses", 0),
-                        unique_users=data.get("unique_users", 0),
-                        success_rate=data.get("success_rate", 0.0),
-                        avg_duration_ms=data.get("avg_duration_ms", 0.0),
-                        min_duration_ms=data.get("min_duration_ms", float("inf")),
-                        max_duration_ms=data.get("max_duration_ms", 0.0),
-                        common_contexts=data.get("common_contexts", {}),
-                        common_patterns=data.get("common_patterns", {}),
-                        peak_usage_hours=data.get("peak_usage_hours", {}),
-                        daily_usage=data.get("daily_usage", {}),
-                        weekly_growth=data.get("weekly_growth", 0.0),
-                        user_retention=data.get("user_retention", 0.0),
-                        error_rate=data.get("error_rate", 0.0),
-                        common_errors=data.get("common_errors", {}),
-                        user_satisfaction=data.get("user_satisfaction", 0.0),
+                        capability_name = data["capability_name"],
+                        category = CapabilityCategory(data["category"]),
+                        total_uses = data.get("total_uses", 0),
+                        unique_users = data.get("unique_users", 0),
+                        success_rate = data.get("success_rate", 0.0),
+                        avg_duration_ms = data.get("avg_duration_ms", 0.0),
+                        min_duration_ms = data.get("min_duration_ms", float("inf")),
+                        max_duration_ms = data.get("max_duration_ms", 0.0),
+                        common_contexts = data.get("common_contexts", {}),
+                        common_patterns = data.get("common_patterns", {}),
+                        peak_usage_hours = data.get("peak_usage_hours", {}),
+                        daily_usage = data.get("daily_usage", {}),
+                        weekly_growth = data.get("weekly_growth", 0.0),
+                        user_retention = data.get("user_retention", 0.0),
+                        error_rate = data.get("error_rate", 0.0),
+                        common_errors = data.get("common_errors", {}),
+                        user_satisfaction = data.get("user_satisfaction", 0.0),
                     )
                     self.capability_metrics[capability_name] = metrics
 
@@ -479,22 +479,22 @@ class SystemCapabilityTracker:
 
         # Create usage event
         event = CapabilityUsageEvent(
-            event_id=f"cap_{int(time.time())}_{uuid.uuid4().hex[:8]}",
-            capability_name=capability_name,
-            category=category,
+            event_id = f"cap_{int(time.time())}_{uuid.uuid4().hex[:8]}",
+            capability_name = capability_name,
+            category = category,
             user_id=(
                 user_id
                 if not self.config.get("user_anonymization", False)
                 else f"user_{hash(user_id) % 10000}"
             ),
-            timestamp=datetime.now(),
-            context=context,
-            pattern=pattern,
-            session_id=session_id,
-            success=success,
-            duration_ms=duration_ms,
-            parameters=parameters or {},
-            error_details=error_details,
+            timestamp = datetime.now(),
+            context = context,
+            pattern = pattern,
+            session_id = session_id,
+            success = success,
+            duration_ms = duration_ms,
+            parameters = parameters or {},
+            error_details = error_details,
             **kwargs,
         )
 
@@ -560,7 +560,7 @@ class SystemCapabilityTracker:
 
         if capability_name not in self.capability_metrics:
             self.capability_metrics[capability_name] = CapabilityMetrics(
-                capability_name=capability_name, category=event.category
+                capability_name = capability_name, category = event.category
             )
 
         metrics = self.capability_metrics[capability_name]
@@ -642,7 +642,7 @@ class SystemCapabilityTracker:
             return {}
 
         # Calculate trends from daily usage data
-        cutoff_date = (datetime.now() - timedelta(days=days)).date()
+        cutoff_date = (datetime.now() - timedelta(days = days)).date()
         recent_usage = {
             date: count
             for date, count in metrics.daily_usage.items()
@@ -744,7 +744,7 @@ class SystemCapabilityTracker:
                     e
                     for e in user_events
                     if datetime.fromisoformat(e["timestamp"])
-                    >= datetime.now() - timedelta(days=7)
+                    >= datetime.now() - timedelta(days = 7)
                 ]
             ),
         }
@@ -752,7 +752,7 @@ class SystemCapabilityTracker:
     def generate_system_report(self, days: int = 30) -> SystemCapabilityReport:
         """Generate comprehensive system capability usage report."""
         end_date = datetime.now()
-        start_date = end_date - timedelta(days=days)
+        start_date = end_date - timedelta(days = days)
 
         # Collect statistics
         total_uses = sum(
@@ -782,8 +782,8 @@ class SystemCapabilityTracker:
                 (name, metrics.total_uses)
                 for name, metrics in self.capability_metrics.items()
             ],
-            key=lambda x: x[1],
-            reverse=True,
+            key = lambda x: x[1],
+            reverse = True,
         )[:10]
 
         # Fastest growing capabilities
@@ -792,7 +792,7 @@ class SystemCapabilityTracker:
             trends = self.get_usage_trends(name, days)
             if trends.get("growth_rate", 0) > 0:
                 growing_caps.append((name, trends["growth_rate"]))
-        growing_caps.sort(key=lambda x: x[1], reverse=True)
+        growing_caps.sort(key = lambda x: x[1], reverse = True)
 
         # Highest satisfaction (placeholder - would integrate with UX system)
         satisfaction_caps = []
@@ -812,39 +812,39 @@ class SystemCapabilityTracker:
         ux_recommendations = self._generate_ux_recommendations()
 
         report = SystemCapabilityReport(
-            report_id=f"cap_report_{int(time.time())}",
-            generated_at=end_date,
-            period_start=start_date,
-            period_end=end_date,
-            total_capability_uses=total_uses,
-            unique_capabilities_used=unique_capabilities,
-            unique_users=len(unique_users),
+            report_id = f"cap_report_{int(time.time())}",
+            generated_at = end_date,
+            period_start = start_date,
+            period_end = end_date,
+            total_capability_uses = total_uses,
+            unique_capabilities_used = unique_capabilities,
+            unique_users = len(unique_users),
             most_used_capabilities=[
                 {"name": name, "uses": uses} for name, uses in most_used
             ],
             fastest_growing_capabilities=[
                 {"name": name, "growth_rate": rate} for name, rate in growing_caps[:5]
             ],
-            highest_satisfaction_capabilities=satisfaction_caps,
-            common_workflows=common_workflows,
-            peak_usage_times=dict(peak_times),
-            user_behavior_patterns=self._analyze_user_behavior_patterns(),
-            performance_leaders=self._get_performance_leaders(),
-            performance_concerns=self._get_performance_concerns(),
-            optimization_opportunities=self._get_optimization_opportunities(),
-            feature_promotion_recommendations=feature_recommendations,
-            optimization_recommendations=optimization_recommendations,
-            user_experience_improvements=ux_recommendations,
+            highest_satisfaction_capabilities = satisfaction_caps,
+            common_workflows = common_workflows,
+            peak_usage_times = dict(peak_times),
+            user_behavior_patterns = self._analyze_user_behavior_patterns(),
+            performance_leaders = self._get_performance_leaders(),
+            performance_concerns = self._get_performance_concerns(),
+            optimization_opportunities = self._get_optimization_opportunities(),
+            feature_promotion_recommendations = feature_recommendations,
+            optimization_recommendations = optimization_recommendations,
+            user_experience_improvements = ux_recommendations,
         )
 
         # Save report
         report_file = (
             self.reports_dir
-            / f"capability_report_{end_date.strftime('%Y % m%d_ % H%M % S')}.json"
+            / f"capability_report_{end_date.strftime('%Y % m % d_ % H % M % S')}.json"
         )
         try:
             with open(report_file, "w") as f:
-                json.dump(self._serialize_report(report), f, indent=2)
+                json.dump(self._serialize_report(report), f, indent = 2)
         except Exception as e:
             print(f"Warning: Failed to save report: {e}")
 
@@ -887,7 +887,7 @@ class SystemCapabilityTracker:
                     }
                 )
 
-        return sorted(common_workflows, key=lambda x: x["frequency"], reverse=True)[:10]
+        return sorted(common_workflows, key = lambda x: x["frequency"], reverse = True)[:10]
 
     def _analyze_user_behavior_patterns(self) -> Dict[str, Any]:
         """Analyze overall user behavior patterns."""
@@ -918,7 +918,7 @@ class SystemCapabilityTracker:
                     }
                 )
 
-        return sorted(leaders, key=lambda x: x["performance_score"], reverse=True)[:5]
+        return sorted(leaders, key = lambda x: x["performance_score"], reverse = True)[:5]
 
     def _get_performance_concerns(self) -> List[Dict[str, Any]]:
         """Get capabilities with performance concerns."""
@@ -942,7 +942,7 @@ class SystemCapabilityTracker:
                     if metrics.success_rate < 0.8:
                         concerns[-1]["concerns"].append("low_success_rate")
 
-        return sorted(concerns, key=lambda x: len(x["concerns"]), reverse=True)
+        return sorted(concerns, key = lambda x: len(x["concerns"]), reverse = True)
 
     def _get_optimization_opportunities(self) -> List[Dict[str, Any]]:
         """Identify optimization opportunities."""
@@ -1072,7 +1072,7 @@ class SystemCapabilityTracker:
                 }
 
             with open(self.metrics_file, "w") as f:
-                json.dump(metrics_data, f, indent=2)
+                json.dump(metrics_data, f, indent = 2)
 
         except Exception as e:
             print(f"Warning: Failed to save metrics: {e}")
@@ -1106,12 +1106,12 @@ def track_capability_usage(
         root = Path.cwd()
         tracker = get_system_capability_tracker(root)
         return tracker.record_capability_usage(
-            capability_name=capability_name,
-            user_id=user_id,
-            context=context,
-            pattern=pattern,
-            success=success,
-            duration_ms=duration_ms,
+            capability_name = capability_name,
+            user_id = user_id,
+            context = context,
+            pattern = pattern,
+            success = success,
+            duration_ms = duration_ms,
             **kwargs,
         )
     except Exception:

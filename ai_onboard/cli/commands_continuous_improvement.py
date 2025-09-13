@@ -169,13 +169,13 @@ def handle_continuous_improvement_commands(
                 print('{"error":"invalid outcome JSON"}')
                 return
             interaction_id = psys.record_user_interaction(
-                user_id=args.user,
-                interaction_type=args.type,
-                context=context,
-                duration=getattr(args, "duration", None),
-                outcome=outcome,
-                satisfaction_score=getattr(args, "satisfaction", None),
-                feedback=getattr(args, "feedback", None),
+                user_id = args.user,
+                interaction_type = args.type,
+                context = context,
+                duration = getattr(args, "duration", None),
+                outcome = outcome,
+                satisfaction_score = getattr(args, "satisfaction", None),
+                feedback = getattr(args, "feedback", None),
             )
             print(json.dumps({"interaction_id": interaction_id}))
             return
@@ -220,26 +220,26 @@ def _handle_record_learning(args: argparse.Namespace, system) -> None:
 
     # Parse context and outcome from flexible inputs
     context = _parse_json_source(
-        raw=getattr(args, "context", None),
-        file=getattr(args, "context_file", None),
-        b64=getattr(args, "context_b64", None),
-        allow_kv=True,
+        raw = getattr(args, "context", None),
+        file = getattr(args, "context_file", None),
+        b64 = getattr(args, "context_b64", None),
+        allow_kv = True,
     )
     outcome = _parse_json_source(
-        raw=getattr(args, "outcome", None),
-        file=getattr(args, "outcome_file", None),
-        b64=getattr(args, "outcome_b64", None),
-        allow_kv=True,
+        raw = getattr(args, "outcome", None),
+        file = getattr(args, "outcome_file", None),
+        b64 = getattr(args, "outcome_b64", None),
+        allow_kv = True,
     )
 
     # Record the learning event
     event_id = system.record_learning_event(
-        learning_type=learning_type,
-        context=context,
-        outcome=outcome,
-        confidence=args.confidence or 0.8,
-        impact_score=args.impact or 0.5,
-        source=args.source or "manual",
+        learning_type = learning_type,
+        context = context,
+        outcome = outcome,
+        confidence = args.confidence or 0.8,
+        impact_score = args.impact or 0.5,
+        source = args.source or "manual",
     )
 
     print(f"✅ Learning event recorded: {event_id}")
@@ -310,7 +310,7 @@ def _handle_list_recommendations(args: argparse.Namespace, system) -> None:
     status = getattr(args, "status", None) or "pending"
 
     recommendations = system.get_improvement_recommendations(
-        limit=limit, priority_threshold=priority_threshold, status=status
+        limit = limit, priority_threshold = priority_threshold, status = status
     )
 
     if not recommendations:
@@ -491,7 +491,7 @@ def _handle_performance_opportunities(args: argparse.Namespace, optimizer) -> No
     max_risk = args.risk or 7
 
     opportunities = optimizer.get_optimization_opportunities(
-        limit=limit, min_confidence=min_confidence, max_risk=max_risk
+        limit = limit, min_confidence = min_confidence, max_risk = max_risk
     )
 
     if not opportunities:
@@ -675,10 +675,10 @@ def _handle_config_set(args: argparse.Namespace, config_manager) -> None:
     success = config_manager.set_setting(
         args.setting_key,
         value,
-        reason=args.reason or "Manual configuration change",
-        trigger=AdaptationTrigger.MANUAL_OVERRIDE,
-        confidence=1.0,
-        expected_impact=0.5,
+        reason = args.reason or "Manual configuration change",
+        trigger = AdaptationTrigger.MANUAL_OVERRIDE,
+        confidence = 1.0,
+        expected_impact = 0.5,
     )
 
     if success:
@@ -710,10 +710,10 @@ def _handle_config_adapt(args: argparse.Namespace, config_manager) -> None:
     """Handle configuration adaptation."""
     # Parse context (flexible sources)
     context = _parse_json_source(
-        raw=getattr(args, "context", None),
-        file=getattr(args, "context_file", None),
-        b64=getattr(args, "context_b64", None),
-        allow_kv=True,
+        raw = getattr(args, "context", None),
+        file = getattr(args, "context_file", None),
+        b64 = getattr(args, "context_b64", None),
+        allow_kv = True,
     )
 
     # Apply default context if none provided
@@ -727,7 +727,7 @@ def _handle_config_adapt(args: argparse.Namespace, config_manager) -> None:
         }
 
     changes = config_manager.adapt_configuration(
-        context, trigger=AdaptationTrigger.USAGE_PATTERN_CHANGE
+        context, trigger = AdaptationTrigger.USAGE_PATTERN_CHANGE
     )
 
     if changes:
@@ -763,10 +763,10 @@ def _handle_config_profiles(args: argparse.Namespace, config_manager) -> None:
 
         # Parse context (flexible sources)
         context = _parse_json_source(
-            raw=getattr(args, "context", None),
-            file=getattr(args, "context_file", None),
-            b64=getattr(args, "context_b64", None),
-            allow_kv=True,
+            raw = getattr(args, "context", None),
+            file = getattr(args, "context_file", None),
+            b64 = getattr(args, "context_b64", None),
+            allow_kv = True,
         )
 
         profile_id = config_manager.create_configuration_profile(
@@ -834,28 +834,28 @@ def _handle_record_interaction(args: argparse.Namespace, preference_system) -> N
 
     # Parse context / outcome (flexible sources)
     context = _parse_json_source(
-        raw=getattr(args, "context", None),
-        file=getattr(args, "context_file", None),
-        b64=getattr(args, "context_b64", None),
-        allow_kv=True,
+        raw = getattr(args, "context", None),
+        file = getattr(args, "context_file", None),
+        b64 = getattr(args, "context_b64", None),
+        allow_kv = True,
     )
     outcome_obj = _parse_json_source(
-        raw=getattr(args, "outcome", None),
-        file=getattr(args, "outcome_file", None),
-        b64=getattr(args, "outcome_b64", None),
-        allow_kv=True,
+        raw = getattr(args, "outcome", None),
+        file = getattr(args, "outcome_file", None),
+        b64 = getattr(args, "outcome_b64", None),
+        allow_kv = True,
     )
     outcome = outcome_obj if outcome_obj else None
 
     # Record the interaction
     interaction_id = preference_system.record_user_interaction(
-        user_id=args.user,
-        interaction_type=interaction_type,
-        context=context,
-        duration=args.duration,
-        outcome=outcome,
-        satisfaction_score=args.satisfaction,
-        feedback=args.feedback,
+        user_id = args.user,
+        interaction_type = interaction_type,
+        context = context,
+        duration = args.duration,
+        outcome = outcome,
+        satisfaction_score = args.satisfaction,
+        feedback = args.feedback,
     )
 
     print(f"✅ User interaction recorded: {interaction_id}")
@@ -1333,21 +1333,21 @@ def _handle_add_knowledge(args: argparse.Namespace, knowledge_base) -> None:
     tags = args.tags.split(",") if args.tags else []
     # Parse metadata (flexible sources)
     metadata = _parse_json_source(
-        raw=getattr(args, "metadata", None),
-        file=getattr(args, "metadata_file", None),
-        b64=getattr(args, "metadata_b64", None),
-        allow_kv=True,
+        raw = getattr(args, "metadata", None),
+        file = getattr(args, "metadata_file", None),
+        b64 = getattr(args, "metadata_b64", None),
+        allow_kv = True,
     )
 
     knowledge_id = knowledge_base.add_knowledge(
-        knowledge_type=knowledge_type,
-        title=args.title,
-        content=args.content,
-        source=source,
-        quality=quality,
-        tags=tags,
-        metadata=metadata,
-        confidence_score=args.confidence or 0.5,
+        knowledge_type = knowledge_type,
+        title = args.title,
+        content = args.content,
+        source = source,
+        quality = quality,
+        tags = tags,
+        metadata = metadata,
+        confidence_score = args.confidence or 0.5,
     )
 
     print(f"✅ Knowledge added successfully")
@@ -1365,11 +1365,11 @@ def _handle_search_knowledge(args: argparse.Namespace, knowledge_base) -> None:
     tags = args.tags.split(",") if args.tags else None
 
     results = knowledge_base.search_knowledge(
-        query=args.query,
-        knowledge_types=knowledge_types,
-        tags=tags,
-        quality_threshold=args.quality_threshold or 0.0,
-        limit=args.limit or 10,
+        query = args.query,
+        knowledge_types = knowledge_types,
+        tags = tags,
+        quality_threshold = args.quality_threshold or 0.0,
+        limit = args.limit or 10,
     )
 
     if not results:
@@ -1406,9 +1406,9 @@ def _handle_list_knowledge(args: argparse.Namespace, knowledge_base) -> None:
     # Sort by relevance or confidence
     sort_key = args.sort or "relevance"
     if sort_key == "confidence":
-        items.sort(key=lambda x: x.confidence_score, reverse=True)
+        items.sort(key = lambda x: x.confidence_score, reverse = True)
     else:
-        items.sort(key=lambda x: x.relevance_score, reverse=True)
+        items.sort(key = lambda x: x.relevance_score, reverse = True)
 
     limit = args.limit or 20
     items = items[:limit]
@@ -1427,7 +1427,7 @@ def _handle_list_knowledge(args: argparse.Namespace, knowledge_base) -> None:
         print(f"   Status: {item.status.value}")
         print(f"   Quality: {item.quality.value}")
         print(f"   Confidence: {item.confidence_score:.2f}")
-        print(f"   Created: {item.created_at.strftime('%Y -% m-%d %H:%M')}")
+        print(f"   Created: {item.created_at.strftime('%Y -% m -% d %H:%M')}")
         print(f"   Tags: {', '.join(item.tags)}")
         print()
 
@@ -1487,7 +1487,7 @@ def _handle_list_patterns(knowledge_base) -> None:
         return
 
     # Sort by confidence
-    patterns.sort(key=lambda x: x.confidence, reverse=True)
+    patterns.sort(key = lambda x: x.confidence, reverse = True)
 
     print(f"📚 Knowledge Patterns ({len(patterns)} found)")
     print("=" * 35)
@@ -1498,7 +1498,7 @@ def _handle_list_patterns(knowledge_base) -> None:
         print(f"   Frequency: {pattern.frequency}")
         print(f"   Confidence: {pattern.confidence:.2f}")
         print(f"   Success Rate: {pattern.success_rate:.2f}")
-        print(f"   Discovered: {pattern.discovered_at.strftime('%Y -% m-%d')}")
+        print(f"   Discovered: {pattern.discovered_at.strftime('%Y -% m -% d')}")
         print(f"   Examples: {len(pattern.examples)}")
         print()
 
@@ -1554,7 +1554,7 @@ def _handle_get_recommendations(args: argparse.Namespace, knowledge_base) -> Non
     context = json.loads(args.context) if args.context else {}
 
     recommendations = knowledge_base.get_knowledge_recommendations(
-        context=context, limit=args.limit or 5
+        context = context, limit = args.limit or 5
     )
 
     if not recommendations:
@@ -1598,7 +1598,7 @@ def _handle_list_knowledge_recommendations(knowledge_base) -> None:
         print(f"   Confidence: {rec.confidence:.2f}")
         print(f"   Usage Count: {rec.usage_count}")
         print(f"   Feedback Score: {rec.feedback_score:.2f}")
-        print(f"   Created: {rec.created_at.strftime('%Y -% m-%d %H:%M')}")
+        print(f"   Created: {rec.created_at.strftime('%Y -% m -% d %H:%M')}")
         print()
 
 
@@ -1696,11 +1696,11 @@ def _handle_record_metric(args: argparse.Namespace, analytics) -> None:
     metadata = json.loads(args.metadata) if args.metadata else {}
 
     metric_id = analytics.collect_metric(
-        name=args.name,
-        value=args.value,
-        metric_type=metric_type,
-        tags=tags,
-        metadata=metadata,
+        name = args.name,
+        value = args.value,
+        metric_type = metric_type,
+        tags = tags,
+        metadata = metadata,
     )
 
     print(f"✅ Metric recorded successfully")
@@ -1720,7 +1720,7 @@ def _handle_list_metrics(args: argparse.Namespace, analytics) -> None:
         metrics = [m for m in metrics if args.name_filter.lower() in m.name.lower()]
 
     # Sort by timestamp (most recent first)
-    metrics.sort(key=lambda x: x.timestamp, reverse=True)
+    metrics.sort(key = lambda x: x.timestamp, reverse = True)
     metrics = metrics[:limit]
 
     if not metrics:
@@ -1734,7 +1734,7 @@ def _handle_list_metrics(args: argparse.Namespace, analytics) -> None:
         print(f"{i}. {metric.name}")
         print(f"   Value: {metric.value}")
         print(f"   Type: {metric.metric_type.value}")
-        print(f"   Timestamp: {metric.timestamp.strftime('%Y -% m-%d %H:%M:%S')}")
+        print(f"   Timestamp: {metric.timestamp.strftime('%Y -% m -% d %H:%M:%S')}")
         if metric.tags:
             print(f"   Tags: {', '.join(f'{k}={v}' for k, v in metric.tags.items())}")
         print()
@@ -1771,7 +1771,7 @@ def _handle_list_kpis(analytics) -> None:
         print(f"   Current: {kpi.current_value:.2f} {kpi.unit}")
         print(f"   Target: {kpi.target_value:.2f} {kpi.unit}")
         print(f"   Trend: {trend_icon} {kpi.trend}")
-        print(f"   Last Updated: {kpi.last_updated.strftime('%Y -% m-%d %H:%M')}")
+        print(f"   Last Updated: {kpi.last_updated.strftime('%Y -% m -% d %H:%M')}")
         print()
 
 
@@ -1796,7 +1796,7 @@ def _handle_show_kpi(args: argparse.Namespace, analytics) -> None:
     if kpi.historical_values:
         print(f"\nHistorical Values (last 5):")
         for timestamp, value in kpi.historical_values[-5:]:
-            print(f"  {timestamp.strftime('%Y -% m-%d %H:%M')}: {value:.2f} {kpi.unit}")
+            print(f"  {timestamp.strftime('%Y -% m -% d %H:%M')}: {value:.2f} {kpi.unit}")
 
 
 def _handle_reports_commands(args: argparse.Namespace, analytics) -> None:
@@ -1818,31 +1818,31 @@ def _handle_generate_report(args: argparse.Namespace, analytics) -> None:
     # Calculate period
     if args.period == "day":
         period_end = datetime.now()
-        period_start = period_end - timedelta(days=1)
+        period_start = period_end - timedelta(days = 1)
     elif args.period == "week":
         period_end = datetime.now()
-        period_start = period_end - timedelta(weeks=1)
+        period_start = period_end - timedelta(weeks = 1)
     elif args.period == "month":
         period_end = datetime.now()
-        period_start = period_end - timedelta(days=30)
+        period_start = period_end - timedelta(days = 30)
     else:
         # Custom period
         period_start = datetime.fromisoformat(args.period_start)
         period_end = datetime.fromisoformat(args.period_end)
 
     report_id = analytics.generate_report(
-        report_type=report_type,
-        period_start=period_start,
-        period_end=period_end,
-        title=args.title,
-        description=args.description,
+        report_type = report_type,
+        period_start = period_start,
+        period_end = period_end,
+        title = args.title,
+        description = args.description,
     )
 
     print(f"✅ Report generated successfully")
     print(f"Report ID: {report_id}")
     print(f"Type: {report_type.value}")
     print(
-        f"Period: {period_start.strftime('%Y -% m-%d')} to {period_end.strftime('%Y -% m-%d')}"
+        f"Period: {period_start.strftime('%Y -% m -% d')} to {period_end.strftime('%Y -% m -% d')}"
     )
 
 
@@ -1851,7 +1851,7 @@ def _handle_list_reports(args: argparse.Namespace, analytics) -> None:
     limit = args.limit or 10
 
     # Sort by generation time (most recent first)
-    reports = sorted(analytics.reports, key=lambda x: x.generated_at, reverse=True)
+    reports = sorted(analytics.reports, key = lambda x: x.generated_at, reverse = True)
     reports = reports[:limit]
 
     if not reports:
@@ -1864,9 +1864,9 @@ def _handle_list_reports(args: argparse.Namespace, analytics) -> None:
     for i, report in enumerate(reports, 1):
         print(f"{i}. {report.title}")
         print(f"   Type: {report.report_type.value}")
-        print(f"   Generated: {report.generated_at.strftime('%Y -% m-%d %H:%M')}")
+        print(f"   Generated: {report.generated_at.strftime('%Y -% m -% d %H:%M')}")
         print(
-            f"   Period: {report.period_start.strftime('%Y -% m-%d')} to {report.period_end.strftime('%Y -% m-%d')}"
+            f"   Period: {report.period_start.strftime('%Y -% m -% d')} to {report.period_end.strftime('%Y -% m -% d')}"
         )
         print(f"   ID: {report.report_id}")
         print()
@@ -1925,7 +1925,7 @@ def _handle_list_alerts(args: argparse.Namespace, analytics) -> None:
         alerts = [a for a in alerts if not a.resolved_at]
 
     # Sort by trigger time (most recent first)
-    alerts.sort(key=lambda x: x.triggered_at, reverse=True)
+    alerts.sort(key = lambda x: x.triggered_at, reverse = True)
     alerts = alerts[:limit]
 
     if not alerts:
@@ -1950,7 +1950,7 @@ def _handle_list_alerts(args: argparse.Namespace, analytics) -> None:
         print(f"   Level: {alert.alert_level.value}")
         print(f"   Status: {status}")
         print(f"   Acknowledged: {acknowledged}")
-        print(f"   Triggered: {alert.triggered_at.strftime('%Y -% m-%d %H:%M')}")
+        print(f"   Triggered: {alert.triggered_at.strftime('%Y -% m -% d %H:%M')}")
         print(f"   Metric: {alert.metric_name} ({alert.current_value:.2f})")
         print(f"   Threshold: {alert.threshold_value:.2f}")
         print()
@@ -2092,11 +2092,11 @@ def _handle_test_commands(args: argparse.Namespace, root: Path) -> None:
     # Test 1: Record a learning event
     print("1. Testing learning event recording...")
     event_id = system.record_learning_event(
-        learning_type=LearningType.USER_PREFERENCE,
+        learning_type = LearningType.USER_PREFERENCE,
         context={"user_id": "test_user", "preference_type": "gate_timeout", "value": 2},
         outcome={"preferred_value": 2, "satisfaction_score": 0.8},
-        confidence=0.9,
-        impact_score=0.6,
+        confidence = 0.9,
+        impact_score = 0.6,
         source="test",
     )
     print(f"   ✅ Learning event recorded: {event_id}")
@@ -2111,7 +2111,7 @@ def _handle_test_commands(args: argparse.Namespace, root: Path) -> None:
 
     # Test 3: Get recommendations
     print("3. Testing recommendations...")
-    recommendations = system.get_improvement_recommendations(limit=5)
+    recommendations = system.get_improvement_recommendations(limit = 5)
     print(f"   ✅ Found {len(recommendations)} recommendations")
 
     # Test 4: System health
@@ -2160,13 +2160,13 @@ def add_continuous_improvement_parser(subparsers) -> None:
         "--outcome - b64", dest="outcome_b64", help="Base64 - encoded JSON for outcome"
     )
     record_parser.add_argument(
-        "--confidence", type=float, help="Confidence score (0 - 1)"
+        "--confidence", type = float, help="Confidence score (0 - 1)"
     )
-    record_parser.add_argument("--impact", type=float, help="Impact score (0 - 1)")
+    record_parser.add_argument("--impact", type = float, help="Impact score (0 - 1)")
     record_parser.add_argument("--source", help="Source of the learning event")
 
     learn_subparsers.add_parser("summary", help="Get learning summary").add_argument(
-        "--days", type=int, help="Number of days to look back"
+        "--days", type = int, help="Number of days to look back"
     )
 
     learn_subparsers.add_parser("events", help="List learning events")
@@ -2180,8 +2180,8 @@ def add_continuous_improvement_parser(subparsers) -> None:
     )
 
     list_parser = rec_subparsers.add_parser("list", help="List recommendations")
-    list_parser.add_argument("--limit", type=int, help="Maximum number to show")
-    list_parser.add_argument("--priority", type=int, help="Minimum priority threshold")
+    list_parser.add_argument("--limit", type = int, help="Maximum number to show")
+    list_parser.add_argument("--priority", type = int, help="Minimum priority threshold")
     list_parser.add_argument("--status", help="Filter by status")
 
     show_parser = rec_subparsers.add_parser("show", help="Show specific recommendation")
@@ -2237,22 +2237,22 @@ def add_continuous_improvement_parser(subparsers) -> None:
     prefs_parser = subparsers.add_parser(
         "user - prefs", help="User preference learning commands"
     )
-    prefs_sub = prefs_parser.add_subparsers(dest="prefs_cmd", required=True)
+    prefs_sub = prefs_parser.add_subparsers(dest="prefs_cmd", required = True)
     pref_rec = prefs_sub.add_parser(
         "record", help="Record a user interaction for learning"
     )
-    pref_rec.add_argument("--user", required=True)
-    pref_rec.add_argument("--type", required=True)
+    pref_rec.add_argument("--user", required = True)
+    pref_rec.add_argument("--type", required = True)
     pref_rec.add_argument("--context", default="{}")
-    pref_rec.add_argument("--duration", type=float)
+    pref_rec.add_argument("--duration", type = float)
     pref_rec.add_argument("--outcome", default="{}")
-    pref_rec.add_argument("--satisfaction", type=float)
+    pref_rec.add_argument("--satisfaction", type = float)
     pref_rec.add_argument("--feedback", default="")
     prefs_sub.add_parser("summary", help="Show user profile summary").add_argument(
-        "--user", required=True
+        "--user", required = True
     )
     prefs_sub.add_parser("recommend", help="Get user recommendations").add_argument(
-        "--user", required=True
+        "--user", required = True
     )
 
     health_issues_show_parser = health_issues_subparsers.add_parser(
@@ -2272,7 +2272,7 @@ def add_continuous_improvement_parser(subparsers) -> None:
         "history", help="Show self - healing history"
     )
     health_healing_history_parser.add_argument(
-        "--days", type=int, default=7, help="Number of days to show (default: 7)"
+        "--days", type = int, default = 7, help="Number of days to show (default: 7)"
     )
 
     health_healing_subparsers.add_parser("stats", help="Show self - healing statistics")
@@ -2283,8 +2283,8 @@ def add_continuous_improvement_parser(subparsers) -> None:
     )
     health_summary_parser.add_argument(
         "--hours",
-        type=int,
-        default=24,
+        type = int,
+        default = 24,
         help="Number of hours to summarize (default: 24)",
     )
 
@@ -2328,7 +2328,7 @@ def add_continuous_improvement_parser(subparsers) -> None:
         help="Base64 - encoded JSON for metadata",
     )
     add_knowledge_parser.add_argument(
-        "--confidence", type=float, help="Confidence score (0 - 1)"
+        "--confidence", type = float, help="Confidence score (0 - 1)"
     )
 
     # Search knowledge
@@ -2341,10 +2341,10 @@ def add_continuous_improvement_parser(subparsers) -> None:
     )
     search_knowledge_parser.add_argument("--tags", help="Comma - separated tags")
     search_knowledge_parser.add_argument(
-        "--quality - threshold", type=float, help="Minimum quality threshold"
+        "--quality - threshold", type = float, help="Minimum quality threshold"
     )
     search_knowledge_parser.add_argument(
-        "--limit", type=int, help="Maximum results to return"
+        "--limit", type = int, help="Maximum results to return"
     )
 
     # List knowledge
@@ -2365,7 +2365,7 @@ def add_continuous_improvement_parser(subparsers) -> None:
         "--sort", choices=["relevance", "confidence"], help="Sort order"
     )
     list_knowledge_parser.add_argument(
-        "--limit", type=int, help="Maximum items to show"
+        "--limit", type = int, help="Maximum items to show"
     )
 
     # Show knowledge
@@ -2401,7 +2401,7 @@ def add_continuous_improvement_parser(subparsers) -> None:
     )
     get_recommendations_parser.add_argument("--context", help="Context JSON")
     get_recommendations_parser.add_argument(
-        "--limit", type=int, help="Maximum recommendations"
+        "--limit", type = int, help="Maximum recommendations"
     )
 
     recommendations_subparsers.add_parser("list", help="List knowledge recommendations")
@@ -2432,7 +2432,7 @@ def add_continuous_improvement_parser(subparsers) -> None:
         "record", help="Record a metric"
     )
     record_metric_parser.add_argument("name", help="Metric name")
-    record_metric_parser.add_argument("value", type=float, help="Metric value")
+    record_metric_parser.add_argument("value", type = float, help="Metric value")
     record_metric_parser.add_argument(
         "--metric - type", choices=[mt.value for mt in MetricType], help="Metric type"
     )
@@ -2442,7 +2442,7 @@ def add_continuous_improvement_parser(subparsers) -> None:
     list_metrics_parser = metrics_subparsers.add_parser("list", help="List metrics")
     list_metrics_parser.add_argument("--name - filter", help="Filter by metric name")
     list_metrics_parser.add_argument(
-        "--limit", type=int, help="Maximum metrics to show"
+        "--limit", type = int, help="Maximum metrics to show"
     )
 
     # KPIs commands
@@ -2488,7 +2488,7 @@ def add_continuous_improvement_parser(subparsers) -> None:
 
     list_reports_parser = reports_subparsers.add_parser("list", help="List reports")
     list_reports_parser.add_argument(
-        "--limit", type=int, help="Maximum reports to show"
+        "--limit", type = int, help="Maximum reports to show"
     )
 
     show_report_parser = reports_subparsers.add_parser(
@@ -2509,7 +2509,7 @@ def add_continuous_improvement_parser(subparsers) -> None:
     list_alerts_parser.add_argument(
         "--active - only", action="store_true", help="Show only active alerts"
     )
-    list_alerts_parser.add_argument("--limit", type=int, help="Maximum alerts to show")
+    list_alerts_parser.add_argument("--limit", type = int, help="Maximum alerts to show")
 
     acknowledge_alert_parser = alerts_subparsers.add_parser(
         "acknowledge", help="Acknowledge an alert"
@@ -2579,12 +2579,12 @@ def add_continuous_improvement_parser(subparsers) -> None:
         "opportunities", help="List optimization opportunities"
     )
     opportunities_parser.add_argument(
-        "--limit", type=int, help="Maximum number to show"
+        "--limit", type = int, help="Maximum number to show"
     )
     opportunities_parser.add_argument(
-        "--confidence", type=float, help="Minimum confidence threshold"
+        "--confidence", type = float, help="Minimum confidence threshold"
     )
-    opportunities_parser.add_argument("--risk", type=int, help="Maximum risk level")
+    opportunities_parser.add_argument("--risk", type = int, help="Maximum risk level")
 
     # Performance optimization
     optimize_parser = performance_subparsers.add_parser(
@@ -2597,7 +2597,7 @@ def add_continuous_improvement_parser(subparsers) -> None:
         "summary", help="Get performance summary"
     )
     summary_parser.add_argument(
-        "--hours", type=int, help="Number of hours to look back"
+        "--hours", type = int, help="Number of hours to look back"
     )
 
     # Performance profiles
@@ -2679,7 +2679,7 @@ def add_continuous_improvement_parser(subparsers) -> None:
         "analytics", help="Configuration analytics"
     )
     analytics_parser.add_argument(
-        "--days", type=int, help="Number of days to look back"
+        "--days", type = int, help="Number of days to look back"
     )
 
     # User preference commands
@@ -2705,7 +2705,7 @@ def add_continuous_improvement_parser(subparsers) -> None:
         "--context - b64", dest="context_b64", help="Base64 - encoded JSON for context"
     )
     record_parser.add_argument(
-        "--duration", type=float, help="Interaction duration in seconds"
+        "--duration", type = float, help="Interaction duration in seconds"
     )
     record_parser.add_argument("--outcome", help="Outcome (JSON or key = value pairs)")
     record_parser.add_argument(
@@ -2715,7 +2715,7 @@ def add_continuous_improvement_parser(subparsers) -> None:
         "--outcome - b64", dest="outcome_b64", help="Base64 - encoded JSON for outcome"
     )
     record_parser.add_argument(
-        "--satisfaction", type=float, help="Satisfaction score (0 - 1)"
+        "--satisfaction", type = float, help="Satisfaction score (0 - 1)"
     )
     record_parser.add_argument("--feedback", help="User feedback")
 

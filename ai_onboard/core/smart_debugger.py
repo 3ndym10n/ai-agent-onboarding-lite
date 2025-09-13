@@ -118,7 +118,7 @@ class SmartDebugger:
         pattern_success_rate = self._calculate_pattern_success_rate(learning_data)
 
         # Recent performance
-        recent_sessions = self._get_recent_sessions(learning_data, days=7)
+        recent_sessions = self._get_recent_sessions(learning_data, days = 7)
         recent_success_rate = len(
             [s for s in recent_sessions if s.get("success", False)]
         ) / max(len(recent_sessions), 1)
@@ -462,7 +462,7 @@ class SmartDebugger:
         self, learning_data: Dict[str, Any], days: int = 7
     ) -> List[Dict[str, Any]]:
         """Get recent debugging sessions."""
-        cutoff = datetime.now() - timedelta(days=days)
+        cutoff = datetime.now() - timedelta(days = days)
         cutoff_iso = cutoff.isoformat()
 
         return [

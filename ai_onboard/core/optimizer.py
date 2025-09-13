@@ -50,7 +50,7 @@ def _find_latest_test_report(root: Path) -> Optional[Path]:
     candidates = [p for p in reports_dir.glob("*.json") if p.is_file()]
     if not candidates:
         return None
-    candidates.sort(key=lambda p: p.stat().st_mtime, reverse=True)
+    candidates.sort(key = lambda p: p.stat().st_mtime, reverse = True)
     return candidates[0]
 
 
@@ -93,7 +93,7 @@ def _extract_hotspots(report: Dict[str, Any]) -> List[Tuple[str, float]]:
                 )
                 hotspots.append((name, secs))
 
-    hotspots.sort(key=lambda x: x[1], reverse=True)
+    hotspots.sort(key = lambda x: x[1], reverse = True)
     return hotspots
 
 
@@ -103,13 +103,13 @@ def _ensure_prefs(root: Path, prefs: Dict[str, Any]) -> Path:
     try:
         if not prefs_path.exists():
             with open(prefs_path, "w", encoding="utf - 8") as f:
-                json.dump(prefs, f, indent=2)
+                json.dump(prefs, f, indent = 2)
         else:
             # Merge - lite: keep existing keys, update with new ones
             existing = _load_json(prefs_path) or {}
             existing.update(prefs)
             with open(prefs_path, "w", encoding="utf - 8") as f:
-                json.dump(existing, f, indent=2)
+                json.dump(existing, f, indent = 2)
     except Exception:
         pass
     return prefs_path
@@ -150,7 +150,7 @@ def _analyze_hotspot_patterns(
                 }
             )
 
-        # I / O-bound patterns
+        # I / O - bound patterns
         elif any(
             keyword in func_name.lower()
             for keyword in ["read", "write", "file", "network", "db", "open"]

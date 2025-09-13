@@ -9,7 +9,7 @@ from typing import Any, Dict, List
 
 
 def ensure_dir(path: Path):
-    path.mkdir(parents=True, exist_ok=True)
+    path.mkdir(parents = True, exist_ok = True)
 
 
 def generate_id(length: int = 8) -> str:
@@ -20,7 +20,7 @@ def generate_id(length: int = 8) -> str:
 
 def write_json(path: Path, data):
     ensure_dir(path.parent)
-    path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf - 8")
+    path.write_text(json.dumps(data, indent = 2, ensure_ascii = False), encoding="utf - 8")
 
 
 # Global cache for JSON files
@@ -33,7 +33,7 @@ def _cleanup_json_cache():
     """Remove oldest entries if cache is too large."""
     if len(_json_cache) > _JSON_CACHE_MAX_SIZE:
         # Remove oldest entries
-        oldest_keys = sorted(_json_cache_access.items(), key=lambda x: x[1])[
+        oldest_keys = sorted(_json_cache_access.items(), key = lambda x: x[1])[
             : len(_json_cache) - _JSON_CACHE_MAX_SIZE
         ]
         for key, _ in oldest_keys:
@@ -41,7 +41,7 @@ def _cleanup_json_cache():
             del _json_cache_access[key]
 
 
-def read_json_cached(path: Path, default=None) -> Any:
+def read_json_cached(path: Path, default = None) -> Any:
     """Optimized JSON reading with LRU caching for frequently accessed files."""
     cache_key = str(path.resolve())
 
@@ -64,7 +64,7 @@ def read_json_cached(path: Path, default=None) -> Any:
         return default
 
 
-async def read_json_async(path: Path, default=None) -> Any:
+async def read_json_async(path: Path, default = None) -> Any:
     """Async version of JSON reading for concurrent file operations."""
     if not path.exists():
         return default
@@ -76,18 +76,18 @@ async def read_json_async(path: Path, default=None) -> Any:
         return default
 
 
-def read_json(path: Path, default=None):
+def read_json(path: Path, default = None):
     """Backward - compatible JSON reading - now uses optimized cached version."""
     return read_json_cached(path, default)
 
 
-async def read_multiple_json(paths: List[Path], default=None) -> List[Any]:
+async def read_multiple_json(paths: List[Path], default = None) -> List[Any]:
     """Read multiple JSON files concurrently using asyncio."""
     tasks = [read_json_async(path, default) for path in paths]
-    return await asyncio.gather(*tasks, return_exceptions=True)
+    return await asyncio.gather(*tasks, return_exceptions = True)
 
 
-def read_multiple_json_sync(paths: List[Path], default=None) -> List[Any]:
+def read_multiple_json_sync(paths: List[Path], default = None) -> List[Any]:
     """Synchronous wrapper for concurrent JSON reading."""
     try:
         # Try to run in an existing event loop
@@ -112,14 +112,14 @@ def dumps_json(data) -> str:
     Falls back to default = str for objects that aren't natively serializable.
     """
     try:
-        return json.dumps(data, ensure_ascii=False)
+        return json.dumps(data, ensure_ascii = False)
     except TypeError:
-        return json.dumps(data, ensure_ascii=False, default=str)
+        return json.dumps(data, ensure_ascii = False, default = str)
 
 
 def random_string(length: int = 8) -> str:
     """Generate a random string of specified length."""
-    return "".join(random.choices(string.ascii_lowercase + string.digits, k=length))
+    return "".join(random.choices(string.ascii_lowercase + string.digits, k = length))
 
 
 def append_jsonl(path: Path, data: Dict[str, Any]):
@@ -127,7 +127,7 @@ def append_jsonl(path: Path, data: Dict[str, Any]):
     ensure_dir(path.parent)
 
     # Convert data to JSON string
-    json_line = json.dumps(data, ensure_ascii=False, default=str) + "\n"
+    json_line = json.dumps(data, ensure_ascii = False, default = str) + "\n"
 
     # Append to file
     with open(path, "a", encoding="utf - 8") as f:

@@ -5,7 +5,7 @@ from . import utils
 
 
 def build(root: Path) -> dict:
-    ch = utils.read_json(root / ".ai_onboard" / "charter.json", default=None)
+    ch = utils.read_json(root / ".ai_onboard" / "charter.json", default = None)
     if not ch:
         raise SystemExit("Missing charter. Run: python -m ai_onboard charter")
 
@@ -417,7 +417,7 @@ def _calculate_critical_path(tasks: list, dependencies: list) -> list:
     # Critical path includes highest effort tasks in each WBS
     for wbs_id in sorted(wbs_groups.keys()):
         wbs_tasks = wbs_groups[wbs_id]
-        max_task = max(wbs_tasks, key=lambda t: t["effort_days"])
+        max_task = max(wbs_tasks, key = lambda t: t["effort_days"])
         critical_tasks.append(max_task["id"])
 
     return critical_tasks

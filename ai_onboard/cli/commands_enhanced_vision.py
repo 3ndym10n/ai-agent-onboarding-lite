@@ -491,7 +491,7 @@ def add_enhanced_vision_parser(subparsers) -> None:
         "web", help="Start web interface for vision interrogation"
     )
     web_parser.add_argument(
-        "--port", type=int, default=8080, help="Port for web interface (default: 8080)"
+        "--port", type = int, default = 8080, help="Port for web interface (default: 8080)"
     )
 
     # Status command

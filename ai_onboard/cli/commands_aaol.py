@@ -14,7 +14,7 @@ def add_aaol_commands(subparsers):
     s_aaol = subparsers.add_parser(
         "aaol", help="AI Agent Orchestration Layer - Revolutionary collaborative system"
     )
-    aaol_sub = s_aaol.add_subparsers(dest="aaol_cmd", required=True)
+    aaol_sub = s_aaol.add_subparsers(dest="aaol_cmd", required = True)
 
     # Create session
     s_create = aaol_sub.add_parser(
@@ -26,18 +26,18 @@ def add_aaol_commands(subparsers):
     s_converse = aaol_sub.add_parser(
         "converse", help="Process conversation through decision pipeline"
     )
-    s_converse.add_argument("--session - id", required=True, help="Session identifier")
-    s_converse.add_argument("--message", required=True, help="User message / input")
+    s_converse.add_argument("--session - id", required = True, help="Session identifier")
+    s_converse.add_argument("--message", required = True, help="User message / input")
 
     # Execute plan
     s_execute = aaol_sub.add_parser(
         "execute", help="Execute planned commands for session"
     )
-    s_execute.add_argument("--session - id", required=True, help="Session identifier")
+    s_execute.add_argument("--session - id", required = True, help="Session identifier")
 
     # Session status
     s_status = aaol_sub.add_parser("status", help="Get session status and details")
-    s_status.add_argument("--session - id", required=True, help="Session identifier")
+    s_status.add_argument("--session - id", required = True, help="Session identifier")
 
     # List sessions
     s_list = aaol_sub.add_parser("list - sessions", help="List all available sessions")
@@ -45,7 +45,7 @@ def add_aaol_commands(subparsers):
 
     # Delete session
     s_delete = aaol_sub.add_parser("delete - session", help="Delete a session")
-    s_delete.add_argument("--session - id", required=True, help="Session identifier")
+    s_delete.add_argument("--session - id", required = True, help="Session identifier")
 
     # Cleanup expired sessions
     s_cleanup = aaol_sub.add_parser("cleanup", help="Clean up expired sessions")
@@ -91,7 +91,7 @@ def handle_aaol_commands(args, root: Path):
             "message": "New AI agent conversation session created",
         }
 
-        print(json.dumps(result, indent=2))
+        print(json.dumps(result, indent = 2))
         return True
 
     elif args.aaol_cmd == "converse":
@@ -165,7 +165,7 @@ def handle_aaol_commands(args, root: Path):
 
         print(_ascii_safe("📊 Session Status:"))
         print(_ascii_safe("=" * 30))
-        print(_ascii_safe(json.dumps(status, indent=2, default=str)))
+        print(_ascii_safe(json.dumps(status, indent = 2, default = str)))
 
         return True
 

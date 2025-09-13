@@ -12,7 +12,7 @@ def run_command(cmd, description):
     """Run a command and report results."""
     print(f"🔧 {description}...")
     try:
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+        result = subprocess.run(cmd, shell = True, capture_output = True, text = True)
         if result.returncode == 0:
             print(f"✅ {description} completed successfully")
             return True

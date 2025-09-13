@@ -126,8 +126,8 @@ class ExperimentDesign:
 
     # Metadata
     created_by: str = "system"
-    created_at: datetime = field(default_factory=datetime.now)
-    tags: List[str] = field(default_factory=list)
+    created_at: datetime = field(default_factory = datetime.now)
+    tags: List[str] = field(default_factory = list)
 
 
 @dataclass
@@ -139,7 +139,7 @@ class ExperimentMeasurement:
     metric_name: str
     value: float
     timestamp: datetime
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: Dict[str, Any] = field(default_factory = dict)
 
 
 @dataclass
@@ -160,8 +160,8 @@ class ExperimentResults:
 
     # Recommendations
     recommendation: str = ""
-    next_experiments: List[str] = field(default_factory=list)
-    lessons_learned: List[str] = field(default_factory=list)
+    next_experiments: List[str] = field(default_factory = list)
+    lessons_learned: List[str] = field(default_factory = list)
 
 
 @dataclass
@@ -171,12 +171,12 @@ class RunningExperiment:
     design: ExperimentDesign
     status: ExperimentStatus
     started_at: datetime
-    measurements: List[ExperimentMeasurement] = field(default_factory=list)
+    measurements: List[ExperimentMeasurement] = field(default_factory = list)
     current_condition: Optional[str] = None
 
     # Runtime state
     samples_collected: Dict[str, int] = field(
-        default_factory=dict
+        default_factory = dict
     )  # condition_id -> count
     last_analysis: Optional[datetime] = None
     early_stop_triggered: bool = False
@@ -226,7 +226,7 @@ class StatisticalAnalyzer:
             p_value = 1.0
         else:
             # Pooled standard error
-            pooled_se = math.sqrt((control_std**2 / n1) + (treatment_std**2 / n2))
+            pooled_se = math.sqrt((control_std ** 2 / n1) + (treatment_std ** 2 / n2))
 
             if pooled_se == 0:
                 p_value = 0.0 if control_mean != treatment_mean else 1.0
@@ -301,8 +301,8 @@ class StatisticalAnalyzer:
                 }
 
         # Find best performing condition
-        best_condition = max(condition_means.items(), key=lambda x: x[1])
-        baseline_condition = min(condition_means.items(), key=lambda x: x[1])
+        best_condition = max(condition_means.items(), key = lambda x: x[1])
+        baseline_condition = min(condition_means.items(), key = lambda x: x[1])
 
         # Calculate overall improvement
         improvement = (
@@ -344,7 +344,7 @@ class OptimizationExperimentFramework:
     def __init__(self, root: Path):
         self.root = root
         self.data_dir = root / ".ai_onboard" / "optimization_experiments"
-        self.data_dir.mkdir(parents=True, exist_ok=True)
+        self.data_dir.mkdir(parents = True, exist_ok = True)
 
         # Components
         self.statistical_analyzer = StatisticalAnalyzer()
@@ -360,7 +360,7 @@ class OptimizationExperimentFramework:
         self._monitoring_thread: Optional[threading.Thread] = None
         self._monitoring_active = False
         self._executor = ThreadPoolExecutor(
-            max_workers=3, thread_name_prefix="experiment"
+            max_workers = 3, thread_name_prefix="experiment"
         )
 
         # Load existing data
@@ -470,7 +470,7 @@ class OptimizationExperimentFramework:
                 designs_data[exp_id] = design_dict
 
             with open(self.data_dir / "experiment_designs.json", "w") as f:
-                json.dump(designs_data, f, indent=2)
+                json.dump(designs_data, f, indent = 2)
 
             # Save experiment results
             results_data = {}
@@ -492,7 +492,7 @@ class OptimizationExperimentFramework:
                 results_data[exp_id] = result_dict
 
             with open(self.data_dir / "experiment_results.json", "w") as f:
-                json.dump(results_data, f, indent=2)
+                json.dump(results_data, f, indent = 2)
 
         except Exception as e:
             print(f"Warning: Failed to save persistent experiment data: {e}")
@@ -512,13 +512,13 @@ class OptimizationExperimentFramework:
         experiment_id = f"exp_{int(time.time())}_{uuid.uuid4().hex[:8]}"
 
         design = ExperimentDesign(
-            experiment_id=experiment_id,
-            name=name,
-            description=description,
-            experiment_type=experiment_type,
-            conditions=conditions,
-            metrics=metrics,
-            primary_metric=primary_metric,
+            experiment_id = experiment_id,
+            name = name,
+            description = description,
+            experiment_type = experiment_type,
+            conditions = conditions,
+            metrics = metrics,
+            primary_metric = primary_metric,
             **kwargs,
         )
 
@@ -541,9 +541,9 @@ class OptimizationExperimentFramework:
 
         # Create running experiment
         running_exp = RunningExperiment(
-            design=design,
-            status=ExperimentStatus.RUNNING,
-            started_at=datetime.now(),
+            design = design,
+            status = ExperimentStatus.RUNNING,
+            started_at = datetime.now(),
             samples_collected={cond.condition_id: 0 for cond in design.conditions},
         )
 
@@ -603,12 +603,12 @@ class OptimizationExperimentFramework:
         running_exp = self.running_experiments[experiment_id]
 
         measurement = ExperimentMeasurement(
-            measurement_id=f"meas_{int(time.time())}_{uuid.uuid4().hex[:8]}",
-            condition_id=condition_id,
-            metric_name=metric_name,
-            value=value,
-            timestamp=datetime.now(),
-            context=context or {},
+            measurement_id = f"meas_{int(time.time())}_{uuid.uuid4().hex[:8]}",
+            condition_id = condition_id,
+            metric_name = metric_name,
+            value = value,
+            timestamp = datetime.now(),
+            context = context or {},
         )
 
         running_exp.measurements.append(measurement)
@@ -690,18 +690,18 @@ class OptimizationExperimentFramework:
         )
 
         results = ExperimentResults(
-            experiment_id=running_exp.design.experiment_id,
-            condition_results=condition_data,
-            statistical_analysis=statistical_analysis,
-            outcome=outcome,
-            significance=significance,
-            best_condition=best_condition,
-            improvement_percentage=improvement,
-            confidence_interval=confidence_interval,
-            p_value=p_value,
-            recommendation=recommendation,
-            next_experiments=next_experiments,
-            lessons_learned=lessons_learned,
+            experiment_id = running_exp.design.experiment_id,
+            condition_results = condition_data,
+            statistical_analysis = statistical_analysis,
+            outcome = outcome,
+            significance = significance,
+            best_condition = best_condition,
+            improvement_percentage = improvement,
+            confidence_interval = confidence_interval,
+            p_value = p_value,
+            recommendation = recommendation,
+            next_experiments = next_experiments,
+            lessons_learned = lessons_learned,
         )
 
         return results
@@ -834,7 +834,7 @@ class OptimizationExperimentFramework:
 
         self._monitoring_active = True
         self._monitoring_thread = threading.Thread(
-            target=self._monitoring_loop, name="experiment_monitor", daemon=True
+            target = self._monitoring_loop, name="experiment_monitor", daemon = True
         )
         self._monitoring_thread.start()
 
@@ -842,7 +842,7 @@ class OptimizationExperimentFramework:
         """Stop experiment monitoring thread."""
         self._monitoring_active = False
         if self._monitoring_thread and self._monitoring_thread.is_alive():
-            self._monitoring_thread.join(timeout=5)
+            self._monitoring_thread.join(timeout = 5)
 
     def _monitoring_loop(self):
         """Main monitoring loop for running experiments."""

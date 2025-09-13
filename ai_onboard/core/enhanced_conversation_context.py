@@ -40,8 +40,8 @@ class ContextMemory:
     successful_patterns: List[str]
 
     # Context links
-    related_sessions: List[str] = field(default_factory=list)
-    project_context: Dict[str, Any] = field(default_factory=dict)
+    related_sessions: List[str] = field(default_factory = list)
+    project_context: Dict[str, Any] = field(default_factory = dict)
 
     # Usage tracking
     access_count: int = 0
@@ -59,18 +59,18 @@ class CrossSessionContext:
     last_updated: float
 
     # User behavior patterns
-    preferred_commands: Dict[str, int] = field(default_factory=dict)
-    successful_workflows: List[Dict[str, Any]] = field(default_factory=list)
-    common_issues: List[Dict[str, Any]] = field(default_factory=list)
+    preferred_commands: Dict[str, int] = field(default_factory = dict)
+    successful_workflows: List[Dict[str, Any]] = field(default_factory = list)
+    common_issues: List[Dict[str, Any]] = field(default_factory = list)
 
     # Project understanding
-    project_insights: Dict[str, Any] = field(default_factory=dict)
-    recurring_topics: List[str] = field(default_factory=list)
-    expertise_areas: List[str] = field(default_factory=list)
+    project_insights: Dict[str, Any] = field(default_factory = dict)
+    recurring_topics: List[str] = field(default_factory = list)
+    expertise_areas: List[str] = field(default_factory = list)
 
     # Collaboration preferences
     preferred_collaboration_mode: str = "collaborative"
-    safety_preferences: Dict[str, Any] = field(default_factory=dict)
+    safety_preferences: Dict[str, Any] = field(default_factory = dict)
     communication_style: str = "detailed"  # brief, detailed, technical
 
 
@@ -80,7 +80,7 @@ class ContextSharingProfile:
 
     agent_id: str
     sharing_permissions: Dict[str, bool] = field(
-        default_factory=lambda: {
+        default_factory = lambda: {
             "conversation_history": True,
             "user_preferences": True,
             "project_context": True,
@@ -91,9 +91,9 @@ class ContextSharingProfile:
     )
 
     # Context filtering
-    sensitive_topics: List[str] = field(default_factory=list)
+    sensitive_topics: List[str] = field(default_factory = list)
     allowed_context_types: List[str] = field(
-        default_factory=lambda: ["technical", "workflow", "project_structure"]
+        default_factory = lambda: ["technical", "workflow", "project_structure"]
     )
 
     # Sharing constraints
@@ -108,7 +108,7 @@ class EnhancedConversationContextManager:
     def __init__(self, project_root: Path):
         self.root = project_root
         self.context_dir = project_root / ".ai_onboard" / "enhanced_context"
-        self.context_dir.mkdir(parents=True, exist_ok=True)
+        self.context_dir.mkdir(parents = True, exist_ok = True)
 
         # Storage files
         self.memories_file = self.context_dir / "context_memories.json"
@@ -291,18 +291,18 @@ class EnhancedConversationContextManager:
                 }
 
             memory = ContextMemory(
-                memory_id=memory_id,
-                session_id=session_id,
-                user_id=user_id,
-                created_at=time.time(),
-                last_accessed=time.time(),
-                topic=topic,
-                key_facts=key_facts,
+                memory_id = memory_id,
+                session_id = session_id,
+                user_id = user_id,
+                created_at = time.time(),
+                last_accessed = time.time(),
+                topic = topic,
+                key_facts = key_facts,
                 user_preferences={},
                 resolved_issues=[],
                 successful_patterns=[],
-                project_context=project_context,
-                importance_level=importance,
+                project_context = project_context,
+                importance_level = importance,
             )
 
             self.memories[memory_id] = memory
@@ -334,7 +334,7 @@ class EnhancedConversationContextManager:
         try:
             # Get sharing profile for target agent
             sharing_profile = self.sharing_profiles.get(
-                target_agent_id, ContextSharingProfile(agent_id=target_agent_id)
+                target_agent_id, ContextSharingProfile(agent_id = target_agent_id)
             )
 
             # Load session
@@ -460,8 +460,8 @@ class EnhancedConversationContextManager:
                     "preferred_commands": dict(
                         sorted(
                             cross_context.preferred_commands.items(),
-                            key=lambda x: x[1],
-                            reverse=True,
+                            key = lambda x: x[1],
+                            reverse = True,
                         )[:5]
                     ),  # Top 5 commands
                 },
@@ -477,7 +477,7 @@ class EnhancedConversationContextManager:
                         "created_at": memory.created_at,
                     }
                     for memory in sorted(
-                        user_memories, key=lambda m: m.created_at, reverse=True
+                        user_memories, key = lambda m: m.created_at, reverse = True
                     )[:5]
                 ],
             }
@@ -491,10 +491,10 @@ class EnhancedConversationContextManager:
         """Get or create cross - session context for a user."""
         if user_id not in self.cross_session_contexts:
             self.cross_session_contexts[user_id] = CrossSessionContext(
-                user_id=user_id,
-                project_root=str(self.root),
-                created_at=time.time(),
-                last_updated=time.time(),
+                user_id = user_id,
+                project_root = str(self.root),
+                created_at = time.time(),
+                last_updated = time.time(),
             )
             self._save_persistent_data()
 
@@ -548,7 +548,7 @@ class EnhancedConversationContextManager:
                 relevant_memories.append(memory)
 
         # Sort by relevance and return top memories
-        relevant_memories.sort(key=lambda m: m.relevance_score, reverse=True)
+        relevant_memories.sort(key = lambda m: m.relevance_score, reverse = True)
         return relevant_memories[:10]  # Top 10 most relevant
 
     def _find_related_sessions(self, session_id: str) -> List[Dict[str, Any]]:
@@ -646,11 +646,11 @@ class EnhancedConversationContextManager:
         """Record a metric for enhanced context management."""
         try:
             event = MetricEvent(
-                name=name,
-                value=value,
-                source=MetricSource.SYSTEM,
-                category=MetricCategory.PERFORMANCE,
-                dimensions=dimensions or {},
+                name = name,
+                value = value,
+                source = MetricSource.SYSTEM,
+                category = MetricCategory.PERFORMANCE,
+                dimensions = dimensions or {},
                 unit="count",
             )
             self.metrics_collector.collect_metric(event)

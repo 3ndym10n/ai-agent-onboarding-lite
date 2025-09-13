@@ -31,10 +31,10 @@ class LocalCIValidator:
             start_time = time.time()
             result = subprocess.run(
                 cmd,
-                capture_output=True,
-                text=True,
-                timeout=timeout,
-                cwd=Path.cwd(),
+                capture_output = True,
+                text = True,
+                timeout = timeout,
+                cwd = Path.cwd(),
                 encoding="utf - 8",
                 errors="replace",
             )
@@ -86,13 +86,13 @@ class LocalCIValidator:
         checks = [
             (["python", "--version"], "Python Version"),
             (["pip", "--version"], "Pip Version"),
-            (["python", "scripts/validate_dev_env.py"], "Dev Environment"),
+            (["python", "scripts / validate_dev_env.py"], "Dev Environment"),
             (
-                ["python", "scripts/validate_project_structure.py"],
+                ["python", "scripts / validate_project_structure.py"],
                 "Project Structure",
             ),
             (
-                ["python", "scripts/check_requirements_consistency.py"],
+                ["python", "scripts / check_requirements_consistency.py"],
                 "Requirements Consistency",
             ),
         ]
@@ -131,7 +131,7 @@ class LocalCIValidator:
                     "python",
                     "-m",
                     "isort",
-                    "--check-only",
+                    "--check - only",
                     "--diff",
                     "ai_onboard/",
                     "tests/",
@@ -230,7 +230,7 @@ class LocalCIValidator:
         all_passed = True
         for cmd, name in checks:
             success, _ = self.run_command(
-                cmd, name, timeout=600
+                cmd, name, timeout = 600
             )  # Longer timeout for tests
             if not success:
                 all_passed = False
@@ -319,7 +319,7 @@ def main():
 
     parser = argparse.ArgumentParser(description="Local CI validation")
     parser.add_argument(
-        "--no-fast-fail",
+        "--no - fast - fail",
         action="store_true",
         help="Continue running all checks even if one fails",
     )
@@ -332,7 +332,7 @@ def main():
 
     args = parser.parse_args()
 
-    validator = LocalCIValidator(fast_fail=not args.no_fast_fail, verbose=args.verbose)
+    validator = LocalCIValidator(fast_fail = not args.no_fast_fail, verbose = args.verbose)
 
     if args.step:
         step_map = {

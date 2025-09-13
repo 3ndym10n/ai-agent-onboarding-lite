@@ -9,7 +9,7 @@ def add_prompt_commands(subparsers):
     """Add prompt command parsers."""
 
     s_prompt = subparsers.add_parser("prompt", help="Prompt management and generation")
-    sp_sub = s_prompt.add_subparsers(dest="prompt_cmd", required=True)
+    sp_sub = s_prompt.add_subparsers(dest="prompt_cmd", required = True)
 
     # state
     sp_sub.add_parser(

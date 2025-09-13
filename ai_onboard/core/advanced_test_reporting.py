@@ -84,7 +84,7 @@ class TestMetrics:
     slowest_test: float
     duration_std_dev: float
     test_velocity: float  # tests per second
-    created_at: datetime = field(default_factory=datetime.now)
+    created_at: datetime = field(default_factory = datetime.now)
 
 
 @dataclass
@@ -152,7 +152,7 @@ class AdvancedTestReport:
     historical_comparison: Dict[str, Any]
     recommendations: List[str]
     visualizations: Dict[str, Any]
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory = dict)
 
 
 class AdvancedTestReportGenerator:
@@ -220,7 +220,7 @@ class AdvancedTestReportGenerator:
             },
         }
 
-        return utils.read_json(self.config_path, default=default_config)
+        return utils.read_json(self.config_path, default = default_config)
 
     def _initialize_quality_benchmarks(self) -> Dict[str, float]:
         """Initialize quality benchmarks for comparison."""
@@ -298,20 +298,20 @@ class AdvancedTestReportGenerator:
 
             # Create comprehensive report
             report = AdvancedTestReport(
-                report_id=report_id,
-                generated_at=datetime.now(),
-                report_level=report_level,
-                test_metrics=test_metrics,
-                quality_assessment=quality_assessment,
-                execution_context=execution_context,
-                test_results=test_results,
-                trend_analysis=trend_analysis,
-                anomalies=anomalies,
-                performance_insights=performance_insights,
-                trend_insights=trend_insights,
-                historical_comparison=historical_comparison,
-                recommendations=recommendations,
-                visualizations=visualizations,
+                report_id = report_id,
+                generated_at = datetime.now(),
+                report_level = report_level,
+                test_metrics = test_metrics,
+                quality_assessment = quality_assessment,
+                execution_context = execution_context,
+                test_results = test_results,
+                trend_analysis = trend_analysis,
+                anomalies = anomalies,
+                performance_insights = performance_insights,
+                trend_insights = trend_insights,
+                historical_comparison = historical_comparison,
+                recommendations = recommendations,
+                visualizations = visualizations,
                 metadata={
                     "generator_version": "1.0",
                     "analysis_methods": [
@@ -334,17 +334,17 @@ class AdvancedTestReportGenerator:
             # Log report generation
             telemetry.log_event(
                 "advanced_test_report_generated",
-                report_id=report_id,
-                total_tests=test_metrics.total_tests,
-                success_rate=test_metrics.success_rate,
-                quality_score=quality_assessment.overall_score,
-                formats=len(output_formats),
+                report_id = report_id,
+                total_tests = test_metrics.total_tests,
+                success_rate = test_metrics.success_rate,
+                quality_score = quality_assessment.overall_score,
+                formats = len(output_formats),
             )
 
             return report
 
         except Exception as e:
-            telemetry.log_event("test_report_generation_error", error=str(e))
+            telemetry.log_event("test_report_generation_error", error = str(e))
             raise
 
     def _calculate_test_metrics(
@@ -353,20 +353,20 @@ class AdvancedTestReportGenerator:
         """Calculate comprehensive test execution metrics."""
         if not test_results:
             return TestMetrics(
-                total_tests=0,
-                passed_tests=0,
-                failed_tests=0,
-                skipped_tests=0,
-                warning_tests=0,
-                success_rate=0.0,
-                failure_rate=0.0,
-                skip_rate=0.0,
-                total_duration=0.0,
-                average_duration=0.0,
-                fastest_test=0.0,
-                slowest_test=0.0,
-                duration_std_dev=0.0,
-                test_velocity=0.0,
+                total_tests = 0,
+                passed_tests = 0,
+                failed_tests = 0,
+                skipped_tests = 0,
+                warning_tests = 0,
+                success_rate = 0.0,
+                failure_rate = 0.0,
+                skip_rate = 0.0,
+                total_duration = 0.0,
+                average_duration = 0.0,
+                fastest_test = 0.0,
+                slowest_test = 0.0,
+                duration_std_dev = 0.0,
+                test_velocity = 0.0,
             )
 
         # Count test results
@@ -395,20 +395,20 @@ class AdvancedTestReportGenerator:
         test_velocity = total_tests / total_duration if total_duration > 0 else 0.0
 
         return TestMetrics(
-            total_tests=total_tests,
-            passed_tests=passed_tests,
-            failed_tests=failed_tests,
-            skipped_tests=skipped_tests,
-            warning_tests=warning_tests,
-            success_rate=success_rate,
-            failure_rate=failure_rate,
-            skip_rate=skip_rate,
-            total_duration=total_duration,
-            average_duration=average_duration,
-            fastest_test=fastest_test,
-            slowest_test=slowest_test,
-            duration_std_dev=duration_std_dev,
-            test_velocity=test_velocity,
+            total_tests = total_tests,
+            passed_tests = passed_tests,
+            failed_tests = failed_tests,
+            skipped_tests = skipped_tests,
+            warning_tests = warning_tests,
+            success_rate = success_rate,
+            failure_rate = failure_rate,
+            skip_rate = skip_rate,
+            total_duration = total_duration,
+            average_duration = average_duration,
+            fastest_test = fastest_test,
+            slowest_test = slowest_test,
+            duration_std_dev = duration_std_dev,
+            test_velocity = test_velocity,
         )
 
     def _generate_execution_context(
@@ -420,16 +420,16 @@ class AdvancedTestReportGenerator:
         import sys
 
         return TestExecutionContext(
-            environment=os.getenv("ENVIRONMENT", "development"),
-            platform=platform.platform(),
-            python_version=sys.version,
+            environment = os.getenv("ENVIRONMENT", "development"),
+            platform = platform.platform(),
+            python_version = sys.version,
             test_framework="pytest",
-            execution_mode=os.getenv("TEST_MODE", "standard"),
-            ci_environment=bool(os.getenv("CI")),
-            git_commit=os.getenv("GIT_COMMIT"),
-            git_branch=os.getenv("GIT_BRANCH"),
-            timestamp=datetime.now(),
-            duration=sum(t.duration for t in test_results),
+            execution_mode = os.getenv("TEST_MODE", "standard"),
+            ci_environment = bool(os.getenv("CI")),
+            git_commit = os.getenv("GIT_COMMIT"),
+            git_branch = os.getenv("GIT_BRANCH"),
+            timestamp = datetime.now(),
+            duration = sum(t.duration for t in test_results),
             resource_usage={
                 "memory_peak": self._get_memory_usage(),
                 "cpu_usage": self._get_cpu_usage(),
@@ -451,7 +451,7 @@ class AdvancedTestReportGenerator:
         try:
             import psutil
 
-            return psutil.cpu_percent(interval=0.1)
+            return psutil.cpu_percent(interval = 0.1)
         except ImportError:
             return 0.0
 
@@ -461,12 +461,12 @@ class AdvancedTestReportGenerator:
         """Assess overall test quality with detailed scoring."""
         if not self.config.get("quality_assessment", {}).get("enabled", True):
             return QualityAssessment(
-                overall_score=0.0,
-                quality_grade=TestQualityScore.POOR,
-                coverage_score=0.0,
-                performance_score=0.0,
-                reliability_score=0.0,
-                maintainability_score=0.0,
+                overall_score = 0.0,
+                quality_grade = TestQualityScore.POOR,
+                coverage_score = 0.0,
+                performance_score = 0.0,
+                reliability_score = 0.0,
+                maintainability_score = 0.0,
                 areas_for_improvement=[],
                 strengths=[],
                 recommendations=[],
@@ -519,16 +519,16 @@ class AdvancedTestReportGenerator:
         )
 
         return QualityAssessment(
-            overall_score=overall_score,
-            quality_grade=quality_grade,
-            coverage_score=coverage_score,
-            performance_score=performance_score,
-            reliability_score=reliability_score,
-            maintainability_score=maintainability_score,
-            areas_for_improvement=areas_for_improvement,
-            strengths=strengths,
-            recommendations=recommendations,
-            benchmark_comparison=benchmark_comparison,
+            overall_score = overall_score,
+            quality_grade = quality_grade,
+            coverage_score = coverage_score,
+            performance_score = performance_score,
+            reliability_score = reliability_score,
+            maintainability_score = maintainability_score,
+            areas_for_improvement = areas_for_improvement,
+            strengths = strengths,
+            recommendations = recommendations,
+            benchmark_comparison = benchmark_comparison,
         )
 
     def _calculate_performance_score(self, metrics: TestMetrics) -> float:
@@ -757,7 +757,7 @@ class AdvancedTestReportGenerator:
             return trends
 
         except Exception as e:
-            telemetry.log_event("trend_analysis_error", error=str(e))
+            telemetry.log_event("trend_analysis_error", error = str(e))
             return []
 
     def _create_trend_analysis(
@@ -805,23 +805,23 @@ class AdvancedTestReportGenerator:
         )
 
         return TrendAnalysis(
-            metric_name=metric_name,
+            metric_name = metric_name,
             time_period="10_reports",
-            direction=direction,
-            severity=severity,
-            confidence=confidence,
-            slope=slope,
-            correlation=0.8,  # Simplified
-            data_points=len(values),
-            start_value=values[0],
-            end_value=values[-1],
-            change_percent=change_percent,
+            direction = direction,
+            severity = severity,
+            confidence = confidence,
+            slope = slope,
+            correlation = 0.8,  # Simplified
+            data_points = len(values),
+            start_value = values[0],
+            end_value = values[-1],
+            change_percent = change_percent,
             volatility=(
                 statistics.stdev(values) / statistics.mean(values)
                 if statistics.mean(values) > 0
                 else 0
             ),
-            trend_strength=abs(slope) * confidence,
+            trend_strength = abs(slope) * confidence,
             context={
                 "metric_type": metric_name,
                 "analysis_method": "linear_regression",
@@ -855,27 +855,27 @@ class AdvancedTestReportGenerator:
 
                             anomalies.append(
                                 AnomalyDetection(
-                                    metric_name=f"test_duration_{test.test_id}",
-                                    anomaly_timestamp=datetime.now(),
-                                    anomaly_value=test.duration,
-                                    expected_value=mean_duration,
-                                    deviation_score=z_score,
-                                    anomaly_type=anomaly_type,
-                                    severity=severity,
+                                    metric_name = f"test_duration_{test.test_id}",
+                                    anomaly_timestamp = datetime.now(),
+                                    anomaly_value = test.duration,
+                                    expected_value = mean_duration,
+                                    deviation_score = z_score,
+                                    anomaly_type = anomaly_type,
+                                    severity = severity,
                                     context={
                                         "test_name": test.name,
                                         "test_category": test.category.value,
                                         "detection_method": "z_score",
                                     },
                                     detection_method="z_score",
-                                    confidence=min(z_score / 3.0, 1.0),
+                                    confidence = min(z_score / 3.0, 1.0),
                                 )
                             )
 
             return anomalies
 
         except Exception as e:
-            telemetry.log_event("anomaly_detection_error", error=str(e))
+            telemetry.log_event("anomaly_detection_error", error = str(e))
             return []
 
     def _determine_anomaly_severity(self, z_score: float):
@@ -902,9 +902,9 @@ class AdvancedTestReportGenerator:
             if metrics.success_rate < 0.8:
                 insights.append(
                     PerformanceInsight(
-                        insight_id=f"test_success_rate_{int(time.time())}",
+                        insight_id = f"test_success_rate_{int(time.time())}",
                         title="Low Test Success Rate Detected",
-                        description=f"Current test success rate is {metrics.success_rate:.1%}, which is below the recommended 80% threshold",
+                        description = f"Current test success rate is {metrics.success_rate:.1%}, which is below the recommended 80% threshold",
                         category="reliability",
                         priority="high" if metrics.success_rate < 0.7 else "medium",
                         affected_metrics=["success_rate"],
@@ -926,9 +926,9 @@ class AdvancedTestReportGenerator:
             if metrics.average_duration > 5.0:  # 5 seconds per test
                 insights.append(
                     PerformanceInsight(
-                        insight_id=f"test_performance_{int(time.time())}",
+                        insight_id = f"test_performance_{int(time.time())}",
                         title="Slow Test Execution Detected",
-                        description=f"Average test duration is {metrics.average_duration:.1f}s, which may impact development velocity",
+                        description = f"Average test duration is {metrics.average_duration:.1f}s, which may impact development velocity",
                         category="optimization",
                         priority="medium",
                         affected_metrics=["average_duration"],
@@ -951,9 +951,9 @@ class AdvancedTestReportGenerator:
                 if trend.direction.value == "degrading" and trend.confidence > 0.7:
                     insights.append(
                         PerformanceInsight(
-                            insight_id=f"trend_degrading_{trend.metric_name}_{int(time.time())}",
-                            title=f"Degrading Trend in {trend.metric_name.replace('_', ' ').title()}",
-                            description=f"{trend.metric_name} shows a degrading trend over recent test runs with {trend.change_percent:.1f}% change",
+                            insight_id = f"trend_degrading_{trend.metric_name}_{int(time.time())}",
+                            title = f"Degrading Trend in {trend.metric_name.replace('_', ' ').title()}",
+                            description = f"{trend.metric_name} shows a degrading trend over recent test runs with {trend.change_percent:.1f}% change",
                             category="reliability",
                             priority=(
                                 "high" if abs(trend.change_percent) > 20 else "medium"
@@ -977,7 +977,7 @@ class AdvancedTestReportGenerator:
             return insights
 
         except Exception as e:
-            telemetry.log_event("performance_insights_error", error=str(e))
+            telemetry.log_event("performance_insights_error", error = str(e))
             return []
 
     def _generate_trend_insights(
@@ -994,10 +994,10 @@ class AdvancedTestReportGenerator:
                         insights.append(
                             TrendInsight(
                                 insight_type="positive_trend",
-                                title=f"Improving {trend.metric_name.replace('_', ' ').title()}",
-                                description=f"{trend.metric_name} shows consistent improvement over recent runs",
+                                title = f"Improving {trend.metric_name.replace('_', ' ').title()}",
+                                description = f"{trend.metric_name} shows consistent improvement over recent runs",
                                 severity="info",
-                                confidence=trend.confidence,
+                                confidence = trend.confidence,
                                 evidence={
                                     "change_percent": trend.change_percent,
                                     "trend_strength": trend.trend_strength,
@@ -1013,14 +1013,14 @@ class AdvancedTestReportGenerator:
                         insights.append(
                             TrendInsight(
                                 insight_type="negative_trend",
-                                title=f"Degrading {trend.metric_name.replace('_', ' ').title()}",
-                                description=f"{trend.metric_name} shows concerning degradation over recent runs",
+                                title = f"Degrading {trend.metric_name.replace('_', ' ').title()}",
+                                description = f"{trend.metric_name} shows concerning degradation over recent runs",
                                 severity=(
                                     "warning"
                                     if abs(trend.change_percent) < 20
                                     else "critical"
                                 ),
-                                confidence=trend.confidence,
+                                confidence = trend.confidence,
                                 evidence={
                                     "change_percent": trend.change_percent,
                                     "trend_strength": trend.trend_strength,
@@ -1039,10 +1039,10 @@ class AdvancedTestReportGenerator:
                 insights.append(
                     TrendInsight(
                         insight_type="anomaly_pattern",
-                        title=f"Test Anomalies Detected",
-                        description=f"Found {len(anomalies)} anomalies in test execution patterns",
+                        title = f"Test Anomalies Detected",
+                        description = f"Found {len(anomalies)} anomalies in test execution patterns",
                         severity="warning",
-                        confidence=0.8,
+                        confidence = 0.8,
                         evidence={
                             "anomaly_count": len(anomalies),
                             "types": [a.anomaly_type for a in anomalies],
@@ -1059,7 +1059,7 @@ class AdvancedTestReportGenerator:
             return insights
 
         except Exception as e:
-            telemetry.log_event("trend_insights_error", error=str(e))
+            telemetry.log_event("trend_insights_error", error = str(e))
             return []
 
     def _compare_with_historical(self, current_metrics: TestMetrics) -> Dict[str, Any]:
@@ -1123,7 +1123,7 @@ class AdvancedTestReportGenerator:
             }
 
         except Exception as e:
-            telemetry.log_event("historical_comparison_error", error=str(e))
+            telemetry.log_event("historical_comparison_error", error = str(e))
             return {"status": "comparison_error", "error": str(e)}
 
     def _generate_comprehensive_recommendations(
@@ -1286,7 +1286,7 @@ Data Points: {trend.data_points}"""
             self._save_report_summary(report)
 
         except Exception as e:
-            telemetry.log_event("report_save_error", error=str(e))
+            telemetry.log_event("report_save_error", error = str(e))
 
     def _save_json_report(self, report: AdvancedTestReport, report_dir: Path):
         """Save report as JSON."""
@@ -1306,7 +1306,7 @@ Data Points: {trend.data_points}"""
             raise TypeError(f"Object of type {type(obj)} is not JSON serializable")
 
         with open(json_path, "w") as f:
-            json.dump(report_dict, f, indent=2, default=json_serializer)
+            json.dump(report_dict, f, indent = 2, default = json_serializer)
 
     def _convert_to_serializable(self, obj):
         """Convert complex objects to JSON - serializable format."""
@@ -1418,7 +1418,7 @@ Data Points: {trend.data_points}"""
     <div class="header">
         <h1 > Advanced Test Report </ h1>
         <p >< strong > Report ID:</strong> {report.report_id}</p>
-        <p >< strong > Generated:</strong> {report.generated_at.strftime('%Y -% m-%d %H:%M:%S')}</p>
+        <p >< strong > Generated:</strong> {report.generated_at.strftime('%Y -% m -% d %H:%M:%S')}</p>
         <p >< strong > Quality Grade:</strong> <span class="{report.quality_assessment.quality_grade.value}">{report.quality_assessment.quality_grade.value.upper()}</span ></ p>
     </div>
 
@@ -1479,7 +1479,7 @@ Data Points: {trend.data_points}"""
         return f"""# Advanced Test Report
 
 **Report ID:** {report.report_id}
-**Generated:** {report.generated_at.strftime('%Y -% m-%d %H:%M:%S')}
+**Generated:** {report.generated_at.strftime('%Y -% m -% d %H:%M:%S')}
 **Quality Grade:** {report.quality_assessment.quality_grade.value.upper()}
 
 ## Summary
@@ -1568,59 +1568,59 @@ Data Points: {trend.data_points}"""
 
                         # Create simplified report for trend analysis
                         metrics = TestMetrics(
-                            total_tests=summary["total_tests"],
-                            passed_tests=int(
+                            total_tests = summary["total_tests"],
+                            passed_tests = int(
                                 summary["total_tests"] * summary["success_rate"]
                             ),
-                            failed_tests=int(
+                            failed_tests = int(
                                 summary["total_tests"] * (1 - summary["success_rate"])
                             ),
-                            skipped_tests=0,
-                            warning_tests=0,
-                            success_rate=summary["success_rate"],
-                            failure_rate=1 - summary["success_rate"],
-                            skip_rate=0.0,
-                            total_duration=summary["average_duration"]
+                            skipped_tests = 0,
+                            warning_tests = 0,
+                            success_rate = summary["success_rate"],
+                            failure_rate = 1 - summary["success_rate"],
+                            skip_rate = 0.0,
+                            total_duration = summary["average_duration"]
                             * summary["total_tests"],
-                            average_duration=summary["average_duration"],
-                            fastest_test=0.0,
-                            slowest_test=0.0,
-                            duration_std_dev=0.0,
-                            test_velocity=0.0,
-                            created_at=datetime.fromisoformat(summary["timestamp"]),
+                            average_duration = summary["average_duration"],
+                            fastest_test = 0.0,
+                            slowest_test = 0.0,
+                            duration_std_dev = 0.0,
+                            test_velocity = 0.0,
+                            created_at = datetime.fromisoformat(summary["timestamp"]),
                         )
 
                         # Create minimal report for history
                         historical_report = AdvancedTestReport(
-                            report_id=summary["report_id"],
-                            generated_at=datetime.fromisoformat(summary["timestamp"]),
-                            report_level=ReportLevel.SUMMARY,
-                            test_metrics=metrics,
-                            quality_assessment=QualityAssessment(
-                                overall_score=summary["quality_score"],
-                                quality_grade=TestQualityScore(
+                            report_id = summary["report_id"],
+                            generated_at = datetime.fromisoformat(summary["timestamp"]),
+                            report_level = ReportLevel.SUMMARY,
+                            test_metrics = metrics,
+                            quality_assessment = QualityAssessment(
+                                overall_score = summary["quality_score"],
+                                quality_grade = TestQualityScore(
                                     summary["quality_grade"]
                                 ),
-                                coverage_score=0.0,
-                                performance_score=0.0,
-                                reliability_score=0.0,
-                                maintainability_score=0.0,
+                                coverage_score = 0.0,
+                                performance_score = 0.0,
+                                reliability_score = 0.0,
+                                maintainability_score = 0.0,
                                 areas_for_improvement=[],
                                 strengths=[],
                                 recommendations=[],
                                 benchmark_comparison={},
                             ),
-                            execution_context=TestExecutionContext(
+                            execution_context = TestExecutionContext(
                                 environment="",
                                 platform="",
                                 python_version="",
                                 test_framework="",
                                 execution_mode="",
-                                ci_environment=False,
-                                git_commit=None,
-                                git_branch=None,
-                                timestamp=datetime.fromisoformat(summary["timestamp"]),
-                                duration=0.0,
+                                ci_environment = False,
+                                git_commit = None,
+                                git_branch = None,
+                                timestamp = datetime.fromisoformat(summary["timestamp"]),
+                                duration = 0.0,
                                 resource_usage={},
                             ),
                             test_results=[],
@@ -1639,7 +1639,7 @@ Data Points: {trend.data_points}"""
             self.report_history = self.report_history[-limit:]
 
         except Exception as e:
-            telemetry.log_event("historical_reports_load_error", error=str(e))
+            telemetry.log_event("historical_reports_load_error", error = str(e))
 
     def _trim_report_history(self):
         """Trim report history to configured limit."""

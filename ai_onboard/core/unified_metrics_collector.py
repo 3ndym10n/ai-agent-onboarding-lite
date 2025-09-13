@@ -54,10 +54,10 @@ class MetricEvent:
     value: Union[float, int]
     source: MetricSource
     category: MetricCategory
-    timestamp: datetime = field(default_factory=datetime.now)
+    timestamp: datetime = field(default_factory = datetime.now)
     unit: Optional[str] = None
-    dimensions: Dict[str, Any] = field(default_factory=dict)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    dimensions: Dict[str, Any] = field(default_factory = dict)
+    metadata: Dict[str, Any] = field(default_factory = dict)
     id: Optional[str] = None
 
     def __post_init__(self):
@@ -74,7 +74,7 @@ class MetricQuery:
     category: Optional[MetricCategory] = None
     start_time: Optional[datetime] = None
     end_time: Optional[datetime] = None
-    dimensions: Dict[str, Any] = field(default_factory=dict)
+    dimensions: Dict[str, Any] = field(default_factory = dict)
     limit: int = 1000
     aggregation: Optional[str] = None  # sum, avg, min, max, count
 
@@ -101,7 +101,7 @@ class MetricAlert:
     severity: str  # low, medium, high, critical
     timestamp: datetime
     description: str
-    suggested_actions: List[str] = field(default_factory=list)
+    suggested_actions: List[str] = field(default_factory = list)
 
 
 class UnifiedMetricsCollector:
@@ -114,11 +114,11 @@ class UnifiedMetricsCollector:
         self.config_path = root / ".ai_onboard" / "metrics_config.json"
 
         # In - memory storage for hot data (last 7 days)
-        self.hot_metrics: deque = deque(maxlen=10000)  # Last 10k metrics
+        self.hot_metrics: deque = deque(maxlen = 10000)  # Last 10k metrics
         self.metric_index: Dict[str, List[MetricEvent]] = defaultdict(list)
 
         # Threading for async processing
-        self.executor = ThreadPoolExecutor(max_workers=2, thread_name_prefix="metrics")
+        self.executor = ThreadPoolExecutor(max_workers = 2, thread_name_prefix="metrics")
         self.processing_lock = threading.Lock()
 
         # Alert thresholds and rules
@@ -177,7 +177,7 @@ class UnifiedMetricsCollector:
             },
         }
 
-        self.config = utils.read_json(self.config_path, default=default_config)
+        self.config = utils.read_json(self.config_path, default = default_config)
         self.alert_rules = self.config.get("alert_rules", {})
 
     def _load_existing_metrics(self):
@@ -187,7 +187,7 @@ class UnifiedMetricsCollector:
 
         try:
             # Load recent metrics (last 7 days) into hot storage
-            cutoff_time = datetime.now() - timedelta(days=7)
+            cutoff_time = datetime.now() - timedelta(days = 7)
             loaded_count = 0
 
             with open(self.metrics_path, "r", encoding="utf - 8") as f:
@@ -210,18 +210,18 @@ class UnifiedMetricsCollector:
                             if metric_timestamp >= cutoff_time:
                                 # Create MetricEvent from stored data
                                 metric = MetricEvent(
-                                    name=metric_data["name"],
-                                    value=metric_data["value"],
-                                    source=MetricSource(
+                                    name = metric_data["name"],
+                                    value = metric_data["value"],
+                                    source = MetricSource(
                                         metric_data.get("source", "system")
                                     ),
-                                    category=MetricCategory(
+                                    category = MetricCategory(
                                         metric_data.get("category", "health")
                                     ),
-                                    timestamp=metric_timestamp,
-                                    unit=metric_data.get("unit"),
-                                    dimensions=metric_data.get("dimensions", {}),
-                                    metadata=metric_data.get("metadata", {}),
+                                    timestamp = metric_timestamp,
+                                    unit = metric_data.get("unit"),
+                                    dimensions = metric_data.get("dimensions", {}),
+                                    metadata = metric_data.get("metadata", {}),
                                 )
 
                                 # Add to hot storage and index
@@ -270,14 +270,14 @@ class UnifiedMetricsCollector:
 
             # Update collection stats
             collection_time = (time.time() - start_time) * 1000
-            self._update_collection_stats(collection_time, success=True)
+            self._update_collection_stats(collection_time, success = True)
 
             return metric.id
 
         except Exception as e:
-            self._update_collection_stats(0, success=False)
+            self._update_collection_stats(0, success = False)
             telemetry.log_event(
-                "metric_collection_error", error=str(e), metric_name=metric.name
+                "metric_collection_error", error = str(e), metric_name = metric.name
             )
             return metric.id
 
@@ -315,14 +315,14 @@ class UnifiedMetricsCollector:
 
             # Update stats
             batch_time = (time.time() - start_time) * 1000
-            self._update_collection_stats(batch_time / len(metrics), success=True)
+            self._update_collection_stats(batch_time / len(metrics), success = True)
 
             return collected_ids
 
         except Exception as e:
-            self._update_collection_stats(0, success=False)
+            self._update_collection_stats(0, success = False)
             telemetry.log_event(
-                "metric_batch_collection_error", error=str(e), batch_size=len(metrics)
+                "metric_batch_collection_error", error = str(e), batch_size = len(metrics)
             )
             return collected_ids
 
@@ -349,7 +349,7 @@ class UnifiedMetricsCollector:
                     matching_metrics.append(metric)
 
             # Sort by timestamp (newest first)
-            matching_metrics.sort(key=lambda m: m.timestamp, reverse=True)
+            matching_metrics.sort(key = lambda m: m.timestamp, reverse = True)
 
             # Apply limit
             if query.limit:
@@ -378,17 +378,17 @@ class UnifiedMetricsCollector:
             query_time = (time.time() - start_time) * 1000
 
             return MetricResult(
-                metrics=matching_metrics,
-                total_count=len(matching_metrics),
-                aggregated_value=aggregated_value,
-                query_time_ms=query_time,
+                metrics = matching_metrics,
+                total_count = len(matching_metrics),
+                aggregated_value = aggregated_value,
+                query_time_ms = query_time,
             )
 
         except Exception as e:
-            telemetry.log_event("metric_query_error", error=str(e))
+            telemetry.log_event("metric_query_error", error = str(e))
             return MetricResult(
                 metrics=[],
-                total_count=0,
+                total_count = 0,
                 query_time_ms=(time.time() - start_time) * 1000,
             )
 
@@ -406,15 +406,19 @@ class UnifiedMetricsCollector:
         """Anonymize sensitive fields in metric data."""
         sensitive_fields = self.config.get("privacy", {}).get("sensitive_fields", [])
 
-        for field in sensitive_fields:
-            if field in metric.dimensions:
+        for field_name in sensitive_fields:
+            if field_name in metric.dimensions:
                 # Hash the value for anonymization
-                original_value = str(metric.dimensions[field])
-                metric.dimensions[field] = f"hash_{hash(original_value) % 1000000:06d}"
+                original_value = str(metric.dimensions[field_name])
+                metric.dimensions[field_name] = (
+                    f"hash_{hash(original_value) % 1000000:06d}"
+                )
 
-            if field in metric.metadata:
-                original_value = str(metric.metadata[field])
-                metric.metadata[field] = f"hash_{hash(original_value) % 1000000:06d}"
+            if field_name in metric.metadata:
+                original_value = str(metric.metadata[field_name])
+                metric.metadata[field_name] = (
+                    f"hash_{hash(original_value) % 1000000:06d}"
+                )
 
     def _matches_query(self, metric: MetricEvent, query: MetricQuery) -> bool:
         """Check if a metric matches the query criteria."""
@@ -461,7 +465,7 @@ class UnifiedMetricsCollector:
 
         except Exception as e:
             telemetry.log_event(
-                "async_metric_processing_error", error=str(e), metric_id=metric.id
+                "async_metric_processing_error", error = str(e), metric_id = metric.id
             )
 
     def _process_metrics_batch_async(self, metrics: List[MetricEvent]):
@@ -476,7 +480,7 @@ class UnifiedMetricsCollector:
 
         except Exception as e:
             telemetry.log_event(
-                "async_batch_processing_error", error=str(e), batch_size=len(metrics)
+                "async_batch_processing_error", error = str(e), batch_size = len(metrics)
             )
 
     def _check_alert_conditions(self, metric: MetricEvent):
@@ -504,15 +508,15 @@ class UnifiedMetricsCollector:
 
         if triggered:
             alert = MetricAlert(
-                alert_id=f"alert_{int(time.time())}_{utils.random_string(6)}",
-                metric_name=metric.name,
-                condition=f"{metric.name} {condition} {threshold}",
-                threshold=threshold,
-                current_value=metric.value,
-                severity=severity,
-                timestamp=metric.timestamp,
-                description=f"Metric {metric.name} value {metric.value} {condition} threshold {threshold}",
-                suggested_actions=self._generate_alert_actions(metric, rule),
+                alert_id = f"alert_{int(time.time())}_{utils.random_string(6)}",
+                metric_name = metric.name,
+                condition = f"{metric.name} {condition} {threshold}",
+                threshold = threshold,
+                current_value = metric.value,
+                severity = severity,
+                timestamp = metric.timestamp,
+                description = f"Metric {metric.name} value {metric.value} {condition} threshold {threshold}",
+                suggested_actions = self._generate_alert_actions(metric, rule),
             )
 
             self.active_alerts[alert.alert_id] = alert
@@ -520,10 +524,10 @@ class UnifiedMetricsCollector:
 
             telemetry.log_event(
                 "metric_alert_triggered",
-                alert_id=alert.alert_id,
-                metric_name=metric.name,
-                severity=severity,
-                value=metric.value,
+                alert_id = alert.alert_id,
+                metric_name = metric.name,
+                severity = severity,
+                value = metric.value,
             )
 
     def _generate_alert_actions(self, metric: MetricEvent, rule: Dict) -> List[str]:
@@ -572,7 +576,7 @@ class UnifiedMetricsCollector:
         }
 
         with open(self.metrics_path, "a", encoding="utf - 8") as f:
-            json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
+            json.dump(data, f, ensure_ascii = False, separators=(",", ":"))
             f.write("\n")
 
     def _persist_metrics_batch(self, metrics: List[MetricEvent]):
@@ -590,7 +594,7 @@ class UnifiedMetricsCollector:
                     "dimensions": metric.dimensions,
                     "metadata": metric.metadata,
                 }
-                json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
+                json.dump(data, f, ensure_ascii = False, separators=(",", ":"))
                 f.write("\n")
 
     def _persist_alert(self, alert: MetricAlert):
@@ -608,7 +612,7 @@ class UnifiedMetricsCollector:
         }
 
         with open(self.alerts_path, "a", encoding="utf - 8") as f:
-            json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
+            json.dump(data, f, ensure_ascii = False, separators=(",", ":"))
             f.write("\n")
 
     def _update_collection_stats(self, collection_time_ms: float, success: bool):
@@ -632,14 +636,14 @@ class UnifiedMetricsCollector:
         # Periodic cleanup of old hot storage data
         def cleanup_hot_storage():
             cutoff_time = datetime.now() - timedelta(
-                days=self.config.get("hot_storage_days", 7)
+                days = self.config.get("hot_storage_days", 7)
             )
 
             with self.processing_lock:
                 # Remove old metrics from hot storage
                 self.hot_metrics = deque(
                     [m for m in self.hot_metrics if m.timestamp > cutoff_time],
-                    maxlen=self.hot_metrics.maxlen,
+                    maxlen = self.hot_metrics.maxlen,
                 )
 
                 # Clean up metric index
@@ -661,9 +665,9 @@ class UnifiedMetricsCollector:
                 try:
                     cleanup_hot_storage()
                 except Exception as e:
-                    telemetry.log_event("cleanup_error", error=str(e))
+                    telemetry.log_event("cleanup_error", error = str(e))
 
-        cleanup_thread = threading.Thread(target=periodic_cleanup, daemon=True)
+        cleanup_thread = threading.Thread(target = periodic_cleanup, daemon = True)
         cleanup_thread.start()
 
 
@@ -686,12 +690,12 @@ def collect_performance_metric(
     """Collect a performance timing metric."""
     collector = get_unified_metrics_collector(Path.cwd())
     metric = MetricEvent(
-        name=name,
-        value=value,
-        source=MetricSource.PERFORMANCE,
-        category=MetricCategory.TIMING,
-        unit=unit,
-        dimensions=dimensions,
+        name = name,
+        value = value,
+        source = MetricSource.PERFORMANCE,
+        category = MetricCategory.TIMING,
+        unit = unit,
+        dimensions = dimensions,
     )
     return collector.collect_metric(metric)
 
@@ -702,12 +706,12 @@ def collect_user_metric(
     """Collect a user experience metric."""
     collector = get_unified_metrics_collector(Path.cwd())
     metric = MetricEvent(
-        name=name,
-        value=value,
-        source=MetricSource.USER,
-        category=MetricCategory.INTERACTION,
-        unit=unit,
-        dimensions=dimensions,
+        name = name,
+        value = value,
+        source = MetricSource.USER,
+        category = MetricCategory.INTERACTION,
+        unit = unit,
+        dimensions = dimensions,
     )
     return collector.collect_metric(metric)
 
@@ -718,11 +722,11 @@ def collect_system_metric(
     """Collect a system health metric."""
     collector = get_unified_metrics_collector(Path.cwd())
     metric = MetricEvent(
-        name=name,
-        value=value,
-        source=MetricSource.SYSTEM,
-        category=MetricCategory.HEALTH,
-        unit=unit,
-        dimensions=dimensions,
+        name = name,
+        value = value,
+        source = MetricSource.SYSTEM,
+        category = MetricCategory.HEALTH,
+        unit = unit,
+        dimensions = dimensions,
     )
     return collector.collect_metric(metric)

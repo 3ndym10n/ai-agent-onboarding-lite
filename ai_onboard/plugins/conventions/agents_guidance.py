@@ -23,7 +23,7 @@ class AgentsGuidancePresent:
                     "warn",
                     "AGENTS.md missing (add guidance for AI coding agents)",
                     agents_md,
-                    confidence=0.9,
+                    confidence = 0.9,
                 )
             )
 
@@ -39,7 +39,7 @@ class AgentsGuidancePresent:
                     "info",
                     "README should link to AGENTS.md",
                     readme_md,
-                    confidence=0.7,
+                    confidence = 0.7,
                 )
             )
 
@@ -51,7 +51,7 @@ class AgentsGuidancePresent:
                     "info",
                     "Optional: add .cursorrules for Cursor users to ingest policies",
                     cursorrules,
-                    confidence=0.4,
+                    confidence = 0.4,
                 )
             )
 

@@ -90,7 +90,7 @@ def submit_gate_response(
     if confirmation_code:
         response_data["confirmation_code"] = confirmation_code
 
-    response_file.write_text(json.dumps(response_data, indent=2), encoding="utf - 8")
+    response_file.write_text(json.dumps(response_data, indent = 2), encoding="utf - 8")
 
     print("[OK] Gate response submitted!")
     print(f"[FOLDER] Response saved to: {response_file}")

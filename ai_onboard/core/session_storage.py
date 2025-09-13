@@ -53,7 +53,7 @@ class SessionStorageManager:
     def __init__(self, project_root: Path):
         self.project_root = project_root
         self.sessions_dir = project_root / ".ai_onboard" / "sessions"
-        self.sessions_dir.mkdir(parents=True, exist_ok=True)
+        self.sessions_dir.mkdir(parents = True, exist_ok = True)
 
         # Create a sessions index file for quick lookups
         self.index_file = self.sessions_dir / "sessions_index.json"
@@ -75,7 +75,7 @@ class SessionStorageManager:
     def _save_index(self, index: Dict[str, Dict[str, Any]]):
         """Save the sessions index."""
         with open(self.index_file, "w", encoding="utf - 8") as f:
-            json.dump(index, f, indent=2, default=str)
+            json.dump(index, f, indent = 2, default = str)
 
     def _get_session_file(self, session_id: str) -> Path:
         """Get the file path for a specific session."""
@@ -86,30 +86,30 @@ class SessionStorageManager:
         try:
             # Convert to serializable format
             stored_session = StoredSession(
-                session_id=context.session_id,
-                user_id=context.user_id,
-                project_root=str(context.project_root),
-                created_at=context.created_at,
-                last_activity=context.last_activity,
-                state=context.state.value,
-                conversation_rounds=context.conversation_rounds,
-                resolved_intents=context.resolved_intents,
-                user_corrections=context.user_corrections,
-                current_stage=context.current_stage.value,
-                stage_results=context.stage_results,
-                confidence_scores=context.confidence_scores,
-                risk_factors=context.risk_factors,
-                planned_commands=context.planned_commands,
-                executed_commands=context.executed_commands,
-                rollback_plan=context.rollback_plan,
-                safety_violations=context.safety_violations,
-                intervention_triggers=context.intervention_triggers,
+                session_id = context.session_id,
+                user_id = context.user_id,
+                project_root = str(context.project_root),
+                created_at = context.created_at,
+                last_activity = context.last_activity,
+                state = context.state.value,
+                conversation_rounds = context.conversation_rounds,
+                resolved_intents = context.resolved_intents,
+                user_corrections = context.user_corrections,
+                current_stage = context.current_stage.value,
+                stage_results = context.stage_results,
+                confidence_scores = context.confidence_scores,
+                risk_factors = context.risk_factors,
+                planned_commands = context.planned_commands,
+                executed_commands = context.executed_commands,
+                rollback_plan = context.rollback_plan,
+                safety_violations = context.safety_violations,
+                intervention_triggers = context.intervention_triggers,
             )
 
             # Save session file
             session_file = self._get_session_file(context.session_id)
             with open(session_file, "w", encoding="utf - 8") as f:
-                json.dump(asdict(stored_session), f, indent=2, default=str)
+                json.dump(asdict(stored_session), f, indent = 2, default = str)
 
             # Update index
             index = self._load_index()
@@ -147,24 +147,24 @@ class SessionStorageManager:
 
             # Convert back to ConversationContext
             context = ConversationContext(
-                session_id=data["session_id"],
-                user_id=data["user_id"],
-                project_root=Path(data["project_root"]),
-                created_at=data["created_at"],
-                last_activity=data["last_activity"],
-                state=ConversationState(data["state"]),
-                conversation_rounds=data["conversation_rounds"],
-                resolved_intents=data["resolved_intents"],
-                user_corrections=data["user_corrections"],
-                current_stage=DecisionStage(data["current_stage"]),
-                stage_results=data["stage_results"],
-                confidence_scores=data["confidence_scores"],
-                risk_factors=data["risk_factors"],
-                planned_commands=data["planned_commands"],
-                executed_commands=data["executed_commands"],
-                rollback_plan=data["rollback_plan"],
-                safety_violations=data["safety_violations"],
-                intervention_triggers=data["intervention_triggers"],
+                session_id = data["session_id"],
+                user_id = data["user_id"],
+                project_root = Path(data["project_root"]),
+                created_at = data["created_at"],
+                last_activity = data["last_activity"],
+                state = ConversationState(data["state"]),
+                conversation_rounds = data["conversation_rounds"],
+                resolved_intents = data["resolved_intents"],
+                user_corrections = data["user_corrections"],
+                current_stage = DecisionStage(data["current_stage"]),
+                stage_results = data["stage_results"],
+                confidence_scores = data["confidence_scores"],
+                risk_factors = data["risk_factors"],
+                planned_commands = data["planned_commands"],
+                executed_commands = data["executed_commands"],
+                rollback_plan = data["rollback_plan"],
+                safety_violations = data["safety_violations"],
+                intervention_triggers = data["intervention_triggers"],
             )
 
             return context

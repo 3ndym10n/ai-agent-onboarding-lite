@@ -85,8 +85,8 @@ class UserPreference:
     confidence: float
     evidence_count: int
     last_updated: datetime
-    sources: List[str] = field(default_factory=list)
-    context_conditions: Dict[str, Any] = field(default_factory=dict)
+    sources: List[str] = field(default_factory = list)
+    context_conditions: Dict[str, Any] = field(default_factory = dict)
 
 
 @dataclass
@@ -100,9 +100,9 @@ class UserBehaviorPattern:
     frequency: float
     confidence: float
     conditions: Dict[str, Any]
-    implications: List[str] = field(default_factory=list)
-    recommendations: List[str] = field(default_factory=list)
-    detected_at: datetime = field(default_factory=datetime.now)
+    implications: List[str] = field(default_factory = list)
+    recommendations: List[str] = field(default_factory = list)
+    detected_at: datetime = field(default_factory = datetime.now)
 
 
 @dataclass
@@ -111,15 +111,15 @@ class UserProfile:
 
     user_id: str
     experience_level: UserExperienceLevel
-    preferences: Dict[str, UserPreference] = field(default_factory=dict)
-    behavior_patterns: List[UserBehaviorPattern] = field(default_factory=list)
-    interaction_history: deque = field(default_factory=lambda: deque(maxlen=1000))
-    satisfaction_scores: deque = field(default_factory=lambda: deque(maxlen=100))
-    feedback_history: List[Dict[str, Any]] = field(default_factory=list)
-    last_activity: datetime = field(default_factory=datetime.now)
+    preferences: Dict[str, UserPreference] = field(default_factory = dict)
+    behavior_patterns: List[UserBehaviorPattern] = field(default_factory = list)
+    interaction_history: deque = field(default_factory = lambda: deque(maxlen = 1000))
+    satisfaction_scores: deque = field(default_factory = lambda: deque(maxlen = 100))
+    feedback_history: List[Dict[str, Any]] = field(default_factory = list)
+    last_activity: datetime = field(default_factory = datetime.now)
     total_interactions: int = 0
     average_satisfaction: float = 0.0
-    created_at: datetime = field(default_factory=datetime.now)
+    created_at: datetime = field(default_factory = datetime.now)
 
 
 class UserPreferenceLearningSystem:
@@ -243,16 +243,16 @@ class UserPreferenceLearningSystem:
             preferences = {}
             for pref_key, pref_data in profile_data.get("preferences", {}).items():
                 preferences[pref_key] = UserPreference(
-                    preference_id=pref_data["preference_id"],
-                    user_id=user_id,
-                    category=PreferenceCategory(pref_data["category"]),
-                    preference_key=pref_data["preference_key"],
-                    preference_value=pref_data["preference_value"],
-                    confidence=pref_data["confidence"],
-                    evidence_count=pref_data["evidence_count"],
-                    last_updated=datetime.fromisoformat(pref_data["last_updated"]),
-                    sources=pref_data.get("sources", []),
-                    context_conditions=pref_data.get("context_conditions", {}),
+                    preference_id = pref_data["preference_id"],
+                    user_id = user_id,
+                    category = PreferenceCategory(pref_data["category"]),
+                    preference_key = pref_data["preference_key"],
+                    preference_value = pref_data["preference_value"],
+                    confidence = pref_data["confidence"],
+                    evidence_count = pref_data["evidence_count"],
+                    last_updated = datetime.fromisoformat(pref_data["last_updated"]),
+                    sources = pref_data.get("sources", []),
+                    context_conditions = pref_data.get("context_conditions", {}),
                 )
 
             # Convert behavior patterns
@@ -260,55 +260,55 @@ class UserPreferenceLearningSystem:
             for pattern_data in profile_data.get("behavior_patterns", []):
                 behavior_patterns.append(
                     UserBehaviorPattern(
-                        pattern_id=pattern_data["pattern_id"],
-                        user_id=user_id,
-                        pattern_type=pattern_data["pattern_type"],
-                        description=pattern_data["description"],
-                        frequency=pattern_data["frequency"],
-                        confidence=pattern_data["confidence"],
-                        conditions=pattern_data["conditions"],
-                        implications=pattern_data.get("implications", []),
-                        recommendations=pattern_data.get("recommendations", []),
-                        detected_at=datetime.fromisoformat(pattern_data["detected_at"]),
+                        pattern_id = pattern_data["pattern_id"],
+                        user_id = user_id,
+                        pattern_type = pattern_data["pattern_type"],
+                        description = pattern_data["description"],
+                        frequency = pattern_data["frequency"],
+                        confidence = pattern_data["confidence"],
+                        conditions = pattern_data["conditions"],
+                        implications = pattern_data.get("implications", []),
+                        recommendations = pattern_data.get("recommendations", []),
+                        detected_at = datetime.fromisoformat(pattern_data["detected_at"]),
                     )
                 )
 
             # Convert interaction history
-            interaction_history = deque(maxlen=1000)
+            interaction_history = deque(maxlen = 1000)
             for interaction_data in profile_data.get("interaction_history", []):
                 interaction_history.append(
                     UserInteraction(
-                        interaction_id=interaction_data["interaction_id"],
-                        user_id=user_id,
-                        interaction_type=InteractionType(
+                        interaction_id = interaction_data["interaction_id"],
+                        user_id = user_id,
+                        interaction_type = InteractionType(
                             interaction_data["interaction_type"]
                         ),
-                        timestamp=datetime.fromisoformat(interaction_data["timestamp"]),
-                        context=interaction_data["context"],
-                        duration=interaction_data.get("duration"),
-                        outcome=interaction_data.get("outcome"),
-                        satisfaction_score=interaction_data.get("satisfaction_score"),
-                        feedback=interaction_data.get("feedback"),
+                        timestamp = datetime.fromisoformat(interaction_data["timestamp"]),
+                        context = interaction_data["context"],
+                        duration = interaction_data.get("duration"),
+                        outcome = interaction_data.get("outcome"),
+                        satisfaction_score = interaction_data.get("satisfaction_score"),
+                        feedback = interaction_data.get("feedback"),
                     )
                 )
 
             # Convert satisfaction scores
-            satisfaction_scores = deque(maxlen=100)
+            satisfaction_scores = deque(maxlen = 100)
             for score in profile_data.get("satisfaction_scores", []):
                 satisfaction_scores.append(score)
 
             self.user_profiles[user_id] = UserProfile(
-                user_id=user_id,
-                experience_level=UserExperienceLevel(profile_data["experience_level"]),
-                preferences=preferences,
-                behavior_patterns=behavior_patterns,
-                interaction_history=interaction_history,
-                satisfaction_scores=satisfaction_scores,
-                feedback_history=profile_data.get("feedback_history", []),
-                last_activity=datetime.fromisoformat(profile_data["last_activity"]),
-                total_interactions=profile_data.get("total_interactions", 0),
-                average_satisfaction=profile_data.get("average_satisfaction", 0.0),
-                created_at=datetime.fromisoformat(profile_data["created_at"]),
+                user_id = user_id,
+                experience_level = UserExperienceLevel(profile_data["experience_level"]),
+                preferences = preferences,
+                behavior_patterns = behavior_patterns,
+                interaction_history = interaction_history,
+                satisfaction_scores = satisfaction_scores,
+                feedback_history = profile_data.get("feedback_history", []),
+                last_activity = datetime.fromisoformat(profile_data["last_activity"]),
+                total_interactions = profile_data.get("total_interactions", 0),
+                average_satisfaction = profile_data.get("average_satisfaction", 0.0),
+                created_at = datetime.fromisoformat(profile_data["created_at"]),
             )
 
     def _load_preference_learning_rules(self):
@@ -343,21 +343,21 @@ class UserPreferenceLearningSystem:
                 interaction_type = InteractionType.COMMAND_EXECUTION
 
         interaction = UserInteraction(
-            interaction_id=interaction_id,
-            user_id=user_id,
-            interaction_type=interaction_type,
-            timestamp=datetime.now(),
-            context=context,
-            duration=duration,
-            outcome=outcome,
-            satisfaction_score=satisfaction_score,
-            feedback=feedback,
+            interaction_id = interaction_id,
+            user_id = user_id,
+            interaction_type = interaction_type,
+            timestamp = datetime.now(),
+            context = context,
+            duration = duration,
+            outcome = outcome,
+            satisfaction_score = satisfaction_score,
+            feedback = feedback,
         )
 
         # Get or create user profile
         if user_id not in self.user_profiles:
             self.user_profiles[user_id] = UserProfile(
-                user_id=user_id, experience_level=UserExperienceLevel.BEGINNER
+                user_id = user_id, experience_level = UserExperienceLevel.BEGINNER
             )
 
         profile = self.user_profiles[user_id]
@@ -400,7 +400,7 @@ class UserPreferenceLearningSystem:
 
         # Record learning event
         self.continuous_improvement.record_learning_event(
-            learning_type=continuous_improvement_system.LearningType.USER_PREFERENCE,
+            learning_type = continuous_improvement_system.LearningType.USER_PREFERENCE,
             context={
                 "user_id": user_id,
                 "interaction_type": interaction_type.value,
@@ -412,8 +412,8 @@ class UserPreferenceLearningSystem:
                 "behavior_pattern_detection": True,
                 "experience_level_updated": True,
             },
-            confidence=0.8,
-            impact_score=0.6,
+            confidence = 0.8,
+            impact_score = 0.6,
             source="user_preference_learning",
         )
 
@@ -669,7 +669,7 @@ class UserPreferenceLearningSystem:
             command_types[command_type] += 1
 
         # Determine workflow style preference
-        most_common = max(command_types.items(), key=lambda x: x[1])
+        most_common = max(command_types.items(), key = lambda x: x[1])
         total_commands = sum(command_types.values())
 
         if most_common[1] / total_commands > 0.6:
@@ -762,15 +762,15 @@ class UserPreferenceLearningSystem:
         else:
             # Create new preference
             preference = UserPreference(
-                preference_id=preference_id,
-                user_id=user_id,
-                category=category,
-                preference_key=key,
-                preference_value=value,
-                confidence=confidence,
-                evidence_count=1,
-                last_updated=datetime.now(),
-                sources=sources,
+                preference_id = preference_id,
+                user_id = user_id,
+                category = category,
+                preference_key = key,
+                preference_value = value,
+                confidence = confidence,
+                evidence_count = 1,
+                last_updated = datetime.now(),
+                sources = sources,
             )
 
             self.user_profiles[user_id].preferences[preference_id] = preference
@@ -812,12 +812,12 @@ class UserPreferenceLearningSystem:
         # Detect patterns
         if avg_time_diff < 60:  # Less than 1 minute
             pattern = UserBehaviorPattern(
-                pattern_id=f"pattern_{int(time.time())}_{utils.random_string(8)}",
-                user_id=profile.user_id,
+                pattern_id = f"pattern_{int(time.time())}_{utils.random_string(8)}",
+                user_id = profile.user_id,
                 pattern_type="rapid_interaction",
                 description="User tends to interact rapidly with short intervals",
-                frequency=0.8,
-                confidence=0.7,
+                frequency = 0.8,
+                confidence = 0.7,
                 conditions={"avg_interval_seconds": avg_time_diff},
                 implications=[
                     "Prefers quick responses",
@@ -849,15 +849,15 @@ class UserPreferenceLearningSystem:
             for seq in command_sequences:
                 sequence_counts[seq] += 1
 
-            most_common = max(sequence_counts.items(), key=lambda x: x[1])
+            most_common = max(sequence_counts.items(), key = lambda x: x[1])
             if most_common[1] > 2:  # Appears more than twice
                 pattern = UserBehaviorPattern(
-                    pattern_id=f"pattern_{int(time.time())}_{utils.random_string(8)}",
-                    user_id=profile.user_id,
+                    pattern_id = f"pattern_{int(time.time())}_{utils.random_string(8)}",
+                    user_id = profile.user_id,
                     pattern_type="command_sequence",
-                    description=f"User frequently executes command sequence: {' -> '.join(most_common[0])}",
-                    frequency=most_common[1] / len(command_sequences),
-                    confidence=0.8,
+                    description = f"User frequently executes command sequence: {' -> '.join(most_common[0])}",
+                    frequency = most_common[1] / len(command_sequences),
+                    confidence = 0.8,
                     conditions={
                         "sequence": most_common[0],
                         "frequency": most_common[1],
@@ -887,16 +887,16 @@ class UserPreferenceLearningSystem:
             error_type = interaction.context.get("error_type", "unknown")
             error_types[error_type] += 1
 
-        most_common_error = max(error_types.items(), key=lambda x: x[1])
+        most_common_error = max(error_types.items(), key = lambda x: x[1])
 
         if most_common_error[1] > 2:
             pattern = UserBehaviorPattern(
-                pattern_id=f"pattern_{int(time.time())}_{utils.random_string(8)}",
-                user_id=profile.user_id,
+                pattern_id = f"pattern_{int(time.time())}_{utils.random_string(8)}",
+                user_id = profile.user_id,
                 pattern_type="error_prone",
-                description=f"User frequently encounters {most_common_error[0]} errors",
-                frequency=most_common_error[1] / len(error_interactions),
-                confidence=0.7,
+                description = f"User frequently encounters {most_common_error[0]} errors",
+                frequency = most_common_error[1] / len(error_interactions),
+                confidence = 0.7,
                 conditions={
                     "error_type": most_common_error[0],
                     "frequency": most_common_error[1],
@@ -927,12 +927,12 @@ class UserPreferenceLearningSystem:
 
             if recent_avg > older_avg + 0.2:
                 pattern = UserBehaviorPattern(
-                    pattern_id=f"pattern_{int(time.time())}_{utils.random_string(8)}",
-                    user_id=profile.user_id,
+                    pattern_id = f"pattern_{int(time.time())}_{utils.random_string(8)}",
+                    user_id = profile.user_id,
                     pattern_type="improving_satisfaction",
                     description="User satisfaction is improving over time",
-                    frequency=0.8,
-                    confidence=0.7,
+                    frequency = 0.8,
+                    confidence = 0.7,
                     conditions={"recent_avg": recent_avg, "older_avg": older_avg},
                     implications=[
                         "System is adapting well",
@@ -967,11 +967,11 @@ class UserPreferenceLearningSystem:
             # Log experience level change
             telemetry.log_event(
                 "user_experience_level_changed",
-                user_id=profile.user_id,
-                old_level=profile.experience_level.value,
-                new_level=new_level.value,
-                total_interactions=total_interactions,
-                avg_satisfaction=avg_satisfaction,
+                user_id = profile.user_id,
+                old_level = profile.experience_level.value,
+                new_level = new_level.value,
+                total_interactions = total_interactions,
+                avg_satisfaction = avg_satisfaction,
             )
 
     def _calculate_error_rate(self, profile: UserProfile) -> float:
@@ -1041,7 +1041,7 @@ class UserPreferenceLearningSystem:
                     )
 
         # Sort by confidence
-        recommendations.sort(key=lambda x: x["confidence"], reverse=True)
+        recommendations.sort(key = lambda x: x["confidence"], reverse = True)
 
         return recommendations[:10]  # Return top 10
 
@@ -1072,8 +1072,8 @@ class UserPreferenceLearningSystem:
                 }
                 for pref in sorted(
                     profile.preferences.values(),
-                    key=lambda x: x.confidence,
-                    reverse=True,
+                    key = lambda x: x.confidence,
+                    reverse = True,
                 )[:5]
             ],
             "recent_patterns": [
@@ -1084,7 +1084,7 @@ class UserPreferenceLearningSystem:
                     "frequency": pattern.frequency,
                 }
                 for pattern in sorted(
-                    profile.behavior_patterns, key=lambda x: x.detected_at, reverse=True
+                    profile.behavior_patterns, key = lambda x: x.detected_at, reverse = True
                 )[:3]
             ],
         }
@@ -1104,7 +1104,7 @@ class UserPreferenceLearningSystem:
         }
 
         with open(self.interaction_log_path, "a", encoding="utf - 8") as f:
-            json.dump(interaction_data, f, ensure_ascii=False, separators=(",", ":"))
+            json.dump(interaction_data, f, ensure_ascii = False, separators=(",", ":"))
             f.write("\n")
 
     def _log_preference_learning(
@@ -1128,7 +1128,7 @@ class UserPreferenceLearningSystem:
         }
 
         with open(self.preference_learning_path, "a", encoding="utf - 8") as f:
-            json.dump(learning_data, f, ensure_ascii=False, separators=(",", ":"))
+            json.dump(learning_data, f, ensure_ascii = False, separators=(",", ":"))
             f.write("\n")
 
     def _save_user_profiles(self):

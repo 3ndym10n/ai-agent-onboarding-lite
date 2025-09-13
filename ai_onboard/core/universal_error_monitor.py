@@ -65,9 +65,9 @@ class UniversalErrorMonitor:
         # Log telemetry event
         telemetry.log_event(
             "agent_error_intercepted",
-            error_type=error_data["type"],
-            agent_type=error_data["agent_type"],
-            confidence=debug_result.get("confidence", 0),
+            error_type = error_data["type"],
+            agent_type = error_data["agent_type"],
+            confidence = debug_result.get("confidence", 0),
         )
 
         return {"error_data": error_data, "debug_result": debug_result, "handled": True}
@@ -133,12 +133,12 @@ class UniversalErrorMonitor:
         # Calculate usage statistics
         total_uses = sum(usage_data.get("capabilities", {}).values())
         most_used = (
-            max(usage_data.get("capabilities", {}).items(), key=lambda x: x[1])
+            max(usage_data.get("capabilities", {}).items(), key = lambda x: x[1])
             if usage_data.get("capabilities")
             else ("none", 0)
         )
         least_used = (
-            min(usage_data.get("capabilities", {}).items(), key=lambda x: x[1])
+            min(usage_data.get("capabilities", {}).items(), key = lambda x: x[1])
             if usage_data.get("capabilities")
             else ("none", 0)
         )
@@ -155,7 +155,7 @@ class UniversalErrorMonitor:
     def _log_error(self, error_data: Dict[str, Any]):
         """Log error to persistent storage."""
         with open(self.error_log_path, "a", encoding="utf - 8") as f:
-            json.dump(error_data, f, ensure_ascii=False, separators=(",", ":"))
+            json.dump(error_data, f, ensure_ascii = False, separators=(",", ":"))
             f.write("\n")
 
     def _record_capability_usage(self, capability: str, context: Dict[str, Any]):

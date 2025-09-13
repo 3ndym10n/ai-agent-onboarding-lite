@@ -29,7 +29,7 @@ class NamingConventionsPython:
                             "warn",
                             f"Python filename should be snake_case: {fn}",
                             os.path.join(dirpath, fn),
-                            confidence=0.9,
+                            confidence = 0.9,
                         )
                     )
         return issues
@@ -59,7 +59,7 @@ class NamingConventionsTS:
                             "warn",
                             f"TypeScript / JS filename should be kebab - case: {fn}",
                             os.path.join(dirpath, fn),
-                            confidence=0.85,
+                            confidence = 0.85,
                         )
                     )
         return issues

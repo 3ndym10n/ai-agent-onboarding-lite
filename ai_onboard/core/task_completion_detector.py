@@ -436,7 +436,7 @@ class TaskCompletionDetector:
 
             # Write updated plan
             with open(self.plan_path, "w") as f:
-                json.dump(plan, f, indent=2)
+                json.dump(plan, f, indent = 2)
 
             return True
 
@@ -530,7 +530,7 @@ class TaskCompletionDetector:
 
         # Sort by completion date (most recent first)
         completed_tasks.sort(
-            key=lambda x: x.get("completion_date", "2000 - 01 - 01"), reverse=True
+            key = lambda x: x.get("completion_date", "2000 - 01 - 01"), reverse = True
         )
 
         return completed_tasks[:5]  # Return top 5 most recent

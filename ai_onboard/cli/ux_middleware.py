@@ -129,10 +129,10 @@ class UXMiddleware:
             ux_system.record_ux_event(
                 UXEventType.ERROR_ENCOUNTER,
                 user_id,
-                context=error_context,
-                command=command,
-                success=False,
-                error_details=str(error),
+                context = error_context,
+                command = command,
+                success = False,
+                error_details = str(error),
             )
 
             # Get error recovery intervention
@@ -185,10 +185,10 @@ class UXMiddleware:
                     "success": success,
                     "error_details": error_details,
                 },
-                command=command,
-                success=success,
-                error_details=error_details,
-                duration_ms=duration_ms,
+                command = command,
+                success = success,
+                error_details = error_details,
+                duration_ms = duration_ms,
             )
 
             # Record capability usage
@@ -214,15 +214,15 @@ class UXMiddleware:
                 context = UsageContext.TROUBLESHOOTING
 
             capability_tracker.record_capability_usage(
-                capability_name=command,
-                user_id=user_id,
-                context=context,
-                pattern=pattern,
-                success=success,
-                duration_ms=duration_ms,
-                error_details=error_details,
-                user_expertise=user_profile.expertise_level.value,
-                preceding_commands=recent_commands,
+                capability_name = command,
+                user_id = user_id,
+                context = context,
+                pattern = pattern,
+                success = success,
+                duration_ms = duration_ms,
+                error_details = error_details,
+                user_expertise = user_profile.expertise_level.value,
+                preceding_commands = recent_commands,
             )
 
             # Update user journey

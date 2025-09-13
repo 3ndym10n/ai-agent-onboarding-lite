@@ -44,8 +44,8 @@ def setup_pre_commit():
         # Try using python -m pre_commit first
         result = subprocess.run(
             [sys.executable, "-m", "pre_commit", "install"],
-            capture_output=True,
-            text=True,
+            capture_output = True,
+            text = True,
         )
         if result.returncode == 0:
             print("✅ Pre - commit hooks installed successfully")
@@ -58,7 +58,7 @@ def setup_pre_commit():
     # Try direct pre - commit command
     try:
         result = subprocess.run(
-            ["pre - commit", "install"], capture_output=True, text=True
+            ["pre - commit", "install"], capture_output = True, text = True
         )
         if result.returncode == 0:
             print("✅ Pre - commit hooks installed successfully")
@@ -74,14 +74,14 @@ def setup_pre_commit():
     try:
         print("⚠️  Installing pre - commit...")
         subprocess.run(
-            [sys.executable, "-m", "pip", "install", "pre - commit"], check=True
+            [sys.executable, "-m", "pip", "install", "pre - commit"], check = True
         )
 
         # Try again with python -m
         result = subprocess.run(
             [sys.executable, "-m", "pre_commit", "install"],
-            capture_output=True,
-            text=True,
+            capture_output = True,
+            text = True,
         )
         if result.returncode == 0:
             print("✅ Pre - commit installed and configured")
@@ -105,7 +105,7 @@ def setup_git_hooks():
 
     # Create .githooks directory if it doesn't exist
     githooks_dir = Path(".githooks")
-    githooks_dir.mkdir(exist_ok=True)
+    githooks_dir.mkdir(exist_ok = True)
 
     # Create pre - push hook
     pre_push_hook = githooks_dir / "pre - push"
@@ -140,8 +140,8 @@ exit 0
     try:
         subprocess.run(
             ["git", "config", "core.hooksPath", ".githooks"],
-            check=True,
-            capture_output=True,
+            check = True,
+            capture_output = True,
         )
         print("✅ Configured git to use .githooks directory")
     except subprocess.CalledProcessError as e:

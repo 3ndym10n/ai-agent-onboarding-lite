@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr / bin / env python3
 """
 Script to systematically fix linting issues.
 """
@@ -18,13 +18,13 @@ def remove_unused_imports(file_path: Path) -> bool:
                 "python",
                 "-m",
                 "autoflake",
-                "--remove-all-unused-imports",
-                "--remove-unused-variables",
-                "--in-place",
+                "--remove - all - unused - imports",
+                "--remove - unused - variables",
+                "--in - place",
                 str(file_path),
             ],
-            capture_output=True,
-            text=True,
+            capture_output = True,
+            text = True,
         )
 
         return result.returncode == 0
@@ -37,9 +37,9 @@ def fix_line_length_issues(file_path: Path) -> bool:
     """Fix line length issues using Black."""
     try:
         result = subprocess.run(
-            ["python", "-m", "black", "--line-length=88", str(file_path)],
-            capture_output=True,
-            text=True,
+            ["python", "-m", "black", "--line - length = 88", str(file_path)],
+            capture_output = True,
+            text = True,
         )
 
         return result.returncode == 0
@@ -51,7 +51,7 @@ def fix_line_length_issues(file_path: Path) -> bool:
 def fix_whitespace_issues(file_path: Path) -> bool:
     """Fix whitespace issues manually."""
     try:
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, "r", encoding="utf - 8") as f:
             content = f.read()
 
         # Fix missing whitespace around operators
@@ -67,7 +67,7 @@ def fix_whitespace_issues(file_path: Path) -> bool:
 
         content = "\n".join(lines)
 
-        with open(file_path, "w", encoding="utf-8") as f:
+        with open(file_path, "w", encoding="utf - 8") as f:
             f.write(content)
 
         return True
@@ -113,14 +113,14 @@ def main():
                 "python",
                 "-m",
                 "isort",
-                "--profile=black",
-                "--line-length=88",
+                "--profile = black",
+                "--line - length = 88",
                 "ai_onboard/",
                 "tests/",
                 "scripts/",
             ],
-            capture_output=True,
-            text=True,
+            capture_output = True,
+            text = True,
         )
 
         if result.returncode == 0:
@@ -136,8 +136,8 @@ def main():
         # Install autoflake
         subprocess.run(
             ["python", "-m", "pip", "install", "autoflake"],
-            check=True,
-            capture_output=True,
+            check = True,
+            capture_output = True,
         )
 
         # Remove unused imports
@@ -145,7 +145,7 @@ def main():
             if remove_unused_imports(file_path):
                 print(f"✅ Cleaned imports: {file_path}")
     except Exception as e:
-        print(f"⚠️  Could not install/use autoflake: {e}")
+        print(f"⚠️  Could not install / use autoflake: {e}")
 
     # Step 4: Fix whitespace issues
     print("\n⚪ Step 4: Fixing whitespace issues...")
@@ -154,7 +154,7 @@ def main():
             print(f"✅ Fixed whitespace: {file_path}")
 
     print("\n🎉 Linting fixes completed!")
-    print("Run 'python scripts/local_ci_validation.py --step quality' to check results")
+    print("Run 'python scripts / local_ci_validation.py --step quality' to check results")
 
 
 if __name__ == "__main__":

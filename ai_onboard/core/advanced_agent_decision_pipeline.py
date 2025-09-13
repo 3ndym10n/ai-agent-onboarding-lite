@@ -77,20 +77,20 @@ class DecisionContext:
     conversation_history: List[Dict[str, Any]]
 
     # Enhanced context
-    user_preferences: Dict[str, Any] = field(default_factory=dict)
-    project_context: Dict[str, Any] = field(default_factory=dict)
-    historical_patterns: Dict[str, Any] = field(default_factory=dict)
-    cross_session_insights: Dict[str, Any] = field(default_factory=dict)
+    user_preferences: Dict[str, Any] = field(default_factory = dict)
+    project_context: Dict[str, Any] = field(default_factory = dict)
+    historical_patterns: Dict[str, Any] = field(default_factory = dict)
+    cross_session_insights: Dict[str, Any] = field(default_factory = dict)
 
     # Decision factors
     complexity_level: DecisionComplexity = DecisionComplexity.SIMPLE
-    risk_factors: List[str] = field(default_factory=list)
-    confidence_factors: Dict[str, float] = field(default_factory=dict)
+    risk_factors: List[str] = field(default_factory = list)
+    confidence_factors: Dict[str, float] = field(default_factory = dict)
 
     # Constraints
     time_constraints: Optional[Dict[str, Any]] = None
-    safety_constraints: List[str] = field(default_factory=list)
-    user_constraints: List[str] = field(default_factory=list)
+    safety_constraints: List[str] = field(default_factory = list)
+    user_constraints: List[str] = field(default_factory = list)
 
 
 @dataclass
@@ -104,19 +104,19 @@ class DecisionResult:
 
     # Decision details
     reasoning: str
-    alternative_options: List[Dict[str, Any]] = field(default_factory=list)
+    alternative_options: List[Dict[str, Any]] = field(default_factory = list)
     execution_plan: Optional[Dict[str, Any]] = None
     monitoring_plan: Optional[Dict[str, Any]] = None
 
     # Metadata
     processing_time_ms: float = 0.0
-    pipeline_stages: Dict[str, Any] = field(default_factory=dict)
-    decision_factors: Dict[str, Any] = field(default_factory=dict)
+    pipeline_stages: Dict[str, Any] = field(default_factory = dict)
+    decision_factors: Dict[str, Any] = field(default_factory = dict)
 
     # Follow - up actions
     requires_confirmation: bool = False
     confirmation_message: Optional[str] = None
-    clarification_questions: List[str] = field(default_factory=list)
+    clarification_questions: List[str] = field(default_factory = list)
     escalation_reason: Optional[str] = None
 
 
@@ -411,14 +411,14 @@ class AdvancedDecisionPipeline:
 
         # Create decision context
         decision_context = DecisionContext(
-            session_id=session_id,
-            user_id=user_id,
-            agent_id=agent_id,
-            decision_id=decision_id,
-            created_at=time.time(),
-            user_input=user_input,
-            resolved_intents=resolved_intents,
-            conversation_history=conversation_context.conversation_rounds,
+            session_id = session_id,
+            user_id = user_id,
+            agent_id = agent_id,
+            decision_id = decision_id,
+            created_at = time.time(),
+            user_input = user_input,
+            resolved_intents = resolved_intents,
+            conversation_history = conversation_context.conversation_rounds,
         )
 
         pipeline_stages = {}
@@ -474,27 +474,27 @@ class AdvancedDecisionPipeline:
 
             # Create decision result
             result = DecisionResult(
-                decision_id=decision_id,
-                outcome=strategy_result["outcome"],
-                confidence=confidence_result["confidence"],
-                confidence_level=self._get_confidence_level(
+                decision_id = decision_id,
+                outcome = strategy_result["outcome"],
+                confidence = confidence_result["confidence"],
+                confidence_level = self._get_confidence_level(
                     confidence_result["confidence"]
                 ),
-                reasoning=strategy_result["reasoning"],
-                alternative_options=strategy_result.get("alternatives", []),
-                execution_plan=execution_plan,
-                monitoring_plan=monitoring_plan,
+                reasoning = strategy_result["reasoning"],
+                alternative_options = strategy_result.get("alternatives", []),
+                execution_plan = execution_plan,
+                monitoring_plan = monitoring_plan,
                 processing_time_ms=(time.time() - start_time) * 1000,
-                pipeline_stages=pipeline_stages,
-                decision_factors=confidence_result["factors"],
-                requires_confirmation=strategy_result.get(
+                pipeline_stages = pipeline_stages,
+                decision_factors = confidence_result["factors"],
+                requires_confirmation = strategy_result.get(
                     "requires_confirmation", False
                 ),
-                confirmation_message=strategy_result.get("confirmation_message"),
-                clarification_questions=strategy_result.get(
+                confirmation_message = strategy_result.get("confirmation_message"),
+                clarification_questions = strategy_result.get(
                     "clarification_questions", []
                 ),
-                escalation_reason=strategy_result.get("escalation_reason"),
+                escalation_reason = strategy_result.get("escalation_reason"),
             )
 
             # Record decision metrics
@@ -505,14 +505,14 @@ class AdvancedDecisionPipeline:
         except Exception as e:
             # Handle pipeline errors gracefully
             error_result = DecisionResult(
-                decision_id=decision_id,
-                outcome=DecisionOutcome.ESCALATE,
-                confidence=0.0,
-                confidence_level=DecisionConfidence.VERY_LOW,
-                reasoning=f"Pipeline error: {str(e)}",
+                decision_id = decision_id,
+                outcome = DecisionOutcome.ESCALATE,
+                confidence = 0.0,
+                confidence_level = DecisionConfidence.VERY_LOW,
+                reasoning = f"Pipeline error: {str(e)}",
                 processing_time_ms=(time.time() - start_time) * 1000,
-                pipeline_stages=pipeline_stages,
-                escalation_reason=f"Decision pipeline error: {str(e)}",
+                pipeline_stages = pipeline_stages,
+                escalation_reason = f"Decision pipeline error: {str(e)}",
             )
 
             self._record_decision_metrics(decision_context, error_result)
@@ -833,9 +833,9 @@ class AdvancedDecisionPipeline:
             # Record decision outcome
             outcome_event = MetricEvent(
                 name="decision_pipeline_outcome",
-                value=1.0,
-                source=MetricSource.SYSTEM,
-                category=MetricCategory.TIMING,
+                value = 1.0,
+                source = MetricSource.SYSTEM,
+                category = MetricCategory.TIMING,
                 dimensions={
                     "outcome": result.outcome.value,
                     "complexity": context.complexity_level.value,
@@ -850,9 +850,9 @@ class AdvancedDecisionPipeline:
             # Record processing time
             time_event = MetricEvent(
                 name="decision_pipeline_processing_time",
-                value=result.processing_time_ms,
-                source=MetricSource.SYSTEM,
-                category=MetricCategory.TIMING,
+                value = result.processing_time_ms,
+                source = MetricSource.SYSTEM,
+                category = MetricCategory.TIMING,
                 dimensions={
                     "complexity": context.complexity_level.value,
                     "outcome": result.outcome.value,
@@ -864,9 +864,9 @@ class AdvancedDecisionPipeline:
             # Record confidence score
             confidence_event = MetricEvent(
                 name="decision_pipeline_confidence",
-                value=result.confidence,
-                source=MetricSource.SYSTEM,
-                category=MetricCategory.QUALITY,
+                value = result.confidence,
+                source = MetricSource.SYSTEM,
+                category = MetricCategory.QUALITY,
                 dimensions={
                     "complexity": context.complexity_level.value,
                     "user_experience": context.user_preferences.get(

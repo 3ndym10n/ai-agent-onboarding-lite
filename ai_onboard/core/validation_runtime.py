@@ -16,7 +16,7 @@ from . import (
 
 
 def run(root: Path) -> Dict[str, Any]:
-    manifest = utils.read_json(root / "ai_onboard.json", default=None)
+    manifest = utils.read_json(root / "ai_onboard.json", default = None)
     if not manifest:
         raise SystemExit("Missing ai_onboard.json. Run: python -m ai_onboard analyze")
     policy = policy_engine.load(root)
@@ -24,10 +24,10 @@ def run(root: Path) -> Dict[str, Any]:
     try:
         schema_validate.validate_policy(policy)
         telemetry.log_event(
-            "policy_validation", decision="ok", rules=len(policy.get("rules", []) or [])
+            "policy_validation", decision="ok", rules = len(policy.get("rules", []) or [])
         )
     except Exception as e:
-        telemetry.log_event("policy_validation", decision="fail", error=str(e))
+        telemetry.log_event("policy_validation", decision="fail", error = str(e))
         raise SystemExit(f"Policy validation failed: {e}")
     components = manifest.get("components", [])
     idx = cache.load(root)

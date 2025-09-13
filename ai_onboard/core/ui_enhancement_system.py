@@ -60,10 +60,10 @@ class CommandInfo:
     expertise_level: UserExpertiseLevel
     frequency_score: float = 0.0  # How often users actually use this
     success_rate: float = 1.0  # How often it works without errors
-    common_errors: List[str] = field(default_factory=list)
-    related_commands: List[str] = field(default_factory=list)
-    prerequisites: List[str] = field(default_factory=list)
-    tags: List[str] = field(default_factory=list)
+    common_errors: List[str] = field(default_factory = list)
+    related_commands: List[str] = field(default_factory = list)
+    prerequisites: List[str] = field(default_factory = list)
+    tags: List[str] = field(default_factory = list)
 
 
 @dataclass
@@ -75,9 +75,9 @@ class UserProfile:
     preferred_mode: InterfaceMode
 
     # Usage patterns
-    command_usage_count: Dict[str, int] = field(default_factory=dict)
-    last_used_commands: List[str] = field(default_factory=list)
-    favorite_workflows: List[List[str]] = field(default_factory=list)
+    command_usage_count: Dict[str, int] = field(default_factory = dict)
+    last_used_commands: List[str] = field(default_factory = list)
+    favorite_workflows: List[List[str]] = field(default_factory = list)
 
     # Preferences
     show_examples: bool = True
@@ -86,12 +86,12 @@ class UserProfile:
     preferred_verbosity: str = "normal"  # quiet, normal, verbose
 
     # Learning
-    completed_tutorials: Set[str] = field(default_factory=set)
-    known_shortcuts: Set[str] = field(default_factory=set)
+    completed_tutorials: Set[str] = field(default_factory = set)
+    known_shortcuts: Set[str] = field(default_factory = set)
 
     # Metadata
-    created_at: datetime = field(default_factory=datetime.now)
-    last_updated: datetime = field(default_factory=datetime.now)
+    created_at: datetime = field(default_factory = datetime.now)
+    last_updated: datetime = field(default_factory = datetime.now)
 
 
 @dataclass
@@ -132,7 +132,7 @@ class UIEnhancementSystem:
     def __init__(self, root: Path):
         self.root = root
         self.data_dir = root / ".ai_onboard" / "ui_enhancements"
-        self.data_dir.mkdir(parents=True, exist_ok=True)
+        self.data_dir.mkdir(parents = True, exist_ok = True)
 
         # Components
         self.preference_system = get_user_preference_learning_system(root)
@@ -181,7 +181,7 @@ class UIEnhancementSystem:
 
         # Save default config
         with open(config_file, "w") as f:
-            json.dump(default_config, f, indent=2)
+            json.dump(default_config, f, indent = 2)
 
         return default_config
 
@@ -191,151 +191,151 @@ class UIEnhancementSystem:
             # Project Management
             CommandInfo(
                 name="charter",
-                category=CommandCategory.PROJECT,
+                category = CommandCategory.PROJECT,
                 description="Create project charter and vision",
                 usage_example="ai_onboard charter",
-                expertise_level=UserExpertiseLevel.BEGINNER,
+                expertise_level = UserExpertiseLevel.BEGINNER,
                 tags=["project", "planning", "vision"],
             ),
             CommandInfo(
                 name="plan",
-                category=CommandCategory.PROJECT,
+                category = CommandCategory.PROJECT,
                 description="Generate and manage project plans",
                 usage_example="ai_onboard plan",
-                expertise_level=UserExpertiseLevel.BEGINNER,
+                expertise_level = UserExpertiseLevel.BEGINNER,
                 related_commands=["charter", "align", "validate"],
                 tags=["project", "planning", "tasks"],
             ),
             CommandInfo(
                 name="align",
-                category=CommandCategory.PROJECT,
+                category = CommandCategory.PROJECT,
                 description="Align project with vision and goals",
                 usage_example="ai_onboard align",
-                expertise_level=UserExpertiseLevel.INTERMEDIATE,
+                expertise_level = UserExpertiseLevel.INTERMEDIATE,
                 prerequisites=["charter", "plan"],
                 tags=["project", "alignment", "validation"],
             ),
             CommandInfo(
                 name="validate",
-                category=CommandCategory.PROJECT,
+                category = CommandCategory.PROJECT,
                 description="Validate project progress and quality",
                 usage_example="ai_onboard validate",
-                expertise_level=UserExpertiseLevel.INTERMEDIATE,
+                expertise_level = UserExpertiseLevel.INTERMEDIATE,
                 prerequisites=["plan"],
                 tags=["project", "validation", "quality"],
             ),
             CommandInfo(
                 name="prompt",
-                category=CommandCategory.PROJECT,
+                category = CommandCategory.PROJECT,
                 description="Get project insights and progress",
                 usage_example="ai_onboard prompt progress",
-                expertise_level=UserExpertiseLevel.BEGINNER,
+                expertise_level = UserExpertiseLevel.BEGINNER,
                 tags=["project", "status", "insights"],
             ),
             # Optimization
             CommandInfo(
                 name="kaizen",
-                category=CommandCategory.OPTIMIZATION,
+                category = CommandCategory.OPTIMIZATION,
                 description="Run manual improvement cycle",
                 usage_example="ai_onboard kaizen",
-                expertise_level=UserExpertiseLevel.INTERMEDIATE,
+                expertise_level = UserExpertiseLevel.INTERMEDIATE,
                 tags=["optimization", "improvement", "manual"],
             ),
             CommandInfo(
                 name="kaizen - auto",
-                category=CommandCategory.OPTIMIZATION,
+                category = CommandCategory.OPTIMIZATION,
                 description="Automated continuous improvement system",
                 usage_example="ai_onboard kaizen - auto start",
-                expertise_level=UserExpertiseLevel.ADVANCED,
+                expertise_level = UserExpertiseLevel.ADVANCED,
                 related_commands=["kaizen", "opt - experiments"],
                 tags=["optimization", "automation", "continuous"],
             ),
             CommandInfo(
                 name="opt - experiments",
-                category=CommandCategory.OPTIMIZATION,
+                category = CommandCategory.OPTIMIZATION,
                 description="Design and run optimization experiments",
                 usage_example="ai_onboard opt - experiments design --name 'Performance Test'",
-                expertise_level=UserExpertiseLevel.ADVANCED,
+                expertise_level = UserExpertiseLevel.ADVANCED,
                 related_commands=["kaizen - auto"],
                 tags=["optimization", "experiments", "testing"],
             ),
             # AI Systems
             CommandInfo(
                 name="ai - agent",
-                category=CommandCategory.AI_SYSTEMS,
+                category = CommandCategory.AI_SYSTEMS,
                 description="AI agent collaboration and management",
                 usage_example="ai_onboard ai - agent status",
-                expertise_level=UserExpertiseLevel.INTERMEDIATE,
+                expertise_level = UserExpertiseLevel.INTERMEDIATE,
                 tags=["ai", "agent", "collaboration"],
             ),
             CommandInfo(
                 name="aaol",
-                category=CommandCategory.AI_SYSTEMS,
+                category = CommandCategory.AI_SYSTEMS,
                 description="AI Agent Orchestration Layer",
                 usage_example="ai_onboard aaol session create",
-                expertise_level=UserExpertiseLevel.ADVANCED,
+                expertise_level = UserExpertiseLevel.ADVANCED,
                 related_commands=["ai - agent", "enhanced - context"],
                 tags=["ai", "orchestration", "advanced"],
             ),
             CommandInfo(
                 name="enhanced - context",
-                category=CommandCategory.AI_SYSTEMS,
+                category = CommandCategory.AI_SYSTEMS,
                 description="Advanced conversation context management",
                 usage_example="ai_onboard enhanced - context enhance",
-                expertise_level=UserExpertiseLevel.ADVANCED,
+                expertise_level = UserExpertiseLevel.ADVANCED,
                 related_commands=["aaol", "decision - pipeline"],
                 tags=["ai", "context", "conversation"],
             ),
             CommandInfo(
                 name="decision - pipeline",
-                category=CommandCategory.AI_SYSTEMS,
+                category = CommandCategory.AI_SYSTEMS,
                 description="Advanced agent decision processing",
                 usage_example="ai_onboard decision - pipeline test",
-                expertise_level=UserExpertiseLevel.EXPERT,
+                expertise_level = UserExpertiseLevel.EXPERT,
                 related_commands=["enhanced - context", "aaol"],
                 tags=["ai", "decision", "pipeline", "advanced"],
             ),
             # Development
             CommandInfo(
                 name="cursor",
-                category=CommandCategory.DEVELOPMENT,
+                category = CommandCategory.DEVELOPMENT,
                 description="Cursor AI integration",
                 usage_example="ai_onboard cursor init",
-                expertise_level=UserExpertiseLevel.INTERMEDIATE,
+                expertise_level = UserExpertiseLevel.INTERMEDIATE,
                 tags=["development", "cursor", "integration"],
             ),
             CommandInfo(
                 name="api",
-                category=CommandCategory.DEVELOPMENT,
+                category = CommandCategory.DEVELOPMENT,
                 description="API server management",
                 usage_example="ai_onboard api start",
-                expertise_level=UserExpertiseLevel.ADVANCED,
+                expertise_level = UserExpertiseLevel.ADVANCED,
                 related_commands=["cursor"],
                 tags=["development", "api", "server"],
             ),
             CommandInfo(
                 name="unified - metrics",
-                category=CommandCategory.DEVELOPMENT,
+                category = CommandCategory.DEVELOPMENT,
                 description="Comprehensive metrics collection",
                 usage_example="ai_onboard unified - metrics query",
-                expertise_level=UserExpertiseLevel.ADVANCED,
+                expertise_level = UserExpertiseLevel.ADVANCED,
                 tags=["development", "metrics", "monitoring"],
             ),
             # Learning
             CommandInfo(
                 name="user - prefs",
-                category=CommandCategory.LEARNING,
+                category = CommandCategory.LEARNING,
                 description="User preference learning and adaptation",
                 usage_example="ai_onboard user - prefs summary --user me",
-                expertise_level=UserExpertiseLevel.INTERMEDIATE,
+                expertise_level = UserExpertiseLevel.INTERMEDIATE,
                 tags=["learning", "preferences", "personalization"],
             ),
             CommandInfo(
                 name="continuous - improvement",
-                category=CommandCategory.LEARNING,
+                category = CommandCategory.LEARNING,
                 description="System learning and improvement",
                 usage_example="ai_onboard continuous - improvement status",
-                expertise_level=UserExpertiseLevel.ADVANCED,
+                expertise_level = UserExpertiseLevel.ADVANCED,
                 related_commands=["kaizen - auto", "user - prefs"],
                 tags=["learning", "improvement", "system"],
             ),
@@ -442,7 +442,7 @@ class UIEnhancementSystem:
                 profiles_data[user_id] = profile_dict
 
             with open(self.data_dir / "user_profiles.json", "w") as f:
-                json.dump(profiles_data, f, indent=2)
+                json.dump(profiles_data, f, indent = 2)
         except Exception as e:
             print(f"Warning: Failed to save user profiles: {e}")
 
@@ -453,9 +453,9 @@ class UIEnhancementSystem:
             expertise = self._detect_user_expertise(user_id)
 
             self.user_profiles[user_id] = UserProfile(
-                user_id=user_id,
-                expertise_level=expertise,
-                preferred_mode=self._get_default_mode_for_expertise(expertise),
+                user_id = user_id,
+                expertise_level = expertise,
+                preferred_mode = self._get_default_mode_for_expertise(expertise),
             )
 
             self._save_user_profiles()
@@ -554,7 +554,7 @@ class UIEnhancementSystem:
         filtered_suggestions = [s for s in suggestions if s.confidence >= threshold]
 
         # Sort by confidence and limit
-        filtered_suggestions.sort(key=lambda x: x.confidence, reverse=True)
+        filtered_suggestions.sort(key = lambda x: x.confidence, reverse = True)
         max_suggestions = self.config.get("max_suggestions", 3)
 
         return filtered_suggestions[:max_suggestions]
@@ -588,11 +588,11 @@ class UIEnhancementSystem:
                         if self._is_command_appropriate_for_user(cmd_info, profile):
                             suggestions.append(
                                 CommandSuggestion(
-                                    command=cmd,
-                                    reason=f"Relevant to '{keyword}' context",
-                                    confidence=0.8,
-                                    context=context,
-                                    example=cmd_info.usage_example,
+                                    command = cmd,
+                                    reason = f"Relevant to '{keyword}' context",
+                                    confidence = 0.8,
+                                    context = context,
+                                    example = cmd_info.usage_example,
                                 )
                             )
 
@@ -614,11 +614,11 @@ class UIEnhancementSystem:
                         if self._is_command_appropriate_for_user(related_info, profile):
                             suggestions.append(
                                 CommandSuggestion(
-                                    command=related_cmd,
-                                    reason=f"Related to frequently used '{cmd}'",
-                                    confidence=0.7,
+                                    command = related_cmd,
+                                    reason = f"Related to frequently used '{cmd}'",
+                                    confidence = 0.7,
                                     context="usage_pattern",
-                                    example=related_info.usage_example,
+                                    example = related_info.usage_example,
                                 )
                             )
 
@@ -648,11 +648,11 @@ class UIEnhancementSystem:
                 if self._are_prerequisites_met(cmd_info, profile):
                     suggestions.append(
                         CommandSuggestion(
-                            command=cmd_info.name,
-                            reason=f"Ready to learn {next_level.value} level commands",
-                            confidence=0.6,
+                            command = cmd_info.name,
+                            reason = f"Ready to learn {next_level.value} level commands",
+                            confidence = 0.6,
                             context="expertise_growth",
-                            example=cmd_info.usage_example,
+                            example = cmd_info.usage_example,
                         )
                     )
 
@@ -708,12 +708,12 @@ class UIEnhancementSystem:
 
         # Sort by frequency and relevance
         commands.sort(
-            key=lambda x: (
+            key = lambda x: (
                 profile.command_usage_count.get(x.name, 0),  # Usage frequency
                 x.frequency_score,  # Global frequency
                 -len(x.prerequisites),  # Fewer prerequisites first
             ),
-            reverse=True,
+            reverse = True,
         )
 
         return commands
@@ -848,7 +848,7 @@ class UIEnhancementSystem:
         if profile.command_usage_count:
             dashboard.append(f"\n🔥 Most Used Commands:")
             sorted_commands = sorted(
-                profile.command_usage_count.items(), key=lambda x: x[1], reverse=True
+                profile.command_usage_count.items(), key = lambda x: x[1], reverse = True
             )
             for cmd, count in sorted_commands[:5]:
                 dashboard.append(f"  {cmd}: {count} times")

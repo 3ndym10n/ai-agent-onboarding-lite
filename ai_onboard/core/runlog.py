@@ -8,7 +8,7 @@ from typing import Any, Dict
 
 def _path(root: Path) -> Path:
     d = root / ".ai_onboard"
-    d.mkdir(parents=True, exist_ok=True)
+    d.mkdir(parents = True, exist_ok = True)
     return d / "log.jsonl"
 
 

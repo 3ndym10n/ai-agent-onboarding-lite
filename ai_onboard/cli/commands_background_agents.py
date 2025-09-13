@@ -30,12 +30,12 @@ def add_background_agent_commands(subparsers):
     bg_parser = subparsers.add_parser(
         "background - agents", help="Manage autonomous background AI agents"
     )
-    bg_sub = bg_parser.add_subparsers(dest="bg_cmd", required=True)
+    bg_sub = bg_parser.add_subparsers(dest="bg_cmd", required = True)
 
     # Agent lifecycle commands
     lifecycle_parser = bg_sub.add_parser("lifecycle", help="Agent lifecycle management")
     lifecycle_sub = lifecycle_parser.add_subparsers(
-        dest="lifecycle_action", required=True
+        dest="lifecycle_action", required = True
     )
 
     # List agents
@@ -75,17 +75,17 @@ def add_background_agent_commands(subparsers):
     monitor_parser = bg_sub.add_parser("monitor", help="Monitor agent performance")
     monitor_parser.add_argument("--agent - id", help="Specific agent to monitor")
     monitor_parser.add_argument(
-        "--interval", type=int, default=5, help="Monitoring interval in seconds"
+        "--interval", type = int, default = 5, help="Monitoring interval in seconds"
     )
     monitor_parser.add_argument(
-        "--duration", type=int, help="Monitoring duration in seconds"
+        "--duration", type = int, help="Monitoring duration in seconds"
     )
 
     # Agent logs
     logs_parser = bg_sub.add_parser("logs", help="View agent logs")
     logs_parser.add_argument("agent_id", help="Agent ID to view logs for")
     logs_parser.add_argument(
-        "--tail", type=int, default=50, help="Number of recent log entries"
+        "--tail", type = int, default = 50, help="Number of recent log entries"
     )
     logs_parser.add_argument("--follow", action="store_true", help="Follow log output")
     logs_parser.add_argument(
@@ -96,7 +96,7 @@ def add_background_agent_commands(subparsers):
 
     # Configuration commands
     config_parser = bg_sub.add_parser("config", help="Agent configuration management")
-    config_sub = config_parser.add_subparsers(dest="config_action", required=True)
+    config_sub = config_parser.add_subparsers(dest="config_action", required = True)
 
     # Show config
     show_config_parser = config_sub.add_parser("show", help="Show agent configuration")
@@ -108,10 +108,10 @@ def add_background_agent_commands(subparsers):
     )
     update_config_parser.add_argument("agent_id", help="Agent ID to update")
     update_config_parser.add_argument(
-        "--enabled", type=bool, help="Enable / disable agent"
+        "--enabled", type = bool, help="Enable / disable agent"
     )
     update_config_parser.add_argument(
-        "--auto - start", type=bool, help="Auto - start on system boot"
+        "--auto - start", type = bool, help="Auto - start on system boot"
     )
     update_config_parser.add_argument(
         "--priority",
@@ -119,10 +119,10 @@ def add_background_agent_commands(subparsers):
         help="Agent priority level",
     )
     update_config_parser.add_argument(
-        "--max - cpu", type=float, help="Maximum CPU usage percentage"
+        "--max - cpu", type = float, help="Maximum CPU usage percentage"
     )
     update_config_parser.add_argument(
-        "--max - memory", type=float, help="Maximum memory usage in MB"
+        "--max - memory", type = float, help="Maximum memory usage in MB"
     )
 
     # Create new agent
@@ -130,10 +130,10 @@ def add_background_agent_commands(subparsers):
         "create", help="Create new agent configuration"
     )
     create_parser.add_argument("agent_id", help="New agent ID")
-    create_parser.add_argument("--name", required=True, help="Agent name")
-    create_parser.add_argument("--description", required=True, help="Agent description")
+    create_parser.add_argument("--name", required = True, help="Agent name")
+    create_parser.add_argument("--description", required = True, help="Agent description")
     create_parser.add_argument(
-        "--agent - class", required=True, help="Agent class name"
+        "--agent - class", required = True, help="Agent class name"
     )
     create_parser.add_argument(
         "--schedule - type",
@@ -153,7 +153,7 @@ def add_background_agent_commands(subparsers):
         "analytics", help="Agent analytics and reporting"
     )
     analytics_sub = analytics_parser.add_subparsers(
-        dest="analytics_action", required=True
+        dest="analytics_action", required = True
     )
 
     # Performance analytics
@@ -172,7 +172,7 @@ def add_background_agent_commands(subparsers):
     )
     history_parser.add_argument("--agent - id", help="Specific agent to analyze")
     history_parser.add_argument(
-        "--days", type=int, default=7, help="Number of days to analyze"
+        "--days", type = int, default = 7, help="Number of days to analyze"
     )
 
     # Health report
@@ -185,7 +185,7 @@ def add_background_agent_commands(subparsers):
     coord_parser = bg_sub.add_parser(
         "coordination", help="Agent coordination management"
     )
-    coord_sub = coord_parser.add_subparsers(dest="coord_action", required=True)
+    coord_sub = coord_parser.add_subparsers(dest="coord_action", required = True)
 
     # Show coordination status
     coord_sub.add_parser("status", help="Show agent coordination status")
@@ -199,7 +199,7 @@ def add_background_agent_commands(subparsers):
     # Emergency commands
     emergency_parser = bg_sub.add_parser("emergency", help="Emergency agent management")
     emergency_sub = emergency_parser.add_subparsers(
-        dest="emergency_action", required=True
+        dest="emergency_action", required = True
     )
 
     # Emergency shutdown
@@ -211,7 +211,7 @@ def add_background_agent_commands(subparsers):
     )
     intervention_parser.add_argument("agent_id", help="Agent ID to intervene")
     intervention_parser.add_argument(
-        "--reason", required=True, help="Intervention reason"
+        "--reason", required = True, help="Intervention reason"
     )
 
 
@@ -743,8 +743,8 @@ def _handle_config_commands(args: argparse.Namespace, manager, root: Path) -> No
         print()
 
         print(f"Metadata:")
-        print(f"  Created: {config.created_at.strftime('%Y -% m-%d %H:%M:%S')}")
-        print(f"  Updated: {config.updated_at.strftime('%Y -% m-%d %H:%M:%S')}")
+        print(f"  Created: {config.created_at.strftime('%Y -% m -% d %H:%M:%S')}")
+        print(f"  Updated: {config.updated_at.strftime('%Y -% m -% d %H:%M:%S')}")
         if config.tags:
             print(f"  Tags: {', '.join(config.tags)}")
 
@@ -758,12 +758,12 @@ def _handle_config_commands(args: argparse.Namespace, manager, root: Path) -> No
 
         # Create configuration
         config = AgentConfiguration(
-            agent_id=agent_id,
-            name=args.name,
-            description=args.description,
-            agent_class=args.agent_class,
-            schedule_type=ScheduleType(args.schedule_type),
-            priority=AgentPriority[args.priority.upper()],
+            agent_id = agent_id,
+            name = args.name,
+            description = args.description,
+            agent_class = args.agent_class,
+            schedule_type = ScheduleType(args.schedule_type),
+            priority = AgentPriority[args.priority.upper()],
         )
 
         if manager.create_agent(config):
@@ -900,7 +900,7 @@ def _handle_analytics_commands(args: argparse.Namespace, manager, root: Path) ->
             chart = create_chart(root, "default")
             cpu_data = {"Mon": 8.5, "Tue": 12.3, "Wed": 9.1, "Thu": 15.2, "Fri": 7.8}
             print(f"\n📊 CPU Usage Trend (Last 5 days):")
-            print(chart.bar_chart(cpu_data, max_width=40))
+            print(chart.bar_chart(cpu_data, max_width = 40))
 
         else:
             # System - wide resource analysis
@@ -927,7 +927,7 @@ def _handle_analytics_commands(args: argparse.Namespace, manager, root: Path) ->
                     resource_data[agent_id[:10]] = status.cpu_usage_percent
 
                 print(f"\n📊 CPU Distribution by Agent:")
-                print(chart.bar_chart(resource_data, max_width=40))
+                print(chart.bar_chart(resource_data, max_width = 40))
 
     elif args.analytics_action == "health":
         print("🏥 Agent Health Report")

@@ -95,7 +95,7 @@ class HealthMetricValue:
     threshold_warning: float
     threshold_critical: float
     unit: str = ""
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: Dict[str, Any] = field(default_factory = dict)
 
 
 @dataclass
@@ -110,8 +110,8 @@ class HealthIssue:
     detected_at: datetime
     resolved_at: Optional[datetime] = None
     resolution_action: Optional[SelfHealingAction] = None
-    metrics: Dict[HealthMetric, float] = field(default_factory=dict)
-    context: Dict[str, Any] = field(default_factory=dict)
+    metrics: Dict[HealthMetric, float] = field(default_factory = dict)
+    context: Dict[str, Any] = field(default_factory = dict)
 
 
 @dataclass
@@ -125,7 +125,7 @@ class SelfHealingAction:
     executed_at: datetime
     success: bool
     duration: float
-    result: Dict[str, Any] = field(default_factory=dict)
+    result: Dict[str, Any] = field(default_factory = dict)
     rollback_required: bool = False
 
 
@@ -140,7 +140,7 @@ class SystemHealthSnapshot:
     active_issues: List[HealthIssue]
     recent_actions: List[SelfHealingAction]
     recommendations: List[str]
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: Dict[str, Any] = field(default_factory = dict)
 
 
 class SystemHealthMonitor:
@@ -163,7 +163,7 @@ class SystemHealthMonitor:
         # Health monitoring state
         self.monitoring_active = False
         self.monitoring_thread = None
-        self.health_snapshots: deque = deque(maxlen=1000)
+        self.health_snapshots: deque = deque(maxlen = 1000)
         self.active_issues: List[HealthIssue] = []
         self.self_healing_actions: List[SelfHealingAction] = []
 
@@ -243,12 +243,12 @@ class SystemHealthMonitor:
         for issue_data in data:
             self.active_issues.append(
                 HealthIssue(
-                    issue_id=issue_data["issue_id"],
-                    issue_type=HealthIssue(issue_data["issue_type"]),
-                    severity=HealthStatus(issue_data["severity"]),
-                    description=issue_data["description"],
-                    affected_components=issue_data["affected_components"],
-                    detected_at=datetime.fromisoformat(issue_data["detected_at"]),
+                    issue_id = issue_data["issue_id"],
+                    issue_type = HealthIssue(issue_data["issue_type"]),
+                    severity = HealthStatus(issue_data["severity"]),
+                    description = issue_data["description"],
+                    affected_components = issue_data["affected_components"],
+                    detected_at = datetime.fromisoformat(issue_data["detected_at"]),
                     resolved_at=(
                         datetime.fromisoformat(issue_data["resolved_at"])
                         if issue_data.get("resolved_at")
@@ -263,7 +263,7 @@ class SystemHealthMonitor:
                         HealthMetric(k): v
                         for k, v in issue_data.get("metrics", {}).items()
                     },
-                    context=issue_data.get("context", {}),
+                    context = issue_data.get("context", {}),
                 )
             )
 
@@ -281,17 +281,17 @@ class SystemHealthMonitor:
                     action_data = json.loads(line)
                     self.self_healing_actions.append(
                         SelfHealingAction(
-                            action_id=action_data["action_id"],
-                            action_type=SelfHealingAction(action_data["action_type"]),
-                            issue_id=action_data["issue_id"],
-                            description=action_data["description"],
-                            executed_at=datetime.fromisoformat(
+                            action_id = action_data["action_id"],
+                            action_type = SelfHealingAction(action_data["action_type"]),
+                            issue_id = action_data["issue_id"],
+                            description = action_data["description"],
+                            executed_at = datetime.fromisoformat(
                                 action_data["executed_at"]
                             ),
-                            success=action_data["success"],
-                            duration=action_data["duration"],
-                            result=action_data.get("result", {}),
-                            rollback_required=action_data.get(
+                            success = action_data["success"],
+                            duration = action_data["duration"],
+                            result = action_data.get("result", {}),
+                            rollback_required = action_data.get(
                                 "rollback_required", False
                             ),
                         )
@@ -306,7 +306,7 @@ class SystemHealthMonitor:
 
         self.monitoring_active = True
         self.monitoring_thread = threading.Thread(
-            target=self._monitoring_loop, daemon=True
+            target = self._monitoring_loop, daemon = True
         )
         self.monitoring_thread.start()
 
@@ -316,7 +316,7 @@ class SystemHealthMonitor:
         """Stop system health monitoring."""
         self.monitoring_active = False
         if self.monitoring_thread:
-            self.monitoring_thread.join(timeout=5.0)
+            self.monitoring_thread.join(timeout = 5.0)
 
         telemetry.log_event("system_health_monitoring_stopped")
 
@@ -341,7 +341,7 @@ class SystemHealthMonitor:
                 time.sleep(self.health_config["monitoring_interval"])
 
             except Exception as e:
-                telemetry.log_event("health_monitoring_error", error=str(e))
+                telemetry.log_event("health_monitoring_error", error = str(e))
                 time.sleep(self.health_config["monitoring_interval"])
 
     def _capture_health_snapshot(self) -> SystemHealthSnapshot:
@@ -352,24 +352,24 @@ class SystemHealthMonitor:
         # System resource metrics
         try:
             # CPU usage
-            cpu_percent = psutil.cpu_percent(interval=1)
+            cpu_percent = psutil.cpu_percent(interval = 1)
             metrics[HealthMetric.CPU_USAGE] = HealthMetricValue(
-                metric=HealthMetric.CPU_USAGE,
-                value=cpu_percent,
-                timestamp=timestamp,
-                threshold_warning=self.health_thresholds[HealthMetric.CPU_USAGE][0],
-                threshold_critical=self.health_thresholds[HealthMetric.CPU_USAGE][1],
+                metric = HealthMetric.CPU_USAGE,
+                value = cpu_percent,
+                timestamp = timestamp,
+                threshold_warning = self.health_thresholds[HealthMetric.CPU_USAGE][0],
+                threshold_critical = self.health_thresholds[HealthMetric.CPU_USAGE][1],
                 unit="%",
             )
 
             # Memory usage
             memory = psutil.virtual_memory()
             metrics[HealthMetric.MEMORY_USAGE] = HealthMetricValue(
-                metric=HealthMetric.MEMORY_USAGE,
-                value=memory.percent,
-                timestamp=timestamp,
-                threshold_warning=self.health_thresholds[HealthMetric.MEMORY_USAGE][0],
-                threshold_critical=self.health_thresholds[HealthMetric.MEMORY_USAGE][1],
+                metric = HealthMetric.MEMORY_USAGE,
+                value = memory.percent,
+                timestamp = timestamp,
+                threshold_warning = self.health_thresholds[HealthMetric.MEMORY_USAGE][0],
+                threshold_critical = self.health_thresholds[HealthMetric.MEMORY_USAGE][1],
                 unit="%",
             )
 
@@ -377,11 +377,11 @@ class SystemHealthMonitor:
             disk = psutil.disk_usage("/")
             disk_percent = (disk.used / disk.total) * 100
             metrics[HealthMetric.DISK_USAGE] = HealthMetricValue(
-                metric=HealthMetric.DISK_USAGE,
-                value=disk_percent,
-                timestamp=timestamp,
-                threshold_warning=self.health_thresholds[HealthMetric.DISK_USAGE][0],
-                threshold_critical=self.health_thresholds[HealthMetric.DISK_USAGE][1],
+                metric = HealthMetric.DISK_USAGE,
+                value = disk_percent,
+                timestamp = timestamp,
+                threshold_warning = self.health_thresholds[HealthMetric.DISK_USAGE][0],
+                threshold_critical = self.health_thresholds[HealthMetric.DISK_USAGE][1],
                 unit="%",
             )
 
@@ -390,11 +390,11 @@ class SystemHealthMonitor:
             if disk_io:
                 disk_io_mb = (disk_io.read_bytes + disk_io.write_bytes) / (1024 * 1024)
                 metrics[HealthMetric.DISK_IO] = HealthMetricValue(
-                    metric=HealthMetric.DISK_IO,
-                    value=disk_io_mb,
-                    timestamp=timestamp,
-                    threshold_warning=self.health_thresholds[HealthMetric.DISK_IO][0],
-                    threshold_critical=self.health_thresholds[HealthMetric.DISK_IO][1],
+                    metric = HealthMetric.DISK_IO,
+                    value = disk_io_mb,
+                    timestamp = timestamp,
+                    threshold_warning = self.health_thresholds[HealthMetric.DISK_IO][0],
+                    threshold_critical = self.health_thresholds[HealthMetric.DISK_IO][1],
                     unit="MB",
                 )
 
@@ -405,20 +405,20 @@ class SystemHealthMonitor:
                     1024 * 1024
                 )
                 metrics[HealthMetric.NETWORK_IO] = HealthMetricValue(
-                    metric=HealthMetric.NETWORK_IO,
-                    value=network_io_mb,
-                    timestamp=timestamp,
-                    threshold_warning=self.health_thresholds[HealthMetric.NETWORK_IO][
+                    metric = HealthMetric.NETWORK_IO,
+                    value = network_io_mb,
+                    timestamp = timestamp,
+                    threshold_warning = self.health_thresholds[HealthMetric.NETWORK_IO][
                         0
                     ],
-                    threshold_critical=self.health_thresholds[HealthMetric.NETWORK_IO][
+                    threshold_critical = self.health_thresholds[HealthMetric.NETWORK_IO][
                         1
                     ],
                     unit="MB",
                 )
 
         except Exception as e:
-            telemetry.log_event("health_metrics_capture_error", error=str(e))
+            telemetry.log_event("health_metrics_capture_error", error = str(e))
 
         # Application - specific metrics
         self._capture_application_metrics(metrics, timestamp)
@@ -439,15 +439,15 @@ class SystemHealthMonitor:
             overall_status = HealthStatus.FAILED
 
         return SystemHealthSnapshot(
-            timestamp=timestamp,
-            overall_status=overall_status,
-            health_score=health_score,
-            metrics=metrics,
+            timestamp = timestamp,
+            overall_status = overall_status,
+            health_score = health_score,
+            metrics = metrics,
             active_issues=[
                 issue for issue in self.active_issues if not issue.resolved_at
             ],
-            recent_actions=self.self_healing_actions[-5:],  # Last 5 actions
-            recommendations=self._generate_health_recommendations(
+            recent_actions = self.self_healing_actions[-5:],  # Last 5 actions
+            recommendations = self._generate_health_recommendations(
                 metrics, health_score
             ),
         )
@@ -460,22 +460,22 @@ class SystemHealthMonitor:
             # Error rate (from telemetry)
             error_rate = self._calculate_error_rate()
             metrics[HealthMetric.ERROR_RATE] = HealthMetricValue(
-                metric=HealthMetric.ERROR_RATE,
-                value=error_rate,
-                timestamp=timestamp,
-                threshold_warning=self.health_thresholds[HealthMetric.ERROR_RATE][0],
-                threshold_critical=self.health_thresholds[HealthMetric.ERROR_RATE][1],
+                metric = HealthMetric.ERROR_RATE,
+                value = error_rate,
+                timestamp = timestamp,
+                threshold_warning = self.health_thresholds[HealthMetric.ERROR_RATE][0],
+                threshold_critical = self.health_thresholds[HealthMetric.ERROR_RATE][1],
                 unit="ratio",
             )
 
             # Response time (from recent interactions)
             response_time = self._calculate_avg_response_time()
             metrics[HealthMetric.RESPONSE_TIME] = HealthMetricValue(
-                metric=HealthMetric.RESPONSE_TIME,
-                value=response_time,
-                timestamp=timestamp,
-                threshold_warning=self.health_thresholds[HealthMetric.RESPONSE_TIME][0],
-                threshold_critical=self.health_thresholds[HealthMetric.RESPONSE_TIME][
+                metric = HealthMetric.RESPONSE_TIME,
+                value = response_time,
+                timestamp = timestamp,
+                threshold_warning = self.health_thresholds[HealthMetric.RESPONSE_TIME][0],
+                threshold_critical = self.health_thresholds[HealthMetric.RESPONSE_TIME][
                     1
                 ],
                 unit="seconds",
@@ -484,13 +484,13 @@ class SystemHealthMonitor:
             # User satisfaction (from user preference system)
             user_satisfaction = self._calculate_user_satisfaction()
             metrics[HealthMetric.USER_SATISFACTION] = HealthMetricValue(
-                metric=HealthMetric.USER_SATISFACTION,
-                value=user_satisfaction,
-                timestamp=timestamp,
-                threshold_warning=self.health_thresholds[
+                metric = HealthMetric.USER_SATISFACTION,
+                value = user_satisfaction,
+                timestamp = timestamp,
+                threshold_warning = self.health_thresholds[
                     HealthMetric.USER_SATISFACTION
                 ][0],
-                threshold_critical=self.health_thresholds[
+                threshold_critical = self.health_thresholds[
                     HealthMetric.USER_SATISFACTION
                 ][1],
                 unit="ratio",
@@ -499,16 +499,16 @@ class SystemHealthMonitor:
             # Availability (system uptime)
             availability = self._calculate_availability()
             metrics[HealthMetric.AVAILABILITY] = HealthMetricValue(
-                metric=HealthMetric.AVAILABILITY,
-                value=availability,
-                timestamp=timestamp,
-                threshold_warning=self.health_thresholds[HealthMetric.AVAILABILITY][0],
-                threshold_critical=self.health_thresholds[HealthMetric.AVAILABILITY][1],
+                metric = HealthMetric.AVAILABILITY,
+                value = availability,
+                timestamp = timestamp,
+                threshold_warning = self.health_thresholds[HealthMetric.AVAILABILITY][0],
+                threshold_critical = self.health_thresholds[HealthMetric.AVAILABILITY][1],
                 unit="ratio",
             )
 
         except Exception as e:
-            telemetry.log_event("application_metrics_capture_error", error=str(e))
+            telemetry.log_event("application_metrics_capture_error", error = str(e))
 
     def _calculate_error_rate(self) -> float:
         """Calculate current error rate."""
@@ -622,12 +622,12 @@ class SystemHealthMonitor:
         issue_id = f"issue_{int(time.time())}_{utils.random_string(8)}"
 
         issue = HealthIssue(
-            issue_id=issue_id,
-            issue_type=HealthIssue(f"{metric.value}_issue"),
-            severity=severity,
-            description=f"{metric.value} is {metric_value.value:.1f}{metric_value.unit}, exceeding {severity.value} threshold",
+            issue_id = issue_id,
+            issue_type = HealthIssue(f"{metric.value}_issue"),
+            severity = severity,
+            description = f"{metric.value} is {metric_value.value:.1f}{metric_value.unit}, exceeding {severity.value} threshold",
             affected_components=[metric.value],
-            detected_at=datetime.now(),
+            detected_at = datetime.now(),
             metrics={metric: metric_value.value},
             context={
                 "threshold_warning": metric_value.threshold_warning,
@@ -641,7 +641,7 @@ class SystemHealthMonitor:
 
         # Record learning event
         self.continuous_improvement.record_learning_event(
-            learning_type=continuous_improvement_system.LearningType.SYSTEM_HEALTH,
+            learning_type = continuous_improvement_system.LearningType.SYSTEM_HEALTH,
             context={
                 "health_metrics": {metric.value: metric_value.value},
                 "health_score": snapshot.health_score,
@@ -653,18 +653,18 @@ class SystemHealthMonitor:
                     "recommendations": [f"Address {metric.value} issue"],
                 }
             },
-            confidence=0.9,
-            impact_score=0.8,
+            confidence = 0.9,
+            impact_score = 0.8,
             source="system_health_monitor",
         )
 
         telemetry.log_event(
             "health_issue_detected",
-            issue_id=issue_id,
-            issue_type=issue.issue_type.value,
-            severity=severity.value,
-            metric=metric.value,
-            value=metric_value.value,
+            issue_id = issue_id,
+            issue_type = issue.issue_type.value,
+            severity = severity.value,
+            metric = metric.value,
+            value = metric_value.value,
         )
 
     def _check_resolved_issues(self, snapshot: SystemHealthSnapshot):
@@ -688,8 +688,8 @@ class SystemHealthMonitor:
 
                 telemetry.log_event(
                     "health_issue_resolved",
-                    issue_id=issue.issue_id,
-                    issue_type=issue.issue_type.value,
+                    issue_id = issue.issue_id,
+                    issue_type = issue.issue_type.value,
                     resolution_time=(
                         issue.resolved_at - issue.detected_at
                     ).total_seconds(),
@@ -763,14 +763,14 @@ class SystemHealthMonitor:
 
         # Create action record
         action = SelfHealingAction(
-            action_id=action_id,
-            action_type=action_type,
-            issue_id=issue.issue_id,
-            description=f"Attempted {action_type.value} for {issue.issue_type.value}",
-            executed_at=datetime.now(),
-            success=success,
-            duration=duration,
-            result=result,
+            action_id = action_id,
+            action_type = action_type,
+            issue_id = issue.issue_id,
+            description = f"Attempted {action_type.value} for {issue.issue_type.value}",
+            executed_at = datetime.now(),
+            success = success,
+            duration = duration,
+            result = result,
         )
 
         self.self_healing_actions.append(action)
@@ -784,11 +784,11 @@ class SystemHealthMonitor:
 
         telemetry.log_event(
             "self_healing_action_executed",
-            action_id=action_id,
-            action_type=action_type.value,
-            issue_id=issue.issue_id,
-            success=success,
-            duration=duration,
+            action_id = action_id,
+            action_type = action_type.value,
+            issue_id = issue.issue_id,
+            success = success,
+            duration = duration,
         )
 
     def _determine_healing_action(self, issue: HealthIssue) -> SelfHealingAction:
@@ -883,7 +883,7 @@ class SystemHealthMonitor:
 
     def get_health_summary(self, hours: int = 24) -> Dict[str, Any]:
         """Get system health summary for the last N hours."""
-        cutoff_time = datetime.now() - timedelta(hours=hours)
+        cutoff_time = datetime.now() - timedelta(hours = hours)
 
         # Filter recent snapshots
         recent_snapshots = [
@@ -969,7 +969,7 @@ class SystemHealthMonitor:
 
     def get_self_healing_history(self, days: int = 7) -> List[Dict[str, Any]]:
         """Get self - healing action history."""
-        cutoff_date = datetime.now() - timedelta(days=days)
+        cutoff_date = datetime.now() - timedelta(days = days)
 
         recent_actions = [
             action
@@ -1011,7 +1011,7 @@ class SystemHealthMonitor:
         }
 
         with open(self.health_data_path, "a", encoding="utf - 8") as f:
-            json.dump(snapshot_data, f, ensure_ascii=False, separators=(",", ":"))
+            json.dump(snapshot_data, f, ensure_ascii = False, separators=(",", ":"))
             f.write("\n")
 
     def _log_self_healing_action(self, action: SelfHealingAction):
@@ -1029,7 +1029,7 @@ class SystemHealthMonitor:
         }
 
         with open(self.self_healing_actions_path, "a", encoding="utf - 8") as f:
-            json.dump(action_data, f, ensure_ascii=False, separators=(",", ":"))
+            json.dump(action_data, f, ensure_ascii = False, separators=(",", ":"))
             f.write("\n")
 
     def _save_health_issues(self):

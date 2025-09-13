@@ -54,10 +54,10 @@ class Question:
     text: str
     question_type: QuestionType
     required: bool = True
-    follow_up_questions: List[str] = field(default_factory=list)
-    validation_rules: Dict[str, Any] = field(default_factory=dict)
-    insight_triggers: List[str] = field(default_factory=list)
-    ambiguity_indicators: List[str] = field(default_factory=list)
+    follow_up_questions: List[str] = field(default_factory = list)
+    validation_rules: Dict[str, Any] = field(default_factory = dict)
+    insight_triggers: List[str] = field(default_factory = list)
+    ambiguity_indicators: List[str] = field(default_factory = list)
     category: str = "general"
     priority: int = 1
 
@@ -74,7 +74,7 @@ class Insight:
     source_question: str
     source_phase: str
     actionable: bool = False
-    recommendations: List[str] = field(default_factory=list)
+    recommendations: List[str] = field(default_factory = list)
 
 
 @dataclass
@@ -87,7 +87,7 @@ class Ambiguity:
     description: str
     source_question: str
     source_phase: str
-    suggested_clarifications: List[str] = field(default_factory=list)
+    suggested_clarifications: List[str] = field(default_factory = list)
     resolved: bool = False
 
 
@@ -189,7 +189,7 @@ class EnhancedVisionInterrogator:
 
         # Return project type with highest score, or generic if no clear match
         if scores:
-            best_type = max(scores, key=scores.get)
+            best_type = max(scores, key = scores.get)
             if scores[best_type] > 0:
                 return best_type
 
@@ -315,7 +315,7 @@ class EnhancedVisionInterrogator:
                 Question(
                     id="wa_vc_01",
                     text="What problem does your web application solve for users?",
-                    question_type=QuestionType.OPEN_ENDED,
+                    question_type = QuestionType.OPEN_ENDED,
                     category="problem_definition",
                     insight_triggers=["user problem", "pain point", "solution"],
                     ambiguity_indicators=["maybe", "not sure", "depends"],
@@ -323,7 +323,7 @@ class EnhancedVisionInterrogator:
                 Question(
                     id="wa_vc_02",
                     text="What is your target user base? (e.g., consumers, businesses, developers)",
-                    question_type=QuestionType.MULTIPLE_CHOICE,
+                    question_type = QuestionType.MULTIPLE_CHOICE,
                     validation_rules={
                         "options": [
                             "consumers",
@@ -338,7 +338,7 @@ class EnhancedVisionInterrogator:
                 Question(
                     id="wa_vc_03",
                     text="What devices will users primarily access your app from?",
-                    question_type=QuestionType.MULTIPLE_CHOICE,
+                    question_type = QuestionType.MULTIPLE_CHOICE,
                     validation_rules={
                         "options": ["desktop", "mobile", "tablet", "all devices"]
                     },
@@ -349,15 +349,15 @@ class EnhancedVisionInterrogator:
                 Question(
                     id="wa_sc_01",
                     text="What core features must be included in the initial version?",
-                    question_type=QuestionType.OPEN_ENDED,
+                    question_type = QuestionType.OPEN_ENDED,
                     category="core_features",
                     insight_triggers=["feature", "functionality", "capability"],
                 ),
                 Question(
                     id="wa_sc_02",
                     text="What features are nice - to - have but not essential?",
-                    question_type=QuestionType.OPEN_ENDED,
-                    required=False,
+                    question_type = QuestionType.OPEN_ENDED,
+                    required = False,
                     category="optional_features",
                 ),
             ],
@@ -370,7 +370,7 @@ class EnhancedVisionInterrogator:
                 Question(
                     id="ma_vc_01",
                     text="What mobile - specific problem does your app address?",
-                    question_type=QuestionType.OPEN_ENDED,
+                    question_type = QuestionType.OPEN_ENDED,
                     category="mobile_problem",
                     insight_triggers=[
                         "mobile",
@@ -383,7 +383,7 @@ class EnhancedVisionInterrogator:
                 Question(
                     id="ma_vc_02",
                     text="Which mobile platforms do you need to support?",
-                    question_type=QuestionType.MULTIPLE_CHOICE,
+                    question_type = QuestionType.MULTIPLE_CHOICE,
                     validation_rules={
                         "options": ["iOS", "Android", "Both", "Progressive Web App"]
                     },
@@ -399,7 +399,7 @@ class EnhancedVisionInterrogator:
                 Question(
                     id="ds_vc_01",
                     text="What data do you have available and what insights do you want to extract?",
-                    question_type=QuestionType.OPEN_ENDED,
+                    question_type = QuestionType.OPEN_ENDED,
                     category="data_insights",
                     insight_triggers=[
                         "data",
@@ -412,7 +412,7 @@ class EnhancedVisionInterrogator:
                 Question(
                     id="ds_vc_02",
                     text="What type of analysis are you planning?",
-                    question_type=QuestionType.MULTIPLE_CHOICE,
+                    question_type = QuestionType.MULTIPLE_CHOICE,
                     validation_rules={
                         "options": [
                             "descriptive",
@@ -433,7 +433,7 @@ class EnhancedVisionInterrogator:
                 Question(
                     id="api_vc_01",
                     text="What services or functionality will your API provide?",
-                    question_type=QuestionType.OPEN_ENDED,
+                    question_type = QuestionType.OPEN_ENDED,
                     category="api_functionality",
                     insight_triggers=[
                         "service",
@@ -445,7 +445,7 @@ class EnhancedVisionInterrogator:
                 Question(
                     id="api_vc_02",
                     text="Who will be the primary consumers of your API?",
-                    question_type=QuestionType.OPEN_ENDED,
+                    question_type = QuestionType.OPEN_ENDED,
                     category="api_consumers",
                     insight_triggers=[
                         "developers",
@@ -464,7 +464,7 @@ class EnhancedVisionInterrogator:
                 Question(
                     id="ai_vc_01",
                     text="What AI / ML problem are you trying to solve?",
-                    question_type=QuestionType.OPEN_ENDED,
+                    question_type = QuestionType.OPEN_ENDED,
                     category="ai_problem",
                     insight_triggers=[
                         "machine learning",
@@ -477,7 +477,7 @@ class EnhancedVisionInterrogator:
                 Question(
                     id="ai_vc_02",
                     text="What type of AI / ML approach are you considering?",
-                    question_type=QuestionType.MULTIPLE_CHOICE,
+                    question_type = QuestionType.MULTIPLE_CHOICE,
                     validation_rules={
                         "options": [
                             "supervised learning",
@@ -500,21 +500,21 @@ class EnhancedVisionInterrogator:
                 Question(
                     id="gen_vc_01",
                     text="What is the core problem this project addresses?",
-                    question_type=QuestionType.OPEN_ENDED,
+                    question_type = QuestionType.OPEN_ENDED,
                     category="problem_definition",
                     insight_triggers=["problem", "challenge", "issue", "need"],
                 ),
                 Question(
                     id="gen_vc_02",
                     text="What is your vision for the ideal outcome?",
-                    question_type=QuestionType.OPEN_ENDED,
+                    question_type = QuestionType.OPEN_ENDED,
                     category="vision_outcome",
                     insight_triggers=["vision", "goal", "outcome", "success"],
                 ),
                 Question(
                     id="gen_vc_03",
                     text="Who are the primary users or beneficiaries?",
-                    question_type=QuestionType.OPEN_ENDED,
+                    question_type = QuestionType.OPEN_ENDED,
                     category="target_users",
                     insight_triggers=[
                         "users",
@@ -528,7 +528,7 @@ class EnhancedVisionInterrogator:
                 Question(
                     id="gen_sg_01",
                     text="Who are the key stakeholders and decision makers?",
-                    question_type=QuestionType.OPEN_ENDED,
+                    question_type = QuestionType.OPEN_ENDED,
                     category="stakeholders",
                     insight_triggers=[
                         "stakeholder",
@@ -540,7 +540,7 @@ class EnhancedVisionInterrogator:
                 Question(
                     id="gen_sg_02",
                     text="What are the primary goals for each stakeholder?",
-                    question_type=QuestionType.OPEN_ENDED,
+                    question_type = QuestionType.OPEN_ENDED,
                     category="stakeholder_goals",
                     insight_triggers=["goal", "objective", "priority", "interest"],
                 ),
@@ -549,14 +549,14 @@ class EnhancedVisionInterrogator:
                 Question(
                     id="gen_sc_01",
                     text="What is definitely IN scope for this project?",
-                    question_type=QuestionType.OPEN_ENDED,
+                    question_type = QuestionType.OPEN_ENDED,
                     category="in_scope",
                     insight_triggers=["scope", "include", "must have", "essential"],
                 ),
                 Question(
                     id="gen_sc_02",
                     text="What is definitely OUT of scope?",
-                    question_type=QuestionType.OPEN_ENDED,
+                    question_type = QuestionType.OPEN_ENDED,
                     category="out_of_scope",
                     insight_triggers=[
                         "out of scope",
@@ -570,7 +570,7 @@ class EnhancedVisionInterrogator:
                 Question(
                     id="gen_su_01",
                     text="How will you measure success?",
-                    question_type=QuestionType.OPEN_ENDED,
+                    question_type = QuestionType.OPEN_ENDED,
                     category="success_metrics",
                     insight_triggers=[
                         "measure",
@@ -583,7 +583,7 @@ class EnhancedVisionInterrogator:
                 Question(
                     id="gen_su_02",
                     text="What are the minimum viable outcomes?",
-                    question_type=QuestionType.OPEN_ENDED,
+                    question_type = QuestionType.OPEN_ENDED,
                     category="mvo",
                     insight_triggers=["minimum", "viable", "essential", "must have"],
                 ),

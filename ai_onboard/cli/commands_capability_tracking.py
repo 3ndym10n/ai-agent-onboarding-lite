@@ -27,11 +27,11 @@ def add_capability_tracking_commands(subparsers):
     cap_parser = subparsers.add_parser(
         "capability - tracking", help="System capability usage tracking and analytics"
     )
-    cap_sub = cap_parser.add_subparsers(dest="cap_cmd", required=True)
+    cap_sub = cap_parser.add_subparsers(dest="cap_cmd", required = True)
 
     # Metrics command
     metrics_parser = cap_sub.add_parser("metrics", help="View capability metrics")
-    metrics_sub = metrics_parser.add_subparsers(dest="metrics_action", required=True)
+    metrics_sub = metrics_parser.add_subparsers(dest="metrics_action", required = True)
 
     # View all metrics
     metrics_sub.add_parser("all", help="View all capability metrics")
@@ -56,7 +56,7 @@ def add_capability_tracking_commands(subparsers):
     trends_parser = cap_sub.add_parser("trends", help="View usage trends")
     trends_parser.add_argument("--capability", help="Specific capability to analyze")
     trends_parser.add_argument(
-        "--days", type=int, default=30, help="Number of days to analyze"
+        "--days", type = int, default = 30, help="Number of days to analyze"
     )
     trends_parser.add_argument(
         "--category",
@@ -78,7 +78,7 @@ def add_capability_tracking_commands(subparsers):
         "report", help="Generate capability usage reports"
     )
     report_parser.add_argument(
-        "--days", type=int, default=30, help="Report period in days"
+        "--days", type = int, default = 30, help="Report period in days"
     )
     report_parser.add_argument(
         "--format", choices=["text", "json"], default="text", help="Report format"
@@ -92,7 +92,7 @@ def add_capability_tracking_commands(subparsers):
         "analytics", help="Advanced capability analytics"
     )
     analytics_sub = analytics_parser.add_subparsers(
-        dest="analytics_action", required=True
+        dest="analytics_action", required = True
     )
 
     # Performance analytics
@@ -108,7 +108,7 @@ def add_capability_tracking_commands(subparsers):
     config_parser = cap_sub.add_parser(
         "config", help="Capability tracking configuration"
     )
-    config_sub = config_parser.add_subparsers(dest="config_action", required=True)
+    config_sub = config_parser.add_subparsers(dest="config_action", required = True)
 
     # Show config
     config_sub.add_parser("show", help="Show current configuration")
@@ -116,16 +116,16 @@ def add_capability_tracking_commands(subparsers):
     # Update config
     update_parser = config_sub.add_parser("update", help="Update configuration")
     update_parser.add_argument(
-        "--tracking - enabled", type=bool, help="Enable / disable tracking"
+        "--tracking - enabled", type = bool, help="Enable / disable tracking"
     )
     update_parser.add_argument(
-        "--detailed - tracking", type=bool, help="Enable detailed tracking"
+        "--detailed - tracking", type = bool, help="Enable detailed tracking"
     )
     update_parser.add_argument(
-        "--retention - days", type=int, help="Data retention period"
+        "--retention - days", type = int, help="Data retention period"
     )
     update_parser.add_argument(
-        "--privacy - mode", type=bool, help="Enable privacy mode"
+        "--privacy - mode", type = bool, help="Enable privacy mode"
     )
 
 
@@ -222,7 +222,7 @@ def _handle_metrics_commands(args: argparse.Namespace, tracker, root: Path) -> N
         if metrics.common_contexts:
             print(f"\n🔍 Common Usage Contexts:")
             for context, count in sorted(
-                metrics.common_contexts.items(), key=lambda x: x[1], reverse=True
+                metrics.common_contexts.items(), key = lambda x: x[1], reverse = True
             )[:5]:
                 percentage = (count / metrics.total_uses) * 100
                 print(
@@ -232,7 +232,7 @@ def _handle_metrics_commands(args: argparse.Namespace, tracker, root: Path) -> N
         if metrics.common_patterns:
             print(f"\n📋 Usage Patterns:")
             for pattern, count in sorted(
-                metrics.common_patterns.items(), key=lambda x: x[1], reverse=True
+                metrics.common_patterns.items(), key = lambda x: x[1], reverse = True
             )[:5]:
                 percentage = (count / metrics.total_uses) * 100
                 print(
@@ -242,7 +242,7 @@ def _handle_metrics_commands(args: argparse.Namespace, tracker, root: Path) -> N
         if metrics.peak_usage_hours:
             print(f"\n🕐 Peak Usage Hours:")
             sorted_hours = sorted(
-                metrics.peak_usage_hours.items(), key=lambda x: x[1], reverse=True
+                metrics.peak_usage_hours.items(), key = lambda x: x[1], reverse = True
             )[:5]
             for hour, count in sorted_hours:
                 print(f"   • {hour:02d}:00-{hour:02d}:59: {count} uses")
@@ -264,7 +264,7 @@ def _handle_metrics_commands(args: argparse.Namespace, tracker, root: Path) -> N
         rows = []
 
         for name, metrics in sorted(
-            category_metrics.items(), key=lambda x: x[1].total_uses, reverse=True
+            category_metrics.items(), key = lambda x: x[1].total_uses, reverse = True
         ):
             trends = tracker.get_usage_trends(name, 30)
             growth = trends.get("growth_rate", 0)
@@ -330,7 +330,7 @@ def _handle_trends_commands(args: argparse.Namespace, tracker, root: Path) -> No
             daily_data = {
                 date.split("-")[-1]: recent_usage[date] for date in sorted_dates
             }
-            print(chart.bar_chart(daily_data, max_width=50))
+            print(chart.bar_chart(daily_data, max_width = 50))
 
     elif args.category:
         # Category trends
@@ -355,7 +355,7 @@ def _handle_trends_commands(args: argparse.Namespace, tracker, root: Path) -> No
 
         if trend_data:
             print(f"📈 Category Usage Distribution:")
-            print(chart.bar_chart(trend_data, max_width=50))
+            print(chart.bar_chart(trend_data, max_width = 50))
         else:
             print("❌ No recent usage data for this category")
 
@@ -374,7 +374,7 @@ def _handle_trends_commands(args: argparse.Namespace, tracker, root: Path) -> No
         if trending_caps:
             # Show top 10 trending
             sorted_trending = sorted(
-                trending_caps.items(), key=lambda x: x[1], reverse=True
+                trending_caps.items(), key = lambda x: x[1], reverse = True
             )[:10]
             print(f"🚀 Fastest Growing Capabilities:")
             for name, growth in sorted_trending:
@@ -392,7 +392,7 @@ def _handle_trends_commands(args: argparse.Namespace, tracker, root: Path) -> No
 
         if category_usage:
             print(f"\n📈 Usage by Category:")
-            print(chart.bar_chart(category_usage, max_width=50))
+            print(chart.bar_chart(category_usage, max_width = 50))
 
 
 def _handle_profile_commands(args: argparse.Namespace, tracker, root: Path) -> None:
@@ -437,7 +437,7 @@ def _handle_profile_commands(args: argparse.Namespace, tracker, root: Path) -> N
         category_display = {
             k.replace("_", " ").title(): v for k, v in categories.items()
         }
-        print(chart.bar_chart(category_display, max_width=40))
+        print(chart.bar_chart(category_display, max_width = 40))
 
     # Usage patterns
     patterns = profile.get("usage_patterns", {})
@@ -457,19 +457,19 @@ def _handle_report_commands(args: argparse.Namespace, tracker, root: Path) -> No
     if args.format == "json":
         report_data = tracker._serialize_report(report)
         if args.save:
-            filename = f"capability_report_{datetime.now().strftime('%Y % m%d_ % H%M % S')}.json"
+            filename = f"capability_report_{datetime.now().strftime('%Y % m % d_ % H % M % S')}.json"
             with open(filename, "w") as f:
-                json.dump(report_data, f, indent=2)
+                json.dump(report_data, f, indent = 2)
             print(f"📁 Report saved to: {filename}")
         else:
-            print(json.dumps(report_data, indent=2))
+            print(json.dumps(report_data, indent = 2))
         return
 
     # Text format report
     print(
-        f"Report Period: {report.period_start.strftime('%Y -% m-%d')} to {report.period_end.strftime('%Y -% m-%d')}"
+        f"Report Period: {report.period_start.strftime('%Y -% m -% d')} to {report.period_end.strftime('%Y -% m -% d')}"
     )
-    print(f"Generated: {report.generated_at.strftime('%Y -% m-%d %H:%M:%S')}")
+    print(f"Generated: {report.generated_at.strftime('%Y -% m -% d %H:%M:%S')}")
     print()
 
     # Overview
@@ -509,7 +509,7 @@ def _handle_report_commands(args: argparse.Namespace, tracker, root: Path) -> No
         print("🕐 Peak Usage Times")
         print("-" * 25)
         sorted_hours = sorted(
-            report.peak_usage_times.items(), key=lambda x: x[1], reverse=True
+            report.peak_usage_times.items(), key = lambda x: x[1], reverse = True
         )[:5]
         for hour, count in sorted_hours:
             print(f"   • {hour:02d}:00-{hour:02d}:59: {count} uses")
@@ -540,7 +540,7 @@ def _handle_report_commands(args: argparse.Namespace, tracker, root: Path) -> No
 
     if args.save:
         filename = (
-            f"capability_report_{datetime.now().strftime('%Y % m%d_ % H%M % S')}.txt"
+            f"capability_report_{datetime.now().strftime('%Y % m % d_ % H % M % S')}.txt"
         )
         # Save text report (implementation would write formatted text)
         print(f"📁 Report saved to: {filename}")
@@ -599,14 +599,14 @@ def _handle_analytics_commands(args: argparse.Namespace, tracker, root: Path) ->
             pattern_display = {
                 k.replace("_", " ").title(): v for k, v in all_patterns.items()
             }
-            print(chart.bar_chart(pattern_display, max_width=40))
+            print(chart.bar_chart(pattern_display, max_width = 40))
 
         if all_contexts:
             print(f"\n🔍 System - wide Usage Contexts:")
             context_display = {
                 k.replace("_", " ").title(): v for k, v in all_contexts.items()
             }
-            print(chart.bar_chart(context_display, max_width=40))
+            print(chart.bar_chart(context_display, max_width = 40))
 
     elif args.analytics_action == "recommendations":
         print("💡 Optimization Recommendations")
@@ -696,7 +696,7 @@ def _handle_config_commands(args: argparse.Namespace, tracker, root: Path) -> No
             # Save configuration
             config_file = tracker.data_dir / "config.json"
             with open(config_file, "w") as f:
-                json.dump(config, f, indent=2)
+                json.dump(config, f, indent = 2)
 
             print(status.success("Configuration updated:"))
             for update in updates:

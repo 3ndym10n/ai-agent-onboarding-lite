@@ -83,7 +83,7 @@ class _ApprovalHandler(BaseHTTPRequestHandler):
         answers: List[str] = []
         for key in sorted(
             (k for k in form.keys() if k.startswith("answer_")),
-            key=lambda x: int(x.split("_", 1)[1]),
+            key = lambda x: int(x.split("_", 1)[1]),
         ):
             answers.append((form.get(key, [""])[0] or "").strip())
 
@@ -98,7 +98,7 @@ class _ApprovalHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(self._html("<h3 > Thanks! You may close this tab.</h3>"))
         # Shutdown in background to let response flush
-        Thread(target=self.server.shutdown, daemon=True).start()  # type: ignore[attr - defined]
+        Thread(target = self.server.shutdown, daemon = True).start()  # type: ignore[attr - defined]
 
 
 def request_approval(
@@ -123,7 +123,7 @@ def request_approval(
     }
     httpd.result = None  # type: ignore[attr - defined]
 
-    t = Thread(target=httpd.serve_forever, daemon=True)
+    t = Thread(target = httpd.serve_forever, daemon = True)
     t.start()
     url = f"http://{addr[0]}:{addr[1]}"
     print(f"[APPROVE] Open {url} to approve or stop. Waiting for your click...")

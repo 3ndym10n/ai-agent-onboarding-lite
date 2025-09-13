@@ -46,7 +46,7 @@ def avg_time(state: Dict[str, Any], rule_id: str) -> float:
     r = state.get("rules", {}).get(rule_id)
     if not r or r["runs"] == 0:
         return 0.2
-    return max(1e-3, float(r["avg_time"]))
+    return max(1e - 3, float(r["avg_time"]))
 
 
 def passes_in_row(state: Dict[str, Any], rule_id: str) -> int:

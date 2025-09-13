@@ -77,17 +77,17 @@ def _handle_register_agent(args: argparse.Namespace, root: Path) -> None:
 
     # Create agent profile
     agent_profile = AgentProfile(
-        agent_id=args.agent_id,
-        name=args.name,
-        version=args.version or "1.0.0",
-        capabilities=capabilities,
-        collaboration_mode=collaboration_mode,
-        safety_level=safety_level,
-        max_autonomous_actions=args.max_actions or 10,
-        requires_confirmation_for=args.require_confirmation or [],
-        allowed_commands=args.allowed_commands or [],
-        blocked_commands=args.blocked_commands or [],
-        session_timeout=args.session_timeout or 3600,
+        agent_id = args.agent_id,
+        name = args.name,
+        version = args.version or "1.0.0",
+        capabilities = capabilities,
+        collaboration_mode = collaboration_mode,
+        safety_level = safety_level,
+        max_autonomous_actions = args.max_actions or 10,
+        requires_confirmation_for = args.require_confirmation or [],
+        allowed_commands = args.allowed_commands or [],
+        blocked_commands = args.blocked_commands or [],
+        session_timeout = args.session_timeout or 3600,
     )
 
     # Register agent
@@ -387,8 +387,8 @@ def _handle_test_collaboration(args: argparse.Namespace, root: Path) -> None:
         name="Test AI Agent",
         version="1.0.0",
         capabilities=[AgentCapability.CODE_GENERATION, AgentCapability.PLANNING],
-        collaboration_mode=CollaborationMode.COLLABORATIVE,
-        safety_level=SafetyLevel.MEDIUM,
+        collaboration_mode = CollaborationMode.COLLABORATIVE,
+        safety_level = SafetyLevel.MEDIUM,
     )
 
     result = protocol.register_agent(test_agent)
@@ -464,7 +464,7 @@ def add_ai_agent_collaboration_parser(subparsers) -> None:
         help="Safety level",
     )
     register_parser.add_argument(
-        "--max - actions", type=int, help="Maximum autonomous actions"
+        "--max - actions", type = int, help="Maximum autonomous actions"
     )
     register_parser.add_argument(
         "--require - confirmation", nargs="+", help="Actions requiring confirmation"
@@ -476,7 +476,7 @@ def add_ai_agent_collaboration_parser(subparsers) -> None:
         "--blocked - commands", nargs="+", help="Blocked commands"
     )
     register_parser.add_argument(
-        "--session - timeout", type=int, help="Session timeout in seconds"
+        "--session - timeout", type = int, help="Session timeout in seconds"
     )
 
     # Session management

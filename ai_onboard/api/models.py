@@ -19,15 +19,15 @@ class APIResponse(BaseModel):
     message: Optional[str] = None
     data: Optional[Dict[str, Any]] = None
     error: Optional[str] = None
-    timestamp: datetime = Field(default_factory=datetime.now)
+    timestamp: datetime = Field(default_factory = datetime.now)
 
 
 class ProjectAnalysisRequest(BaseModel):
     """Request model for project analysis."""
 
-    allow_exec: bool = Field(default=False, description="Allow external probes")
+    allow_exec: bool = Field(default = False, description="Allow external probes")
     target_path: Optional[str] = Field(
-        default=None, description="Specific path to analyze"
+        default = None, description="Specific path to analyze"
     )
 
 
@@ -39,7 +39,7 @@ class ProjectAnalysisResponse(BaseModel):
     frameworks: List[str]
     components: List[Dict[str, Any]]
     recommendations: List[str]
-    confidence_score: float = Field(ge=0, le=1)
+    confidence_score: float = Field(ge = 0, le = 1)
     analysis_timestamp: datetime
 
 
@@ -50,12 +50,12 @@ class CharterRequest(BaseModel):
     goals: List[str] = Field(description="Project goals")
     success_criteria: List[str] = Field(description="Success criteria")
     constraints: Optional[List[str]] = Field(
-        default=None, description="Project constraints"
+        default = None, description="Project constraints"
     )
     stakeholders: Optional[List[str]] = Field(
-        default=None, description="Key stakeholders"
+        default = None, description="Key stakeholders"
     )
-    interactive: bool = Field(default=False, description="Interactive charter creation")
+    interactive: bool = Field(default = False, description="Interactive charter creation")
 
 
 class CharterResponse(BaseModel):
@@ -75,10 +75,10 @@ class PlanRequest(BaseModel):
     """Request model for plan generation."""
 
     charter_id: Optional[str] = Field(
-        default=None, description="Charter to base plan on"
+        default = None, description="Charter to base plan on"
     )
     methodology: str = Field(default="agile", description="Planning methodology")
-    timeline_weeks: Optional[int] = Field(default=None, description="Target timeline")
+    timeline_weeks: Optional[int] = Field(default = None, description="Target timeline")
 
 
 class PlanResponse(BaseModel):
@@ -97,10 +97,10 @@ class ValidationRequest(BaseModel):
     """Request model for validation."""
 
     generate_report: bool = Field(
-        default=True, description="Generate validation report"
+        default = True, description="Generate validation report"
     )
     components: Optional[List[str]] = Field(
-        default=None, description="Specific components to validate"
+        default = None, description="Specific components to validate"
     )
 
 
@@ -108,7 +108,7 @@ class ValidationResponse(BaseModel):
     """Response model for validation."""
 
     validation_id: str
-    overall_score: float = Field(ge=0, le=1)
+    overall_score: float = Field(ge = 0, le = 1)
     components: List[Dict[str, Any]]
     issues: List[Dict[str, Any]]
     recommendations: List[str]
@@ -121,7 +121,7 @@ class ProjectStatus(BaseModel):
 
     project_root: str
     current_phase: str
-    overall_progress: float = Field(ge=0, le=100)
+    overall_progress: float = Field(ge = 0, le = 100)
     completed_tasks: int
     total_tasks: int
     active_milestones: List[Dict[str, Any]]
@@ -139,7 +139,7 @@ class AgentRegistrationRequest(BaseModel):
     capabilities: List[str] = Field(description="Agent capabilities")
     collaboration_mode: str = Field(description="Collaboration mode")
     safety_level: str = Field(description="Safety level")
-    max_autonomous_actions: int = Field(default=5, description="Max autonomous actions")
+    max_autonomous_actions: int = Field(default = 5, description="Max autonomous actions")
     requires_confirmation_for: List[str] = Field(
         default=[], description="Actions requiring confirmation"
     )
@@ -161,7 +161,7 @@ class SessionCreateRequest(BaseModel):
 
     agent_id: str
     user_id: str = Field(default="api_user")
-    session_context: Optional[Dict[str, Any]] = Field(default=None)
+    session_context: Optional[Dict[str, Any]] = Field(default = None)
 
 
 class SessionCreateResponse(BaseModel):
@@ -180,12 +180,12 @@ class CommandExecutionRequest(BaseModel):
     """Request model for command execution."""
 
     command: str = Field(description="Command to execute")
-    args: Optional[List[str]] = Field(default=None, description="Command arguments")
+    args: Optional[List[str]] = Field(default = None, description="Command arguments")
     context: Optional[Dict[str, Any]] = Field(
-        default=None, description="Execution context"
+        default = None, description="Execution context"
     )
     require_confirmation: bool = Field(
-        default=False, description="Require user confirmation"
+        default = False, description="Require user confirmation"
     )
 
 
@@ -208,7 +208,7 @@ class NaturalLanguageRequest(BaseModel):
 
     text: str = Field(description="Natural language text")
     context: Optional[Dict[str, Any]] = Field(
-        default=None, description="Additional context"
+        default = None, description="Additional context"
     )
 
 
@@ -218,7 +218,7 @@ class NaturalLanguageResponse(BaseModel):
     original_text: str
     translated_command: Optional[str] = None
     suggested_args: List[str] = []
-    confidence: float = Field(ge=0, le=1)
+    confidence: float = Field(ge = 0, le = 1)
     alternatives: List[Dict[str, Any]] = []
     requires_clarification: bool = False
     clarification_questions: List[str] = []
@@ -227,15 +227,15 @@ class NaturalLanguageResponse(BaseModel):
 class MetricsQuery(BaseModel):
     """Request model for metrics queries."""
 
-    metric_name: Optional[str] = Field(default=None, description="Specific metric name")
-    source: Optional[str] = Field(default=None, description="Metric source")
-    category: Optional[str] = Field(default=None, description="Metric category")
+    metric_name: Optional[str] = Field(default = None, description="Specific metric name")
+    source: Optional[str] = Field(default = None, description="Metric source")
+    category: Optional[str] = Field(default = None, description="Metric category")
     start_time: Optional[datetime] = Field(
-        default=None, description="Start time filter"
+        default = None, description="Start time filter"
     )
-    end_time: Optional[datetime] = Field(default=None, description="End time filter")
-    limit: int = Field(default=100, description="Maximum results")
-    aggregation: Optional[str] = Field(default=None, description="Aggregation function")
+    end_time: Optional[datetime] = Field(default = None, description="End time filter")
+    limit: int = Field(default = 100, description="Maximum results")
+    aggregation: Optional[str] = Field(default = None, description="Aggregation function")
 
 
 class MetricsResponse(BaseModel):
@@ -253,8 +253,8 @@ class WebSocketMessage(BaseModel):
 
     type: str = Field(description="Message type")
     data: Dict[str, Any] = Field(description="Message data")
-    timestamp: datetime = Field(default_factory=datetime.now)
-    session_id: Optional[str] = Field(default=None, description="Session ID")
+    timestamp: datetime = Field(default_factory = datetime.now)
+    session_id: Optional[str] = Field(default = None, description="Session ID")
 
 
 class ProgressUpdate(BaseModel):
@@ -262,7 +262,7 @@ class ProgressUpdate(BaseModel):
 
     operation_id: str
     operation_type: str
-    progress_percentage: float = Field(ge=0, le=100)
+    progress_percentage: float = Field(ge = 0, le = 100)
     current_step: str
     total_steps: int
     completed_steps: int
@@ -303,7 +303,7 @@ class ErrorDetail(BaseModel):
     message: str
     details: Optional[Dict[str, Any]] = None
     trace_id: Optional[str] = None
-    timestamp: datetime = Field(default_factory=datetime.now)
+    timestamp: datetime = Field(default_factory = datetime.now)
     suggested_resolution: Optional[str] = None
 
 

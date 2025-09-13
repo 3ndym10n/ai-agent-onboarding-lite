@@ -178,17 +178,17 @@ class ContinuousImprovementValidator:
 
         # Create validation report
         report = ValidationReport(
-            report_id=f"validation_{int(time.time())}_{utils.random_string(8)}",
-            generated_at=datetime.now(),
-            total_tests=total_tests,
-            passed_tests=passed_tests,
-            failed_tests=failed_tests,
-            warning_tests=warning_tests,
-            skipped_tests=skipped_tests,
-            test_results=test_results,
-            system_health_score=system_health_score,
-            recommendations=recommendations,
-            summary=self._generate_summary(test_results, system_health_score),
+            report_id = f"validation_{int(time.time())}_{utils.random_string(8)}",
+            generated_at = datetime.now(),
+            total_tests = total_tests,
+            passed_tests = passed_tests,
+            failed_tests = failed_tests,
+            warning_tests = warning_tests,
+            skipped_tests = skipped_tests,
+            test_results = test_results,
+            system_health_score = system_health_score,
+            recommendations = recommendations,
+            summary = self._generate_summary(test_results, system_health_score),
         )
 
         # Save report
@@ -301,9 +301,9 @@ class ContinuousImprovementValidator:
                 test_id="ci_integration_001",
                 name="Continuous Improvement System Integration",
                 description="Test basic continuous improvement system functionality",
-                category=ValidationCategory.INTEGRATION,
-                result=ValidationResult.PASS,
-                duration=duration,
+                category = ValidationCategory.INTEGRATION,
+                result = ValidationResult.PASS,
+                duration = duration,
                 details={
                     "learning_events_count": len(learning_events),
                     "recommendations_count": len(recommendations),
@@ -315,10 +315,10 @@ class ContinuousImprovementValidator:
                 test_id="ci_integration_001",
                 name="Continuous Improvement System Integration",
                 description="Test basic continuous improvement system functionality",
-                category=ValidationCategory.INTEGRATION,
-                result=ValidationResult.FAIL,
-                duration=duration,
-                error_message=str(e),
+                category = ValidationCategory.INTEGRATION,
+                result = ValidationResult.FAIL,
+                duration = duration,
+                error_message = str(e),
             )
 
     def _test_performance_optimizer_integration(self) -> "ValidationTestCase":
@@ -336,9 +336,9 @@ class ContinuousImprovementValidator:
                 test_id="perf_integration_001",
                 name="Performance Optimizer Integration",
                 description="Test performance optimizer functionality",
-                category=ValidationCategory.INTEGRATION,
-                result=ValidationResult.PASS,
-                duration=duration,
+                category = ValidationCategory.INTEGRATION,
+                result = ValidationResult.PASS,
+                duration = duration,
                 details={
                     "optimizations_count": len(optimizations),
                     "metrics_count": len(performance_metrics),
@@ -350,10 +350,10 @@ class ContinuousImprovementValidator:
                 test_id="perf_integration_001",
                 name="Performance Optimizer Integration",
                 description="Test performance optimizer functionality",
-                category=ValidationCategory.INTEGRATION,
-                result=ValidationResult.FAIL,
-                duration=duration,
-                error_message=str(e),
+                category = ValidationCategory.INTEGRATION,
+                result = ValidationResult.FAIL,
+                duration = duration,
+                error_message = str(e),
             )
 
     def _test_config_manager_integration(self) -> "ValidationTestCase":
@@ -371,9 +371,9 @@ class ContinuousImprovementValidator:
                 test_id="config_integration_001",
                 name="Configuration Manager Integration",
                 description="Test configuration manager functionality",
-                category=ValidationCategory.INTEGRATION,
-                result=ValidationResult.PASS,
-                duration=duration,
+                category = ValidationCategory.INTEGRATION,
+                result = ValidationResult.PASS,
+                duration = duration,
                 details={
                     "configurations_count": len(configs),
                     "profiles_count": len(profiles),
@@ -385,10 +385,10 @@ class ContinuousImprovementValidator:
                 test_id="config_integration_001",
                 name="Configuration Manager Integration",
                 description="Test configuration manager functionality",
-                category=ValidationCategory.INTEGRATION,
-                result=ValidationResult.FAIL,
-                duration=duration,
-                error_message=str(e),
+                category = ValidationCategory.INTEGRATION,
+                result = ValidationResult.FAIL,
+                duration = duration,
+                error_message = str(e),
             )
 
     def _test_user_preferences_integration(self) -> "ValidationTestCase":
@@ -399,10 +399,10 @@ class ContinuousImprovementValidator:
             # Test user preferences functionality
             test_user_id = "test_user_validation"
             self.user_preferences.record_user_interaction(
-                user_id=test_user_id,
+                user_id = test_user_id,
                 interaction_type="command_execution",
                 context={"command": "validation_test"},
-                satisfaction_score=0.8,
+                satisfaction_score = 0.8,
             )
 
             preferences = self.user_preferences.get_user_preferences(test_user_id)
@@ -413,9 +413,9 @@ class ContinuousImprovementValidator:
                 test_id="user_prefs_integration_001",
                 name="User Preferences Integration",
                 description="Test user preferences functionality",
-                category=ValidationCategory.INTEGRATION,
-                result=ValidationResult.PASS,
-                duration=duration,
+                category = ValidationCategory.INTEGRATION,
+                result = ValidationResult.PASS,
+                duration = duration,
                 details={"preferences_count": len(preferences)},
             )
         except Exception as e:
@@ -424,10 +424,10 @@ class ContinuousImprovementValidator:
                 test_id="user_prefs_integration_001",
                 name="User Preferences Integration",
                 description="Test user preferences functionality",
-                category=ValidationCategory.INTEGRATION,
-                result=ValidationResult.FAIL,
-                duration=duration,
-                error_message=str(e),
+                category = ValidationCategory.INTEGRATION,
+                result = ValidationResult.FAIL,
+                duration = duration,
+                error_message = str(e),
             )
 
     def _test_health_monitor_integration(self) -> "ValidationTestCase":
@@ -445,9 +445,9 @@ class ContinuousImprovementValidator:
                 test_id="health_integration_001",
                 name="Health Monitor Integration",
                 description="Test health monitor functionality",
-                category=ValidationCategory.INTEGRATION,
-                result=ValidationResult.PASS,
-                duration=duration,
+                category = ValidationCategory.INTEGRATION,
+                result = ValidationResult.PASS,
+                duration = duration,
                 details={
                     "health_status": health_summary.get("status", "unknown"),
                     "active_issues_count": len(active_issues),
@@ -459,10 +459,10 @@ class ContinuousImprovementValidator:
                 test_id="health_integration_001",
                 name="Health Monitor Integration",
                 description="Test health monitor functionality",
-                category=ValidationCategory.INTEGRATION,
-                result=ValidationResult.FAIL,
-                duration=duration,
-                error_message=str(e),
+                category = ValidationCategory.INTEGRATION,
+                result = ValidationResult.FAIL,
+                duration = duration,
+                error_message = str(e),
             )
 
     def _test_knowledge_base_integration(self) -> "ValidationTestCase":
@@ -480,9 +480,9 @@ class ContinuousImprovementValidator:
                 test_id="kb_integration_001",
                 name="Knowledge Base Integration",
                 description="Test knowledge base functionality",
-                category=ValidationCategory.INTEGRATION,
-                result=ValidationResult.PASS,
-                duration=duration,
+                category = ValidationCategory.INTEGRATION,
+                result = ValidationResult.PASS,
+                duration = duration,
                 details={
                     "total_knowledge_items": stats.get("total_knowledge_items", 0),
                     "patterns_discovered": len(patterns),
@@ -494,10 +494,10 @@ class ContinuousImprovementValidator:
                 test_id="kb_integration_001",
                 name="Knowledge Base Integration",
                 description="Test knowledge base functionality",
-                category=ValidationCategory.INTEGRATION,
-                result=ValidationResult.FAIL,
-                duration=duration,
-                error_message=str(e),
+                category = ValidationCategory.INTEGRATION,
+                result = ValidationResult.FAIL,
+                duration = duration,
+                error_message = str(e),
             )
 
     def _test_analytics_integration(self) -> "ValidationTestCase":
@@ -515,9 +515,9 @@ class ContinuousImprovementValidator:
                 test_id="analytics_integration_001",
                 name="Analytics Integration",
                 description="Test analytics functionality",
-                category=ValidationCategory.INTEGRATION,
-                result=ValidationResult.PASS,
-                duration=duration,
+                category = ValidationCategory.INTEGRATION,
+                result = ValidationResult.PASS,
+                duration = duration,
                 details={
                     "total_metrics": summary.get("metrics", {}).get("total", 0),
                     "total_reports": summary.get("reports", {}).get("total", 0),
@@ -529,10 +529,10 @@ class ContinuousImprovementValidator:
                 test_id="analytics_integration_001",
                 name="Analytics Integration",
                 description="Test analytics functionality",
-                category=ValidationCategory.INTEGRATION,
-                result=ValidationResult.FAIL,
-                duration=duration,
-                error_message=str(e),
+                category = ValidationCategory.INTEGRATION,
+                result = ValidationResult.FAIL,
+                duration = duration,
+                error_message = str(e),
             )
 
     def _test_configuration_data_integrity(self) -> "ValidationTestCase":
@@ -554,9 +554,9 @@ class ContinuousImprovementValidator:
                 test_id="data_integrity_001",
                 name="Configuration Data Integrity",
                 description="Validate configuration data structure and integrity",
-                category=ValidationCategory.DATA_INTEGRITY,
-                result=ValidationResult.PASS,
-                duration=duration,
+                category = ValidationCategory.DATA_INTEGRITY,
+                result = ValidationResult.PASS,
+                duration = duration,
                 details={"configurations_validated": len(configs)},
             )
         except Exception as e:
@@ -565,10 +565,10 @@ class ContinuousImprovementValidator:
                 test_id="data_integrity_001",
                 name="Configuration Data Integrity",
                 description="Validate configuration data structure and integrity",
-                category=ValidationCategory.DATA_INTEGRITY,
-                result=ValidationResult.FAIL,
-                duration=duration,
-                error_message=str(e),
+                category = ValidationCategory.DATA_INTEGRITY,
+                result = ValidationResult.FAIL,
+                duration = duration,
+                error_message = str(e),
             )
 
     def _test_user_preferences_data_integrity(self) -> "ValidationTestCase":
@@ -581,10 +581,10 @@ class ContinuousImprovementValidator:
 
             # Record interaction
             self.user_preferences.record_user_interaction(
-                user_id=test_user_id,
+                user_id = test_user_id,
                 interaction_type="data_integrity_test",
                 context={"test": "data_integrity"},
-                satisfaction_score=0.9,
+                satisfaction_score = 0.9,
             )
 
             # Retrieve and validate
@@ -596,9 +596,9 @@ class ContinuousImprovementValidator:
                 test_id="data_integrity_002",
                 name="User Preferences Data Integrity",
                 description="Validate user preferences data structure and integrity",
-                category=ValidationCategory.DATA_INTEGRITY,
-                result=ValidationResult.PASS,
-                duration=duration,
+                category = ValidationCategory.DATA_INTEGRITY,
+                result = ValidationResult.PASS,
+                duration = duration,
                 details={"preferences_validated": len(preferences)},
             )
         except Exception as e:
@@ -607,10 +607,10 @@ class ContinuousImprovementValidator:
                 test_id="data_integrity_002",
                 name="User Preferences Data Integrity",
                 description="Validate user preferences data structure and integrity",
-                category=ValidationCategory.DATA_INTEGRITY,
-                result=ValidationResult.FAIL,
-                duration=duration,
-                error_message=str(e),
+                category = ValidationCategory.DATA_INTEGRITY,
+                result = ValidationResult.FAIL,
+                duration = duration,
+                error_message = str(e),
             )
 
     def _test_knowledge_base_data_integrity(self) -> "ValidationTestCase":
@@ -639,9 +639,9 @@ class ContinuousImprovementValidator:
                 test_id="data_integrity_003",
                 name="Knowledge Base Data Integrity",
                 description="Validate knowledge base data structure and integrity",
-                category=ValidationCategory.DATA_INTEGRITY,
-                result=ValidationResult.PASS,
-                duration=duration,
+                category = ValidationCategory.DATA_INTEGRITY,
+                result = ValidationResult.PASS,
+                duration = duration,
                 details={"statistics_validated": len(stats)},
             )
         except Exception as e:
@@ -650,10 +650,10 @@ class ContinuousImprovementValidator:
                 test_id="data_integrity_003",
                 name="Knowledge Base Data Integrity",
                 description="Validate knowledge base data structure and integrity",
-                category=ValidationCategory.DATA_INTEGRITY,
-                result=ValidationResult.FAIL,
-                duration=duration,
-                error_message=str(e),
+                category = ValidationCategory.DATA_INTEGRITY,
+                result = ValidationResult.FAIL,
+                duration = duration,
+                error_message = str(e),
             )
 
     def _test_analytics_data_integrity(self) -> "ValidationTestCase":
@@ -678,9 +678,9 @@ class ContinuousImprovementValidator:
                 test_id="data_integrity_004",
                 name="Analytics Data Integrity",
                 description="Validate analytics data structure and integrity",
-                category=ValidationCategory.DATA_INTEGRITY,
-                result=ValidationResult.PASS,
-                duration=duration,
+                category = ValidationCategory.DATA_INTEGRITY,
+                result = ValidationResult.PASS,
+                duration = duration,
                 details={"summary_sections_validated": len(summary)},
             )
         except Exception as e:
@@ -689,10 +689,10 @@ class ContinuousImprovementValidator:
                 test_id="data_integrity_004",
                 name="Analytics Data Integrity",
                 description="Validate analytics data structure and integrity",
-                category=ValidationCategory.DATA_INTEGRITY,
-                result=ValidationResult.FAIL,
-                duration=duration,
-                error_message=str(e),
+                category = ValidationCategory.DATA_INTEGRITY,
+                result = ValidationResult.FAIL,
+                duration = duration,
+                error_message = str(e),
             )
 
     def _test_system_response_time(self) -> "ValidationTestCase":
@@ -760,10 +760,10 @@ class ContinuousImprovementValidator:
             return ValidationTestCase(
                 test_id="perf_001",
                 name="System Response Time",
-                description=f"Test response time for key operations (threshold: {threshold}ms)",
-                category=ValidationCategory.PERFORMANCE,
-                result=result,
-                duration=duration,
+                description = f"Test response time for key operations (threshold: {threshold}ms)",
+                category = ValidationCategory.PERFORMANCE,
+                result = result,
+                duration = duration,
                 details={
                     "max_response_time_ms": max_response_time,
                     "threshold_ms": threshold,
@@ -776,10 +776,10 @@ class ContinuousImprovementValidator:
                 test_id="perf_001",
                 name="System Response Time",
                 description="Test response time for key operations",
-                category=ValidationCategory.PERFORMANCE,
-                result=ValidationResult.FAIL,
-                duration=duration,
-                error_message=str(e),
+                category = ValidationCategory.PERFORMANCE,
+                result = ValidationResult.FAIL,
+                duration = duration,
+                error_message = str(e),
             )
 
     def _test_memory_usage(self) -> "ValidationTestCase":
@@ -810,10 +810,10 @@ class ContinuousImprovementValidator:
             return ValidationTestCase(
                 test_id="perf_002",
                 name="Memory Usage",
-                description=f"Test memory usage (threshold: {threshold}MB)",
-                category=ValidationCategory.PERFORMANCE,
-                result=result,
-                duration=duration,
+                description = f"Test memory usage (threshold: {threshold}MB)",
+                category = ValidationCategory.PERFORMANCE,
+                result = result,
+                duration = duration,
                 details={"memory_usage_mb": memory_mb, "threshold_mb": threshold},
             )
         except Exception as e:
@@ -822,10 +822,10 @@ class ContinuousImprovementValidator:
                 test_id="perf_002",
                 name="Memory Usage",
                 description="Test memory usage",
-                category=ValidationCategory.PERFORMANCE,
-                result=ValidationResult.FAIL,
-                duration=duration,
-                error_message=str(e),
+                category = ValidationCategory.PERFORMANCE,
+                result = ValidationResult.FAIL,
+                duration = duration,
+                error_message = str(e),
             )
 
     def _test_knowledge_base_performance(self) -> "ValidationTestCase":
@@ -836,7 +836,7 @@ class ContinuousImprovementValidator:
             # Test knowledge base operations
             search_start = time.time()
             search_results = self.knowledge_base.search_knowledge(
-                "test query", limit=10
+                "test query", limit = 10
             )
             search_time = (time.time() - search_start) * 1000
 
@@ -850,9 +850,9 @@ class ContinuousImprovementValidator:
                 test_id="perf_003",
                 name="Knowledge Base Performance",
                 description="Test knowledge base search and statistics performance",
-                category=ValidationCategory.PERFORMANCE,
-                result=ValidationResult.PASS,
-                duration=duration,
+                category = ValidationCategory.PERFORMANCE,
+                result = ValidationResult.PASS,
+                duration = duration,
                 details={
                     "search_time_ms": search_time,
                     "stats_time_ms": stats_time,
@@ -865,10 +865,10 @@ class ContinuousImprovementValidator:
                 test_id="perf_003",
                 name="Knowledge Base Performance",
                 description="Test knowledge base performance",
-                category=ValidationCategory.PERFORMANCE,
-                result=ValidationResult.FAIL,
-                duration=duration,
-                error_message=str(e),
+                category = ValidationCategory.PERFORMANCE,
+                result = ValidationResult.FAIL,
+                duration = duration,
+                error_message = str(e),
             )
 
     def _test_analytics_performance(self) -> "ValidationTestCase":
@@ -891,9 +891,9 @@ class ContinuousImprovementValidator:
                 test_id="perf_004",
                 name="Analytics Performance",
                 description="Test analytics summary and dashboard performance",
-                category=ValidationCategory.PERFORMANCE,
-                result=ValidationResult.PASS,
-                duration=duration,
+                category = ValidationCategory.PERFORMANCE,
+                result = ValidationResult.PASS,
+                duration = duration,
                 details={
                     "summary_time_ms": summary_time,
                     "dashboard_time_ms": dashboard_time,
@@ -905,10 +905,10 @@ class ContinuousImprovementValidator:
                 test_id="perf_004",
                 name="Analytics Performance",
                 description="Test analytics performance",
-                category=ValidationCategory.PERFORMANCE,
-                result=ValidationResult.FAIL,
-                duration=duration,
-                error_message=str(e),
+                category = ValidationCategory.PERFORMANCE,
+                result = ValidationResult.FAIL,
+                duration = duration,
+                error_message = str(e),
             )
 
     def _test_complete_learning_workflow(self) -> "ValidationTestCase":
@@ -921,8 +921,8 @@ class ContinuousImprovementValidator:
                 learning_type="user_preference",
                 context={"test": "end_to_end"},
                 outcome={"success": True},
-                confidence=0.9,
-                impact_score=0.8,
+                confidence = 0.9,
+                impact_score = 0.8,
                 source="validation_test",
             )
 
@@ -940,9 +940,9 @@ class ContinuousImprovementValidator:
                 test_id="e2e_001",
                 name="Complete Learning Workflow",
                 description="Test complete learning event to recommendation workflow",
-                category=ValidationCategory.END_TO_END,
-                result=ValidationResult.PASS,
-                duration=duration,
+                category = ValidationCategory.END_TO_END,
+                result = ValidationResult.PASS,
+                duration = duration,
                 details={
                     "learning_events_count": len(learning_summary),
                     "recommendations_count": len(recommendations),
@@ -954,10 +954,10 @@ class ContinuousImprovementValidator:
                 test_id="e2e_001",
                 name="Complete Learning Workflow",
                 description="Test complete learning workflow",
-                category=ValidationCategory.END_TO_END,
-                result=ValidationResult.FAIL,
-                duration=duration,
-                error_message=str(e),
+                category = ValidationCategory.END_TO_END,
+                result = ValidationResult.FAIL,
+                duration = duration,
+                error_message = str(e),
             )
 
     def _test_complete_recommendation_workflow(self) -> "ValidationTestCase":
@@ -973,7 +973,7 @@ class ContinuousImprovementValidator:
             # Record analytics metric
             self.analytics.collect_metric(
                 name="recommendation_workflow_test",
-                value=len(recommendations),
+                value = len(recommendations),
                 tags={"workflow": "recommendation"},
             )
 
@@ -983,9 +983,9 @@ class ContinuousImprovementValidator:
                 test_id="e2e_002",
                 name="Complete Recommendation Workflow",
                 description="Test complete recommendation generation and tracking workflow",
-                category=ValidationCategory.END_TO_END,
-                result=ValidationResult.PASS,
-                duration=duration,
+                category = ValidationCategory.END_TO_END,
+                result = ValidationResult.PASS,
+                duration = duration,
                 details={"recommendations_generated": len(recommendations)},
             )
         except Exception as e:
@@ -994,10 +994,10 @@ class ContinuousImprovementValidator:
                 test_id="e2e_002",
                 name="Complete Recommendation Workflow",
                 description="Test complete recommendation workflow",
-                category=ValidationCategory.END_TO_END,
-                result=ValidationResult.FAIL,
-                duration=duration,
-                error_message=str(e),
+                category = ValidationCategory.END_TO_END,
+                result = ValidationResult.FAIL,
+                duration = duration,
+                error_message = str(e),
             )
 
     def _test_complete_health_monitoring_workflow(self) -> "ValidationTestCase":
@@ -1023,9 +1023,9 @@ class ContinuousImprovementValidator:
                 test_id="e2e_003",
                 name="Complete Health Monitoring Workflow",
                 description="Test complete health monitoring start / stop / summary workflow",
-                category=ValidationCategory.END_TO_END,
-                result=ValidationResult.PASS,
-                duration=duration,
+                category = ValidationCategory.END_TO_END,
+                result = ValidationResult.PASS,
+                duration = duration,
                 details={"health_status": health_summary.get("status", "unknown")},
             )
         except Exception as e:
@@ -1034,10 +1034,10 @@ class ContinuousImprovementValidator:
                 test_id="e2e_003",
                 name="Complete Health Monitoring Workflow",
                 description="Test complete health monitoring workflow",
-                category=ValidationCategory.END_TO_END,
-                result=ValidationResult.FAIL,
-                duration=duration,
-                error_message=str(e),
+                category = ValidationCategory.END_TO_END,
+                result = ValidationResult.FAIL,
+                duration = duration,
+                error_message = str(e),
             )
 
     def _test_complete_analytics_workflow(self) -> "ValidationTestCase":
@@ -1051,8 +1051,8 @@ class ContinuousImprovementValidator:
             # Generate report
             report_id = self.analytics.generate_report(
                 report_type="performance_summary",
-                period_start=datetime.now() - timedelta(hours=1),
-                period_end=datetime.now(),
+                period_start = datetime.now() - timedelta(hours = 1),
+                period_end = datetime.now(),
             )
 
             # Get dashboard data
@@ -1064,9 +1064,9 @@ class ContinuousImprovementValidator:
                 test_id="e2e_004",
                 name="Complete Analytics Workflow",
                 description="Test complete analytics metric recording to dashboard workflow",
-                category=ValidationCategory.END_TO_END,
-                result=ValidationResult.PASS,
-                duration=duration,
+                category = ValidationCategory.END_TO_END,
+                result = ValidationResult.PASS,
+                duration = duration,
                 details={
                     "report_generated": report_id is not None,
                     "dashboard_sections": len(dashboard_data),
@@ -1078,10 +1078,10 @@ class ContinuousImprovementValidator:
                 test_id="e2e_004",
                 name="Complete Analytics Workflow",
                 description="Test complete analytics workflow",
-                category=ValidationCategory.END_TO_END,
-                result=ValidationResult.FAIL,
-                duration=duration,
-                error_message=str(e),
+                category = ValidationCategory.END_TO_END,
+                result = ValidationResult.FAIL,
+                duration = duration,
+                error_message = str(e),
             )
 
     def _calculate_system_health_score(
@@ -1127,7 +1127,7 @@ class ContinuousImprovementValidator:
                 error_message = str(e)
 
         # Start test in thread
-        thread = Thread(target=run_test)
+        thread = Thread(target = run_test)
         thread.daemon = True
         thread.start()
 
@@ -1138,34 +1138,34 @@ class ContinuousImprovementValidator:
         if thread.is_alive():
             # Timeout occurred
             return ValidationTestCase(
-                test_id=test_name,
-                name=test_name,
-                description=f"Test with {timeout_seconds}s timeout",
-                category=category,
-                result=ValidationResult.FAIL,
-                duration=duration,
-                error_message=f"Test timeout after {timeout_seconds} seconds",
+                test_id = test_name,
+                name = test_name,
+                description = f"Test with {timeout_seconds}s timeout",
+                category = category,
+                result = ValidationResult.FAIL,
+                duration = duration,
+                error_message = f"Test timeout after {timeout_seconds} seconds",
             )
         elif error_message:
             # Test failed with error
             return ValidationTestCase(
-                test_id=test_name,
-                name=test_name,
-                description=f"Test with error handling",
-                category=category,
-                result=ValidationResult.FAIL,
-                duration=duration,
-                error_message=error_message,
+                test_id = test_name,
+                name = test_name,
+                description = f"Test with error handling",
+                category = category,
+                result = ValidationResult.FAIL,
+                duration = duration,
+                error_message = error_message,
             )
         else:
             # Test passed
             return ValidationTestCase(
-                test_id=test_name,
-                name=test_name,
-                description=f"Test completed successfully",
-                category=category,
-                result=ValidationResult.PASS,
-                duration=duration,
+                test_id = test_name,
+                name = test_name,
+                description = f"Test completed successfully",
+                category = category,
+                result = ValidationResult.PASS,
+                duration = duration,
             )
 
     def _create_test_case(
@@ -1178,13 +1178,13 @@ class ContinuousImprovementValidator:
     ) -> "ValidationTestCase":
         """Helper method for creating test cases."""
         return ValidationTestCase(
-            test_id=name,
-            name=name,
-            description=f"Test case for {name}",
-            category=category,
-            result=result,
-            duration=duration,
-            error_message=error_message,
+            test_id = name,
+            name = name,
+            description = f"Test case for {name}",
+            category = category,
+            result = result,
+            duration = duration,
+            error_message = error_message,
         )
 
     def _check_threshold_violations(
@@ -1208,7 +1208,7 @@ class ContinuousImprovementValidator:
         import uuid
         from datetime import datetime
 
-        timestamp = datetime.now().strftime("%Y % m%d_ % H%M % S")
+        timestamp = datetime.now().strftime("%Y % m % d_ % H % M % S")
         unique_id = str(uuid.uuid4())[:8]
         return f"validation_report_{timestamp}_{unique_id}"
 
@@ -1344,7 +1344,7 @@ class ContinuousImprovementValidator:
         }
 
         with open(self.validation_path, "a", encoding="utf - 8") as f:
-            json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
+            json.dump(data, f, ensure_ascii = False, separators=(",", ":"))
             f.write("\n")
 
 

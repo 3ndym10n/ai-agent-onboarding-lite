@@ -27,9 +27,9 @@ def is_feature_branch() -> bool:
         # First try: get current branch name
         result = subprocess.run(
             ["git", "rev - parse", "--abbrev - ref", "HEAD"],
-            text=True,
-            capture_output=True,
-            check=True,
+            text = True,
+            capture_output = True,
+            check = True,
         )
         current_branch = result.stdout.strip()
 
@@ -46,9 +46,9 @@ def is_feature_branch() -> bool:
             try:
                 remote_result = subprocess.run(
                     ["git", "branch", "-r", "--contains", "HEAD"],
-                    text=True,
-                    capture_output=True,
-                    check=True,
+                    text = True,
+                    capture_output = True,
+                    check = True,
                 )
                 remote_branches = remote_result.stdout.strip().split("\n")
                 print(f"DEBUG: Remote branches containing HEAD: {remote_branches}")
@@ -119,7 +119,7 @@ def main() -> int:
     # Debug: show git status
     try:
         status_result = subprocess.run(
-            ["git", "status", "--porcelain"], text=True, capture_output=True, check=True
+            ["git", "status", "--porcelain"], text = True, capture_output = True, check = True
         )
         print(f"DEBUG: Git status:\n{status_result.stdout}")
     except subprocess.CalledProcessError as e:
@@ -127,9 +127,9 @@ def main() -> int:
 
     cp = subprocess.run(
         ["git", "diff", "--name - status", base, "HEAD"],
-        text=True,
-        capture_output=True,
-        check=False,
+        text = True,
+        capture_output = True,
+        check = False,
     )
 
     print(f"DEBUG: Git diff command: git diff --name - status {base} HEAD")
@@ -158,7 +158,7 @@ def main() -> int:
                     "message": "Protected paths touched"
                     + (" (allowed on feature branch)" if is_feature else ""),
                 },
-                indent=2,
+                indent = 2,
             )
         )
 

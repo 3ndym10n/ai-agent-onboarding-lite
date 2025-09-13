@@ -60,7 +60,7 @@ def compute_overall_progress(plan: Dict[str, Any]) -> Dict[str, Any]:
         "in_progress_tasks": in_progress_tasks,
         "pending_tasks": pending_tasks,
         "completion_percentage": round(pct, 1),
-        "visual_bar": create_progress_bar(pct, width=20),
+        "visual_bar": create_progress_bar(pct, width = 20),
     }
 
 
@@ -101,10 +101,10 @@ def compute_milestone_progress(
                 "status": status,
                 "target_date": ms.get("target_date"),
                 "priority": ms.get("priority", "medium"),
-                "visual_bar": create_progress_bar(progress_pct, width=width),
+                "visual_bar": create_progress_bar(progress_pct, width = width),
             }
         )
 
     # Sort by most complete first
-    results.sort(key=lambda x: x["progress_percentage"], reverse=True)
+    results.sort(key = lambda x: x["progress_percentage"], reverse = True)
     return results

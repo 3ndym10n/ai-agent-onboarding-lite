@@ -62,7 +62,7 @@ class PerformanceSnapshot:
 
     timestamp: datetime
     metrics: Dict[PerformanceMetric, float]
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: Dict[str, Any] = field(default_factory = dict)
     operation_id: Optional[str] = None
     session_id: Optional[str] = None
 
@@ -79,8 +79,8 @@ class OptimizationOpportunity:
     confidence: float
     implementation_effort: int  # 1 - 10
     risk_level: int  # 1 - 10, lower is safer
-    context: Dict[str, Any] = field(default_factory=dict)
-    created_at: datetime = field(default_factory=datetime.now)
+    context: Dict[str, Any] = field(default_factory = dict)
+    created_at: datetime = field(default_factory = datetime.now)
 
 
 @dataclass
@@ -97,7 +97,7 @@ class OptimizationResult:
     implementation_time: float
     rollback_required: bool = False
     rollback_reason: Optional[str] = None
-    created_at: datetime = field(default_factory=datetime.now)
+    created_at: datetime = field(default_factory = datetime.now)
 
 
 @dataclass
@@ -108,11 +108,11 @@ class PerformanceProfile:
     operation_name: str
     baseline_metrics: Dict[PerformanceMetric, float]
     current_metrics: Dict[PerformanceMetric, float]
-    optimization_history: List[OptimizationResult] = field(default_factory=list)
+    optimization_history: List[OptimizationResult] = field(default_factory = list)
     performance_trends: Dict[PerformanceMetric, List[float]] = field(
-        default_factory=dict
+        default_factory = dict
     )
-    last_updated: datetime = field(default_factory=datetime.now)
+    last_updated: datetime = field(default_factory = datetime.now)
 
 
 class PerformanceOptimizer:
@@ -206,8 +206,8 @@ class PerformanceOptimizer:
 
         for profile_id, profile_data in data.items():
             self.performance_profiles[profile_id] = PerformanceProfile(
-                profile_id=profile_id,
-                operation_name=profile_data["operation_name"],
+                profile_id = profile_id,
+                operation_name = profile_data["operation_name"],
                 baseline_metrics={
                     PerformanceMetric(k): v
                     for k, v in profile_data["baseline_metrics"].items()
@@ -221,7 +221,7 @@ class PerformanceOptimizer:
                     PerformanceMetric(k): v
                     for k, v in profile_data.get("performance_trends", {}).items()
                 },
-                last_updated=datetime.fromisoformat(profile_data["last_updated"]),
+                last_updated = datetime.fromisoformat(profile_data["last_updated"]),
             )
 
     def _load_optimization_opportunities(self):
@@ -234,19 +234,19 @@ class PerformanceOptimizer:
         for opp_data in data:
             self.optimization_opportunities.append(
                 OptimizationOpportunity(
-                    opportunity_id=opp_data["opportunity_id"],
-                    optimization_type=OptimizationType(opp_data["optimization_type"]),
-                    description=opp_data["description"],
+                    opportunity_id = opp_data["opportunity_id"],
+                    optimization_type = OptimizationType(opp_data["optimization_type"]),
+                    description = opp_data["description"],
                     current_performance={
                         PerformanceMetric(k): v
                         for k, v in opp_data["current_performance"].items()
                     },
-                    expected_improvement=opp_data["expected_improvement"],
-                    confidence=opp_data["confidence"],
-                    implementation_effort=opp_data["implementation_effort"],
-                    risk_level=opp_data["risk_level"],
-                    context=opp_data.get("context", {}),
-                    created_at=datetime.fromisoformat(opp_data["created_at"]),
+                    expected_improvement = opp_data["expected_improvement"],
+                    confidence = opp_data["confidence"],
+                    implementation_effort = opp_data["implementation_effort"],
+                    risk_level = opp_data["risk_level"],
+                    context = opp_data.get("context", {}),
+                    created_at = datetime.fromisoformat(opp_data["created_at"]),
                 )
             )
 
@@ -257,7 +257,7 @@ class PerformanceOptimizer:
 
         self.monitoring_active = True
         self.monitoring_thread = threading.Thread(
-            target=self._monitoring_loop, daemon=True
+            target = self._monitoring_loop, daemon = True
         )
         self.monitoring_thread.start()
 
@@ -267,7 +267,7 @@ class PerformanceOptimizer:
         """Stop performance monitoring."""
         self.monitoring_active = False
         if self.monitoring_thread:
-            self.monitoring_thread.join(timeout=5.0)
+            self.monitoring_thread.join(timeout = 5.0)
 
         telemetry.log_event("performance_monitoring_stopped")
 
@@ -296,13 +296,13 @@ class PerformanceOptimizer:
                 time.sleep(self.optimization_config["monitoring_interval"])
 
             except Exception as e:
-                telemetry.log_event("performance_monitoring_error", error=str(e))
+                telemetry.log_event("performance_monitoring_error", error = str(e))
                 time.sleep(self.optimization_config["monitoring_interval"])
 
     def _capture_performance_snapshot(self) -> PerformanceSnapshot:
         """Capture current system performance."""
         # Get system metrics
-        cpu_percent = psutil.cpu_percent(interval=0.1)
+        cpu_percent = psutil.cpu_percent(interval = 0.1)
         memory = psutil.virtual_memory()
         disk_io = psutil.disk_io_counters()
         network_io = psutil.net_io_counters()
@@ -319,8 +319,8 @@ class PerformanceOptimizer:
         }
 
         return PerformanceSnapshot(
-            timestamp=datetime.now(),
-            metrics=metrics,
+            timestamp = datetime.now(),
+            metrics = metrics,
             context={
                 "system_load": (
                     psutil.getloadavg() if hasattr(psutil, "getloadavg") else [0, 0, 0]
@@ -371,7 +371,7 @@ class PerformanceOptimizer:
         sum_xy = sum(x[i] * values[i] for i in range(n))
         sum_x2 = sum(x[i] ** 2 for i in range(n))
 
-        slope = (n * sum_xy - sum_x * sum_y) / (n * sum_x2 - sum_x**2)
+        slope = (n * sum_xy - sum_x * sum_y) / (n * sum_x2 - sum_x ** 2)
 
         # Determine direction and severity
         if abs(slope) < 0.01:
@@ -420,14 +420,14 @@ class PerformanceOptimizer:
         risk_level = self._estimate_risk_level(optimization_type, metric)
 
         opportunity = OptimizationOpportunity(
-            opportunity_id=opportunity_id,
-            optimization_type=optimization_type,
-            description=f"Optimize {metric.value} - {trend['direction']} trend detected",
+            opportunity_id = opportunity_id,
+            optimization_type = optimization_type,
+            description = f"Optimize {metric.value} - {trend['direction']} trend detected",
             current_performance={metric: snapshots[-1].metrics[metric]},
-            expected_improvement=expected_improvement,
-            confidence=confidence,
-            implementation_effort=implementation_effort,
-            risk_level=risk_level,
+            expected_improvement = expected_improvement,
+            confidence = confidence,
+            implementation_effort = implementation_effort,
+            risk_level = risk_level,
             context={
                 "metric": metric.value,
                 "trend": trend,
@@ -440,7 +440,7 @@ class PerformanceOptimizer:
 
         # Record learning event
         self.continuous_improvement.record_learning_event(
-            learning_type=continuous_improvement_system.LearningType.PERFORMANCE_OPTIMIZATION,
+            learning_type = continuous_improvement_system.LearningType.PERFORMANCE_OPTIMIZATION,
             context={
                 "optimization_type": optimization_type.value,
                 "metric": metric.value,
@@ -452,8 +452,8 @@ class PerformanceOptimizer:
                 "expected_improvement": expected_improvement,
                 "confidence": confidence,
             },
-            confidence=confidence,
-            impact_score=expected_improvement,
+            confidence = confidence,
+            impact_score = expected_improvement,
             source="performance_optimizer",
         )
 
@@ -547,10 +547,10 @@ class PerformanceOptimizer:
             # Log operation performance
             telemetry.log_event(
                 "operation_performance",
-                operation_name=operation_name,
-                execution_time=execution_time,
-                memory_delta=memory_delta,
-                cpu_delta=cpu_delta,
+                operation_name = operation_name,
+                execution_time = execution_time,
+                memory_delta = memory_delta,
+                cpu_delta = cpu_delta,
             )
 
     def _update_operation_profile(
@@ -561,10 +561,10 @@ class PerformanceOptimizer:
 
         if profile_id not in self.performance_profiles:
             self.performance_profiles[profile_id] = PerformanceProfile(
-                profile_id=profile_id,
-                operation_name=operation_name,
-                baseline_metrics=metrics.copy(),
-                current_metrics=metrics.copy(),
+                profile_id = profile_id,
+                operation_name = operation_name,
+                baseline_metrics = metrics.copy(),
+                current_metrics = metrics.copy(),
             )
         else:
             profile = self.performance_profiles[profile_id]
@@ -596,7 +596,7 @@ class PerformanceOptimizer:
 
         # Sort by expected improvement and confidence
         filtered.sort(
-            key=lambda x: (x.expected_improvement, x.confidence), reverse=True
+            key = lambda x: (x.expected_improvement, x.confidence), reverse = True
         )
 
         return filtered[:limit]
@@ -633,14 +633,14 @@ class PerformanceOptimizer:
         )
 
         result = OptimizationResult(
-            optimization_id=optimization_id,
-            opportunity_id=opportunity_id,
-            optimization_type=opportunity.optimization_type,
-            success=success,
-            performance_before=performance_before,
-            performance_after=performance_after,
-            improvement_percentage=improvement_percentage,
-            implementation_time=implementation_time,
+            optimization_id = optimization_id,
+            opportunity_id = opportunity_id,
+            optimization_type = opportunity.optimization_type,
+            success = success,
+            performance_before = performance_before,
+            performance_after = performance_after,
+            improvement_percentage = improvement_percentage,
+            implementation_time = implementation_time,
         )
 
         # Log the result
@@ -648,7 +648,7 @@ class PerformanceOptimizer:
 
         # Record learning event
         self.continuous_improvement.record_learning_event(
-            learning_type=continuous_improvement_system.LearningType.PERFORMANCE_OPTIMIZATION,
+            learning_type = continuous_improvement_system.LearningType.PERFORMANCE_OPTIMIZATION,
             context={
                 "optimization_type": opportunity.optimization_type.value,
                 "performance_metrics": performance_before,
@@ -661,8 +661,8 @@ class PerformanceOptimizer:
                     "implementation_time": implementation_time,
                 }
             },
-            confidence=0.9 if success else 0.3,
-            impact_score=improvement_percentage / 100,
+            confidence = 0.9 if success else 0.3,
+            impact_score = improvement_percentage / 100,
             source="performance_optimizer",
         )
 
@@ -688,7 +688,7 @@ class PerformanceOptimizer:
             else:
                 return False
         except Exception as e:
-            telemetry.log_event("optimization_implementation_error", error=str(e))
+            telemetry.log_event("optimization_implementation_error", error = str(e))
             return False
 
     def _optimize_memory(self, context: Dict[str, Any]) -> bool:
@@ -746,7 +746,7 @@ class PerformanceOptimizer:
         }
 
         with open(self.performance_data_path, "a", encoding="utf - 8") as f:
-            json.dump(snapshot_data, f, ensure_ascii=False, separators=(",", ":"))
+            json.dump(snapshot_data, f, ensure_ascii = False, separators=(",", ":"))
             f.write("\n")
 
     def _log_optimization_result(self, result: OptimizationResult):
@@ -772,7 +772,7 @@ class PerformanceOptimizer:
         }
 
         with open(self.optimization_results_path, "a", encoding="utf - 8") as f:
-            json.dump(result_data, f, ensure_ascii=False, separators=(",", ":"))
+            json.dump(result_data, f, ensure_ascii = False, separators=(",", ":"))
             f.write("\n")
 
     def _save_optimization_opportunities(self):
@@ -824,7 +824,7 @@ class PerformanceOptimizer:
 
     def get_performance_summary(self, hours: int = 24) -> Dict[str, Any]:
         """Get performance summary for the last N hours."""
-        cutoff_time = datetime.now() - timedelta(hours=hours)
+        cutoff_time = datetime.now() - timedelta(hours = hours)
 
         # Filter recent snapshots
         recent_snapshots = [
@@ -865,7 +865,7 @@ class PerformanceOptimizer:
             metrics = []
 
             # System metrics
-            cpu_percent = psutil.cpu_percent(interval=1)
+            cpu_percent = psutil.cpu_percent(interval = 1)
             memory = psutil.virtual_memory()
             disk = psutil.disk_usage("/")
 
@@ -900,7 +900,7 @@ class PerformanceOptimizer:
 
     def get_optimization_effectiveness(self, days: int = 7) -> Dict[str, Any]:
         """Get optimization effectiveness summary."""
-        cutoff_date = datetime.now() - timedelta(days=days)
+        cutoff_date = datetime.now() - timedelta(days = days)
 
         # Load recent optimization results
         results = []

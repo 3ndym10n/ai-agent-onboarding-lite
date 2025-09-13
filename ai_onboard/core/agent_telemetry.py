@@ -17,7 +17,7 @@ def record_event(root: Path, rec: Dict[str, Any]) -> None:
     out.update(rec or {})
     try:
         with open(path, "a", encoding="utf - 8") as f:
-            json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
+            json.dump(out, f, ensure_ascii = False, separators=(",", ":"))
             f.write("\n")
     except Exception:
         pass

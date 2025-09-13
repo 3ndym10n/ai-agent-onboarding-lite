@@ -42,10 +42,10 @@ def ask_card(root: Path, question: str, options: List[str]) -> None:
 
 def issue_from_fp(fp: str, rule_id: str, message: str) -> Issue:
     return Issue(
-        rule_id=rule_id,
+        rule_id = rule_id,
         severity="error",
-        message=f"{message} (fp={fp})",
-        confidence=0.9,
+        message = f"{message} (fp={fp})",
+        confidence = 0.9,
     )
 
 

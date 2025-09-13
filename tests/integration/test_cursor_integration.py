@@ -75,7 +75,7 @@ class TestCursorIntegrationBasics:
     def test_session_management(self, cursor_integration, test_user_id):
         """Test session creation and management."""
         session = cursor_integration.create_session(
-            user_id=test_user_id,
+            user_id = test_user_id,
             project_context={
                 "project_name": "Test Project",
                 "project_type": "software_development",
@@ -118,7 +118,7 @@ class TestUXSystemIntegration:
             UXEventType.COMMAND_EXECUTION,
             test_user_id,
             command="cursor",
-            success=True,
+            success = True,
             context={"integration_test": True, "duration_ms": 150},
         )
 
@@ -149,7 +149,7 @@ class TestUXSystemIntegration:
 
         # Get satisfaction trend
         trend_data = ux_system.satisfaction_tracker.get_satisfaction_trend(
-            test_user_id, days=1
+            test_user_id, days = 1
         )
 
         assert trend_data is not None
@@ -371,7 +371,7 @@ class TestAPIServerFunctionality:
             import requests
 
             # Check if API server is running
-            response = requests.get("http://127.0.0.1:8000 / health", timeout=2)
+            response = requests.get("http://127.0.0.1:8000 / health", timeout = 2)
 
             if response.status_code == 200:
                 # Server is running, test endpoints
@@ -516,8 +516,8 @@ def run_comprehensive_cursor_testing(root: Path) -> Dict[str, Any]:
     # Run pytest on this module
     result = subprocess.run(
         [sys.executable, "-m", "pytest", str(Path(__file__)), "-v", "--tb = short"],
-        capture_output=True,
-        text=True,
+        capture_output = True,
+        text = True,
     )
 
     return {

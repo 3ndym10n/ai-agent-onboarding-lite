@@ -23,31 +23,31 @@ def add_enhanced_context_commands(subparsers):
         "enhanced - context",
         help="Enhanced conversation context management for AI agents",
     )
-    context_sub = context_parser.add_subparsers(dest="context_cmd", required=True)
+    context_sub = context_parser.add_subparsers(dest="context_cmd", required = True)
 
     # Enhance session command
     enhance_parser = context_sub.add_parser(
         "enhance", help="Enhance a session with cross - session context and memories"
     )
     enhance_parser.add_argument(
-        "--session - id", required=True, help="Session ID to enhance"
+        "--session - id", required = True, help="Session ID to enhance"
     )
 
     # Create memory command
     memory_parser = context_sub.add_parser("memory", help="Context memory management")
-    memory_sub = memory_parser.add_subparsers(dest="memory_action", required=True)
+    memory_sub = memory_parser.add_subparsers(dest="memory_action", required = True)
 
     # Create memory
     create_memory_parser = memory_sub.add_parser(
         "create", help="Create a new context memory"
     )
     create_memory_parser.add_argument(
-        "--session - id", required=True, help="Session ID"
+        "--session - id", required = True, help="Session ID"
     )
-    create_memory_parser.add_argument("--user - id", required=True, help="User ID")
-    create_memory_parser.add_argument("--topic", required=True, help="Memory topic")
+    create_memory_parser.add_argument("--user - id", required = True, help="User ID")
+    create_memory_parser.add_argument("--topic", required = True, help="Memory topic")
     create_memory_parser.add_argument(
-        "--facts", nargs="+", required=True, help="Key facts"
+        "--facts", nargs="+", required = True, help="Key facts"
     )
     create_memory_parser.add_argument(
         "--importance",
@@ -61,7 +61,7 @@ def add_enhanced_context_commands(subparsers):
     list_memory_parser.add_argument("--user - id", help="Filter by user ID")
     list_memory_parser.add_argument("--topic", help="Filter by topic")
     list_memory_parser.add_argument(
-        "--limit", type=int, default=20, help="Limit results"
+        "--limit", type = int, default = 20, help="Limit results"
     )
 
     # Share context command
@@ -69,9 +69,9 @@ def add_enhanced_context_commands(subparsers):
         "share", help="Share context with another AI agent"
     )
     share_parser.add_argument(
-        "--session - id", required=True, help="Session ID to share"
+        "--session - id", required = True, help="Session ID to share"
     )
-    share_parser.add_argument("--target - agent", required=True, help="Target agent ID")
+    share_parser.add_argument("--target - agent", required = True, help="Target agent ID")
     share_parser.add_argument(
         "--context - types",
         nargs="+",
@@ -89,11 +89,11 @@ def add_enhanced_context_commands(subparsers):
     continuity_parser = context_sub.add_parser(
         "continuity", help="Get context continuity summary"
     )
-    continuity_parser.add_argument("--user - id", required=True, help="User ID")
+    continuity_parser.add_argument("--user - id", required = True, help="User ID")
 
     # Context graph command
     graph_parser = context_sub.add_parser("graph", help="Context relationship analysis")
-    graph_sub = graph_parser.add_subparsers(dest="graph_action", required=True)
+    graph_sub = graph_parser.add_subparsers(dest="graph_action", required = True)
 
     # Show relationships
     graph_sub.add_parser("show", help="Show context relationship graph")
@@ -103,21 +103,21 @@ def add_enhanced_context_commands(subparsers):
         "patterns", help="Find conversation patterns"
     )
     patterns_parser.add_argument("--user - id", help="Filter by user ID")
-    patterns_parser.add_argument("--days", type=int, default=7, help="Days to analyze")
+    patterns_parser.add_argument("--days", type = int, default = 7, help="Days to analyze")
 
     # Analytics command
     analytics_parser = context_sub.add_parser(
         "analytics", help="Context analytics and insights"
     )
     analytics_sub = analytics_parser.add_subparsers(
-        dest="analytics_action", required=True
+        dest="analytics_action", required = True
     )
 
     # User insights
     insights_parser = analytics_sub.add_parser(
         "insights", help="Get user behavior insights"
     )
-    insights_parser.add_argument("--user - id", required=True, help="User ID")
+    insights_parser.add_argument("--user - id", required = True, help="User ID")
 
     # System stats
     analytics_sub.add_parser("stats", help="Get system - wide context statistics")
@@ -125,7 +125,7 @@ def add_enhanced_context_commands(subparsers):
     # Cleanup command
     cleanup_parser = context_sub.add_parser("cleanup", help="Clean up old context data")
     cleanup_parser.add_argument(
-        "--days", type=int, default=30, help="Keep data newer than N days"
+        "--days", type = int, default = 30, help="Keep data newer than N days"
     )
     cleanup_parser.add_argument(
         "--dry - run", action="store_true", help="Show what would be cleaned up"
@@ -217,11 +217,11 @@ def _handle_memory_commands(args: argparse.Namespace, context_manager) -> None:
         print(f"💭 Creating context memory...")
 
         memory_id = context_manager.create_context_memory(
-            session_id=args.session_id,
-            user_id=args.user_id,
-            topic=args.topic,
-            key_facts=args.facts,
-            importance=args.importance,
+            session_id = args.session_id,
+            user_id = args.user_id,
+            topic = args.topic,
+            key_facts = args.facts,
+            importance = args.importance,
         )
 
         if memory_id:
@@ -246,7 +246,7 @@ def _handle_memory_commands(args: argparse.Namespace, context_manager) -> None:
             memories = [m for m in memories if args.topic.lower() in m.topic.lower()]
 
         # Sort by creation time (newest first)
-        memories.sort(key=lambda m: m.created_at, reverse=True)
+        memories.sort(key = lambda m: m.created_at, reverse = True)
 
         # Apply limit
         memories = memories[: args.limit]
@@ -271,9 +271,9 @@ def _handle_share_context(args: argparse.Namespace, context_manager) -> None:
     print(f"🤝 Sharing context with agent: {args.target_agent}")
 
     result = context_manager.share_context_with_agent(
-        session_id=args.session_id,
-        target_agent_id=args.target_agent,
-        context_types=args.context_types,
+        session_id = args.session_id,
+        target_agent_id = args.target_agent,
+        context_types = args.context_types,
     )
 
     if "error" in result:

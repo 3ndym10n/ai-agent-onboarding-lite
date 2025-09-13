@@ -36,7 +36,7 @@ def preference_system(temp_root):
     with patch("ai_onboard.core.user_preference_learning.telemetry"), patch(
         "ai_onboard.core.user_preference_learning.get_unified_metrics_collector"
     ):
-        system = UserPreferenceLearningSystem(temp_root)
+        system=UserPreferenceLearningSystem(temp_root)
         return system
 
 
@@ -80,7 +80,7 @@ class TestUserPreferenceLearningSystem:
         with patch("ai_onboard.core.user_preference_learning.telemetry"), patch(
             "ai_onboard.core.user_preference_learning.get_unified_metrics_collector"
         ):
-            system = UserPreferenceLearningSystem(temp_root)
+            system=UserPreferenceLearningSystem(temp_root)
 
             assert system.root == temp_root
             assert (
@@ -96,7 +96,7 @@ class TestUserPreferenceLearningSystem:
 
     def test_record_user_interaction(self, preference_system, sample_user_interactions):
         """Test recording user interactions."""
-        interaction = sample_user_interactions[0]
+        interaction=sample_user_interactions[0]
 
         preference_system.record_user_interaction(
             user_id=interaction["user_id"],
@@ -109,7 +109,7 @@ class TestUserPreferenceLearningSystem:
         )
 
         # Check that interaction was recorded
-        user_data = preference_system._load_user_data(interaction["user_id"])
+        user_data=preference_system._load_user_data(interaction["user_id"])
         assert len(user_data["interactions"]) > 0
         assert user_data["interactions"][-1]["action"] == interaction["action"]
 
@@ -117,7 +117,7 @@ class TestUserPreferenceLearningSystem:
         self, preference_system, sample_user_interactions
     ):
         """Test learning preferences from user interactions."""
-        user_id = "test_user"
+        user_id="test_user"
 
         # Record multiple interactions
         for interaction in sample_user_interactions:
@@ -129,7 +129,7 @@ class TestUserPreferenceLearningSystem:
             )
 
         # Learn preferences
-        learned_preferences = preference_system.learn_preferences_from_interactions(
+        learned_preferences=preference_system.learn_preferences_from_interactions(
             user_id
         )
 
@@ -143,10 +143,10 @@ class TestUserPreferenceLearningSystem:
 
     def test_get_user_preferences(self, preference_system):
         """Test retrieving user preferences."""
-        user_id = "test_user"
+        user_id="test_user"
 
         # Create a test preference
-        test_preference = UserPreference(
+        test_preference=UserPreference(
             user_id=user_id,
             preference_key="output_format",
             preference_value="detailed",
@@ -162,7 +162,7 @@ class TestUserPreferenceLearningSystem:
         preference_system._store_user_preference(test_preference)
 
         # Retrieve preferences
-        preferences = preference_system.get_user_preferences(user_id)
+        preferences=preference_system.get_user_preferences(user_id)
 
         assert isinstance(preferences, list)
         assert len(preferences) > 0
@@ -171,11 +171,11 @@ class TestUserPreferenceLearningSystem:
 
     def test_update_preference_confidence(self, preference_system):
         """Test updating preference confidence based on usage."""
-        user_id = "test_user"
-        preference_key = "test_preference"
+        user_id="test_user"
+        preference_key="test_preference"
 
         # Create initial preference
-        preference = UserPreference(
+        preference=UserPreference(
             user_id=user_id,
             preference_key=preference_key,
             preference_value="test_value",
@@ -195,8 +195,8 @@ class TestUserPreferenceLearningSystem:
         )
 
         # Check updated preference
-        updated_prefs = preference_system.get_user_preferences(user_id)
-        updated_pref = next(
+        updated_prefs=preference_system.get_user_preferences(user_id)
+        updated_pref=next(
             p for p in updated_prefs if p.preference_key == preference_key
         )
 
@@ -205,10 +205,10 @@ class TestUserPreferenceLearningSystem:
 
     def test_predict_user_preference(self, preference_system):
         """Test predicting user preferences for new contexts."""
-        user_id = "test_user"
+        user_id="test_user"
 
         # Store some historical preferences
-        preferences = [
+        preferences=[
             UserPreference(
                 user_id=user_id,
                 preference_key="output_verbosity",
@@ -226,7 +226,7 @@ class TestUserPreferenceLearningSystem:
             preference_system._store_user_preference(pref)
 
         # Predict preference for new context
-        prediction = preference_system.predict_user_preference(
+        prediction=preference_system.predict_user_preference(
             user_id=user_id,
             context={"command": "validate", "project_type": "web_app"},
             preference_category=PreferenceCategory.INTERFACE,
@@ -238,12 +238,12 @@ class TestUserPreferenceLearningSystem:
 
     def test_adaptive_learning(self, preference_system, sample_user_interactions):
         """Test adaptive learning from user feedback."""
-        user_id = "test_user"
+        user_id="test_user"
 
         # Record interactions over time
         for i, interaction in enumerate(sample_user_interactions):
             # Simulate time progression
-            interaction_time = datetime.now() - timedelta(
+            interaction_time=datetime.now() - timedelta(
                 days=len(sample_user_interactions) - i
             )
 
@@ -259,15 +259,15 @@ class TestUserPreferenceLearningSystem:
         preference_system.perform_adaptive_learning(user_id)
 
         # Check that learning occurred
-        user_data = preference_system._load_user_data(user_id)
+        user_data=preference_system._load_user_data(user_id)
         assert "learning_metrics" in user_data
         assert user_data["learning_metrics"]["total_interactions"] > 0
 
     def test_preference_persistence(self, preference_system):
         """Test that preferences are properly persisted."""
-        user_id = "test_user"
+        user_id="test_user"
 
-        preference = UserPreference(
+        preference=UserPreference(
             user_id=user_id,
             preference_key="persistence_test",
             preference_value="test_value",
@@ -286,10 +286,10 @@ class TestUserPreferenceLearningSystem:
         with patch("ai_onboard.core.user_preference_learning.telemetry"), patch(
             "ai_onboard.core.user_preference_learning.get_unified_metrics_collector"
         ):
-            new_system = UserPreferenceLearningSystem(preference_system.root)
+            new_system=UserPreferenceLearningSystem(preference_system.root)
 
             # Retrieve preferences
-            retrieved_prefs = new_system.get_user_preferences(user_id)
+            retrieved_prefs=new_system.get_user_preferences(user_id)
 
             assert len(retrieved_prefs) > 0
             assert any(p.preference_key == "persistence_test" for p in retrieved_prefs)
@@ -299,17 +299,17 @@ class TestUserPreferenceLearningSystem:
         with patch("ai_onboard.core.user_preference_learning.telemetry"), patch(
             "ai_onboard.core.user_preference_learning.get_unified_metrics_collector"
         ):
-            system = get_user_preference_learning_system(temp_root)
+            system=get_user_preference_learning_system(temp_root)
             assert isinstance(system, UserPreferenceLearningSystem)
             assert system.root == temp_root
 
     def test_configuration_loading(self, temp_root):
         """Test configuration loading and defaults."""
         # Create custom config
-        config_path = temp_root / ".ai_onboard" / "preference_learning_config.json"
+        config_path=temp_root / ".ai_onboard" / "preference_learning_config.json"
         config_path.parent.mkdir(parents=True, exist_ok=True)
 
-        custom_config = {
+        custom_config={
             "learning_enabled": True,
             "confidence_threshold": 0.7,
             "max_interaction_history": 1000,
@@ -321,7 +321,7 @@ class TestUserPreferenceLearningSystem:
         with patch("ai_onboard.core.user_preference_learning.telemetry"), patch(
             "ai_onboard.core.user_preference_learning.get_unified_metrics_collector"
         ):
-            system = UserPreferenceLearningSystem(temp_root)
+            system=UserPreferenceLearningSystem(temp_root)
 
             assert system.config["learning_enabled"] is True
             assert system.config["confidence_threshold"] == 0.7
@@ -329,16 +329,16 @@ class TestUserPreferenceLearningSystem:
     def test_error_handling_invalid_user(self, preference_system):
         """Test error handling with invalid user IDs."""
         # Non - existent user
-        preferences = preference_system.get_user_preferences("non_existent_user")
+        preferences=preference_system.get_user_preferences("non_existent_user")
         assert isinstance(preferences, list)
         assert len(preferences) == 0
 
     def test_preference_categories_and_types(self, preference_system):
         """Test different preference categories and types."""
-        user_id = "test_user"
+        user_id="test_user"
 
         # Test different preference types
-        preferences = [
+        preferences=[
             UserPreference(
                 user_id=user_id,
                 preference_key="boolean_pref",
@@ -378,11 +378,11 @@ class TestUserPreferenceLearningSystem:
             preference_system._store_user_preference(pref)
 
         # Retrieve and verify
-        retrieved_prefs = preference_system.get_user_preferences(user_id)
+        retrieved_prefs=preference_system.get_user_preferences(user_id)
         assert len(retrieved_prefs) == 3
 
         # Check that all types are represented
-        pref_types = {p.preference_type for p in retrieved_prefs}
+        pref_types={p.preference_type for p in retrieved_prefs}
         assert PreferenceType.BOOLEAN in pref_types
         assert PreferenceType.NUMERIC in pref_types
         assert PreferenceType.SELECTION in pref_types
@@ -398,9 +398,9 @@ class TestUserPreferenceLearningSystem:
     )
     def test_confidence_levels(self, preference_system, confidence_level):
         """Test different confidence levels."""
-        user_id = "test_user"
+        user_id="test_user"
 
-        preference = UserPreference(
+        preference=UserPreference(
             user_id=user_id,
             preference_key=f"confidence_test_{confidence_level.value}",
             preference_value="test",
@@ -414,8 +414,8 @@ class TestUserPreferenceLearningSystem:
 
         preference_system._store_user_preference(preference)
 
-        retrieved_prefs = preference_system.get_user_preferences(user_id)
-        matching_pref = next(
+        retrieved_prefs=preference_system.get_user_preferences(user_id)
+        matching_pref=next(
             p
             for p in retrieved_prefs
             if p.preference_key == f"confidence_test_{confidence_level.value}"
@@ -429,7 +429,7 @@ class TestUserPreference:
 
     def test_user_preference_creation(self):
         """Test UserPreference object creation."""
-        preference = UserPreference(
+        preference=UserPreference(
             user_id="test_user",
             preference_key="test_key",
             preference_value="test_value",
@@ -460,11 +460,11 @@ class TestUserPreferenceLearningIntegration:
             "ai_onboard.core.user_preference_learning.get_unified_metrics_collector"
         ):
 
-            system = UserPreferenceLearningSystem(temp_root)
-            user_id = "integration_test_user"
+            system=UserPreferenceLearningSystem(temp_root)
+            user_id="integration_test_user"
 
             # Simulate user interactions over time
-            interactions = [
+            interactions=[
                 {"action": "command_execution", "command": "charter", "success": True},
                 {
                     "action": "preference_selection",
@@ -494,20 +494,20 @@ class TestUserPreferenceLearningIntegration:
                 )
 
             # Learn preferences
-            learned_prefs = system.learn_preferences_from_interactions(user_id)
+            learned_prefs=system.learn_preferences_from_interactions(user_id)
 
             # Perform adaptive learning
             system.perform_adaptive_learning(user_id)
 
             # Get final preferences
-            final_prefs = system.get_user_preferences(user_id)
+            final_prefs=system.get_user_preferences(user_id)
 
             # Verify learning occurred
             assert len(final_prefs) > 0
             assert isinstance(learned_prefs, list)
 
             # Test prediction
-            prediction = system.predict_user_preference(
+            prediction=system.predict_user_preference(
                 user_id=user_id,
                 context={"command": "new_command"},
                 preference_category=PreferenceCategory.INTERFACE,

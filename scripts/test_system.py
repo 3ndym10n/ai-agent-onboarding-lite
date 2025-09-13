@@ -56,7 +56,7 @@ class EnhancedMetricsCollector:
         if HAS_PSUTIL:
             process = psutil.Process()
             start_memory = process.memory_info().rss / 1024 / 1024  # MB
-            start_cpu = process.cpu_percent(interval=None)
+            start_cpu = process.cpu_percent(interval = None)
         else:
             start_memory = 0.0
             start_cpu = 0.0
@@ -78,7 +78,7 @@ class EnhancedMetricsCollector:
 
             if HAS_PSUTIL:
                 end_memory = process.memory_info().rss / 1024 / 1024  # MB
-                end_cpu = process.cpu_percent(interval=None)
+                end_cpu = process.cpu_percent(interval = None)
             else:
                 end_memory = 0.0
                 end_cpu = 0.0
@@ -167,7 +167,7 @@ class EnhancedMetricsCollector:
         """Analyze errors using SmartDebugger with enhanced integration."""
         try:
             analysis = self.smart_debugger.analyze_error(
-                error_msg, context=f"Test: {test_name}"
+                error_msg, context = f"Test: {test_name}"
             )
 
             # Enhanced analysis with more details
@@ -237,9 +237,7 @@ class EnhancedMetricsCollector:
         print(f"{status_icon} {test_metrics['test_name']}: {test_metrics['status']}")
 
         if test_metrics["success"]:
-            print(
-                f"      Time: {test_metrics.get('execution_time_seconds', 0):.3f}s"
-            )
+            print(f"      Time: {test_metrics.get('execution_time_seconds', 0):.3f}s")
             print(f"      Memory: {test_metrics.get('memory_usage_mb', 0):.1f}MB")
             print(f"      Confidence: {test_metrics.get('confidence_score', 0):.1f}")
             print(
@@ -631,7 +629,7 @@ class PerformanceBaselineMonitor:
         """Save performance baselines to file."""
         try:
             with open(self.baseline_file, "w") as f:
-                json.dump(self.baselines, f, indent=2)
+                json.dump(self.baselines, f, indent = 2)
         except:
             pass
 
@@ -913,7 +911,7 @@ def main():
             f"   Average confidence: {smart_debugger_analysis.get('average_confidence_score', 0):.1f}"
         )
         print(
-            f"   High-confidence analyses: {smart_debugger_analysis.get('high_confidence_analyses', 0)}"
+            f"   High - confidence analyses: {smart_debugger_analysis.get('high_confidence_analyses', 0)}"
         )
         print(
             f"   Total error analyses: {smart_debugger_analysis.get('total_error_analyses', 0)}"
@@ -926,7 +924,7 @@ def main():
         if smart_insights:
             for insight in smart_insights[:2]:  # Show top 2 SmartDebugger insights
                 # Remove Unicode characters for Windows compatibility
-                clean_insight = insight.encode('ascii', 'ignore').decode('ascii')
+                clean_insight = insight.encode("ascii", "ignore").decode("ascii")
                 print(f"   {clean_insight}")
 
     # Display performance monitoring results
@@ -938,9 +936,7 @@ def main():
         )
         print(f"   Baselines established: {perf_summary.get('total_baselines', 0)}")
         print(f"   Performance alerts: {perf_summary.get('total_alerts', 0)}")
-        print(
-            f"   High severity alerts: {perf_summary.get('high_severity_alerts', 0)}"
-        )
+        print(f"   High severity alerts: {perf_summary.get('high_severity_alerts', 0)}")
         print(
             f"   Medium severity alerts: {perf_summary.get('medium_severity_alerts', 0)}"
         )
@@ -975,10 +971,10 @@ def main():
         / "test_reports"
         / f"enhanced_test_report_{int(time.time())}.json"
     )
-    report_path.parent.mkdir(parents=True, exist_ok=True)
+    report_path.parent.mkdir(parents = True, exist_ok = True)
 
     with open(report_path, "w") as f:
-        json.dump(report, f, indent=2)
+        json.dump(report, f, indent = 2)
 
     print("\nDetailed report saved to:")
     print(f"   {report_path}")

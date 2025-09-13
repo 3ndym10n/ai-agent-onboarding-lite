@@ -56,7 +56,7 @@ class AIAgentGateDetector:
         }
 
         self.response_file.write_text(
-            json.dumps(response_data, indent=2), encoding="utf - 8"
+            json.dumps(response_data, indent = 2), encoding="utf - 8"
         )
         print(f"[OK] Response file created: {self.response_file}")
 

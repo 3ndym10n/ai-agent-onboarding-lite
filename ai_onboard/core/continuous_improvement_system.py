@@ -71,8 +71,8 @@ class ImprovementRecommendation:
     confidence: float
     priority: int  # 1 - 10, higher is more important
     implementation_effort: int  # 1 - 10, higher is more effort
-    dependencies: List[str] = field(default_factory=list)
-    created_at: datetime = field(default_factory=datetime.now)
+    dependencies: List[str] = field(default_factory = list)
+    created_at: datetime = field(default_factory = datetime.now)
     status: str = "pending"  # pending, approved, implemented, rejected
 
 
@@ -81,12 +81,12 @@ class UserProfile:
     """Profile of user preferences and patterns."""
 
     user_id: str
-    preferences: Dict[str, Any] = field(default_factory=dict)
-    usage_patterns: Dict[str, Any] = field(default_factory=dict)
-    project_types: List[str] = field(default_factory=list)
-    interaction_history: List[Dict[str, Any]] = field(default_factory=list)
-    satisfaction_scores: List[float] = field(default_factory=list)
-    last_updated: datetime = field(default_factory=datetime.now)
+    preferences: Dict[str, Any] = field(default_factory = dict)
+    usage_patterns: Dict[str, Any] = field(default_factory = dict)
+    project_types: List[str] = field(default_factory = list)
+    interaction_history: List[Dict[str, Any]] = field(default_factory = list)
+    satisfaction_scores: List[float] = field(default_factory = list)
+    last_updated: datetime = field(default_factory = datetime.now)
 
 
 @dataclass
@@ -100,8 +100,8 @@ class SystemHealthMetrics:
     system_uptime: float
     resource_usage: Dict[str, float]
     component_health: Dict[str, float]
-    bottlenecks: List[str] = field(default_factory=list)
-    recommendations: List[str] = field(default_factory=list)
+    bottlenecks: List[str] = field(default_factory = list)
+    recommendations: List[str] = field(default_factory = list)
 
 
 class ContinuousImprovementSystem:
@@ -153,13 +153,13 @@ class ContinuousImprovementSystem:
 
         for user_id, profile_data in data.items():
             profiles[user_id] = UserProfile(
-                user_id=user_id,
-                preferences=profile_data.get("preferences", {}),
-                usage_patterns=profile_data.get("usage_patterns", {}),
-                project_types=profile_data.get("project_types", []),
-                interaction_history=profile_data.get("interaction_history", []),
-                satisfaction_scores=profile_data.get("satisfaction_scores", []),
-                last_updated=datetime.fromisoformat(
+                user_id = user_id,
+                preferences = profile_data.get("preferences", {}),
+                usage_patterns = profile_data.get("usage_patterns", {}),
+                project_types = profile_data.get("project_types", []),
+                interaction_history = profile_data.get("interaction_history", []),
+                satisfaction_scores = profile_data.get("satisfaction_scores", []),
+                last_updated = datetime.fromisoformat(
                     profile_data.get("last_updated", datetime.now().isoformat())
                 ),
             )
@@ -177,17 +177,17 @@ class ContinuousImprovementSystem:
         for rec_data in data:
             recommendations.append(
                 ImprovementRecommendation(
-                    recommendation_id=rec_data["recommendation_id"],
-                    action_type=ImprovementAction(rec_data["action_type"]),
-                    description=rec_data["description"],
-                    rationale=rec_data["rationale"],
-                    expected_impact=rec_data["expected_impact"],
-                    confidence=rec_data["confidence"],
-                    priority=rec_data["priority"],
-                    implementation_effort=rec_data["implementation_effort"],
-                    dependencies=rec_data.get("dependencies", []),
-                    created_at=datetime.fromisoformat(rec_data["created_at"]),
-                    status=rec_data.get("status", "pending"),
+                    recommendation_id = rec_data["recommendation_id"],
+                    action_type = ImprovementAction(rec_data["action_type"]),
+                    description = rec_data["description"],
+                    rationale = rec_data["rationale"],
+                    expected_impact = rec_data["expected_impact"],
+                    confidence = rec_data["confidence"],
+                    priority = rec_data["priority"],
+                    implementation_effort = rec_data["implementation_effort"],
+                    dependencies = rec_data.get("dependencies", []),
+                    created_at = datetime.fromisoformat(rec_data["created_at"]),
+                    status = rec_data.get("status", "pending"),
                 )
             )
 
@@ -245,14 +245,14 @@ class ContinuousImprovementSystem:
         event_id = f"learn_{int(time.time())}_{utils.random_string(8)}"
 
         event = LearningEvent(
-            event_id=event_id,
-            timestamp=datetime.now(),
-            learning_type=learning_type,
-            context=context,
-            outcome=outcome,
-            confidence=confidence,
-            impact_score=impact_score,
-            source=source,
+            event_id = event_id,
+            timestamp = datetime.now(),
+            learning_type = learning_type,
+            context = context,
+            outcome = outcome,
+            confidence = confidence,
+            impact_score = impact_score,
+            source = source,
         )
 
         # Log the learning event
@@ -264,11 +264,11 @@ class ContinuousImprovementSystem:
         # Log telemetry
         telemetry.log_event(
             "learning_event_recorded",
-            event_id=event_id,
-            learning_type=learning_type.value,
-            confidence=confidence,
-            impact_score=impact_score,
-            source=source,
+            event_id = event_id,
+            learning_type = learning_type.value,
+            confidence = confidence,
+            impact_score = impact_score,
+            source = source,
         )
 
         return event_id
@@ -287,7 +287,7 @@ class ContinuousImprovementSystem:
         }
 
         with open(self.learning_events_path, "a", encoding="utf - 8") as f:
-            json.dump(event_data, f, ensure_ascii=False, separators=(",", ":"))
+            json.dump(event_data, f, ensure_ascii = False, separators=(",", ":"))
             f.write("\n")
 
     def _process_learning_event(self, event: LearningEvent):
@@ -312,7 +312,7 @@ class ContinuousImprovementSystem:
         preference_value = event.outcome.get("preferred_value")
 
         if user_id not in self.user_profiles:
-            self.user_profiles[user_id] = UserProfile(user_id=user_id)
+            self.user_profiles[user_id] = UserProfile(user_id = user_id)
 
         profile = self.user_profiles[user_id]
 
@@ -427,7 +427,7 @@ class ContinuousImprovementSystem:
         usage_pattern = event.context.get("usage_pattern", {})
 
         if user_id not in self.user_profiles:
-            self.user_profiles[user_id] = UserProfile(user_id=user_id)
+            self.user_profiles[user_id] = UserProfile(user_id = user_id)
 
         profile = self.user_profiles[user_id]
 
@@ -487,15 +487,15 @@ class ContinuousImprovementSystem:
 
         # Record system health metrics
         health_record = SystemHealthMetrics(
-            timestamp=event.timestamp,
-            performance_score=health_metrics.get("performance_score", 0.0),
-            error_rate=health_metrics.get("error_rate", 0.0),
-            user_satisfaction=health_metrics.get("user_satisfaction", 0.0),
-            system_uptime=health_metrics.get("system_uptime", 0.0),
-            resource_usage=health_metrics.get("resource_usage", {}),
-            component_health=health_metrics.get("component_health", {}),
-            bottlenecks=health_issues.get("bottlenecks", []),
-            recommendations=health_issues.get("recommendations", []),
+            timestamp = event.timestamp,
+            performance_score = health_metrics.get("performance_score", 0.0),
+            error_rate = health_metrics.get("error_rate", 0.0),
+            user_satisfaction = health_metrics.get("user_satisfaction", 0.0),
+            system_uptime = health_metrics.get("system_uptime", 0.0),
+            resource_usage = health_metrics.get("resource_usage", {}),
+            component_health = health_metrics.get("component_health", {}),
+            bottlenecks = health_issues.get("bottlenecks", []),
+            recommendations = health_issues.get("recommendations", []),
         )
 
         self._log_system_health(health_record)
@@ -516,14 +516,14 @@ class ContinuousImprovementSystem:
 
         if avg_satisfaction < 0.6:  # Low satisfaction
             recommendation = ImprovementRecommendation(
-                recommendation_id=f"user_pref_{int(time.time())}",
-                action_type=ImprovementAction.ENHANCE_UX,
-                description=f"Improve user experience for {profile.user_id}",
-                rationale=f"User satisfaction is {avg_satisfaction:.2f}, below threshold of 0.6",
-                expected_impact=0.3,
-                confidence=0.8,
-                priority=7,
-                implementation_effort=5,
+                recommendation_id = f"user_pref_{int(time.time())}",
+                action_type = ImprovementAction.ENHANCE_UX,
+                description = f"Improve user experience for {profile.user_id}",
+                rationale = f"User satisfaction is {avg_satisfaction:.2f}, below threshold of 0.6",
+                expected_impact = 0.3,
+                confidence = 0.8,
+                priority = 7,
+                implementation_effort = 5,
             )
 
             self.improvement_recommendations.append(recommendation)
@@ -536,14 +536,14 @@ class ContinuousImprovementSystem:
         if optimization_result.get("success", False):
             # Successful optimization - recommend applying to similar contexts
             recommendation = ImprovementRecommendation(
-                recommendation_id=f"perf_opt_{int(time.time())}",
-                action_type=ImprovementAction.OPTIMIZE_PERFORMANCE,
-                description=f"Apply successful optimization to similar contexts",
-                rationale=f"Optimization improved performance by {optimization_result.get('improvement', 0):.1f}%",
-                expected_impact=optimization_result.get("improvement", 0) / 100,
-                confidence=event.confidence,
-                priority=6,
-                implementation_effort=3,
+                recommendation_id = f"perf_opt_{int(time.time())}",
+                action_type = ImprovementAction.OPTIMIZE_PERFORMANCE,
+                description = f"Apply successful optimization to similar contexts",
+                rationale = f"Optimization improved performance by {optimization_result.get('improvement', 0):.1f}%",
+                expected_impact = optimization_result.get("improvement", 0) / 100,
+                confidence = event.confidence,
+                priority = 6,
+                implementation_effort = 3,
             )
 
             self.improvement_recommendations.append(recommendation)
@@ -555,14 +555,14 @@ class ContinuousImprovementSystem:
 
         if solution_effectiveness > 0.8:  # Highly effective solution
             recommendation = ImprovementRecommendation(
-                recommendation_id=f"error_prev_{int(time.time())}",
-                action_type=ImprovementAction.PREVENT_ERRORS,
-                description=f"Implement proactive prevention for {error_type}",
-                rationale=f"Solution effectiveness is {solution_effectiveness:.2f}, suggesting proactive prevention",
-                expected_impact=0.4,
-                confidence=0.9,
-                priority=8,
-                implementation_effort=4,
+                recommendation_id = f"error_prev_{int(time.time())}",
+                action_type = ImprovementAction.PREVENT_ERRORS,
+                description = f"Implement proactive prevention for {error_type}",
+                rationale = f"Solution effectiveness is {solution_effectiveness:.2f}, suggesting proactive prevention",
+                expected_impact = 0.4,
+                confidence = 0.9,
+                priority = 8,
+                implementation_effort = 4,
             )
 
             self.improvement_recommendations.append(recommendation)
@@ -576,14 +576,14 @@ class ContinuousImprovementSystem:
 
         if pattern_type == "frequent_manual_steps":
             recommendation = ImprovementRecommendation(
-                recommendation_id=f"workflow_adapt_{int(time.time())}",
-                action_type=ImprovementAction.ADAPT_WORKFLOW,
-                description=f"Automate frequent manual steps for {profile.user_id}",
-                rationale=f"User frequently performs manual steps that could be automated",
-                expected_impact=0.5,
-                confidence=0.7,
-                priority=6,
-                implementation_effort=6,
+                recommendation_id = f"workflow_adapt_{int(time.time())}",
+                action_type = ImprovementAction.ADAPT_WORKFLOW,
+                description = f"Automate frequent manual steps for {profile.user_id}",
+                rationale = f"User frequently performs manual steps that could be automated",
+                expected_impact = 0.5,
+                confidence = 0.7,
+                priority = 6,
+                implementation_effort = 6,
             )
 
             self.improvement_recommendations.append(recommendation)
@@ -596,14 +596,14 @@ class ContinuousImprovementSystem:
 
         if success_indicators.get("vision_clarity", 0) > 0.8:
             recommendation = ImprovementRecommendation(
-                recommendation_id=f"proj_spec_{int(time.time())}",
-                action_type=ImprovementAction.UPDATE_RECOMMENDATIONS,
-                description=f"Update recommendations for {project_type} projects",
-                rationale=f"High success rate ({success_indicators.get('vision_clarity', 0):.2f}) suggests good patterns",
-                expected_impact=0.3,
-                confidence=0.8,
-                priority=5,
-                implementation_effort=3,
+                recommendation_id = f"proj_spec_{int(time.time())}",
+                action_type = ImprovementAction.UPDATE_RECOMMENDATIONS,
+                description = f"Update recommendations for {project_type} projects",
+                rationale = f"High success rate ({success_indicators.get('vision_clarity', 0):.2f}) suggests good patterns",
+                expected_impact = 0.3,
+                confidence = 0.8,
+                priority = 5,
+                implementation_effort = 3,
             )
 
             self.improvement_recommendations.append(recommendation)
@@ -614,14 +614,14 @@ class ContinuousImprovementSystem:
         """Generate recommendations based on system health learning."""
         if health_record.performance_score < 0.7:
             recommendation = ImprovementRecommendation(
-                recommendation_id=f"sys_health_{int(time.time())}",
-                action_type=ImprovementAction.OPTIMIZE_PERFORMANCE,
+                recommendation_id = f"sys_health_{int(time.time())}",
+                action_type = ImprovementAction.OPTIMIZE_PERFORMANCE,
                 description="Improve system performance",
-                rationale=f"Performance score is {health_record.performance_score:.2f}, below threshold of 0.7",
-                expected_impact=0.4,
-                confidence=0.9,
-                priority=9,
-                implementation_effort=7,
+                rationale = f"Performance score is {health_record.performance_score:.2f}, below threshold of 0.7",
+                expected_impact = 0.4,
+                confidence = 0.9,
+                priority = 9,
+                implementation_effort = 7,
             )
 
             self.improvement_recommendations.append(recommendation)
@@ -641,7 +641,7 @@ class ContinuousImprovementSystem:
         }
 
         with open(self.system_health_path, "a", encoding="utf - 8") as f:
-            json.dump(health_data, f, ensure_ascii=False, separators=(",", ":"))
+            json.dump(health_data, f, ensure_ascii = False, separators=(",", ":"))
             f.write("\n")
 
     def get_improvement_recommendations(
@@ -655,7 +655,7 @@ class ContinuousImprovementSystem:
         ]
 
         # Sort by priority (descending) and expected impact (descending)
-        filtered.sort(key=lambda x: (x.priority, x.expected_impact), reverse=True)
+        filtered.sort(key = lambda x: (x.priority, x.expected_impact), reverse = True)
 
         return filtered[:limit]
 
@@ -769,7 +769,7 @@ class ContinuousImprovementSystem:
 
     def get_system_health_summary(self, days: int = 7) -> Dict[str, Any]:
         """Get system health summary for the last N days."""
-        cutoff_date = datetime.now() - timedelta(days=days)
+        cutoff_date = datetime.now() - timedelta(days = days)
 
         health_records = []
         if self.system_health_path.exists():
@@ -824,7 +824,7 @@ class ContinuousImprovementSystem:
 
     def get_learning_summary(self, days: int = 7) -> Dict[str, Any]:
         """Get learning activity summary for the last N days."""
-        cutoff_date = datetime.now() - timedelta(days=days)
+        cutoff_date = datetime.now() - timedelta(days = days)
 
         learning_events = []
         if self.learning_events_path.exists():
@@ -888,7 +888,7 @@ class ContinuousImprovementSystem:
         return [
             {"source": source, "count": count}
             for source, count in sorted(
-                source_counts.items(), key=lambda x: x[1], reverse=True
+                source_counts.items(), key = lambda x: x[1], reverse = True
             )
         ]
 

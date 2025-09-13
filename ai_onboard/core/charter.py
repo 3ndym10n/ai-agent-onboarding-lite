@@ -21,7 +21,7 @@ TEMPLATE = {
 
 def ensure(root: Path, interactive: bool = False) -> dict:
     path = root / ".ai_onboard" / "charter.json"
-    ch = utils.read_json(path, default=TEMPLATE.copy())
+    ch = utils.read_json(path, default = TEMPLATE.copy())
     if ch["project_name"] == "TBD":
         ch["project_name"] = root.name
     ch["methodology"] = methodology.pick(ch)
@@ -38,4 +38,4 @@ def require_gate(root: Path, needed: str) -> None:
 def load_charter(root: Path) -> dict:
     """Load the project charter"""
     path = root / ".ai_onboard" / "charter.json"
-    return utils.read_json(path, default=TEMPLATE.copy())
+    return utils.read_json(path, default = TEMPLATE.copy())

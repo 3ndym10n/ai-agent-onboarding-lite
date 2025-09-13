@@ -36,13 +36,13 @@ TEST_CONFIG = {
 @pytest.fixture(scope="session")
 def test_root():
     """Provide a temporary test root directory for the entire test session."""
-    with tempfile.TemporaryDirectory(prefix=TEST_CONFIG["temp_dir_prefix"]) as temp_dir:
+    with tempfile.TemporaryDirectory(prefix = TEST_CONFIG["temp_dir_prefix"]) as temp_dir:
         test_root = Path(temp_dir)
 
         # Create necessary directories
-        (test_root / ".ai_onboard").mkdir(exist_ok=True)
-        (test_root / ".ai_onboard" / "logs").mkdir(exist_ok=True)
-        (test_root / ".ai_onboard" / "cache").mkdir(exist_ok=True)
+        (test_root / ".ai_onboard").mkdir(exist_ok = True)
+        (test_root / ".ai_onboard" / "logs").mkdir(exist_ok = True)
+        (test_root / ".ai_onboard" / "cache").mkdir(exist_ok = True)
 
         # Set environment variables for testing
         os.environ["AI_ONBOARD_TEST_MODE"] = "true"
@@ -109,36 +109,36 @@ def sample_test_results():
             test_id="test_integration_basic_001",
             name="test_integration_basic",
             description="Basic integration test",
-            category=ValidationCategory.INTEGRATION,
-            result=ValidationResult.PASS,
-            duration=0.1205,
-            error_message=None,
+            category = ValidationCategory.INTEGRATION,
+            result = ValidationResult.PASS,
+            duration = 0.1205,
+            error_message = None,
         ),
         ValidationTestCase(
             test_id="test_performance_response_time_002",
             name="test_performance_response_time",
             description="Performance response time test",
-            category=ValidationCategory.PERFORMANCE,
-            result=ValidationResult.WARNING,
-            duration=0.8,
+            category = ValidationCategory.PERFORMANCE,
+            result = ValidationResult.WARNING,
+            duration = 0.8,
             error_message="Response time exceeded threshold",
         ),
         ValidationTestCase(
             test_id="test_data_integrity_check_003",
             name="test_data_integrity_check",
             description="Data integrity check test",
-            category=ValidationCategory.DATA_INTEGRITY,
-            result=ValidationResult.PASS,
-            duration=0.045,
-            error_message=None,
+            category = ValidationCategory.DATA_INTEGRITY,
+            result = ValidationResult.PASS,
+            duration = 0.045,
+            error_message = None,
         ),
         ValidationTestCase(
             test_id="test_end_to_end_workflow_004",
             name="test_end_to_end_workflow",
-            description="End-to-end workflow test",
-            category=ValidationCategory.END_TO_END,
-            result=ValidationResult.FAIL,
-            duration=2.0,
+            description="End - to - end workflow test",
+            category = ValidationCategory.END_TO_END,
+            result = ValidationResult.FAIL,
+            duration = 2.0,
             error_message="Authentication failed: invalid credentials",
         ),
     ]
@@ -170,7 +170,7 @@ class ValidationTestCollector:
             "error": ValidationResult.FAIL,
         }
 
-        # Determine test category from keywords/markers
+        # Determine test category from keywords / markers
         category = ValidationCategory.INTEGRATION  # Default
         if "unit" in keywords:
             category = (
@@ -184,13 +184,13 @@ class ValidationTestCollector:
             category = ValidationCategory.END_TO_END
 
         test_case = ValidationTestCase(
-            test_id=f"pytest_{nodeid.replace('::', '_').replace('/', '_')}",
-            name=nodeid.split("::")[-1],  # Extract test function name
-            description=f"Pytest test: {nodeid}",
-            category=category,
-            result=result_mapping.get(outcome, ValidationResult.FAIL),
-            duration=duration,  # Keep in seconds
-            error_message=str(longrepr) if longrepr else None,
+            test_id = f"pytest_{nodeid.replace('::', '_').replace('/', '_')}",
+            name = nodeid.split("::")[-1],  # Extract test function name
+            description = f"Pytest test: {nodeid}",
+            category = category,
+            result = result_mapping.get(outcome, ValidationResult.FAIL),
+            duration = duration,  # Keep in seconds
+            error_message = str(longrepr) if longrepr else None,
         )
 
         self.test_results.append(test_case)
@@ -240,17 +240,17 @@ class ValidationTestCollector:
         summary = f"Executed {total_tests} tests: {passed_tests} passed, {failed_tests} failed, {warning_tests} warnings, {skipped_tests} skipped. Health score: {health_score:.1f}%"
 
         return ValidationReport(
-            report_id=f"pytest_validation_{int(time.time())}",
-            generated_at=datetime.now(),
-            total_tests=total_tests,
-            passed_tests=passed_tests,
-            failed_tests=failed_tests,
-            warning_tests=warning_tests,
-            skipped_tests=skipped_tests,
-            test_results=self.test_results,
-            system_health_score=health_score,
-            recommendations=recommendations[:10],  # Limit recommendations
-            summary=summary,
+            report_id = f"pytest_validation_{int(time.time())}",
+            generated_at = datetime.now(),
+            total_tests = total_tests,
+            passed_tests = passed_tests,
+            failed_tests = failed_tests,
+            warning_tests = warning_tests,
+            skipped_tests = skipped_tests,
+            test_results = self.test_results,
+            system_health_score = health_score,
+            recommendations = recommendations[:10],  # Limit recommendations
+            summary = summary,
         )
 
 
@@ -274,7 +274,7 @@ class ContinuousImprovementPlugin:
         )
         config.addinivalue_line("markers", "performance: Performance test")
         config.addinivalue_line("markers", "integration: Integration test")
-        config.addinivalue_line("markers", "end_to_end: End-to-end test")
+        config.addinivalue_line("markers", "end_to_end: End - to - end test")
         config.addinivalue_line("markers", "data_integrity: Data integrity test")
 
     def pytest_sessionstart(self, session):
@@ -300,11 +300,11 @@ class ContinuousImprovementPlugin:
             ]
 
             self.collector.add_test_result(
-                nodeid=report.nodeid,
-                outcome=report.outcome,
-                duration=report.duration,
-                keywords=keywords,
-                longrepr=str(report.longrepr) if report.longrepr else None,
+                nodeid = report.nodeid,
+                outcome = report.outcome,
+                duration = report.duration,
+                keywords = keywords,
+                longrepr = str(report.longrepr) if report.longrepr else None,
             )
 
     def pytest_sessionfinish(self, session, exitstatus):
@@ -325,7 +325,7 @@ class ContinuousImprovementPlugin:
         if report:
             # Save report to file
             report_file = Path(".ai_onboard") / "pytest_validation_report.json"
-            report_file.parent.mkdir(exist_ok=True)
+            report_file.parent.mkdir(exist_ok = True)
 
             report_data = {
                 "report_id": report.report_id,
@@ -353,7 +353,7 @@ class ContinuousImprovementPlugin:
             }
 
             with open(report_file, "w") as f:
-                json.dump(report_data, f, indent=2)
+                json.dump(report_data, f, indent = 2)
 
             # Print summary
             print(f"\n🧪 Continuous Improvement Validation Report Generated")
@@ -376,20 +376,20 @@ class ContinuousImprovementPlugin:
 def pytest_addoption(parser):
     """Add command line options for continuous improvement integration."""
     parser.addoption(
-        "--ci-validation-report",
+        "--ci - validation - report",
         action="store_true",
-        default=False,
+        default = False,
         help="Generate continuous improvement validation report",
     )
     parser.addoption(
-        "--ci-validation-timeout",
+        "--ci - validation - timeout",
         action="store",
-        default=300,
-        type=int,
+        default = 300,
+        type = int,
         help="Timeout for continuous improvement validation tests",
     )
     parser.addoption(
-        "--performance-baseline",
+        "--performance - baseline",
         action="store",
         help="Performance baseline file for comparison",
     )
@@ -397,26 +397,26 @@ def pytest_addoption(parser):
 
 def pytest_configure(config):
     """Configure pytest with continuous improvement plugin."""
-    if config.getoption("--ci-validation-report"):
+    if config.getoption("--ci - validation - report"):
         config.pluginmanager.register(ContinuousImprovementPlugin(), "ci_plugin")
 
 
 @pytest.fixture(scope="session")
 def ci_validation_enabled(request):
     """Check if CI validation is enabled."""
-    return request.config.getoption("--ci-validation-report")
+    return request.config.getoption("--ci - validation - report")
 
 
 @pytest.fixture(scope="session")
 def ci_validation_timeout(request):
     """Get CI validation timeout."""
-    return request.config.getoption("--ci-validation-timeout")
+    return request.config.getoption("--ci - validation - timeout")
 
 
 @pytest.fixture(scope="session")
 def performance_baseline(request):
     """Get performance baseline file path."""
-    baseline_file = request.config.getoption("--performance-baseline")
+    baseline_file = request.config.getoption("--performance - baseline")
     if baseline_file and Path(baseline_file).exists():
         with open(baseline_file, "r") as f:
             return json.load(f)
@@ -464,13 +464,13 @@ def integration_test_helper():
             error_message: Optional[str] = None,
         ) -> ValidationTestCase:
             return ValidationTestCase(
-                test_id=f"helper_{name}",
-                name=name,
-                description=f"Test case: {name}",
-                category=category,
-                result=result,
-                duration=duration,
-                error_message=error_message,
+                test_id = f"helper_{name}",
+                name = name,
+                description = f"Test case: {name}",
+                category = category,
+                result = result,
+                duration = duration,
+                error_message = error_message,
             )
 
         @staticmethod
@@ -496,17 +496,17 @@ def integration_test_helper():
             )
 
             return ValidationReport(
-                report_id=f"test_report_{int(time.time())}",
-                generated_at=datetime.now(),
-                total_tests=total_tests,
-                passed_tests=passed_tests,
-                failed_tests=failed_tests,
-                warning_tests=warning_tests,
-                skipped_tests=skipped_tests,
-                test_results=test_results,
-                system_health_score=health_score,
+                report_id = f"test_report_{int(time.time())}",
+                generated_at = datetime.now(),
+                total_tests = total_tests,
+                passed_tests = passed_tests,
+                failed_tests = failed_tests,
+                warning_tests = warning_tests,
+                skipped_tests = skipped_tests,
+                test_results = test_results,
+                system_health_score = health_score,
                 recommendations=[],
-                summary=f"Test report with {total_tests} tests",
+                summary = f"Test report with {total_tests} tests",
             )
 
     return IntegrationTestHelper()
@@ -531,22 +531,22 @@ def pytest_collection_modifyitems(config, items):
         ):
             item.add_marker(pytest.mark.ci_validation)
 
-        # Mark end-to-end tests
+        # Mark end - to - end tests
         if "end_to_end" in item.name.lower() or "e2e" in item.name.lower():
             item.add_marker(pytest.mark.end_to_end)
 
 
 # Cleanup fixtures
-@pytest.fixture(autouse=True)
+@pytest.fixture(autouse = True)
 def cleanup_test_artifacts():
     """Automatically clean up test artifacts after each test."""
     yield
 
     # Clean up any test files in the current directory
     test_files = [
-        ".ai_onboard/test_*.json",
-        ".ai_onboard/validation_*.jsonl",
-        ".ai_onboard/temp_*",
+        ".ai_onboard / test_*.json",
+        ".ai_onboard / validation_*.jsonl",
+        ".ai_onboard / temp_*",
     ]
 
     for pattern in test_files:

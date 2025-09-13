@@ -46,7 +46,7 @@ from .commands_cleanup_safety import (
 # from ..plugins import example_policy  # ensure example plugin registers on import
 
 
-def main(argv=None):
+def main(argv = None):
     p = argparse.ArgumentParser(
         prog="ai_onboard",
         description=(
@@ -54,7 +54,7 @@ def main(argv=None):
             "(charter + plan + align + validate + kaizen)"
         ),
     )
-    sub = p.add_subparsers(dest="cmd", required=True)
+    sub = p.add_subparsers(dest="cmd", required = True)
 
     s_an = sub.add_parser(
         "analyze", help="Scan repo and draft ai_onboard.json manifest"
@@ -91,7 +91,7 @@ def main(argv=None):
     s_k.add_argument("--once", action="store_true")
 
     s_o = sub.add_parser("optimize", help="Optimization Strategist (MVP)")
-    so_sub = s_o.add_subparsers(dest="opt_cmd", required=False)
+    so_sub = s_o.add_subparsers(dest="opt_cmd", required = False)
     s_o.add_argument("--budget", default="5m", help="Time budget (e.g., 5m)")
     so_sub.add_parser("propose", help="Generate optimization proposals and open gate")
     s_sbx = so_sub.add_parser(
@@ -130,7 +130,7 @@ def main(argv=None):
 
     # Checkpoints (agent - aware snapshots)
     s_ck = sub.add_parser("checkpoint", help="Manage lightweight checkpoints")
-    ck_sub = s_ck.add_subparsers(dest="ck_cmd", required=True)
+    ck_sub = s_ck.add_subparsers(dest="ck_cmd", required = True)
     ck_create = ck_sub.add_parser(
         "create", help="Create checkpoint for given scope globs"
     )
@@ -138,13 +138,13 @@ def main(argv=None):
     ck_create.add_argument("--reason", default="")
     ck_sub.add_parser("list", help="List checkpoints")
     ck_restore = ck_sub.add_parser("restore", help="Restore by id")
-    ck_restore.add_argument("--id", required=True)
+    ck_restore.add_argument("--id", required = True)
 
     # Agent - facing prompt bridge (read - mostly, feature - flagged)
     s_prompt = sub.add_parser(
         "prompt", help="Agent context APIs: state|rules|summary|propose"
     )
-    sp = s_prompt.add_subparsers(dest="prompt_cmd", required=True)
+    sp = s_prompt.add_subparsers(dest="prompt_cmd", required = True)
     sp.add_parser("state", help="Emit compact project state JSON")
     sp_rules = sp.add_parser(
         "rules", help="Applicable meta - policy rules for a target path"
@@ -172,7 +172,7 @@ def main(argv=None):
 
     # Vision and planning commands
     s_vision = sub.add_parser("vision", help="Vision alignment and scope management")
-    sv_sub = s_vision.add_subparsers(dest="vision_cmd", required=True)
+    sv_sub = s_vision.add_subparsers(dest="vision_cmd", required = True)
     validate_parser = sv_sub.add_parser(
         "validate", help="Validate decision alignment with project vision"
     )
@@ -188,29 +188,29 @@ def main(argv=None):
 
     # UI / UX Design commands
     s_design = sub.add_parser("design", help="UI / UX design validation and management")
-    sd_sub = s_design.add_subparsers(dest="design_cmd", required=True)
+    sd_sub = s_design.add_subparsers(dest="design_cmd", required = True)
 
     analyze_parser = sd_sub.add_parser(
         "analyze", help="Analyze UI design from screenshot"
     )
     analyze_parser.add_argument(
-        "--screenshot", required=True, help="Path to screenshot file"
+        "--screenshot", required = True, help="Path to screenshot file"
     )
 
     validate_parser = sd_sub.add_parser("validate", help="Validate design decision")
     validate_parser.add_argument(
-        "--description", required=True, help="Design description"
+        "--description", required = True, help="Design description"
     )
 
     consistency_parser = sd_sub.add_parser(
         "consistency", help="Check design consistency"
     )
     consistency_parser.add_argument(
-        "--description", required=True, help="Design description"
+        "--description", required = True, help="Design description"
     )
 
     system_parser = sd_sub.add_parser("system", help="Design system management")
-    system_sub = system_parser.add_subparsers(dest="system_cmd", required=True)
+    system_sub = system_parser.add_subparsers(dest="system_cmd", required = True)
     system_sub.add_parser("summary", help="Show design system summary")
     system_sub.add_parser("tokens", help="List design tokens")
     system_sub.add_parser("components", help="List design components")
@@ -218,7 +218,7 @@ def main(argv=None):
 
     # Dynamic planning commands
     s_planning = sub.add_parser("planning", help="Dynamic project planning")
-    sp_sub = s_planning.add_subparsers(dest="planning_cmd", required=True)
+    sp_sub = s_planning.add_subparsers(dest="planning_cmd", required = True)
     milestone_parser = sp_sub.add_parser("milestone", help="Mark milestone complete")
     milestone_parser.add_argument("--name", help="Milestone name")
     milestone_parser.add_argument("--completion", help="Completion data (JSON)")
@@ -240,7 +240,7 @@ def main(argv=None):
 
     # Smart debugging commands
     s_debug = sub.add_parser("debug", help="Smart debugging system")
-    sd_sub = s_debug.add_subparsers(dest="debug_cmd", required=True)
+    sd_sub = s_debug.add_subparsers(dest="debug_cmd", required = True)
     analyze_parser = sd_sub.add_parser(
         "analyze", help="Analyze error and provide smart insights"
     )
@@ -251,7 +251,7 @@ def main(argv=None):
 
     # Context continuity commands
     s_context = sub.add_parser("context", help="Context continuity management")
-    sc_sub = s_context.add_subparsers(dest="context_cmd", required=True)
+    sc_sub = s_context.add_subparsers(dest="context_cmd", required = True)
     summary_parser = sc_sub.add_parser("summary", help="Get context summary")
     summary_parser.add_argument(
         "--level", default="brief", help="Summary level (brief / full)"
@@ -266,27 +266,27 @@ def main(argv=None):
     # Vision interrogation commands
     # User preference learning commands
     s_prefs = sub.add_parser("user - prefs", help="User preference learning commands")
-    sprefs = s_prefs.add_subparsers(dest="prefs_cmd", required=True)
+    sprefs = s_prefs.add_subparsers(dest="prefs_cmd", required = True)
     rec_parser = sprefs.add_parser(
         "record", help="Record a user interaction for learning"
     )
-    rec_parser.add_argument("--user", required=True, help="User ID")
+    rec_parser.add_argument("--user", required = True, help="User ID")
     rec_parser.add_argument(
-        "--type", required=True, help="Interaction type (enum value)"
+        "--type", required = True, help="Interaction type (enum value)"
     )
     rec_parser.add_argument("--context", default="{}", help="Context JSON")
-    rec_parser.add_argument("--duration", type=float)
+    rec_parser.add_argument("--duration", type = float)
     rec_parser.add_argument("--outcome", default="{}", help="Outcome JSON")
-    rec_parser.add_argument("--satisfaction", type=float)
+    rec_parser.add_argument("--satisfaction", type = float)
     rec_parser.add_argument("--feedback", default="")
     sprefs.add_parser("summary", help="Show user profile summary").add_argument(
-        "--user", required=True
+        "--user", required = True
     )
     sprefs.add_parser("recommend", help="Get user recommendations").add_argument(
-        "--user", required=True
+        "--user", required = True
     )
     s_interrogate = sub.add_parser("interrogate", help="Vision interrogation system")
-    si_sub = s_interrogate.add_subparsers(dest="interrogate_cmd", required=True)
+    si_sub = s_interrogate.add_subparsers(dest="interrogate_cmd", required = True)
     si_sub.add_parser("check", help="Check if vision is ready for AI agents")
     si_sub.add_parser("start", help="Start vision interrogation process")
     submit_parser = si_sub.add_parser(
@@ -307,13 +307,13 @@ def main(argv=None):
 
     try:
         if args.cmd == "analyze":
-            manifest = discovery.run(root, allow_exec=args.allowExec)
+            manifest = discovery.run(root, allow_exec = args.allowExec)
             utils.write_json(root / "ai_onboard.json", manifest)
             print("Wrote ai_onboard.json (draft).")
             return
 
         if args.cmd == "charter":
-            charter.ensure(root, interactive=args.interactive)
+            charter.ensure(root, interactive = args.interactive)
             state.advance(root, st, "chartered")
             print("Charter ready at .ai_onboard / charter.json")
             return
@@ -383,7 +383,7 @@ def main(argv=None):
 
                 gate_system = GateSystem(root)
                 gate_request = GateRequest(
-                    gate_type=GateType.CONFIRMATION_REQUIRED,
+                    gate_type = GateType.CONFIRMATION_REQUIRED,
                     title="Optimization Strategist Proposals",
                     description="Review and approve optimization proposals grounded in latest evidence.",
                     context={
@@ -395,7 +395,7 @@ def main(argv=None):
                         },
                         "evidence": proposals.get("evidence_summary", {}),
                     },
-                    questions=questions,
+                    questions = questions,
                 )
                 gate_system.create_gate(gate_request)
                 print_content(
@@ -428,7 +428,7 @@ def main(argv=None):
 
                 gate_system = GateSystem(root)
                 gate_request = GateRequest(
-                    gate_type=GateType.CONFIRMATION_REQUIRED,
+                    gate_type = GateType.CONFIRMATION_REQUIRED,
                     title="Optimization Sandbox Plan",
                     description="Approve sandbox plan (branch + steps) for selected optimization proposal.",
                     context={
@@ -441,7 +441,7 @@ def main(argv=None):
                         "evidence": plan.get("evidence", {}),
                         "branch": plan.get("branch"),
                     },
-                    questions=questions,
+                    questions = questions,
                 )
                 gate_system.create_gate(gate_request)
                 print_content(
@@ -492,7 +492,7 @@ def main(argv=None):
             print_activity("Scanning for files to clean up...", "search")
 
             # Always start with dry - run to show what would be deleted
-            result = cleanup.safe_cleanup(root, dry_run=True)
+            result = cleanup.safe_cleanup(root, dry_run = True)
 
             print("\nScan Results:")
             print(f"  Protected (critical): {result['protected']} files")
@@ -530,7 +530,7 @@ def main(argv=None):
                 print(f"Backup created at: {backup_dir}")
 
             print("Performing cleanup...")
-            result = cleanup.safe_cleanup(root, dry_run=False)
+            result = cleanup.safe_cleanup(root, dry_run = False)
 
             print("\nCleanup completed!")
             print(f"  Deleted: {result['deleted_count']} files")
@@ -555,7 +555,7 @@ def main(argv=None):
             from ..core import checkpoints
 
             if subcmd == "create":
-                rec = checkpoints.create(root, scope=args.scope, reason=args.reason)
+                rec = checkpoints.create(root, scope = args.scope, reason = args.reason)
                 print(prompt_bridge.dumps_json({"created": rec}))
                 return
             if subcmd == "list":
@@ -563,7 +563,7 @@ def main(argv=None):
                 print(prompt_bridge.dumps_json({"items": items}))
                 return
             if subcmd == "restore":
-                res = checkpoints.restore(root, ckpt_id=args.id)
+                res = checkpoints.restore(root, ckpt_id = args.id)
                 print(prompt_bridge.dumps_json(res))
                 return
             print('{"error":"unknown checkpoint subcommand"}')
@@ -582,16 +582,16 @@ def main(argv=None):
                 return
             if pcmd == "rules":
                 out = prompt_bridge.get_applicable_rules(
-                    root, target_path=args.path, change_summary=args.change
+                    root, target_path = args.path, change_summary = args.change
                 )
                 print(prompt_bridge.dumps_json(out))
                 return
             if pcmd == "summary":
-                out = prompt_bridge.summary(root, level=args.level)
+                out = prompt_bridge.summary(root, level = args.level)
                 print(prompt_bridge.dumps_json(out))
                 return
             if pcmd == "propose":
-                out = prompt_bridge.propose_action(root, diff_json=args.diff)
+                out = prompt_bridge.propose_action(root, diff_json = args.diff)
                 print(prompt_bridge.dumps_json(out))
                 return
             print('{"error":"unknown prompt subcommand"}')
@@ -667,9 +667,9 @@ def main(argv=None):
 
                 # Create GateRequest object for user confirmation
                 gate_request = GateRequest(
-                    gate_type=GateType.CONFIRMATION_REQUIRED,
+                    gate_type = GateType.CONFIRMATION_REQUIRED,
                     title="Project Plan Update Confirmation",
-                    description=f"Update project plan with {scan_results['scan_results']['completed_tasks_detected']} detected task completions",
+                    description = f"Update project plan with {scan_results['scan_results']['completed_tasks_detected']} detected task completions",
                     context={
                         "scan_results": scan_results["scan_results"],
                         "progress_report": scan_results["progress_report"],
@@ -722,7 +722,7 @@ def main(argv=None):
                             },
                         },
                     },
-                    questions=questions,
+                    questions = questions,
                 )
 
                 gate_system.create_gate(gate_request)
@@ -1053,13 +1053,13 @@ def main(argv=None):
                     print('{"error":"invalid outcome JSON"}')
                     return
                 interaction_id = psys.record_user_interaction(
-                    user_id=user_id,
-                    interaction_type=interaction_type,
-                    context=context,
-                    duration=getattr(args, "duration", None),
-                    outcome=outcome,
-                    satisfaction_score=getattr(args, "satisfaction", None),
-                    feedback=getattr(args, "feedback", None),
+                    user_id = user_id,
+                    interaction_type = interaction_type,
+                    context = context,
+                    duration = getattr(args, "duration", None),
+                    outcome = outcome,
+                    satisfaction_score = getattr(args, "satisfaction", None),
+                    feedback = getattr(args, "feedback", None),
                 )
                 print(prompt_bridge.dumps_json({"interaction_id": interaction_id}))
                 return
@@ -1135,7 +1135,7 @@ def main(argv=None):
             print_activity("Scanning for files to clean up...", "search")
 
             # Always start with dry - run to show what would be deleted
-            result = cleanup.safe_cleanup(root, dry_run=True)
+            result = cleanup.safe_cleanup(root, dry_run = True)
 
             print_content("Scan Results:", "stats")
             safe_print(
@@ -1175,7 +1175,7 @@ def main(argv=None):
                 print_status(f"Backup created at: {backup_dir}", "success")
 
             print("🧹 Performing cleanup...")
-            result = cleanup.safe_cleanup(root, dry_run=False)
+            result = cleanup.safe_cleanup(root, dry_run = False)
 
             print_status("Cleanup completed!", "success")
             safe_print(f"  [DELETED] Deleted: {result['deleted_count']} files")

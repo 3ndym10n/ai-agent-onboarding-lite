@@ -36,7 +36,7 @@ class DevEnvironmentSetup:
         print(f"Running: {' '.join(cmd)}")
         try:
             result = subprocess.run(
-                cmd, cwd=cwd, capture_output=True, text=True, check=True
+                cmd, cwd = cwd, capture_output = True, text = True, check = True
             )
             print(f"✅ Success: {result.stdout.strip()}")
             return result
@@ -159,7 +159,7 @@ class DevEnvironmentSetup:
         try:
             # Set up protected paths hook
             githooks_dir = self.project_root / ".githooks"
-            githooks_dir.mkdir(exist_ok=True)
+            githooks_dir.mkdir(exist_ok = True)
 
             # Create pre - push hook
             pre_push_hook = githooks_dir / "pre - push"
@@ -186,7 +186,7 @@ python scripts / protected_paths_diff.py
         try:
             # VS Code settings
             vscode_dir = self.project_root / ".vscode"
-            vscode_dir.mkdir(exist_ok=True)
+            vscode_dir.mkdir(exist_ok = True)
 
             vscode_settings = {
                 "python.defaultInterpreterPath": (
@@ -212,13 +212,13 @@ python scripts / protected_paths_diff.py
             import json
 
             (vscode_dir / "settings.json").write_text(
-                json.dumps(vscode_settings, indent=2)
+                json.dumps(vscode_settings, indent = 2)
             )
 
             # PyCharm configuration
             idea_dir = self.project_root / ".idea"
             if not idea_dir.exists():
-                idea_dir.mkdir(exist_ok=True)
+                idea_dir.mkdir(exist_ok = True)
                 (idea_dir / "misc.xml").write_text(
                     """<?xml version="1.0" encoding="UTF - 8"?>
 <project version="4">

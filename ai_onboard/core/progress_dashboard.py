@@ -84,7 +84,7 @@ class ProgressDashboard:
         """Generate detailed milestone progress tracking via canonical utils."""
         from . import progress_utils
 
-        milestone_progress = progress_utils.compute_milestone_progress(plan, width=15)
+        milestone_progress = progress_utils.compute_milestone_progress(plan, width = 15)
 
         # Enrich with days_remaining and normalized status where needed
         for item in milestone_progress:
@@ -143,7 +143,7 @@ class ProgressDashboard:
             )
 
         return {
-            "weekly_completions": sorted(timeline_data, key=lambda x: x["week"]),
+            "weekly_completions": sorted(timeline_data, key = lambda x: x["week"]),
             "total_weeks": len(timeline_data),
             "peak_week": None,  # TODO: Implement with proper typing
         }
@@ -211,7 +211,7 @@ class ProgressDashboard:
                         }
                     )
 
-        return sorted(upcoming, key=lambda x: x["days_remaining"])[:10]
+        return sorted(upcoming, key = lambda x: x["days_remaining"])[:10]
 
     def _generate_blockers_and_risks(self, plan: Dict[str, Any]) -> Dict[str, Any]:
         """Generate blockers and risks analysis."""
@@ -363,15 +363,15 @@ class ProgressDashboard:
             return None
 
         days_remaining = remaining_tasks / progress_rate
-        estimated_date = datetime.now() + timedelta(days=days_remaining)
+        estimated_date = datetime.now() + timedelta(days = days_remaining)
 
-        return estimated_date.strftime("%Y -% m-%d")
+        return estimated_date.strftime("%Y -% m -% d")
 
     def _generate_progress_bar(self, percentage: float) -> str:
         """Legacy wrapper kept for compatibility; delegates to canonical utils."""
         from . import progress_utils
 
-        return progress_utils.create_progress_bar(percentage, width=20)
+        return progress_utils.create_progress_bar(percentage, width = 20)
 
     def _calculate_milestone_status(
         self, progress: float, target_date: Optional[str]
@@ -414,8 +414,8 @@ class ProgressDashboard:
         """Get the start of the week for a given date."""
         date = datetime.fromisoformat(date_str)
         # Monday is 0 in isocalendar
-        week_start = date - timedelta(days=date.weekday())
-        return week_start.strftime("%Y -% m-%d")
+        week_start = date - timedelta(days = date.weekday())
+        return week_start.strftime("%Y -% m -% d")
 
     def _count_overdue_tasks(self, plan: Dict[str, Any]) -> int:
         """Count overdue tasks."""

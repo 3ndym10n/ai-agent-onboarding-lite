@@ -63,7 +63,7 @@ def create(root: Path, scope: Iterable[str], reason: str = "") -> Dict[str, Any]
         "reason": reason,
     }
     with open(_ckpt_dir(root) / INDEX, "a", encoding="utf - 8") as f:
-        f.write(json.dumps(rec, ensure_ascii=False, separators=(",", ":")) + "\n")
+        f.write(json.dumps(rec, ensure_ascii = False, separators=(",", ":")) + "\n")
     return rec
 
 

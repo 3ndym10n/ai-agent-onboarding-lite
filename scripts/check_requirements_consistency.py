@@ -55,10 +55,10 @@ def parse_pyproject_toml() -> Tuple[Dict[str, str], Dict[str, str]]:
     # Parse dev dependencies
     if (
         "project" in data
-        and "optional-dependencies" in data["project"]
-        and "dev" in data["project"]["optional-dependencies"]
+        and "optional - dependencies" in data["project"]
+        and "dev" in data["project"]["optional - dependencies"]
     ):
-        for dep in data["project"]["optional-dependencies"]["dev"]:
+        for dep in data["project"]["optional - dependencies"]["dev"]:
             if "==" in dep:
                 name, version = dep.split("==", 1)
                 dev_deps[name.strip()] = version.strip()

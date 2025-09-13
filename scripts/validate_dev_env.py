@@ -27,7 +27,7 @@ class DevEnvironmentValidator:
 
         try:
             result = subprocess.run(
-                cmd, cwd=cwd, capture_output=True, text=True, check=True
+                cmd, cwd = cwd, capture_output = True, text = True, check = True
             )
             return True, result.stdout.strip(), result.stderr.strip()
         except subprocess.CalledProcessError as e:
@@ -78,9 +78,9 @@ class DevEnvironmentValidator:
             import ai_onboard
 
             results["package_installed"] = ai_onboard.__version__
-            print(f"✅ ai-onboard package: {ai_onboard.__version__}")
+            print(f"✅ ai - onboard package: {ai_onboard.__version__}")
         except ImportError:
-            print("❌ ai-onboard package not installed")
+            print("❌ ai - onboard package not installed")
 
         return results
 
@@ -93,7 +93,7 @@ class DevEnvironmentValidator:
             "flake8": ["python", "-m", "flake8", "--version"],
             "mypy": ["python", "-m", "mypy", "--version"],
             "pytest": ["python", "-m", "pytest", "--version"],
-            "pre-commit": ["python", "-m", "pre_commit", "--version"],
+            "pre - commit": ["python", "-m", "pre_commit", "--version"],
             "isort": ["python", "-m", "isort", "--version"],
         }
 
@@ -153,22 +153,22 @@ class DevEnvironmentValidator:
         required_files = [
             "pyproject.toml",
             "README.md",
-            "docs/developer/DEVELOPMENT.md",
-            ".pre-commit-config.yaml",
-            "config/dev-config.yaml",
-            "scripts/setup_dev_env.py",
-            "scripts/validate_dev_env.py",
-            "scripts/test_system.py",
-            ".github/workflows/ci.yml",
+            "docs / developer / DEVELOPMENT.md",
+            ".pre - commit - config.yaml",
+            "config / dev - config.yaml",
+            "scripts / setup_dev_env.py",
+            "scripts / validate_dev_env.py",
+            "scripts / test_system.py",
+            ".github / workflows / ci.yml",
         ]
 
         required_dirs = [
             "ai_onboard",
-            "ai_onboard/cli",
-            "ai_onboard/core",
-            "ai_onboard/plugins",
-            "ai_onboard/policies",
-            "ai_onboard/schemas",
+            "ai_onboard / cli",
+            "ai_onboard / core",
+            "ai_onboard / plugins",
+            "ai_onboard / policies",
+            "ai_onboard / schemas",
             "tests",
             "docs",
             "scripts",
@@ -217,7 +217,7 @@ class DevEnvironmentValidator:
 
         # Check system tests
         success, stdout, stderr = self.run_command(
-            [sys.executable, "scripts/test_system.py"]
+            [sys.executable, "scripts / test_system.py"]
         )
         if success:
             results["system_tests"] = True
@@ -305,13 +305,13 @@ class DevEnvironmentValidator:
 
         print("\nNext steps:")
         if percentage < 100:
-            print("1. Run 'python scripts/setup_dev_env.py' to fix issues")
+            print("1. Run 'python scripts / setup_dev_env.py' to fix issues")
             print("2. Check the error messages above for specific problems")
-            print("3. Re-run this validation script after fixes")
+            print("3. Re - run this validation script after fixes")
         else:
             print("1. You're ready to start developing!")
             print("2. Run 'python -m ai_onboard --help' to test the CLI")
-            print("3. Check out docs/developer/DEVELOPMENT.md for more information")
+            print("3. Check out docs / developer / DEVELOPMENT.md for more information")
 
 
 def main():
@@ -327,8 +327,8 @@ def main():
         import json
 
         report_file = project_root / ".ai_onboard" / "dev_env_report.json"
-        report_file.parent.mkdir(exist_ok=True)
-        report_file.write_text(json.dumps(report, indent=2))
+        report_file.parent.mkdir(exist_ok = True)
+        report_file.write_text(json.dumps(report, indent = 2))
         print(f"\n📄 Detailed report saved to: {report_file}")
 
         # Exit with appropriate code

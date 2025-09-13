@@ -62,27 +62,27 @@ def sample_test_results():
             test_id="test_001",
             name="test_basic_functionality",
             description="Basic functionality test",
-            category=ValidationCategory.INTEGRATION,
-            result=ValidationResult.PASS,
-            duration=0.5,
-            error_message=None,
+            category = ValidationCategory.INTEGRATION,
+            result = ValidationResult.PASS,
+            duration = 0.5,
+            error_message = None,
         ),
         ValidationTestCase(
             test_id="test_002",
             name="test_performance",
             description="Performance test",
-            category=ValidationCategory.PERFORMANCE,
-            result=ValidationResult.WARNING,
-            duration=2.5,
+            category = ValidationCategory.PERFORMANCE,
+            result = ValidationResult.WARNING,
+            duration = 2.5,
             error_message="Performance threshold exceeded",
         ),
         ValidationTestCase(
             test_id="test_003",
             name="test_data_integrity",
             description="Data integrity test",
-            category=ValidationCategory.DATA_INTEGRITY,
-            result=ValidationResult.FAIL,
-            duration=1.0,
+            category = ValidationCategory.DATA_INTEGRITY,
+            result = ValidationResult.FAIL,
+            duration = 1.0,
             error_message="Data validation failed",
         ),
     ]
@@ -93,10 +93,10 @@ def report_generator(temp_root, mock_validator, mock_trend_analyzer):
     """Provide an AdvancedTestReportGenerator with mocked dependencies."""
     with patch(
         "ai_onboard.core.advanced_test_reporting.ContinuousImprovementValidator",
-        return_value=mock_validator,
+        return_value = mock_validator,
     ), patch(
         "ai_onboard.core.advanced_test_reporting.get_performance_trend_analyzer",
-        return_value=mock_trend_analyzer,
+        return_value = mock_trend_analyzer,
     ):
         generator = AdvancedTestReportGenerator(temp_root)
         return generator
@@ -133,7 +133,7 @@ class TestAdvancedTestReportGenerator:
         assert metrics.failed_tests == 1
         assert metrics.warning_tests == 1
         assert metrics.skipped_tests == 0
-        assert metrics.success_rate == pytest.approx(33.33, rel=1e-2)
+        assert metrics.success_rate == pytest.approx(33.33, rel = 1e - 2)
         assert metrics.average_duration > 0
         assert metrics.total_duration > 0
 
@@ -163,8 +163,8 @@ class TestAdvancedTestReportGenerator:
     def test_generate_comprehensive_report(self, report_generator, sample_test_results):
         """Test comprehensive report generation."""
         report = report_generator.generate_comprehensive_report(
-            test_results=sample_test_results,
-            report_level=ReportLevel.DETAILED,
+            test_results = sample_test_results,
+            report_level = ReportLevel.DETAILED,
             output_formats=[ReportFormat.JSON],
         )
 
@@ -181,7 +181,7 @@ class TestAdvancedTestReportGenerator:
     def test_report_persistence(self, report_generator, sample_test_results):
         """Test that reports are properly persisted."""
         report = report_generator.generate_comprehensive_report(
-            test_results=sample_test_results, output_formats=[ReportFormat.JSON]
+            test_results = sample_test_results, output_formats=[ReportFormat.JSON]
         )
 
         # Check that report file was created
@@ -226,7 +226,7 @@ class TestAdvancedTestReportGenerator:
         """Test configuration loading and defaults."""
         # Create a custom config
         config_path = temp_root / ".ai_onboard" / "test_reporting_config.json"
-        config_path.parent.mkdir(parents=True, exist_ok=True)
+        config_path.parent.mkdir(parents = True, exist_ok = True)
 
         custom_config = {
             "reporting_enabled": True,
@@ -268,7 +268,7 @@ class TestAdvancedTestReportGenerator:
     ):
         """Test report generation with different detail levels."""
         report = report_generator.generate_comprehensive_report(
-            test_results=sample_test_results, report_level=report_level
+            test_results = sample_test_results, report_level = report_level
         )
 
         assert report.report_level == report_level
@@ -280,7 +280,7 @@ class TestAdvancedTestReportGenerator:
     ):
         """Test report generation with different output formats."""
         report = report_generator.generate_comprehensive_report(
-            test_results=sample_test_results, output_formats=[output_format]
+            test_results = sample_test_results, output_formats=[output_format]
         )
 
         assert isinstance(report, AdvancedTestReport)
@@ -304,9 +304,9 @@ class TestTestMetrics:
                 test_id="test_001",
                 name="single_test",
                 description="Single test",
-                category=ValidationCategory.INTEGRATION,
-                result=ValidationResult.PASS,
-                duration=1.0,
+                category = ValidationCategory.INTEGRATION,
+                result = ValidationResult.PASS,
+                duration = 1.0,
             )
         ]
 
@@ -344,22 +344,22 @@ class TestAdvancedTestReportingIntegration:
             # Create realistic test results
             test_results = [
                 ValidationTestCase(
-                    test_id=f"integration_test_{i}",
-                    name=f"integration_test_{i}",
-                    description=f"Integration test {i}",
-                    category=ValidationCategory.INTEGRATION,
+                    test_id = f"integration_test_{i}",
+                    name = f"integration_test_{i}",
+                    description = f"Integration test {i}",
+                    category = ValidationCategory.INTEGRATION,
                     result=(
                         ValidationResult.PASS if i % 2 == 0 else ValidationResult.FAIL
                     ),
-                    duration=0.1 * i,
+                    duration = 0.1 * i,
                 )
                 for i in range(10)
             ]
 
             # Generate comprehensive report
             report = generator.generate_comprehensive_report(
-                test_results=test_results,
-                report_level=ReportLevel.COMPREHENSIVE,
+                test_results = test_results,
+                report_level = ReportLevel.COMPREHENSIVE,
                 output_formats=[ReportFormat.JSON, ReportFormat.HTML],
             )
 

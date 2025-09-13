@@ -46,8 +46,8 @@ class TestResult:
     level: TestLevel
     passed: bool
     duration_ms: float
-    metrics: Dict[str, Any] = field(default_factory=dict)
-    recommendations: List[str] = field(default_factory=list)
+    metrics: Dict[str, Any] = field(default_factory = dict)
+    recommendations: List[str] = field(default_factory = list)
     error: Optional[str] = None
     confidence_score: float = 0.0
 
@@ -239,27 +239,27 @@ class EnhancedSystemTester:
 
             return TestResult(
                 name="Enhanced Error Monitoring",
-                level=TestLevel.SMOKE,
-                passed=error_captured,
-                duration_ms=duration_ms,
+                level = TestLevel.SMOKE,
+                passed = error_captured,
+                duration_ms = duration_ms,
                 metrics={
                     "total_capability_uses": report.get("total_capability_uses", 0),
                     "error_rate": report.get("error_rate", 0),
                     "recent_errors_count": len(report.get("recent_errors", [])),
                     "error_capture_working": error_captured,
                 },
-                confidence_score=0.95 if error_captured else 0.3,
+                confidence_score = 0.95 if error_captured else 0.3,
             )
 
         except Exception as e:
             duration_ms = (time.time() - start_time) * 1000
             return TestResult(
                 name="Enhanced Error Monitoring",
-                level=TestLevel.SMOKE,
-                passed=True,  # Pass in CI environment
-                duration_ms=duration_ms,
-                error=f"CI environment: {e}",
-                confidence_score=0.8,  # Lower confidence but still passing
+                level = TestLevel.SMOKE,
+                passed = True,  # Pass in CI environment
+                duration_ms = duration_ms,
+                error = f"CI environment: {e}",
+                confidence_score = 0.8,  # Lower confidence but still passing
                 recommendations=[
                     "Initialize .ai_onboard directory for full functionality"
                 ],
@@ -289,17 +289,17 @@ class EnhancedSystemTester:
 
             return TestResult(
                 name="Smart Debugging Integration",
-                level=TestLevel.INTEGRATION,
-                passed=has_solution and confidence_acceptable,
-                duration_ms=duration_ms,
+                level = TestLevel.INTEGRATION,
+                passed = has_solution and confidence_acceptable,
+                duration_ms = duration_ms,
                 metrics={
                     "confidence": result.get("confidence", 0),
                     "pattern_id": result.get("pattern_id"),
                     "has_solution": has_solution,
                     "solution_steps": len(result.get("solution", {}).get("steps", [])),
                 },
-                confidence_score=result.get("confidence", 0),
-                recommendations=result.get("solution", {}).get("steps", [])[
+                confidence_score = result.get("confidence", 0),
+                recommendations = result.get("solution", {}).get("steps", [])[
                     :3
                 ],  # Top 3 steps
             )
@@ -308,11 +308,11 @@ class EnhancedSystemTester:
             duration_ms = (time.time() - start_time) * 1000
             return TestResult(
                 name="Smart Debugging Integration",
-                level=TestLevel.INTEGRATION,
-                passed=True,  # Pass in CI
-                duration_ms=duration_ms,
-                error=f"CI environment: {e}",
-                confidence_score=0.7,
+                level = TestLevel.INTEGRATION,
+                passed = True,  # Pass in CI
+                duration_ms = duration_ms,
+                error = f"CI environment: {e}",
+                confidence_score = 0.7,
             )
 
     def _test_system_response_time(self) -> TestResult:
@@ -363,9 +363,9 @@ class EnhancedSystemTester:
 
             return TestResult(
                 name="System Response Time",
-                level=TestLevel.PERFORMANCE,
-                passed=performance_acceptable,
-                duration_ms=total_duration,
+                level = TestLevel.PERFORMANCE,
+                passed = performance_acceptable,
+                duration_ms = total_duration,
                 metrics={
                     "avg_response_time_ms": avg_response_time,
                     "threshold_ms": threshold,
@@ -374,7 +374,7 @@ class EnhancedSystemTester:
                         avg_response_time / threshold if threshold > 0 else 0
                     ),
                 },
-                confidence_score=0.9 if performance_acceptable else 0.4,
+                confidence_score = 0.9 if performance_acceptable else 0.4,
                 recommendations=(
                     ["Consider caching optimizations"]
                     if not performance_acceptable
@@ -386,11 +386,11 @@ class EnhancedSystemTester:
             duration_ms = (time.time() - start_time) * 1000
             return TestResult(
                 name="System Response Time",
-                level=TestLevel.PERFORMANCE,
-                passed=True,  # Pass in CI
-                duration_ms=duration_ms,
-                error=str(e),
-                confidence_score=0.7,
+                level = TestLevel.PERFORMANCE,
+                passed = True,  # Pass in CI
+                duration_ms = duration_ms,
+                error = str(e),
+                confidence_score = 0.7,
             )
 
     # --- Missing legacy helpers implemented below ---
@@ -409,21 +409,21 @@ class EnhancedSystemTester:
             )
             return TestResult(
                 name="Vision System",
-                level=TestLevel.SMOKE,
-                passed=ready,
-                duration_ms=duration_ms,
+                level = TestLevel.SMOKE,
+                passed = ready,
+                duration_ms = duration_ms,
                 metrics={"status": status},
-                confidence_score=0.9 if ready else 0.4,
+                confidence_score = 0.9 if ready else 0.4,
             )
         except Exception as e:
             duration_ms = (time.time() - start_time) * 1000
             return TestResult(
                 name="Vision System",
-                level=TestLevel.SMOKE,
-                passed=True,  # pass in CI
-                duration_ms=duration_ms,
-                error=str(e),
-                confidence_score=0.7,
+                level = TestLevel.SMOKE,
+                passed = True,  # pass in CI
+                duration_ms = duration_ms,
+                error = str(e),
+                confidence_score = 0.7,
             )
 
     def _test_alignment_system(self) -> TestResult:
@@ -435,21 +435,21 @@ class EnhancedSystemTester:
             ok = isinstance(result, dict) or result is not None
             return TestResult(
                 name="Alignment System",
-                level=TestLevel.SMOKE,
-                passed=ok,
-                duration_ms=duration_ms,
+                level = TestLevel.SMOKE,
+                passed = ok,
+                duration_ms = duration_ms,
                 metrics={"has_result": ok},
-                confidence_score=0.9 if ok else 0.5,
+                confidence_score = 0.9 if ok else 0.5,
             )
         except Exception as e:
             duration_ms = (time.time() - start_time) * 1000
             return TestResult(
                 name="Alignment System",
-                level=TestLevel.SMOKE,
-                passed=True,
-                duration_ms=duration_ms,
-                error=str(e),
-                confidence_score=0.7,
+                level = TestLevel.SMOKE,
+                passed = True,
+                duration_ms = duration_ms,
+                error = str(e),
+                confidence_score = 0.7,
             )
 
     def _test_project_planning(self) -> TestResult:
@@ -464,25 +464,25 @@ class EnhancedSystemTester:
             ok = overall.get("total_tasks", 0) >= 0 and "visual_bar" in overall
             return TestResult(
                 name="Project Planning",
-                level=TestLevel.SMOKE,
-                passed=ok,
-                duration_ms=duration_ms,
+                level = TestLevel.SMOKE,
+                passed = ok,
+                duration_ms = duration_ms,
                 metrics={
                     "total_tasks": overall.get("total_tasks"),
                     "completed_tasks": overall.get("completed_tasks"),
                     "completion_percentage": overall.get("completion_percentage"),
                 },
-                confidence_score=0.95 if ok else 0.5,
+                confidence_score = 0.95 if ok else 0.5,
             )
         except Exception as e:
             duration_ms = (time.time() - start_time) * 1000
             return TestResult(
                 name="Project Planning",
-                level=TestLevel.SMOKE,
-                passed=True,
-                duration_ms=duration_ms,
-                error=str(e),
-                confidence_score=0.7,
+                level = TestLevel.SMOKE,
+                passed = True,
+                duration_ms = duration_ms,
+                error = str(e),
+                confidence_score = 0.7,
             )
 
     def _ensure_validation_report(self):
@@ -501,11 +501,11 @@ class EnhancedSystemTester:
             if not self._validation_report:
                 return TestResult(
                     name="Comprehensive Validation",
-                    level=TestLevel.INTEGRATION,
-                    passed=True,  # don't fail CI
-                    duration_ms=duration_ms,
+                    level = TestLevel.INTEGRATION,
+                    passed = True,  # don't fail CI
+                    duration_ms = duration_ms,
                     error="validator unavailable",
-                    confidence_score=0.7,
+                    confidence_score = 0.7,
                 )
             rep = self._validation_report
             # dataclass with attributes
@@ -515,25 +515,25 @@ class EnhancedSystemTester:
             ok = health >= 50 or passed_ratio >= 0.7
             return TestResult(
                 name="Comprehensive Validation",
-                level=TestLevel.INTEGRATION,
-                passed=ok,
-                duration_ms=duration_ms,
+                level = TestLevel.INTEGRATION,
+                passed = ok,
+                duration_ms = duration_ms,
                 metrics={
                     "health": health,
                     "total": total,
                     "passed": getattr(rep, "passed_tests", 0),
                 },
-                confidence_score=0.9 if ok else 0.6,
+                confidence_score = 0.9 if ok else 0.6,
             )
         except Exception as e:
             duration_ms = (time.time() - start_time) * 1000
             return TestResult(
                 name="Comprehensive Validation",
-                level=TestLevel.INTEGRATION,
-                passed=True,
-                duration_ms=duration_ms,
-                error=str(e),
-                confidence_score=0.7,
+                level = TestLevel.INTEGRATION,
+                passed = True,
+                duration_ms = duration_ms,
+                error = str(e),
+                confidence_score = 0.7,
             )
 
     def _test_data_integrity(self) -> TestResult:
@@ -545,11 +545,11 @@ class EnhancedSystemTester:
             if not self._validation_report:
                 return TestResult(
                     name="Data Integrity Validation",
-                    level=TestLevel.INTEGRATION,
-                    passed=True,
-                    duration_ms=duration_ms,
+                    level = TestLevel.INTEGRATION,
+                    passed = True,
+                    duration_ms = duration_ms,
                     error="validator unavailable",
-                    confidence_score=0.7,
+                    confidence_score = 0.7,
                 )
             rep = self._validation_report
             # Count failures among data_integrity category
@@ -566,21 +566,21 @@ class EnhancedSystemTester:
             ok = failures == 0
             return TestResult(
                 name="Data Integrity Validation",
-                level=TestLevel.INTEGRATION,
-                passed=ok,
-                duration_ms=duration_ms,
+                level = TestLevel.INTEGRATION,
+                passed = ok,
+                duration_ms = duration_ms,
                 metrics={"total": total, "failures": failures},
-                confidence_score=0.9 if ok else 0.6,
+                confidence_score = 0.9 if ok else 0.6,
             )
         except Exception as e:
             duration_ms = (time.time() - start_time) * 1000
             return TestResult(
                 name="Data Integrity Validation",
-                level=TestLevel.INTEGRATION,
-                passed=True,
-                duration_ms=duration_ms,
-                error=str(e),
-                confidence_score=0.7,
+                level = TestLevel.INTEGRATION,
+                passed = True,
+                duration_ms = duration_ms,
+                error = str(e),
+                confidence_score = 0.7,
             )
 
     def _test_component_integration(self) -> TestResult:
@@ -592,11 +592,11 @@ class EnhancedSystemTester:
             if not self._validation_report:
                 return TestResult(
                     name="Component Integration Validation",
-                    level=TestLevel.INTEGRATION,
-                    passed=True,
-                    duration_ms=duration_ms,
+                    level = TestLevel.INTEGRATION,
+                    passed = True,
+                    duration_ms = duration_ms,
                     error="validator unavailable",
-                    confidence_score=0.7,
+                    confidence_score = 0.7,
                 )
             rep = self._validation_report
             failures = 0
@@ -613,21 +613,21 @@ class EnhancedSystemTester:
             ok = failures == 0
             return TestResult(
                 name="Component Integration Validation",
-                level=TestLevel.INTEGRATION,
-                passed=ok,
-                duration_ms=duration_ms,
+                level = TestLevel.INTEGRATION,
+                passed = ok,
+                duration_ms = duration_ms,
                 metrics={"total": total, "failures": failures},
-                confidence_score=0.9 if ok else 0.6,
+                confidence_score = 0.9 if ok else 0.6,
             )
         except Exception as e:
             duration_ms = (time.time() - start_time) * 1000
             return TestResult(
                 name="Component Integration Validation",
-                level=TestLevel.INTEGRATION,
-                passed=True,
-                duration_ms=duration_ms,
-                error=str(e),
-                confidence_score=0.7,
+                level = TestLevel.INTEGRATION,
+                passed = True,
+                duration_ms = duration_ms,
+                error = str(e),
+                confidence_score = 0.7,
             )
 
     def run_all_tests(self) -> Dict[str, Any]:
@@ -739,9 +739,9 @@ class EnhancedSystemTester:
         # Save report
         report_path = self.root / ".ai_onboard" / "enhanced_test_report.json"
         try:
-            report_path.parent.mkdir(parents=True, exist_ok=True)
+            report_path.parent.mkdir(parents = True, exist_ok = True)
             with open(report_path, "w") as f:
-                json.dump(report, f, indent=2)
+                json.dump(report, f, indent = 2)
         except Exception:
             pass  # Don't fail if we can't save report
 

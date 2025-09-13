@@ -40,7 +40,7 @@ class CursorIntegrationConfig:
     safety_level: str = "medium"
     max_autonomous_actions: int = 5
     require_confirmation: List[str] = field(
-        default_factory=lambda: ["file_modifications", "system_commands"]
+        default_factory = lambda: ["file_modifications", "system_commands"]
     )
     session_timeout: int = 7200  # 2 hours
     api_enabled: bool = False
@@ -126,7 +126,7 @@ class CursorAIIntegration:
         }
 
         return AgentProfile(
-            agent_id=self.config.agent_id,
+            agent_id = self.config.agent_id,
             name="Cursor AI Assistant",
             version="1.0.0",
             capabilities=[
@@ -136,13 +136,13 @@ class CursorAIIntegration:
                 AgentCapability.DOCUMENTATION,
                 AgentCapability.PROJECT_ANALYSIS,
             ],
-            collaboration_mode=CollaborationMode.COLLABORATIVE,
-            safety_level=safety_level_map.get(
+            collaboration_mode = CollaborationMode.COLLABORATIVE,
+            safety_level = safety_level_map.get(
                 self.config.safety_level, SafetyLevel.MEDIUM
             ),
-            max_autonomous_actions=self.config.max_autonomous_actions,
-            requires_confirmation_for=self.config.require_confirmation,
-            session_timeout=self.config.session_timeout,
+            max_autonomous_actions = self.config.max_autonomous_actions,
+            requires_confirmation_for = self.config.require_confirmation,
+            session_timeout = self.config.session_timeout,
         )
 
     def create_collaboration_session(
@@ -151,7 +151,7 @@ class CursorAIIntegration:
         """Create a new collaboration session for Cursor AI."""
         try:
             session_result = self.collaboration_protocol.start_collaboration_session(
-                agent_id=self.config.agent_id, project_root=self.root
+                agent_id = self.config.agent_id, project_root = self.root
             )
 
             if session_result.get("status") == "success":
@@ -347,10 +347,10 @@ class CursorAIIntegration:
         """Record integration metric."""
         try:
             metric = MetricEvent(
-                name=f"cursor_integration_{name}",
-                value=value,
-                source=MetricSource.SYSTEM,
-                category=MetricCategory.ADOPTION,
+                name = f"cursor_integration_{name}",
+                value = value,
+                source = MetricSource.SYSTEM,
+                category = MetricCategory.ADOPTION,
                 dimensions={
                     "integration_type": "cursor_ai",
                     "agent_id": self.config.agent_id,
@@ -385,16 +385,16 @@ class CursorAIIntegration:
         try:
             # Create agent profile using collaboration protocol
             agent_profile = AgentProfile(
-                agent_id=f"{user_id}_{profile_data.get('name', 'agent').lower().replace(' ', '_')}",
-                name=profile_data.get("name", "Cursor Agent"),
+                agent_id = f"{user_id}_{profile_data.get('name', 'agent').lower().replace(' ', '_')}",
+                name = profile_data.get("name", "Cursor Agent"),
                 version="1.0.0",
                 capabilities=[
                     AgentCapability(cap) for cap in profile_data.get("capabilities", [])
                 ],
-                collaboration_mode=CollaborationMode(
+                collaboration_mode = CollaborationMode(
                     profile_data.get("collaboration_style", "collaborative")
                 ),
-                safety_level=SafetyLevel(profile_data.get("safety_level", "medium")),
+                safety_level = SafetyLevel(profile_data.get("safety_level", "medium")),
             )
 
             # Register with collaboration protocol

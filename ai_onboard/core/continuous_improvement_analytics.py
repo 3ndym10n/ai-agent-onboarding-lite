@@ -66,8 +66,8 @@ class Metric:
     name: str
     value: float
     timestamp: datetime
-    tags: Dict[str, str] = field(default_factory=dict)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    tags: Dict[str, str] = field(default_factory = dict)
+    metadata: Dict[str, Any] = field(default_factory = dict)
 
 
 @dataclass
@@ -82,8 +82,8 @@ class KPI:
     unit: str
     trend: str  # "up", "down", "stable"
     last_updated: datetime
-    historical_values: List[Tuple[datetime, float]] = field(default_factory=list)
-    alerts: List[Dict[str, Any]] = field(default_factory=list)
+    historical_values: List[Tuple[datetime, float]] = field(default_factory = list)
+    alerts: List[Dict[str, Any]] = field(default_factory = list)
 
 
 @dataclass
@@ -99,9 +99,9 @@ class Report:
     period_end: datetime
     data: Dict[str, Any]
     summary: str
-    recommendations: List[str] = field(default_factory=list)
-    charts: List[Dict[str, Any]] = field(default_factory=list)
-    export_formats: List[str] = field(default_factory=list)
+    recommendations: List[str] = field(default_factory = list)
+    charts: List[Dict[str, Any]] = field(default_factory = list)
+    export_formats: List[str] = field(default_factory = list)
 
 
 @dataclass
@@ -118,7 +118,7 @@ class Alert:
     triggered_at: datetime
     resolved_at: Optional[datetime] = None
     acknowledged: bool = False
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory = dict)
 
 
 class ContinuousImprovementAnalytics:
@@ -253,7 +253,7 @@ class ContinuousImprovementAnalytics:
             return
 
         cutoff_date = datetime.now() - timedelta(
-            days=self.analytics_config["metrics_retention_days"]
+            days = self.analytics_config["metrics_retention_days"]
         )
 
         with open(self.metrics_path, "r", encoding="utf - 8") as f:
@@ -270,13 +270,13 @@ class ContinuousImprovementAnalytics:
                         continue
 
                     metric = Metric(
-                        metric_id=data["metric_id"],
-                        metric_type=MetricType(data["metric_type"]),
-                        name=data["name"],
-                        value=data["value"],
-                        timestamp=metric_timestamp,
-                        tags=data.get("tags", {}),
-                        metadata=data.get("metadata", {}),
+                        metric_id = data["metric_id"],
+                        metric_type = MetricType(data["metric_type"]),
+                        name = data["name"],
+                        value = data["value"],
+                        timestamp = metric_timestamp,
+                        tags = data.get("tags", {}),
+                        metadata = data.get("metadata", {}),
                     )
                     self.metrics.append(metric)
                 except (json.JSONDecodeError, KeyError, ValueError):
@@ -296,16 +296,16 @@ class ContinuousImprovementAnalytics:
             ]
 
             kpi = KPI(
-                kpi_id=kpi_id,
-                name=kpi_data["name"],
-                description=kpi_data["description"],
-                current_value=kpi_data["current_value"],
-                target_value=kpi_data["target_value"],
-                unit=kpi_data["unit"],
-                trend=kpi_data["trend"],
-                last_updated=datetime.fromisoformat(kpi_data["last_updated"]),
-                historical_values=historical_values,
-                alerts=kpi_data.get("alerts", []),
+                kpi_id = kpi_id,
+                name = kpi_data["name"],
+                description = kpi_data["description"],
+                current_value = kpi_data["current_value"],
+                target_value = kpi_data["target_value"],
+                unit = kpi_data["unit"],
+                trend = kpi_data["trend"],
+                last_updated = datetime.fromisoformat(kpi_data["last_updated"]),
+                historical_values = historical_values,
+                alerts = kpi_data.get("alerts", []),
             )
             self.kpis[kpi_id] = kpi
 
@@ -322,18 +322,18 @@ class ContinuousImprovementAnalytics:
                 try:
                     data = json.loads(line)
                     report = Report(
-                        report_id=data["report_id"],
-                        report_type=ReportType(data["report_type"]),
-                        title=data["title"],
-                        description=data["description"],
-                        generated_at=datetime.fromisoformat(data["generated_at"]),
-                        period_start=datetime.fromisoformat(data["period_start"]),
-                        period_end=datetime.fromisoformat(data["period_end"]),
-                        data=data["data"],
-                        summary=data["summary"],
-                        recommendations=data.get("recommendations", []),
-                        charts=data.get("charts", []),
-                        export_formats=data.get("export_formats", []),
+                        report_id = data["report_id"],
+                        report_type = ReportType(data["report_type"]),
+                        title = data["title"],
+                        description = data["description"],
+                        generated_at = datetime.fromisoformat(data["generated_at"]),
+                        period_start = datetime.fromisoformat(data["period_start"]),
+                        period_end = datetime.fromisoformat(data["period_end"]),
+                        data = data["data"],
+                        summary = data["summary"],
+                        recommendations = data.get("recommendations", []),
+                        charts = data.get("charts", []),
+                        export_formats = data.get("export_formats", []),
                     )
                     self.reports.append(report)
                 except (json.JSONDecodeError, KeyError, ValueError):
@@ -352,21 +352,21 @@ class ContinuousImprovementAnalytics:
                 try:
                     data = json.loads(line)
                     alert = Alert(
-                        alert_id=data["alert_id"],
-                        alert_level=AlertLevel(data["alert_level"]),
-                        title=data["title"],
-                        description=data["description"],
-                        metric_name=data["metric_name"],
-                        current_value=data["current_value"],
-                        threshold_value=data["threshold_value"],
-                        triggered_at=datetime.fromisoformat(data["triggered_at"]),
+                        alert_id = data["alert_id"],
+                        alert_level = AlertLevel(data["alert_level"]),
+                        title = data["title"],
+                        description = data["description"],
+                        metric_name = data["metric_name"],
+                        current_value = data["current_value"],
+                        threshold_value = data["threshold_value"],
+                        triggered_at = datetime.fromisoformat(data["triggered_at"]),
                         resolved_at=(
                             datetime.fromisoformat(data["resolved_at"])
                             if data.get("resolved_at")
                             else None
                         ),
-                        acknowledged=data.get("acknowledged", False),
-                        metadata=data.get("metadata", {}),
+                        acknowledged = data.get("acknowledged", False),
+                        metadata = data.get("metadata", {}),
                     )
                     self.alerts.append(alert)
                 except (json.JSONDecodeError, KeyError, ValueError):
@@ -384,13 +384,13 @@ class ContinuousImprovementAnalytics:
         metric_id = f"metric_{int(time.time())}_{utils.random_string(8)}"
 
         metric = Metric(
-            metric_id=metric_id,
-            metric_type=metric_type,
-            name=name,
-            value=value,
-            timestamp=datetime.now(),
-            tags=tags or {},
-            metadata=metadata or {},
+            metric_id = metric_id,
+            metric_type = metric_type,
+            name = name,
+            value = value,
+            timestamp = datetime.now(),
+            tags = tags or {},
+            metadata = metadata or {},
         )
 
         self.metrics.append(metric)
@@ -404,10 +404,10 @@ class ContinuousImprovementAnalytics:
 
         telemetry.log_event(
             "metric_recorded",
-            metric_id=metric_id,
-            name=name,
-            value=value,
-            metric_type=metric_type.value,
+            metric_id = metric_id,
+            name = name,
+            value = value,
+            metric_type = metric_type.value,
         )
 
         return metric_id
@@ -425,7 +425,7 @@ class ContinuousImprovementAnalytics:
         }
 
         with open(self.metrics_path, "a", encoding="utf - 8") as f:
-            json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
+            json.dump(data, f, ensure_ascii = False, separators=(",", ":"))
             f.write("\n")
 
     def _check_metric_alerts(self, metric: Metric):
@@ -446,11 +446,11 @@ class ContinuousImprovementAnalytics:
                                 if level == "warning"
                                 else AlertLevel.CRITICAL
                             ),
-                            title=f"{kpi_def['name']} Alert",
-                            description=f"{kpi_def['name']} is {metric.value:.2f}, below {level} threshold of {threshold}",
-                            metric_name=metric.name,
-                            current_value=metric.value,
-                            threshold_value=threshold,
+                            title = f"{kpi_def['name']} Alert",
+                            description = f"{kpi_def['name']} is {metric.value:.2f}, below {level} threshold of {threshold}",
+                            metric_name = metric.name,
+                            current_value = metric.value,
+                            threshold_value = threshold,
                         )
 
     def _create_alert(
@@ -467,15 +467,15 @@ class ContinuousImprovementAnalytics:
         alert_id = f"alert_{int(time.time())}_{utils.random_string(8)}"
 
         alert = Alert(
-            alert_id=alert_id,
-            alert_level=alert_level,
-            title=title,
-            description=description,
-            metric_name=metric_name,
-            current_value=current_value,
-            threshold_value=threshold_value,
-            triggered_at=datetime.now(),
-            metadata=metadata or {},
+            alert_id = alert_id,
+            alert_level = alert_level,
+            title = title,
+            description = description,
+            metric_name = metric_name,
+            current_value = current_value,
+            threshold_value = threshold_value,
+            triggered_at = datetime.now(),
+            metadata = metadata or {},
         )
 
         self.alerts.append(alert)
@@ -483,12 +483,12 @@ class ContinuousImprovementAnalytics:
 
         telemetry.log_event(
             "alert_created",
-            alert_id=alert_id,
-            alert_level=alert_level.value,
-            title=title,
-            metric_name=metric_name,
-            current_value=current_value,
-            threshold_value=threshold_value,
+            alert_id = alert_id,
+            alert_level = alert_level.value,
+            title = title,
+            metric_name = metric_name,
+            current_value = current_value,
+            threshold_value = threshold_value,
         )
 
     def _save_alert(self, alert: Alert):
@@ -508,7 +508,7 @@ class ContinuousImprovementAnalytics:
         }
 
         with open(self.alerts_path, "a", encoding="utf - 8") as f:
-            json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
+            json.dump(data, f, ensure_ascii = False, separators=(",", ":"))
             f.write("\n")
 
     def _update_related_kpis(self, metric: Metric):
@@ -537,14 +537,14 @@ class ContinuousImprovementAnalytics:
                 else:
                     # Create new KPI
                     kpi = KPI(
-                        kpi_id=kpi_id,
-                        name=kpi_def["name"],
-                        description=kpi_def["description"],
-                        current_value=new_value,
-                        target_value=kpi_def["target"],
-                        unit=kpi_def["unit"],
+                        kpi_id = kpi_id,
+                        name = kpi_def["name"],
+                        description = kpi_def["description"],
+                        current_value = new_value,
+                        target_value = kpi_def["target"],
+                        unit = kpi_def["unit"],
                         trend="stable",
-                        last_updated=datetime.now(),
+                        last_updated = datetime.now(),
                         historical_values=[(datetime.now(), new_value)],
                     )
                     self.kpis[kpi_id] = kpi
@@ -554,7 +554,7 @@ class ContinuousImprovementAnalytics:
     def _calculate_learning_rate(self) -> float:
         """Calculate learning rate KPI."""
         # Count learning events in the last 24 hours
-        cutoff = datetime.now() - timedelta(hours=24)
+        cutoff = datetime.now() - timedelta(hours = 24)
         learning_events = [
             metric
             for metric in self.metrics
@@ -583,7 +583,7 @@ class ContinuousImprovementAnalytics:
     def _calculate_knowledge_growth_rate(self) -> float:
         """Calculate knowledge growth rate KPI."""
         # Count knowledge additions in the last 24 hours
-        cutoff = datetime.now() - timedelta(hours=24)
+        cutoff = datetime.now() - timedelta(hours = 24)
         knowledge_metrics = [
             metric
             for metric in self.metrics
@@ -669,17 +669,17 @@ class ContinuousImprovementAnalytics:
 
         # Create report
         report = Report(
-            report_id=report_id,
-            report_type=report_type,
-            title=title or f"{report_type.value.replace('_', ' ').title()} Report",
-            description=description or f"Comprehensive {report_type.value} analysis",
-            generated_at=datetime.now(),
-            period_start=period_start,
-            period_end=period_end,
-            data=data,
-            summary=summary,
-            recommendations=recommendations,
-            export_formats=self.analytics_config["export_formats"],
+            report_id = report_id,
+            report_type = report_type,
+            title = title or f"{report_type.value.replace('_', ' ').title()} Report",
+            description = description or f"Comprehensive {report_type.value} analysis",
+            generated_at = datetime.now(),
+            period_start = period_start,
+            period_end = period_end,
+            data = data,
+            summary = summary,
+            recommendations = recommendations,
+            export_formats = self.analytics_config["export_formats"],
         )
 
         self.reports.append(report)
@@ -687,10 +687,10 @@ class ContinuousImprovementAnalytics:
 
         telemetry.log_event(
             "report_generated",
-            report_id=report_id,
-            report_type=report_type.value,
-            period_start=period_start.isoformat(),
-            period_end=period_end.isoformat(),
+            report_id = report_id,
+            report_type = report_type.value,
+            period_start = period_start.isoformat(),
+            period_end = period_end.isoformat(),
         )
 
         return report_id
@@ -891,7 +891,7 @@ class ContinuousImprovementAnalytics:
         }
 
         with open(self.reports_path, "a", encoding="utf - 8") as f:
-            json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
+            json.dump(data, f, ensure_ascii = False, separators=(",", ":"))
             f.write("\n")
 
     def get_dashboard_data(self) -> Dict[str, Any]:
@@ -961,7 +961,7 @@ class ContinuousImprovementAnalytics:
                     "data": report.data,
                     "recommendations": report.recommendations,
                 },
-                indent=2,
+                indent = 2,
             )
 
         elif format == "csv":
@@ -993,8 +993,8 @@ class ContinuousImprovementAnalytics:
             <body>
                 <div class="header">
                     <h1>{report.title}</h1>
-                    <p > Generated: {report.generated_at.strftime('%Y -% m-%d %H:%M:%S')}</p>
-                    <p > Period: {report.period_start.strftime('%Y -% m-%d')} to {report.period_end.strftime('%Y -% m-%d')}</p>
+                    <p > Generated: {report.generated_at.strftime('%Y -% m -% d %H:%M:%S')}</p>
+                    <p > Period: {report.period_start.strftime('%Y -% m -% d')} to {report.period_end.strftime('%Y -% m -% d')}</p>
                 </div>
                 <div class="summary">
                     <h2 > Summary </ h2>
@@ -1024,7 +1024,7 @@ class ContinuousImprovementAnalytics:
                     [
                         m
                         for m in self.metrics
-                        if m.timestamp >= datetime.now() - timedelta(hours=24)
+                        if m.timestamp >= datetime.now() - timedelta(hours = 24)
                     ]
                 ),
             },
@@ -1044,7 +1044,7 @@ class ContinuousImprovementAnalytics:
                     [
                         r
                         for r in self.reports
-                        if r.generated_at >= datetime.now() - timedelta(days=7)
+                        if r.generated_at >= datetime.now() - timedelta(days = 7)
                     ]
                 ),
             },

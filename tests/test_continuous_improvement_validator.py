@@ -42,13 +42,13 @@ class TestContinuousImprovementValidator:
         """Mock all subsystems to avoid dependencies during unit tests."""
         with patch.multiple(
             "ai_onboard.core.continuous_improvement_validator",
-            continuous_improvement_system=Mock(),
-            performance_optimizer=Mock(),
-            adaptive_config_manager=Mock(),
-            user_preference_learning=Mock(),
-            system_health_monitor=Mock(),
-            knowledge_base_evolution=Mock(),
-            continuous_improvement_analytics=Mock(),
+            continuous_improvement_system = Mock(),
+            performance_optimizer = Mock(),
+            adaptive_config_manager = Mock(),
+            user_preference_learning = Mock(),
+            system_health_monitor = Mock(),
+            knowledge_base_evolution = Mock(),
+            continuous_improvement_analytics = Mock(),
         ) as mocks:
             yield mocks
 
@@ -89,10 +89,10 @@ class TestContinuousImprovementValidator:
             test_id="test_example_001",
             name="test_example",
             description="Example test case",
-            category=ValidationCategory.INTEGRATION,
-            result=ValidationResult.PASS,
-            duration=0.1505,
-            error_message=None,
+            category = ValidationCategory.INTEGRATION,
+            result = ValidationResult.PASS,
+            duration = 0.1505,
+            error_message = None,
         )
 
         assert test_case.name == "test_example"
@@ -109,22 +109,22 @@ class TestContinuousImprovementValidator:
                 test_id="test1_001",
                 name="test1",
                 description="Test case 1",
-                category=ValidationCategory.INTEGRATION,
-                result=ValidationResult.PASS,
-                duration=0.1,
+                category = ValidationCategory.INTEGRATION,
+                result = ValidationResult.PASS,
+                duration = 0.1,
             )
         ]
 
         report = ValidationReport(
             report_id="test_report_123",
-            generated_at=datetime.now(),
-            total_tests=1,
-            passed_tests=1,
-            failed_tests=0,
-            warning_tests=0,
-            skipped_tests=0,
-            test_results=test_results,
-            system_health_score=95.0,
+            generated_at = datetime.now(),
+            total_tests = 1,
+            passed_tests = 1,
+            failed_tests = 0,
+            warning_tests = 0,
+            skipped_tests = 0,
+            test_results = test_results,
+            system_health_score = 95.0,
             recommendations=["All systems healthy"],
             summary="All tests passed successfully",
         )
@@ -213,7 +213,7 @@ class TestContinuousImprovementValidator:
         for system_name, mock_system in mock_subsystems.items():
             mock_system.get_system_health = Mock(return_value={"status": "healthy"})
             mock_system.get_configuration = Mock(return_value={"enabled": True})
-            mock_system.validate_configuration = Mock(return_value=True)
+            mock_system.validate_configuration = Mock(return_value = True)
 
         tests = validator._run_integration_tests()
 
@@ -377,14 +377,14 @@ class TestContinuousImprovementValidator:
         """Test that validation reports are saved correctly."""
         report = ValidationReport(
             report_id="test_report_123",
-            generated_at=datetime.now(),
-            total_tests=2,
-            passed_tests=1,
-            failed_tests=1,
-            warning_tests=0,
-            skipped_tests=0,
+            generated_at = datetime.now(),
+            total_tests = 2,
+            passed_tests = 1,
+            failed_tests = 1,
+            warning_tests = 0,
+            skipped_tests = 0,
             test_results=[],
-            system_health_score=75.0,
+            system_health_score = 75.0,
             recommendations=["Fix failed test"],
             summary="Mixed results",
         )
@@ -436,7 +436,7 @@ class TestContinuousImprovementValidator:
                 "timeout_test",
                 lambda: time.sleep(40),  # Function that would take 40 seconds
                 ValidationCategory.INTEGRATION,
-                timeout_seconds=30,
+                timeout_seconds = 30,
             )
 
             assert test_case.result == ValidationResult.FAIL
@@ -453,7 +453,7 @@ class TestContinuousImprovementValidator:
             "error_test",
             failing_test,
             ValidationCategory.INTEGRATION,
-            timeout_seconds=30,
+            timeout_seconds = 30,
         )
 
         assert test_case.result == ValidationResult.FAIL
@@ -530,12 +530,12 @@ class TestValidationReporting:
         """Create a sample validation report for testing."""
         return ValidationReport(
             report_id="sample_report_123",
-            generated_at=datetime.now(),
-            total_tests=10,
-            passed_tests=7,
-            failed_tests=2,
-            warning_tests=1,
-            skipped_tests=0,
+            generated_at = datetime.now(),
+            total_tests = 10,
+            passed_tests = 7,
+            failed_tests = 2,
+            warning_tests = 1,
+            skipped_tests = 0,
             test_results=[
                 ValidationTestCase(
                     "test1",
@@ -555,7 +555,7 @@ class TestValidationReporting:
                     error_message="Performance threshold exceeded",
                 ),
             ],
-            system_health_score=78.5,
+            system_health_score = 78.5,
             recommendations=[
                 "Investigate performance issues",
                 "Review failed integration tests",
@@ -715,14 +715,14 @@ def pytest_addoption(parser):
     parser.addoption(
         "--generate - validation - report",
         action="store_true",
-        default=False,
+        default = False,
         help="Generate validation report at end of test session",
     )
     parser.addoption(
         "--validation - timeout",
         action="store",
-        default=300,
-        type=int,
+        default = 300,
+        type = int,
         help="Timeout for validation tests in seconds",
     )
 
