@@ -33,9 +33,9 @@ from .continuous_improvement_analytics import (
 )
 from .continuous_improvement_validator import (
     ContinuousImprovementValidator,
-    TestCase,
-    TestCategory,
-    TestResult,
+    ValidationTestCase,
+    ValidationCategory,
+    ValidationResult,
     ValidationReport,
 )
 from .performance_trend_analyzer import (
@@ -155,7 +155,7 @@ class AdvancedTestReport:
     test_metrics: TestMetrics
     quality_assessment: QualityAssessment
     execution_context: TestExecutionContext
-    test_results: List[TestCase]
+    test_results: List[ValidationTestCase]
     trend_analysis: List[TrendAnalysis]
     anomalies: List[AnomalyDetection]
     performance_insights: List[PerformanceInsight]
@@ -252,7 +252,7 @@ class AdvancedTestReportGenerator:
 
     def generate_comprehensive_report(
         self,
-        test_results: List[TestCase],
+        test_results: List[ValidationTestCase],
         execution_context: Optional[TestExecutionContext] = None,
         report_level: ReportLevel = ReportLevel.DETAILED,
         output_formats: List[ReportFormat] = None,
@@ -358,7 +358,7 @@ class AdvancedTestReportGenerator:
             telemetry.log_event("test_report_generation_error", error=str(e))
             raise
 
-    def _calculate_test_metrics(self, test_results: List[TestCase]) -> TestMetrics:
+    def _calculate_test_metrics(self, test_results: List[ValidationTestCase]) -> TestMetrics:
         """Calculate comprehensive test execution metrics."""
         if not test_results:
             return TestMetrics(
@@ -380,10 +380,10 @@ class AdvancedTestReportGenerator:
 
         # Count test results
         total_tests = len(test_results)
-        passed_tests = sum(1 for t in test_results if t.result == TestResult.PASS)
-        failed_tests = sum(1 for t in test_results if t.result == TestResult.FAIL)
-        skipped_tests = sum(1 for t in test_results if t.result == TestResult.SKIP)
-        warning_tests = sum(1 for t in test_results if t.result == TestResult.WARNING)
+        passed_tests = sum(1 for t in test_results if t.result == ValidationResult.PASS)
+        failed_tests = sum(1 for t in test_results if t.result == ValidationResult.FAIL)
+        skipped_tests = sum(1 for t in test_results if t.result == ValidationResult.SKIP)
+        warning_tests = sum(1 for t in test_results if t.result == ValidationResult.WARNING)
 
         # Calculate rates
         success_rate = passed_tests / total_tests if total_tests > 0 else 0.0
@@ -417,7 +417,7 @@ class AdvancedTestReportGenerator:
         )
 
     def _generate_execution_context(
-        self, test_results: List[TestCase]
+        self, test_results: List[ValidationTestCase]
     ) -> TestExecutionContext:
         """Generate execution context information."""
         import os
@@ -461,7 +461,7 @@ class AdvancedTestReportGenerator:
             return 0.0
 
     def _assess_test_quality(
-        self, metrics: TestMetrics, test_results: List[TestCase]
+        self, metrics: TestMetrics, test_results: List[ValidationTestCase]
     ) -> QualityAssessment:
         """Assess overall test quality with detailed scoring."""
         if not self.config.get("quality_assessment", {}).get("enabled", True):
@@ -554,14 +554,14 @@ class AdvancedTestReportGenerator:
         else:
             return 0.2
 
-    def _calculate_coverage_score(self, test_results: List[TestCase]) -> float:
+    def _calculate_coverage_score(self, test_results: List[ValidationTestCase]) -> float:
         """Calculate test coverage score based on test categories."""
         if not test_results:
             return 0.0
 
         # Count unique test categories
         categories = set(t.category for t in test_results)
-        total_categories = len(TestCategory)
+        total_categories = len(ValidationCategory)
         coverage_ratio = len(categories) / total_categories
 
         # Bonus for comprehensive testing
@@ -571,7 +571,7 @@ class AdvancedTestReportGenerator:
             return coverage_ratio
 
     def _calculate_reliability_score(
-        self, test_results: List[TestCase], metrics: TestMetrics
+        self, test_results: List[ValidationTestCase], metrics: TestMetrics
     ) -> float:
         """Calculate reliability score based on test consistency."""
         if not test_results:
@@ -590,7 +590,7 @@ class AdvancedTestReportGenerator:
 
         return min(1.0, base_score)
 
-    def _calculate_maintainability_score(self, test_results: List[TestCase]) -> float:
+    def _calculate_maintainability_score(self, test_results: List[ValidationTestCase]) -> float:
         """Calculate maintainability score based on test characteristics."""
         if not test_results:
             return 0.0
@@ -718,7 +718,7 @@ class AdvancedTestReportGenerator:
         }
 
     def _analyze_test_trends(
-        self, test_results: List[TestCase], metrics: TestMetrics
+        self, test_results: List[ValidationTestCase], metrics: TestMetrics
     ) -> List[TrendAnalysis]:
         """Analyze test performance trends."""
         if not self.config.get("trend_analysis", {}).get("enabled", True):
@@ -830,7 +830,7 @@ class AdvancedTestReportGenerator:
         )
 
     def _detect_test_anomalies(
-        self, test_results: List[TestCase], metrics: TestMetrics
+        self, test_results: List[ValidationTestCase], metrics: TestMetrics
     ) -> List[AnomalyDetection]:
         """Detect anomalies in test execution."""
         if not self.config.get("trend_analysis", {}).get("anomaly_detection", True):

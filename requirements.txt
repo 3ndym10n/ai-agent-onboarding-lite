@@ -1,9 +1,21 @@
 # Core dependencies for ai_onboard
-# This project primarily uses Python standard library modules
-# Additional dependencies may be added as the project grows
+# Pinned versions for CI/CD stability
 
-# Development dependencies (optional)
-pytest>=7.0.0
-black>=22.0.0
-flake8>=5.0.0
-mypy>=1.0.0
+# Core runtime dependencies
+PyYAML==6.0.2
+setuptools-scm==9.2.0
+
+# Development dependencies
+pytest==8.4.1
+pytest-cov==6.2.1
+pytest-asyncio==1.1.0
+pytest-mock==3.14.1
+black==25.1.0
+flake8==7.3.0
+flake8-docstrings==1.7.0
+mypy==1.11.2
+isort==6.0.1
+pre-commit==4.0.1
+safety==3.2.11
+bandit==1.8.0
+types-PyYAML==6.0.12.20241016
