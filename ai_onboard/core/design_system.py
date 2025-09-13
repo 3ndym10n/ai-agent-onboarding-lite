@@ -112,50 +112,50 @@ class DesignSystemManager:
     def _create_default_tokens(self) -> Dict[str, DesignToken]:
         """Create default design tokens"""
         return {
-            "primary-color": DesignToken(
-                name="primary-color",
+            "primary - color": DesignToken(
+                name="primary - color",
                 category="color",
                 value="#007bff",
                 description="Primary brand color",
                 usage=["buttons", "links", "highlights"],
             ),
-            "secondary-color": DesignToken(
-                name="secondary-color",
+            "secondary - color": DesignToken(
+                name="secondary - color",
                 category="color",
                 value="#6c757d",
                 description="Secondary brand color",
                 usage=["text", "borders", "backgrounds"],
             ),
-            "success-color": DesignToken(
-                name="success-color",
+            "success - color": DesignToken(
+                name="success - color",
                 category="color",
                 value="#28a745",
                 description="Success state color",
                 usage=["success messages", "completed states"],
             ),
-            "error-color": DesignToken(
-                name="error-color",
+            "error - color": DesignToken(
+                name="error - color",
                 category="color",
                 value="#dc3545",
                 description="Error state color",
                 usage=["error messages", "validation errors"],
             ),
-            "font-family": DesignToken(
-                name="font-family",
+            "font - family": DesignToken(
+                name="font - family",
                 category="typography",
-                value="'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+                value="'Inter', -apple - system, BlinkMacSystemFont, sans - serif",
                 description="Primary font family",
                 usage=["body text", "headings"],
             ),
-            "font-size-base": DesignToken(
-                name="font-size-base",
+            "font - size - base": DesignToken(
+                name="font - size - base",
                 category="typography",
                 value="16px",
                 description="Base font size",
                 usage=["body text", "default text"],
             ),
-            "spacing-unit": DesignToken(
-                name="spacing-unit",
+            "spacing - unit": DesignToken(
+                name="spacing - unit",
                 category="spacing",
                 value="8px",
                 description="Base spacing unit",
@@ -166,9 +166,9 @@ class DesignSystemManager:
     def _create_default_patterns(self) -> Dict[str, DesignPattern]:
         """Create default design patterns"""
         return {
-            "card-layout": DesignPattern(
-                name="card-layout",
-                description="Consistent card-based layout pattern",
+            "card - layout": DesignPattern(
+                name="card - layout",
+                description="Consistent card - based layout pattern",
                 use_cases=[
                     "product displays",
                     "content sections",
@@ -177,15 +177,15 @@ class DesignSystemManager:
                 examples=["Product cards", "Feature cards", "Content cards"],
                 accessibility_notes="Ensure proper heading hierarchy and keyboard navigation",
             ),
-            "form-validation": DesignPattern(
-                name="form-validation",
+            "form - validation": DesignPattern(
+                name="form - validation",
                 description="Consistent form validation and error display",
                 use_cases=["user input forms", "data entry", "settings"],
                 examples=["Login forms", "Registration forms", "Settings forms"],
                 accessibility_notes="Provide clear error messages and ARIA labels",
             ),
-            "navigation-breadcrumb": DesignPattern(
-                name="navigation-breadcrumb",
+            "navigation - breadcrumb": DesignPattern(
+                name="navigation - breadcrumb",
                 description="Breadcrumb navigation pattern",
                 use_cases=[
                     "deep navigation",
@@ -193,7 +193,7 @@ class DesignSystemManager:
                     "user orientation",
                 ],
                 examples=[
-                    "E-commerce categories",
+                    "E - commerce categories",
                     "Document navigation",
                     "File systems",
                 ],
@@ -266,7 +266,7 @@ class DesignSystemManager:
 
         # Calculate consistency score
         total_elements = len(used_tokens) + len(used_components) + len(used_patterns)
-        consistency_score = min(total_elements / 5, 1.0)  # Normalize to 0-1
+        consistency_score = min(total_elements / 5, 1.0)  # Normalize to 0 - 1
 
         # Generate suggestions
         suggestions = []

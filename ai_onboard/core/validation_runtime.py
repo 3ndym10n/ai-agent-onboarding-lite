@@ -20,7 +20,7 @@ def run(root: Path) -> Dict[str, Any]:
     if not manifest:
         raise SystemExit("Missing ai_onboard.json. Run: python -m ai_onboard analyze")
     policy = policy_engine.load(root)
-    # Validate effective policy against minimal schema (non-invasive)
+    # Validate effective policy against minimal schema (non - invasive)
     try:
         schema_validate.validate_policy(policy)
         telemetry.log_event(
@@ -42,11 +42,11 @@ def run(root: Path) -> Dict[str, Any]:
         comp_files = comp.get("paths", ["."])
         ctx = {"root": str(root), "comp": comp, "policy": policy}
 
-        # Create pseudo-rule list from plugin names for scheduler ordering
+        # Create pseudo - rule list from plugin names for scheduler ordering
         rules = [{"id": getattr(p, "name", p.__class__.__name__)} for p in plugins]
-        # Load optimizer state to inform scheduling (fault_yield/avg_time)
+        # Load optimizer state to inform scheduling (fault_yield / avg_time)
         opt_state = optimizer_state.load(root)
-        # Build dynamic history/profiler views from state
+        # Build dynamic history / profiler views from state
         hist = {}
         prof = {}
         for r in rules:
@@ -88,7 +88,7 @@ def run(root: Path) -> Dict[str, Any]:
         # Persist updated optimizer state after processing this component
         optimizer_state.save(root, opt_state)
 
-        # Post-process issues: fingerprint & create ask-cards if repeated
+        # Post - process issues: fingerprint & create ask - cards if repeated
         for i in list(issues):
             fp = error_resolver.fingerprint(i.message, i.file or comp.get("name", ""))
             error_resolver.touch_fp(root, fp)

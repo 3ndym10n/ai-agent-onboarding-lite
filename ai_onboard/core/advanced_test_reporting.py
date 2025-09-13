@@ -1,47 +1,36 @@
 """
 Advanced Test Reporting System - Comprehensive test analysis and reporting.
 
-This module provides enterprise-grade test reporting capabilities that:
+This module provides enterprise - grade test reporting capabilities that:
 - Generate comprehensive test reports with advanced analytics
-- Provide multi-dimensional test analysis and insights
+- Provide multi - dimensional test analysis and insights
 - Support multiple output formats (HTML, JSON, PDF, CSV)
 - Integrate with performance trend analysis and continuous improvement
-- Offer real-time test monitoring and alerting
+- Offer real - time test monitoring and alerting
 - Enable test quality scoring and benchmarking
 """
 
 import csv
 import html
-import io
 import json
-import math
 import statistics
 import time
-import warnings
-from collections import Counter, defaultdict
-from dataclasses import asdict, dataclass, field
-from datetime import datetime, timedelta
+from dataclasses import dataclass, field
+from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional
 
 from . import telemetry, utils
-from .continuous_improvement_analytics import (
-    ContinuousImprovementAnalytics,
-    MetricType,
-    ReportType,
-)
 from .continuous_improvement_validator import (
     ContinuousImprovementValidator,
     ValidationCategory,
-    ValidationReport,
     ValidationResult,
     ValidationTestCase,
 )
 from .performance_trend_analyzer import (
     AnomalyDetection,
     PerformanceInsight,
-    PerformanceTrendAnalyzer,
     TrendAnalysis,
     get_performance_trend_analyzer,
 )
@@ -70,10 +59,10 @@ class ReportLevel(Enum):
 class TestQualityScore(Enum):
     """Test quality scoring levels."""
 
-    EXCELLENT = "excellent"  # 95-100%
-    GOOD = "good"  # 80-94%
-    FAIR = "fair"  # 65-79%
-    POOR = "poor"  # 50-64%
+    EXCELLENT = "excellent"  # 95 - 100%
+    GOOD = "good"  # 80 - 94%
+    FAIR = "fair"  # 65 - 79%
+    POOR = "poor"  # 50 - 64%
     CRITICAL = "critical"  # < 50%
 
 
@@ -519,7 +508,7 @@ class AdvancedTestReportGenerator:
             maintainability_score,
         )
 
-        # Generate quality-specific recommendations
+        # Generate quality - specific recommendations
         recommendations = self._generate_quality_recommendations(
             success_score, performance_score, coverage_score, reliability_score
         )
@@ -675,7 +664,7 @@ class AdvancedTestReportGenerator:
         if reliability_score >= 0.9:
             strengths.append("Highly reliable and consistent tests")
         if maintainability_score >= 0.8:
-            strengths.append("Well-maintained and documented tests")
+            strengths.append("Well - maintained and documented tests")
 
         return strengths
 
@@ -686,7 +675,7 @@ class AdvancedTestReportGenerator:
         coverage_score: float,
         reliability_score: float,
     ) -> List[str]:
-        """Generate quality-specific recommendations."""
+        """Generate quality - specific recommendations."""
         recommendations = []
 
         if success_score < 0.9:
@@ -736,7 +725,7 @@ class AdvancedTestReportGenerator:
 
         try:
             # Use performance trend analyzer for test metrics
-            trend_analyzer = self.trend_analyzer
+            self.trend_analyzer
 
             # For now, we'll create mock trend analysis based on historical data
             # In a full implementation, this would analyze historical test metrics
@@ -890,7 +879,7 @@ class AdvancedTestReportGenerator:
             return []
 
     def _determine_anomaly_severity(self, z_score: float):
-        """Determine anomaly severity based on z-score."""
+        """Determine anomaly severity based on z - score."""
         from .performance_trend_analyzer import TrendSeverity
 
         if z_score < 2.0:
@@ -957,7 +946,7 @@ class AdvancedTestReportGenerator:
                     )
                 )
 
-            # Trend-based insights
+            # Trend - based insights
             for trend in trends:
                 if trend.direction.value == "degrading" and trend.confidence > 0.7:
                     insights.append(
@@ -1147,17 +1136,17 @@ class AdvancedTestReportGenerator:
         """Generate comprehensive recommendations from all analysis."""
         recommendations = []
 
-        # Quality-based recommendations
+        # Quality - based recommendations
         recommendations.extend(quality_assessment.recommendations)
 
-        # Trend-based recommendations
+        # Trend - based recommendations
         for trend in trends:
             if trend.direction.value == "degrading" and trend.confidence > 0.7:
                 recommendations.append(
                     f"Address degrading trend in {trend.metric_name}"
                 )
 
-        # Anomaly-based recommendations
+        # Anomaly - based recommendations
         if anomalies:
             recommendations.append(
                 f"Investigate {len(anomalies)} test execution anomalies"
@@ -1179,7 +1168,7 @@ class AdvancedTestReportGenerator:
         trends: List[TrendAnalysis],
         quality_assessment: QualityAssessment,
     ) -> Dict[str, Any]:
-        """Generate text-based visualizations for the report."""
+        """Generate text - based visualizations for the report."""
         if not self.config.get("visualizations", {}).get("enabled", True):
             return {}
 
@@ -1254,7 +1243,7 @@ class AdvancedTestReportGenerator:
 📊 Average Duration:  {metrics.average_duration:.2f}s
 🚀 Fastest Test:      {metrics.fastest_test:.2f}s
 🐌 Slowest Test:      {metrics.slowest_test:.2f}s
-📈 Test Velocity:     {metrics.test_velocity:.1f} tests/sec"""
+📈 Test Velocity:     {metrics.test_velocity:.1f} tests / sec"""
 
         return chart
 
@@ -1320,7 +1309,7 @@ Data Points: {trend.data_points}"""
             json.dump(report_dict, f, indent=2, default=json_serializer)
 
     def _convert_to_serializable(self, obj):
-        """Convert complex objects to JSON-serializable format."""
+        """Convert complex objects to JSON - serializable format."""
         if isinstance(obj, datetime):
             return obj.isoformat()
         elif isinstance(obj, Enum):
@@ -1353,14 +1342,14 @@ Data Points: {trend.data_points}"""
 
         html_content = self._generate_html_report(report)
 
-        with open(html_path, "w", encoding="utf-8") as f:
+        with open(html_path, "w", encoding="utf - 8") as f:
             f.write(html_content)
 
     def _save_csv_report(self, report: AdvancedTestReport, report_dir: Path):
         """Save test results as CSV."""
         csv_path = report_dir / "test_results.csv"
 
-        with open(csv_path, "w", newline="", encoding="utf-8") as f:
+        with open(csv_path, "w", newline="", encoding="utf - 8") as f:
             writer = csv.writer(f)
 
             # Header
@@ -1396,7 +1385,7 @@ Data Points: {trend.data_points}"""
 
         md_content = self._generate_markdown_report(report)
 
-        with open(md_path, "w", encoding="utf-8") as f:
+        with open(md_path, "w", encoding="utf - 8") as f:
             f.write(md_content)
 
     def _generate_html_report(self, report: AdvancedTestReport) -> str:
@@ -1406,79 +1395,79 @@ Data Points: {trend.data_points}"""
         return f"""<!DOCTYPE html>
 <html>
 <head>
-    <title>Advanced Test Report - {report.report_id}</title>
+    <title > Advanced Test Report - {report.report_id}</title>
     <style>
-        body {{ font-family: Arial, sans-serif; margin: 20px; }}
-        .header {{ background: #f5f5f5; padding: 20px; border-radius: 5px; }}
-        .metrics {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0; }}
-        .metric-card {{ background: white; border: 1px solid #ddd; padding: 15px; border-radius: 5px; }}
-        .quality-score {{ font-size: 2em; font-weight: bold; }}
+        body {{ font - family: Arial, sans - serif; margin: 20px; }}
+        .header {{ background: #f5f5f5; padding: 20px; border - radius: 5px; }}
+        .metrics {{ display: grid; grid - template - columns: repeat(auto - fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0; }}
+        .metric - card {{ background: white; border: 1px solid #ddd; padding: 15px; border - radius: 5px; }}
+        .quality - score {{ font - size: 2em; font - weight: bold; }}
         .excellent {{ color: #28a745; }}
         .good {{ color: #17a2b8; }}
         .fair {{ color: #ffc107; }}
         .poor {{ color: #fd7e14; }}
         .critical {{ color: #dc3545; }}
-        .test-results {{ margin: 20px 0; }}
-        .test-item {{ padding: 10px; margin: 5px 0; border-left: 4px solid #ddd; }}
-        .pass {{ border-left-color: #28a745; }}
-        .fail {{ border-left-color: #dc3545; }}
-        .skip {{ border-left-color: #6c757d; }}
+        .test - results {{ margin: 20px 0; }}
+        .test - item {{ padding: 10px; margin: 5px 0; border - left: 4px solid #ddd; }}
+        .pass {{ border - left - color: #28a745; }}
+        .fail {{ border - left - color: #dc3545; }}
+        .skip {{ border - left - color: #6c757d; }}
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>Advanced Test Report</h1>
-        <p><strong>Report ID:</strong> {report.report_id}</p>
-        <p><strong>Generated:</strong> {report.generated_at.strftime('%Y-%m-%d %H:%M:%S')}</p>
-        <p><strong>Quality Grade:</strong> <span class="{report.quality_assessment.quality_grade.value}">{report.quality_assessment.quality_grade.value.upper()}</span></p>
+        <h1 > Advanced Test Report </ h1>
+        <p >< strong > Report ID:</strong> {report.report_id}</p>
+        <p >< strong > Generated:</strong> {report.generated_at.strftime('%Y -% m-%d %H:%M:%S')}</p>
+        <p >< strong > Quality Grade:</strong> <span class="{report.quality_assessment.quality_grade.value}">{report.quality_assessment.quality_grade.value.upper()}</span ></ p>
     </div>
-    
+
     <div class="metrics">
-        <div class="metric-card">
-            <h3>Test Results</h3>
-            <p><strong>Total Tests:</strong> {report.test_metrics.total_tests}</p>
-            <p><strong>Success Rate:</strong> {report.test_metrics.success_rate:.1%}</p>
-            <p><strong>Failed Tests:</strong> {report.test_metrics.failed_tests}</p>
+        <div class="metric - card">
+            <h3 > Test Results </ h3>
+            <p >< strong > Total Tests:</strong> {report.test_metrics.total_tests}</p>
+            <p >< strong > Success Rate:</strong> {report.test_metrics.success_rate:.1%}</p>
+            <p >< strong > Failed Tests:</strong> {report.test_metrics.failed_tests}</p>
         </div>
-        
-        <div class="metric-card">
-            <h3>Performance</h3>
-            <p><strong>Total Duration:</strong> {report.test_metrics.total_duration:.2f}s</p>
-            <p><strong>Average Duration:</strong> {report.test_metrics.average_duration:.2f}s</p>
-            <p><strong>Test Velocity:</strong> {report.test_metrics.test_velocity:.1f} tests/sec</p>
+
+        <div class="metric - card">
+            <h3 > Performance </ h3>
+            <p >< strong > Total Duration:</strong> {report.test_metrics.total_duration:.2f}s </ p>
+            <p >< strong > Average Duration:</strong> {report.test_metrics.average_duration:.2f}s </ p>
+            <p >< strong > Test Velocity:</strong> {report.test_metrics.test_velocity:.1f} tests / sec </ p>
         </div>
-        
-        <div class="metric-card">
-            <h3>Quality Assessment</h3>
-            <div class="quality-score {report.quality_assessment.quality_grade.value}">
+
+        <div class="metric - card">
+            <h3 > Quality Assessment </ h3>
+            <div class="quality - score {report.quality_assessment.quality_grade.value}">
                 {report.quality_assessment.overall_score:.1%}
             </div>
-            <p>Grade: {report.quality_assessment.quality_grade.value.upper()}</p>
+            <p > Grade: {report.quality_assessment.quality_grade.value.upper()}</p>
         </div>
     </div>
-    
+
     <div class="visualizations">
-        <h2>Performance Visualizations</h2>
+        <h2 > Performance Visualizations </ h2>
         <pre>{report.visualizations.get('success_rate_gauge', '')}</pre>
         <pre>{report.visualizations.get('test_distribution', '')}</pre>
         <pre>{report.visualizations.get('performance_chart', '')}</pre>
     </div>
-    
+
     <div class="recommendations">
-        <h2>Recommendations</h2>
+        <h2 > Recommendations </ h2>
         <ul>
             {''.join(f'<li>{rec}</li>' for rec in report.recommendations)}
         </ul>
     </div>
-    
-    <div class="test-results">
-        <h2>Test Results Details</h2>
+
+    <div class="test - results">
+        <h2 > Test Results Details </ h2>
         {''.join(f'''
-        <div class="test-item {test.result.value.lower()}">
+        <div class="test - item {test.result.value.lower()}">
             <strong>{html.escape(test.name)}</strong> - {test.result.value}
-            <br><small>Duration: {test.duration:.3f}s | Category: {test.category.value}</small>
-            {f'<br><em>{html.escape(test.description)}</em>' if test.description else ''}
-            {f'<br><strong>Error:</strong> {html.escape(test.error_message)}' if test.error_message else ''}
+            <br >< small > Duration: {test.duration:.3f}s | Category: {test.category.value}</small>
+            {f'<br >< em>{html.escape(test.description)}</em>' if test.description else ''}
+            {f'<br >< strong > Error:</strong> {html.escape(test.error_message)}' if test.error_message else ''}
         </div>
         ''' for test in report.test_results)}
     </div>
@@ -1489,8 +1478,8 @@ Data Points: {trend.data_points}"""
         """Generate Markdown report content."""
         return f"""# Advanced Test Report
 
-**Report ID:** {report.report_id}  
-**Generated:** {report.generated_at.strftime('%Y-%m-%d %H:%M:%S')}  
+**Report ID:** {report.report_id}
+**Generated:** {report.generated_at.strftime('%Y -% m-%d %H:%M:%S')}
 **Quality Grade:** {report.quality_assessment.quality_grade.value.upper()}
 
 ## Summary
@@ -1532,7 +1521,7 @@ Data Points: {trend.data_points}"""
 
 ## Recommendations
 
-{chr(10).join(f'{i+1}. {rec}' for i, rec in enumerate(report.recommendations))}
+{chr(10).join(f'{i + 1}. {rec}' for i, rec in enumerate(report.recommendations))}
 
 ## Test Results
 

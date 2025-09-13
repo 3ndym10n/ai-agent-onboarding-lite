@@ -2,18 +2,16 @@
 Enhanced Help System - Intelligent, contextual help and guidance.
 
 This module provides:
-- Context-aware help that adapts to user expertise
+- Context - aware help that adapts to user expertise
 - Interactive help with examples and tutorials
 - Command discovery and suggestion system
 - Progressive disclosure of functionality
 - Visual and accessible help formatting
 """
 
-import json
-import re
 import shutil
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import List, Optional
 
 from ..core.ui_enhancement_system import (
     CommandCategory,
@@ -41,7 +39,7 @@ class HelpSystem:
     def show_main_help(
         self, user_id: str = "default", mode: Optional[str] = None
     ) -> str:
-        """Show main help with user-appropriate commands."""
+        """Show main help with user - appropriate commands."""
         profile = self.ui_system.get_user_profile(user_id)
 
         if mode:
@@ -168,7 +166,7 @@ class HelpSystem:
         """Get contextual tips based on user profile and mode."""
         tips = []
 
-        # Expertise-based tips
+        # Expertise - based tips
         if profile.expertise_level == UserExpertiseLevel.BEGINNER:
             tips.extend(
                 [
@@ -182,27 +180,27 @@ class HelpSystem:
                 [
                     "Explore 'kaizen' for continuous improvement",
                     "Use 'validate' regularly to ensure quality",
-                    "Try 'user-prefs summary --user you' to see your patterns",
+                    "Try 'user - prefs summary --user you' to see your patterns",
                 ]
             )
         elif profile.expertise_level == UserExpertiseLevel.ADVANCED:
             tips.extend(
                 [
-                    "Set up 'kaizen-auto start' for automated improvements",
-                    "Design experiments with 'opt-experiments'",
+                    "Set up 'kaizen - auto start' for automated improvements",
+                    "Design experiments with 'opt - experiments'",
                     "Use 'aaol' for advanced AI collaboration",
                 ]
             )
         else:  # EXPERT
             tips.extend(
                 [
-                    "Create custom workflows with 'decision-pipeline'",
+                    "Create custom workflows with 'decision - pipeline'",
                     "Use 'api start' to integrate with external tools",
-                    "Explore 'enhanced-context' for advanced AI features",
+                    "Explore 'enhanced - context' for advanced AI features",
                 ]
             )
 
-        # Usage-based tips
+        # Usage - based tips
         total_usage = sum(profile.command_usage_count.values())
         if total_usage == 0:
             tips.append("New here? Try 'help --tutorial' for a guided introduction")
@@ -213,7 +211,7 @@ class HelpSystem:
                 "You're using few commands - explore other categories to expand your toolkit"
             )
 
-        # Mode-based tips
+        # Mode - based tips
         if (
             mode == InterfaceMode.SIMPLE
             and profile.expertise_level != UserExpertiseLevel.BEGINNER
@@ -231,7 +229,7 @@ class HelpSystem:
             "project": CommandCategory.PROJECT,
             "optimization": CommandCategory.OPTIMIZATION,
             "ai": CommandCategory.AI_SYSTEMS,
-            "ai-systems": CommandCategory.AI_SYSTEMS,
+            "ai - systems": CommandCategory.AI_SYSTEMS,
             "development": CommandCategory.DEVELOPMENT,
             "dev": CommandCategory.DEVELOPMENT,
             "learning": CommandCategory.LEARNING,

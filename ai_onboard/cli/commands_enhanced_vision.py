@@ -7,7 +7,7 @@ including web interface management and advanced interrogation features.
 
 import argparse
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from ..core import utils
 from ..core.enhanced_vision_interrogator import (
@@ -59,8 +59,8 @@ def _handle_start_enhanced_interrogation(args: argparse.Namespace, root: Path) -
         print(f"Session ID: {result['session_id']}")
         print()
         print("Next Steps:")
-        print("1. Run 'ai_onboard enhanced-vision web' to open the web interface")
-        print("2. Or use 'ai_onboard enhanced-vision status' to check progress")
+        print("1. Run 'ai_onboard enhanced - vision web' to open the web interface")
+        print("2. Or use 'ai_onboard enhanced - vision status' to check progress")
     else:
         print(
             f"Failed to start interrogation: {result.get('message', 'Unknown error')}"
@@ -82,7 +82,7 @@ def _handle_web_interface(args: argparse.Namespace, root: Path) -> None:
         print("The web interface should open automatically in your browser.")
         print("If it doesn't, please open the URL manually.")
         print()
-        print("Press Ctrl+C to stop the web interface.")
+        print("Press Ctrl + C to stop the web interface.")
 
         try:
             # Keep the server running
@@ -104,7 +104,7 @@ def _handle_enhanced_status(args: argparse.Namespace, root: Path) -> None:
 
     if status["status"] == "no_interrogation":
         print("📋 No enhanced vision interrogation found.")
-        print("Run 'ai_onboard enhanced-vision start' to begin.")
+        print("Run 'ai_onboard enhanced - vision start' to begin.")
         return
 
     print("📊 Enhanced Vision Interrogation Status")
@@ -283,7 +283,7 @@ def _list_templates():
 
     print()
     print(
-        "Use 'ai_onboard enhanced-vision templates show <template_name>' to view details."
+        "Use 'ai_onboard enhanced - vision templates show <template_name>' to view details."
     )
 
 
@@ -314,7 +314,7 @@ def _show_template(template_name: str):
     except ValueError:
         print(f"❌ Invalid template name: {template_name}")
         print(
-            "Use 'ai_onboard enhanced-vision templates list' to see available templates."
+            "Use 'ai_onboard enhanced - vision templates list' to see available templates."
         )
 
 
@@ -392,18 +392,18 @@ def _export_to_html(interrogation_data: Dict[str, Any], output_file: Path) -> No
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vision Interrogation Results</title>
+    <meta charset="UTF - 8">
+    <meta name="viewport" content="width = device - width, initial - scale = 1.0">
+    <title > Vision Interrogation Results </ title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        body { font - family: -apple - system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans - serif; max - width: 800px; margin: 0 auto; padding: 20px; }
         h1 { color: #4f46e5; }
-        h2 { color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+        h2 { color: #1e293b; border - bottom: 2px solid #e2e8f0; padding - bottom: 10px; }
         h3 { color: #374151; }
-        .metadata { background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
-        .response { background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
-        .confidence { font-weight: bold; color: #059669; }
-        .insight { background: #ecfdf5; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #10b981; }
+        .metadata { background: #f8fafc; padding: 15px; border - radius: 8px; margin - bottom: 20px; }
+        .response { background: #f8fafc; padding: 15px; border - radius: 8px; margin - bottom: 15px; }
+        .confidence { font - weight: bold; color: #059669; }
+        .insight { background: #ecfdf5; padding: 15px; border - radius: 8px; margin - bottom: 10px; border - left: 4px solid #10b981; }
     </style>
 </head>
 <body>
@@ -411,16 +411,16 @@ def _export_to_html(interrogation_data: Dict[str, Any], output_file: Path) -> No
     )
 
     # Title and metadata
-    html_content.append("<h1>🎯 Vision Interrogation Results</h1>")
+    html_content.append("<h1>🎯 Vision Interrogation Results </ h1>")
     html_content.append('<div class="metadata">')
     html_content.append(
-        f"<p><strong>Project Type:</strong> {interrogation_data.get('project_type', 'Unknown')}</p>"
+        f"<p >< strong > Project Type:</strong> {interrogation_data.get('project_type', 'Unknown')}</p>"
     )
     html_content.append(
-        f"<p><strong>Status:</strong> {interrogation_data.get('status', 'Unknown')}</p>"
+        f"<p >< strong > Status:</strong> {interrogation_data.get('status', 'Unknown')}</p>"
     )
     html_content.append(
-        f"<p><strong>Vision Quality Score:</strong> {interrogation_data.get('vision_quality_score', 0):.1%}</p>"
+        f"<p >< strong > Vision Quality Score:</strong> {interrogation_data.get('vision_quality_score', 0):.1%}</p>"
     )
     html_content.append("</div>")
 
@@ -445,22 +445,22 @@ def _export_to_html(interrogation_data: Dict[str, Any], output_file: Path) -> No
     # Insights
     insights = interrogation_data.get("insights", [])
     if insights:
-        html_content.append("<h2>💡 Insights</h2>")
+        html_content.append("<h2>💡 Insights </ h2>")
 
         for insight in insights:
             html_content.append('<div class="insight">')
             html_content.append(f"<h3>{insight.get('type', 'Unknown')}</h3>")
             html_content.append(
-                f"<p><strong>Category:</strong> {insight.get('category', 'Unknown')}</p>"
+                f"<p >< strong > Category:</strong> {insight.get('category', 'Unknown')}</p>"
             )
             html_content.append(
-                f"<p><strong>Confidence:</strong> {insight.get('confidence', 0):.1%}</p>"
+                f"<p >< strong > Confidence:</strong> {insight.get('confidence', 0):.1%}</p>"
             )
             html_content.append(f"<p>{insight.get('description', '')}</p>")
             html_content.append("</div>")
 
     # HTML footer
-    html_content.append("</body></html>")
+    html_content.append("</body ></ html>")
 
     # Write to file
     output_file.write_text("\n".join(html_content))
@@ -469,7 +469,7 @@ def _export_to_html(interrogation_data: Dict[str, Any], output_file: Path) -> No
 def add_enhanced_vision_parser(subparsers) -> None:
     """Add enhanced vision interrogation commands to the argument parser."""
     enhanced_vision_parser = subparsers.add_parser(
-        "enhanced-vision", help="Enhanced vision interrogation system"
+        "enhanced - vision", help="Enhanced vision interrogation system"
     )
 
     enhanced_vision_subparsers = enhanced_vision_parser.add_subparsers(
@@ -481,9 +481,9 @@ def add_enhanced_vision_parser(subparsers) -> None:
         "start", help="Start enhanced vision interrogation"
     )
     start_parser.add_argument(
-        "--project-type",
+        "--project - type",
         choices=[pt.value for pt in ProjectType],
-        help="Project type for template-based questioning",
+        help="Project type for template - based questioning",
     )
 
     # Web interface command

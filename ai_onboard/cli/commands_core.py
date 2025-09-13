@@ -1,4 +1,4 @@
-"""Core CLI commands for ai-onboard."""
+"""Core CLI commands for ai - onboard."""
 
 import argparse
 import os
@@ -6,19 +6,7 @@ from pathlib import Path
 
 from ..core import (
     alignment,
-    analysis_lite,
-    charter,
-    cleanup,
-    discovery,
-    optimizer,
-    planning,
-    progress_tracker,
-    roadmap_lite,
-    runlog,
-    state,
     telemetry,
-    utils,
-    validation_runtime,
     versioning,
 )
 from ..core.gate_system import create_clarification_gate, create_confirmation_gate
@@ -63,7 +51,7 @@ def add_core_commands(subparsers):
     s_al.add_argument(
         "--preview",
         action="store_true",
-        help="Compute dry-run alignment report (no edits)",
+        help="Compute dry - run alignment report (no edits)",
     )
 
     # Validate
@@ -73,14 +61,14 @@ def add_core_commands(subparsers):
     s_v.add_argument(
         "--report",
         action="store_true",
-        help="Write .ai_onboard/report.md and versioned copy",
+        help="Write .ai_onboard / report.md and versioned copy",
     )
 
     # Kaizen
     s_k = subparsers.add_parser(
         "kaizen",
         parents=[ias_parent],
-        help="Run a kaizen cycle (metrics-driven nudges)",
+        help="Run a kaizen cycle (metrics - driven nudges)",
     )
     s_k.add_argument("--once", action="store_true")
 
@@ -113,10 +101,10 @@ def add_core_commands(subparsers):
     s_clean = subparsers.add_parser(
         "cleanup",
         parents=[ias_parent],
-        help="Safely remove non-critical files (build artifacts, cache, etc.)",
+        help="Safely remove non - critical files (build artifacts, cache, etc.)",
     )
     s_clean.add_argument(
-        "--dry-run",
+        "--dry - run",
         action="store_true",
         help="Show what would be deleted without actually deleting",
     )
@@ -164,7 +152,7 @@ def _ias_gate(args, root: Path) -> bool:
 
     Returns True if execution may proceed, False if it should stop for clarification.
     """
-    # CI-only bypass: allow in GitHub Actions when explicitly enabled
+    # CI - only bypass: allow in GitHub Actions when explicitly enabled
     if (
         os.getenv("GITHUB_ACTIONS", "").lower() == "true"
         and os.getenv("AI_ONBOARD_BYPASS", "") == "ci"
@@ -176,18 +164,18 @@ def _ias_gate(args, root: Path) -> bool:
         )
         return True
 
-    # Manual override file (human-only). If present, proceed and log.
+    # Manual override file (human - only). If present, proceed and log.
     gates_dir = root / ".ai_onboard" / "gates"
     override_file = gates_dir / "override.txt"
     if override_file.exists():
         try:
-            note = override_file.read_text(encoding="utf-8").strip()[:500]
+            note = override_file.read_text(encoding="utf - 8").strip()[:500]
         except Exception:
             note = "(unreadable)"
         telemetry.log_event("gate_override_manual", note=note)
         return True
 
-    # Compute preview (no user-bypass flags honored)
+    # Compute preview (no user - bypass flags honored)
     report = alignment.preview(root)
     decision = report.get("decision", "clarify")
 
@@ -200,7 +188,7 @@ def _ias_gate(args, root: Path) -> bool:
         context = {
             "command": getattr(args, "cmd", "unknown"),
             "confidence": report.get("confidence", 0.0),
-            "report_path": report.get("report_path", "N/A"),
+            "report_path": report.get("report_path", "N / A"),
         }
 
         response = create_confirmation_gate(
@@ -215,7 +203,7 @@ def _ias_gate(args, root: Path) -> bool:
 
     context = {
         "command": getattr(args, "cmd", "unknown"),
-        "report_path": report.get("report_path", "N/A"),
+        "report_path": report.get("report_path", "N / A"),
         "components": report.get("components", {}),
     }
 
@@ -264,7 +252,9 @@ def _handle_gate_commands(args, root: Path):
         }
         # Ignore --code for now (kept for compatibility)
 
-        response_file.write_text(json.dumps(response_data, indent=2), encoding="utf-8")
+        response_file.write_text(
+            json.dumps(response_data, indent=2), encoding="utf - 8"
+        )
         print(f"[OK] Response written to: {response_file}")
         print(f"[INFO] The system should now continue automatically")
 
@@ -272,7 +262,7 @@ def _handle_gate_commands(args, root: Path):
 def handle_core_commands(args, root: Path):
     """Handle core command execution."""
 
-    # Allow a safe, read-only preview to bypass the IAS gate so users can
+    # Allow a safe, read - only preview to bypass the IAS gate so users can
     # inspect the recommendation before deciding to proceed.
     if args.cmd == "align" and getattr(args, "preview", False):
         from ..core import alignment, utils
@@ -319,14 +309,14 @@ def handle_core_commands(args, root: Path):
             print("✅ Vision confirmed in charter")
 
         state.advance(root, state.load(root), "chartered")
-        print("Charter ready at .ai_onboard/charter.json")
+        print("Charter ready at .ai_onboard / charter.json")
     elif args.cmd == "plan":
         # Build project plan from charter
         from ..core import planning, state
 
         planning.build(root)
         state.advance(root, state.load(root), "planned")
-        print("Plan ready at .ai_onboard/plan.json")
+        print("Plan ready at .ai_onboard / plan.json")
     elif args.cmd == "roadmap":
         # Build lightweight roadmap from analysis
         from ..core import roadmap_lite
@@ -344,7 +334,7 @@ def handle_core_commands(args, root: Path):
         if not rm_path.exists():
             print("No roadmap.json. Run 'ai_onboard roadmap' first.")
             return
-        rm = json.loads(rm_path.read_text(encoding="utf-8"))
+        rm = json.loads(rm_path.read_text(encoding="utf - 8"))
         next_task = None
         for t in rm.get("tasks", []):
             if t.get("status") == "pending":
@@ -395,11 +385,11 @@ def handle_core_commands(args, root: Path):
         res = validation_runtime.run(root)
         if args.report:
             progress_tracker.write_report(root, res)
-            print("Wrote .ai_onboard/report.md (+ versioned copy).")
+            print("Wrote .ai_onboard / report.md (+ versioned copy).")
         telemetry.record_run(root, res)
         print("Validation complete.")
     elif args.cmd == "kaizen":
-        # Run a kaizen cycle (metrics-driven nudges)
+        # Run a kaizen cycle (metrics - driven nudges)
         from ..core import optimizer
 
         optimizer.nudge_from_metrics(root)
@@ -425,7 +415,7 @@ def handle_core_commands(args, root: Path):
             print(f"Bumped {args.bump}: {current} -> {newv}")
             return
         # Show package version, not project version
-        print(f"ai-onboard package version: {ai_onboard.__version__}")
+        print(f"ai - onboard package version: {ai_onboard.__version__}")
         # Also show project version if it exists
         try:
             project_version = versioning.get_version(root)

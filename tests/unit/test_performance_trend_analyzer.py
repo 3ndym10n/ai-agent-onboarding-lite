@@ -6,7 +6,6 @@ with mocked dependencies for reliable and fast testing.
 """
 
 import tempfile
-import time
 from datetime import datetime, timedelta
 from pathlib import Path
 from unittest.mock import Mock, patch
@@ -345,7 +344,7 @@ class TestPerformanceTrendAnalyzerIntegration:
     """Integration tests for the performance trend analyzer."""
 
     def test_end_to_end_analysis(self, temp_root):
-        """Test complete end-to-end trend analysis."""
+        """Test complete end - to - end trend analysis."""
         with patch("ai_onboard.core.performance_trend_analyzer.telemetry"):
             analyzer = PerformanceTrendAnalyzer(temp_root)
 

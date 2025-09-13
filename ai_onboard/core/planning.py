@@ -9,13 +9,13 @@ def build(root: Path) -> dict:
     if not ch:
         raise SystemExit("Missing charter. Run: python -m ai_onboard charter")
 
-    # Generate charter-aware work breakdown structure
+    # Generate charter - aware work breakdown structure
     wbs = _generate_charter_aware_wbs(ch)
 
-    # Generate charter-aware milestones
+    # Generate charter - aware milestones
     milestones = _generate_charter_aware_milestones(ch)
 
-    # Generate charter-aware risks
+    # Generate charter - aware risks
     risks = _generate_charter_aware_risks(ch)
 
     # Generate detailed project tasks
@@ -91,11 +91,11 @@ def _generate_charter_aware_wbs(charter: dict) -> list:
         }
     )
 
-    # System robustness and self-improvement
+    # System robustness and self - improvement
     wbs.append(
         {
             "id": "C8",
-            "name": "System robustness and self-improvement",
+            "name": "System robustness and self - improvement",
             "deps": ["C1", "C2", "C4"],
         }
     )
@@ -118,7 +118,10 @@ def _generate_charter_aware_milestones(charter: dict) -> list:
             "name": "AI Agent Integration",
             "description": "AI agent collaboration features working",
         },
-        {"name": "Production Ready", "description": "System ready for real-world use"},
+        {
+            "name": "Production Ready",
+            "description": "System ready for real - world use",
+        },
     ]
 
     # Add specific milestones based on top outcomes
@@ -144,7 +147,7 @@ def _generate_charter_aware_risks(charter: dict) -> list:
             {
                 "id": "R1",
                 "desc": "Budget constraints limiting tool choices",
-                "mitigation": "Focus on free/open-source solutions",
+                "mitigation": "Focus on free / open - source solutions",
                 "severity": "M",
             }
         )
@@ -189,7 +192,7 @@ def _generate_detailed_tasks(charter: dict, wbs: list) -> list:
                 "type": "setup",
             },
             {
-                "name": "Set up version control and CI/CD",
+                "name": "Set up version control and CI / CD",
                 "effort_days": 1,
                 "type": "setup",
             },

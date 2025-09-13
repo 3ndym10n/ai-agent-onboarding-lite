@@ -1,7 +1,7 @@
 """
 CLI commands for Kaizen Cycle Automation.
 
-This module provides command-line interfaces for:
+This module provides command - line interfaces for:
 - Managing automated Kaizen cycles
 - Configuring improvement automation
 - Monitoring improvement opportunities
@@ -12,7 +12,6 @@ import argparse
 import json
 import time
 from pathlib import Path
-from typing import Optional
 
 from ..core.kaizen_automation import get_kaizen_automation
 
@@ -22,7 +21,7 @@ def add_kaizen_commands(subparsers):
 
     # Main Kaizen command
     kaizen_parser = subparsers.add_parser(
-        "kaizen-auto",
+        "kaizen - auto",
         help="Automated Kaizen cycle management and continuous improvement",
     )
     kaizen_sub = kaizen_parser.add_subparsers(dest="kaizen_cmd", required=True)
@@ -41,7 +40,7 @@ def add_kaizen_commands(subparsers):
 
     # Run cycle command
     run_parser = kaizen_sub.add_parser(
-        "run-cycle", help="Run a single Kaizen cycle manually"
+        "run - cycle", help="Run a single Kaizen cycle manually"
     )
     run_parser.add_argument(
         "--verbose", action="store_true", help="Show detailed progress"
@@ -122,17 +121,21 @@ def add_kaizen_commands(subparsers):
     update_parser = config_sub.add_parser("update", help="Update configuration")
     update_parser.add_argument("--interval", type=int, help="Cycle interval in hours")
     update_parser.add_argument(
-        "--max-concurrent", type=int, help="Max concurrent improvements"
+        "--max - concurrent", type=int, help="Max concurrent improvements"
     )
     update_parser.add_argument(
-        "--confidence-threshold", type=float, help="Minimum confidence threshold"
+        "--confidence - threshold", type=float, help="Minimum confidence threshold"
     )
     update_parser.add_argument(
-        "--auto-execute-low-risk", type=bool, help="Auto-execute low-risk improvements"
+        "--auto - execute - low - risk",
+        type=bool,
+        help="Auto - execute low - risk improvements",
     )
-    update_parser.add_argument("--enable-category", help="Enable improvement category")
     update_parser.add_argument(
-        "--disable-category", help="Disable improvement category"
+        "--enable - category", help="Enable improvement category"
+    )
+    update_parser.add_argument(
+        "--disable - category", help="Disable improvement category"
     )
 
 
@@ -147,7 +150,7 @@ def handle_kaizen_commands(args: argparse.Namespace, root: Path) -> None:
         _handle_stop_automation(args, kaizen_engine)
     elif args.kaizen_cmd == "status":
         _handle_status(args, kaizen_engine)
-    elif args.kaizen_cmd == "run-cycle":
+    elif args.kaizen_cmd == "run - cycle":
         _handle_run_cycle(args, kaizen_engine)
     elif args.kaizen_cmd == "opportunities":
         _handle_opportunities_commands(args, kaizen_engine)
@@ -173,7 +176,7 @@ def _handle_start_automation(args: argparse.Namespace, kaizen_engine) -> None:
 
     if not status["config"]["enabled"]:
         print("❌ Kaizen automation is disabled in configuration")
-        print("💡 Enable with: kaizen-auto config update --enable")
+        print("💡 Enable with: kaizen - auto config update --enable")
         return
 
     kaizen_engine.start_automation()
@@ -185,10 +188,10 @@ def _handle_start_automation(args: argparse.Namespace, kaizen_engine) -> None:
         f"   Max Concurrent Improvements: {status['config']['max_concurrent_improvements']}"
     )
     print(f"   Confidence Threshold: {status['config']['min_confidence_threshold']}")
-    print(f"   Auto-execute Low Risk: {status['config']['auto_execute_low_risk']}")
+    print(f"   Auto - execute Low Risk: {status['config']['auto_execute_low_risk']}")
 
     if not args.background:
-        print("\n🔍 Monitoring automation (Ctrl+C to stop)...")
+        print("\n🔍 Monitoring automation (Ctrl + C to stop)...")
         try:
             while kaizen_engine.get_automation_status()["running"]:
                 time.sleep(5)
@@ -231,7 +234,7 @@ def _handle_status(args: argparse.Namespace, kaizen_engine) -> None:
     print(f"   Max Concurrent: {config['max_concurrent_improvements']}")
     print(f"   Confidence Threshold: {config['min_confidence_threshold']}")
     print(
-        f"   Auto-execute Low Risk: {'✅' if config['auto_execute_low_risk'] else '❌'}"
+        f"   Auto - execute Low Risk: {'✅' if config['auto_execute_low_risk'] else '❌'}"
     )
 
     # Active state
@@ -374,7 +377,7 @@ def _handle_opportunities_commands(args: argparse.Namespace, kaizen_engine) -> N
             print(f"   Title: {opp.title}")
             print(f"   Category: {opp.category.value}")
             print(f"   Priority: {opp.priority.value}")
-            print(f"   Impact/Effort: {opp.estimated_impact}/{opp.estimated_effort}")
+            print(f"   Impact / Effort: {opp.estimated_impact}/{opp.estimated_effort}")
             print(f"   Risk Level: {opp.risk_level}")
             print(f"   Status: {opp.status.value}")
 
@@ -393,7 +396,9 @@ def _handle_opportunities_commands(args: argparse.Namespace, kaizen_engine) -> N
         print(f"Category: {opportunity.category.value}")
         print(f"Priority: {opportunity.priority.value}")
         print(f"Status: {opportunity.status.value}")
-        print(f"Identified: {opportunity.identified_at.strftime('%Y-%m-%d %H:%M:%S')}")
+        print(
+            f"Identified: {opportunity.identified_at.strftime('%Y -% m-%d %H:%M:%S')}"
+        )
 
         print(f"\n📊 Metrics:")
         print(f"   Estimated Impact: {opportunity.estimated_impact}/5")
@@ -514,7 +519,7 @@ def _handle_analytics_commands(args: argparse.Namespace, kaizen_engine) -> None:
         print(f"Total Cycles: {total_cycles}")
         print(f"Average Success Score: {avg_success_score:.2f}")
         print(
-            f"High Impact Cycles: {high_impact_cycles} ({high_impact_cycles/total_cycles*100:.1f}%)"
+            f"High Impact Cycles: {high_impact_cycles} ({high_impact_cycles / total_cycles * 100:.1f}%)"
         )
 
         # Impact distribution
@@ -525,7 +530,7 @@ def _handle_analytics_commands(args: argparse.Namespace, kaizen_engine) -> None:
 
         print(f"\n📈 Impact Distribution:")
         for impact, count in impact_counts.items():
-            print(f"   {impact}: {count} ({count/total_cycles*100:.1f}%)")
+            print(f"   {impact}: {count} ({count / total_cycles * 100:.1f}%)")
 
     elif args.analytics_action == "impact":
         print("🎯 Improvement Impact Analysis")
@@ -578,7 +583,7 @@ def _handle_analytics_commands(args: argparse.Namespace, kaizen_engine) -> None:
         print("   • Performance improvements show highest success rates")
         print("   • User experience improvements have highest impact")
         print("   • Reliability improvements are most critical for system health")
-        print("   • Low-risk improvements can be safely automated")
+        print("   • Low - risk improvements can be safely automated")
 
         print(f"\n📈 Learning Trends:")
         print("   • Success rates improving over time")
@@ -600,7 +605,7 @@ def _handle_config_commands(args: argparse.Namespace, kaizen_engine) -> None:
         print(f"Max Concurrent Improvements: {config['max_concurrent_improvements']}")
         print(f"Confidence Threshold: {config['min_confidence_threshold']}")
         print(
-            f"Auto-execute Low Risk: {'✅' if config['auto_execute_low_risk'] else '❌'}"
+            f"Auto - execute Low Risk: {'✅' if config['auto_execute_low_risk'] else '❌'}"
         )
         print(
             f"Notifications Enabled: {'✅' if config['notification_enabled'] else '❌'}"
@@ -632,7 +637,9 @@ def _handle_config_commands(args: argparse.Namespace, kaizen_engine) -> None:
 
         if args.auto_execute_low_risk is not None:
             config["auto_execute_low_risk"] = args.auto_execute_low_risk
-            updates_made.append(f"Auto-execute low risk: {args.auto_execute_low_risk}")
+            updates_made.append(
+                f"Auto - execute low risk: {args.auto_execute_low_risk}"
+            )
 
         if args.enable_category:
             config["categories_enabled"][args.enable_category] = True

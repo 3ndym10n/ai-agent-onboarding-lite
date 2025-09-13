@@ -11,15 +11,13 @@ Tests include:
 - Decision pipeline processing
 - API server functionality
 - Metrics collection
-- End-to-end workflows
-- Multi-agent collaboration
+- End - to - end workflows
+- Multi - agent collaboration
 """
 
-import json
-import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 import pytest
 
@@ -211,7 +209,7 @@ class TestContextManagement:
         assert retrieved_context is not None
 
     def test_cross_session_context(self, context_manager, test_user_id):
-        """Test cross-session context sharing and continuity."""
+        """Test cross - session context sharing and continuity."""
         session1_id = "test_session_001"
         session2_id = "test_session_002"
 
@@ -270,7 +268,7 @@ class TestDecisionPipeline:
         return "test_cursor_user"
 
     def test_decision_pipeline_processing(self, decision_pipeline, test_user_id):
-        """Test multi-stage decision pipeline processing."""
+        """Test multi - stage decision pipeline processing."""
         decision_request = {
             "request_id": "test_decision_001",
             "user_id": test_user_id,
@@ -373,14 +371,14 @@ class TestAPIServerFunctionality:
             import requests
 
             # Check if API server is running
-            response = requests.get("http://127.0.0.1:8000/health", timeout=2)
+            response = requests.get("http://127.0.0.1:8000 / health", timeout=2)
 
             if response.status_code == 200:
                 # Server is running, test endpoints
                 assert response.json().get("status") == "healthy"
 
                 # Test API info endpoint
-                info_response = requests.get("http://127.0.0.1:8000/api/info")
+                info_response = requests.get("http://127.0.0.1:8000 / api / info")
                 assert info_response.status_code == 200
 
             else:
@@ -405,7 +403,6 @@ class TestMetricsCollection:
 
     def test_metrics_collection_system(self, metrics_collector):
         """Test metrics collection system functionality."""
-        from ai_onboard.core.unified_metrics_collector import MetricCategory
 
         # Test metric collection capability
         assert hasattr(metrics_collector, "collect_metric")
@@ -415,11 +412,11 @@ class TestMetricsCollection:
 
 
 class TestEndToEndWorkflows:
-    """Test complete end-to-end Cursor workflows."""
+    """Test complete end - to - end Cursor workflows."""
 
     @pytest.fixture
     def all_systems(self):
-        """Initialize all systems for end-to-end testing."""
+        """Initialize all systems for end - to - end testing."""
         root = Path.cwd()
         systems = {}
 
@@ -447,7 +444,7 @@ class TestEndToEndWorkflows:
         ux_system = all_systems["ux_system"]
 
         if not cursor_integration or not ux_system:
-            pytest.skip("Required systems not available for end-to-end testing")
+            pytest.skip("Required systems not available for end - to - end testing")
 
         test_user_id = "test_workflow_user"
         workflow_steps = []
@@ -462,7 +459,7 @@ class TestEndToEndWorkflows:
                 }
             )
             workflow_steps.append(("cursor_init", cursor_init is not None))
-        except Exception as e:
+        except Exception:
             workflow_steps.append(("cursor_init", False))
 
         # Step 2: Record UX events
@@ -475,7 +472,7 @@ class TestEndToEndWorkflows:
                 context={"workflow": "project_setup", "success": True},
             )
             workflow_steps.append(("ux_recording", ux_event is not None))
-        except Exception as e:
+        except Exception:
             workflow_steps.append(("ux_recording", False))
 
         # Evaluate workflow success
@@ -518,7 +515,7 @@ def run_comprehensive_cursor_testing(root: Path) -> Dict[str, Any]:
 
     # Run pytest on this module
     result = subprocess.run(
-        [sys.executable, "-m", "pytest", str(Path(__file__)), "-v", "--tb=short"],
+        [sys.executable, "-m", "pytest", str(Path(__file__)), "-v", "--tb = short"],
         capture_output=True,
         text=True,
     )

@@ -1,10 +1,11 @@
-"""Refactored main CLI entry point for ai-onboard."""
+"""Refactored main CLI entry point for ai - onboard."""
 
 import argparse
 from pathlib import Path
 
 from ..core.universal_error_monitor import get_error_monitor
-from ..plugins import example_policy  # ensure example plugin registers on import
+
+# from ..plugins import example_policy  # ensure example plugin registers on import
 from .commands_aaol import add_aaol_commands, handle_aaol_commands
 from .commands_advanced_test_reporting import (
     add_advanced_test_reporting_commands,
@@ -63,7 +64,7 @@ from .commands_ux_enhancements import (
     add_ux_enhancement_commands,
     handle_ux_enhancement_commands,
 )
-from .ux_middleware import get_ux_middleware, with_ux_enhancements
+from .ux_middleware import get_ux_middleware
 
 
 def main(argv=None):
@@ -71,8 +72,8 @@ def main(argv=None):
     p = argparse.ArgumentParser(
         prog="ai_onboard",
         description=(
-            "AI Onboard: drop-in project coach "
-            "(charter + plan + align + validate + kaizen + interrogate + prompt + ai-agent + aaol)"
+            "AI Onboard: drop - in project coach "
+            "(charter + plan + align + validate + kaizen + interrogate + prompt + ai - agent + aaol)"
         ),
     )
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -122,7 +123,7 @@ def main(argv=None):
     # Add optimization experiment commands
     add_optimization_experiment_commands(sub)
 
-    # Add UI-enhanced commands
+    # Add UI - enhanced commands
     add_ui_enhanced_commands(sub)
 
     # Add UX enhancement commands
@@ -160,9 +161,9 @@ def main(argv=None):
             try:
                 from .. import __version__
 
-                print(f"ai-onboard {__version__}")
+                print(f"ai - onboard {__version__}")
             except ImportError:
-                print("ai-onboard (version unknown)")
+                print("ai - onboard (version unknown)")
         elif args.cmd == "help":
             p.print_help()
         return
@@ -215,9 +216,9 @@ def main(argv=None):
                 return
 
     # Handle AI agent commands with error monitoring
-    if args.cmd == "ai-agent":
+    if args.cmd == "ai - agent":
         with error_monitor.monitor_command_execution(
-            "ai-agent", "foreground", "cli_session"
+            "ai - agent", "foreground", "cli_session"
         ):
             if handle_ai_agent_commands(args, root):
                 return
@@ -231,41 +232,41 @@ def main(argv=None):
                 return
 
     # Handle enhanced vision commands with error monitoring
-    if args.cmd == "enhanced-vision":
+    if args.cmd == "enhanced - vision":
         with error_monitor.monitor_command_execution(
-            "enhanced-vision", "foreground", "cli_session"
+            "enhanced - vision", "foreground", "cli_session"
         ):
             handle_enhanced_vision_commands(args, root)
             return
 
     # Handle AI agent collaboration commands with error monitoring
-    if args.cmd == "ai-collaboration":
+    if args.cmd == "ai - collaboration":
         with error_monitor.monitor_command_execution(
-            "ai-collaboration", "foreground", "cli_session"
+            "ai - collaboration", "foreground", "cli_session"
         ):
             handle_ai_agent_collaboration_commands(args, root)
             return
 
     # Handle continuous improvement commands with error monitoring
-    if args.cmd == "continuous-improvement":
+    if args.cmd == "continuous - improvement":
         with error_monitor.monitor_command_execution(
-            "continuous-improvement", "foreground", "cli_session"
+            "continuous - improvement", "foreground", "cli_session"
         ):
             handle_continuous_improvement_commands(args, root)
             return
 
-    # Handle user preference learning (quick-path) with error monitoring
-    if args.cmd == "user-prefs":
+    # Handle user preference learning (quick - path) with error monitoring
+    if args.cmd == "user - prefs":
         with error_monitor.monitor_command_execution(
-            "user-prefs", "foreground", "cli_session"
+            "user - prefs", "foreground", "cli_session"
         ):
             handle_continuous_improvement_commands(args, root)
             return
 
     # Handle unified metrics commands with error monitoring
-    if args.cmd == "unified-metrics":
+    if args.cmd == "unified - metrics":
         with error_monitor.monitor_command_execution(
-            "unified-metrics", "foreground", "cli_session"
+            "unified - metrics", "foreground", "cli_session"
         ):
             handle_metrics_commands(args, root)
             return
@@ -287,38 +288,38 @@ def main(argv=None):
             return
 
     # Handle enhanced conversation context commands with error monitoring
-    if args.cmd == "enhanced-context":
+    if args.cmd == "enhanced - context":
         with error_monitor.monitor_command_execution(
-            "enhanced-context", "foreground", "cli_session"
+            "enhanced - context", "foreground", "cli_session"
         ):
             handle_enhanced_context_commands(args, root)
             return
 
     # Handle advanced decision pipeline commands with error monitoring
-    if args.cmd == "decision-pipeline":
+    if args.cmd == "decision - pipeline":
         with error_monitor.monitor_command_execution(
-            "decision-pipeline", "foreground", "cli_session"
+            "decision - pipeline", "foreground", "cli_session"
         ):
             handle_decision_pipeline_commands(args, root)
             return
 
     # Handle Kaizen automation commands with error monitoring
-    if args.cmd == "kaizen-auto":
+    if args.cmd == "kaizen - auto":
         with error_monitor.monitor_command_execution(
-            "kaizen-auto", "foreground", "cli_session"
+            "kaizen - auto", "foreground", "cli_session"
         ):
             handle_kaizen_commands(args, root)
             return
 
     # Handle optimization experiment commands with error monitoring
-    if args.cmd == "opt-experiments":
+    if args.cmd == "opt - experiments":
         with error_monitor.monitor_command_execution(
-            "opt-experiments", "foreground", "cli_session"
+            "opt - experiments", "foreground", "cli_session"
         ):
             handle_optimization_experiment_commands(args, root)
             return
 
-    # Handle UI-enhanced commands with error monitoring
+    # Handle UI - enhanced commands with error monitoring
     if args.cmd in [
         "help",
         "dashboard",
@@ -341,41 +342,41 @@ def main(argv=None):
             return
 
     # Handle capability tracking commands with error monitoring
-    if args.cmd == "capability-tracking":
+    if args.cmd == "capability - tracking":
         with error_monitor.monitor_command_execution(
-            "capability-tracking", "foreground", "cli_session"
+            "capability - tracking", "foreground", "cli_session"
         ):
             handle_capability_tracking_commands(args, root)
             return
 
     # Handle enhanced testing commands with error monitoring
-    if args.cmd == "enhanced-testing":
+    if args.cmd == "enhanced - testing":
         with error_monitor.monitor_command_execution(
-            "enhanced-testing", "foreground", "cli_session"
+            "enhanced - testing", "foreground", "cli_session"
         ):
             handle_enhanced_testing_commands(args, root)
             return
 
     # Handle performance trend commands with error monitoring
-    if args.cmd == "perf-trends":
+    if args.cmd == "perf - trends":
         with error_monitor.monitor_command_execution(
-            "perf-trends", "foreground", "cli_session"
+            "perf - trends", "foreground", "cli_session"
         ):
             handle_performance_trend_commands(args, root)
             return
 
     # Handle advanced test reporting commands with error monitoring
-    if args.cmd == "test-reports":
+    if args.cmd == "test - reports":
         with error_monitor.monitor_command_execution(
-            "test-reports", "foreground", "cli_session"
+            "test - reports", "foreground", "cli_session"
         ):
             handle_advanced_test_reporting_commands(args, root)
             return
 
     # Handle background agent commands with error monitoring
-    if args.cmd == "background-agents":
+    if args.cmd == "background - agents":
         with error_monitor.monitor_command_execution(
-            "background-agents", "foreground", "cli_session"
+            "background - agents", "foreground", "cli_session"
         ):
             handle_background_agent_commands(args, root)
             return

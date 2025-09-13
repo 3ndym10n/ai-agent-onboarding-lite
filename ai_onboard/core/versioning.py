@@ -10,12 +10,12 @@ def get_version(root: Path) -> str:
     vf = version_file(root)
     if not vf.exists():
         return "0.1.0"
-    return vf.read_text(encoding="utf-8").strip() or "0.1.0"
+    return vf.read_text(encoding="utf - 8").strip() or "0.1.0"
 
 
 def set_version(root: Path, v: str) -> None:
     vf = version_file(root)
-    vf.write_text(v.strip() + "\n", encoding="utf-8")
+    vf.write_text(v.strip() + "\n", encoding="utf - 8")
 
 
 def bump(version: str, kind: str) -> str:

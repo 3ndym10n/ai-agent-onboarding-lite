@@ -27,7 +27,6 @@ from ..core import (
     prompt_bridge,
     smart_debugger,
     state,
-    task_completion_detector,
     telemetry,
     utils,
     validation_runtime,
@@ -51,7 +50,7 @@ def main(argv=None):
     p = argparse.ArgumentParser(
         prog="ai_onboard",
         description=(
-            "AI Onboard: drop-in project coach "
+            "AI Onboard: drop - in project coach "
             "(charter + plan + align + validate + kaizen)"
         ),
     )
@@ -78,17 +77,17 @@ def main(argv=None):
     s_al.add_argument(
         "--preview",
         action="store_true",
-        help="Compute dry-run alignment report (no edits)",
+        help="Compute dry - run alignment report (no edits)",
     )
 
     s_v = sub.add_parser("validate", help="Run validation and write report")
     s_v.add_argument(
         "--report",
         action="store_true",
-        help="Write .ai_onboard/report.md and versioned copy",
+        help="Write .ai_onboard / report.md and versioned copy",
     )
 
-    s_k = sub.add_parser("kaizen", help="Run a kaizen cycle (metrics-driven nudges)")
+    s_k = sub.add_parser("kaizen", help="Run a kaizen cycle (metrics - driven nudges)")
     s_k.add_argument("--once", action="store_true")
 
     s_o = sub.add_parser("optimize", help="Optimization Strategist (MVP)")
@@ -99,7 +98,7 @@ def main(argv=None):
         "sandbox", help="Create sandbox plan for a proposal and open gate"
     )
     s_sbx.add_argument(
-        "--proposal-id",
+        "--proposal - id",
         default="",
         help="Proposal ID (optional; defaults to top proposal)",
     )
@@ -112,10 +111,10 @@ def main(argv=None):
 
     s_clean = sub.add_parser(
         "cleanup",
-        help="Safely remove non-critical files (build artifacts, cache, etc.)",
+        help="Safely remove non - critical files (build artifacts, cache, etc.)",
     )
     s_clean.add_argument(
-        "--dry-run",
+        "--dry - run",
         action="store_true",
         help="Show what would be deleted without actually deleting",
     )
@@ -129,7 +128,7 @@ def main(argv=None):
     # Cleanup Safety Gates
     add_cleanup_safety_commands(sub)
 
-    # Checkpoints (agent-aware snapshots)
+    # Checkpoints (agent - aware snapshots)
     s_ck = sub.add_parser("checkpoint", help="Manage lightweight checkpoints")
     ck_sub = s_ck.add_subparsers(dest="ck_cmd", required=True)
     ck_create = ck_sub.add_parser(
@@ -141,20 +140,20 @@ def main(argv=None):
     ck_restore = ck_sub.add_parser("restore", help="Restore by id")
     ck_restore.add_argument("--id", required=True)
 
-    # Agent-facing prompt bridge (read-mostly, feature-flagged)
+    # Agent - facing prompt bridge (read - mostly, feature - flagged)
     s_prompt = sub.add_parser(
         "prompt", help="Agent context APIs: state|rules|summary|propose"
     )
     sp = s_prompt.add_subparsers(dest="prompt_cmd", required=True)
     sp.add_parser("state", help="Emit compact project state JSON")
     sp_rules = sp.add_parser(
-        "rules", help="Applicable meta-policy rules for a target path"
+        "rules", help="Applicable meta - policy rules for a target path"
     )
     sp_rules.add_argument("--path", default=".")
     sp_rules.add_argument(
-        "--change", default="", help="Optional change summary (free-text or JSON)"
+        "--change", default="", help="Optional change summary (free - text or JSON)"
     )
-    sp_summary = sp.add_parser("summary", help="Model-aware summary: brief|full")
+    sp_summary = sp.add_parser("summary", help="Model - aware summary: brief|full")
     sp_summary.add_argument("--level", choices=["brief", "full"], default="brief")
     sp_propose = sp.add_parser(
         "propose", help="Propose action; returns decision and rationale"
@@ -167,7 +166,7 @@ def main(argv=None):
 
     # Progress tracking command
     sub.add_parser(
-        "progress-scan",
+        "progress - scan",
         help="Scan for completed tasks and update plan with gate confirmation",
     )
 
@@ -180,15 +179,15 @@ def main(argv=None):
     validate_parser.add_argument("--decision", help="Decision data (JSON)")
 
     scope_parser = sv_sub.add_parser(
-        "scope-change", help="Propose scope change with user validation"
+        "scope - change", help="Propose scope change with user validation"
     )
     scope_parser.add_argument("--change", help="Scope change data (JSON)")
 
     update_parser = sv_sub.add_parser("update", help="Update vision documents")
     update_parser.add_argument("--update", help="Update data (JSON)")
 
-    # UI/UX Design commands
-    s_design = sub.add_parser("design", help="UI/UX design validation and management")
+    # UI / UX Design commands
+    s_design = sub.add_parser("design", help="UI / UX design validation and management")
     sd_sub = s_design.add_subparsers(dest="design_cmd", required=True)
 
     analyze_parser = sd_sub.add_parser(
@@ -225,17 +224,17 @@ def main(argv=None):
     milestone_parser.add_argument("--completion", help="Completion data (JSON)")
 
     progress_parser = sp_sub.add_parser("progress", help="Update activity progress")
-    progress_parser.add_argument("--activity-id", help="Activity ID")
+    progress_parser.add_argument("--activity - id", help="Activity ID")
     progress_parser.add_argument("--progress", help="Progress data (JSON)")
 
-    sp_sub.add_parser("auto-update", help="Auto-update plan based on progress")
+    sp_sub.add_parser("auto - update", help="Auto - update plan based on progress")
     sp_sub.add_parser(
-        "progress-scan",
+        "progress - scan",
         help="Scan for completed tasks and update plan with gate confirmation",
     )
 
     add_milestone_parser = sp_sub.add_parser(
-        "add-milestone", help="Add new milestone to plan"
+        "add - milestone", help="Add new milestone to plan"
     )
     add_milestone_parser.add_argument("--milestone", help="Milestone data (JSON)")
 
@@ -255,18 +254,18 @@ def main(argv=None):
     sc_sub = s_context.add_subparsers(dest="context_cmd", required=True)
     summary_parser = sc_sub.add_parser("summary", help="Get context summary")
     summary_parser.add_argument(
-        "--level", default="brief", help="Summary level (brief/full)"
+        "--level", default="brief", help="Summary level (brief / full)"
     )
 
     sc_sub.add_parser("drift", help="Check for context drift")
 
     resolve_parser = sc_sub.add_parser("resolve", help="Resolve context drift")
-    resolve_parser.add_argument("--drift-type", help="Drift type")
+    resolve_parser.add_argument("--drift - type", help="Drift type")
     resolve_parser.add_argument("--resolution", help="Resolution data (JSON)")
 
     # Vision interrogation commands
     # User preference learning commands
-    s_prefs = sub.add_parser("user-prefs", help="User preference learning commands")
+    s_prefs = sub.add_parser("user - prefs", help="User preference learning commands")
     sprefs = s_prefs.add_subparsers(dest="prefs_cmd", required=True)
     rec_parser = sprefs.add_parser(
         "record", help="Record a user interaction for learning"
@@ -294,12 +293,12 @@ def main(argv=None):
         "submit", help="Submit response to interrogation question"
     )
     submit_parser.add_argument("--phase", help="Interrogation phase")
-    submit_parser.add_argument("--question-id", help="Question ID")
+    submit_parser.add_argument("--question - id", help="Question ID")
     submit_parser.add_argument("--response", help="Response data (JSON)")
     si_sub.add_parser("questions", help="Get current interrogation questions")
     si_sub.add_parser("summary", help="Get interrogation summary")
     si_sub.add_parser(
-        "force-complete", help="Force complete interrogation (use with caution)"
+        "force - complete", help="Force complete interrogation (use with caution)"
     )
 
     args = p.parse_args(argv)
@@ -316,18 +315,18 @@ def main(argv=None):
         if args.cmd == "charter":
             charter.ensure(root, interactive=args.interactive)
             state.advance(root, st, "chartered")
-            print("Charter ready at .ai_onboard/charter.json")
+            print("Charter ready at .ai_onboard / charter.json")
             return
 
         if args.cmd == "plan":
             charter.require_gate(root, "chartered")
             planning.build(root)
             state.advance(root, st, "planned")
-            print("Plan ready at .ai_onboard/plan.json")
+            print("Plan ready at .ai_onboard / plan.json")
             return
 
         if args.cmd == "align":
-            # Non-invasive preview mode
+            # Non - invasive preview mode
             if getattr(args, "preview", False):
                 res = alignment.preview(root)
                 print(prompt_bridge.dumps_json(res))
@@ -347,13 +346,13 @@ def main(argv=None):
             res = validation_runtime.run(root)
             if args.report:
                 progress_tracker.write_report(root, res)
-                print("Wrote .ai_onboard/report.md (+ versioned copy).")
+                print("Wrote .ai_onboard / report.md (+ versioned copy).")
             telemetry.record_run(root, res)
             return
 
         if args.cmd == "kaizen":
             print(
-                "Kaizen: ingesting telemetry and nudging schedules/bounds (lightweight)."
+                "Kaizen: ingesting telemetry and nudging schedules / bounds (lightweight)."
             )
             optimizer.nudge_from_metrics(root)
             return
@@ -379,7 +378,7 @@ def main(argv=None):
                 questions = [
                     "Approve pursuing selected optimization proposals?",
                     f"Default experiment budget is {args.budget}. Allow override per run?",
-                    "Proceed on separate branches for high-risk/low-confidence items?",
+                    "Proceed on separate branches for high - risk / low - confidence items?",
                 ]
 
                 gate_system = GateSystem(root)
@@ -390,7 +389,7 @@ def main(argv=None):
                     context={
                         "executive_summary": {
                             "total_proposals": len(proposals.get("proposals", [])),
-                            "new_progress_percentage": "N/A",
+                            "new_progress_percentage": "N / A",
                             "task_descriptions": summary_lines,
                             "categories": {"proposals": len(summary_lines)},
                         },
@@ -400,7 +399,7 @@ def main(argv=None):
                 )
                 gate_system.create_gate(gate_request)
                 print_content(
-                    "Gate created for Optimization Strategist proposals: .ai_onboard/gates/current_gate.md",
+                    "Gate created for Optimization Strategist proposals: .ai_onboard / gates / current_gate.md",
                     "status",
                 )
                 print("Run 'ai_onboard gate respond' after answering the questions")
@@ -446,7 +445,7 @@ def main(argv=None):
                 )
                 gate_system.create_gate(gate_request)
                 print_content(
-                    "Gate created for Optimization Sandbox Plan: .ai_onboard/gates/current_gate.md",
+                    "Gate created for Optimization Sandbox Plan: .ai_onboard / gates / current_gate.md",
                     "status",
                 )
                 print("Run 'ai_onboard gate respond' after answering the questions")
@@ -477,7 +476,7 @@ def main(argv=None):
                 return
             comps = last.get("components", [])
             comp_lines = [
-                f"- {c.get('name','?')}: score={c.get('score','n/a')} issues={c.get('issue_count',0)}"
+                f"- {c.get('name','?')}: score={c.get('score','n / a')} issues={c.get('issue_count',0)}"
                 for c in comps
             ]
             print("Last validation run:")
@@ -492,7 +491,7 @@ def main(argv=None):
         if args.cmd == "cleanup":
             print_activity("Scanning for files to clean up...", "search")
 
-            # Always start with dry-run to show what would be deleted
+            # Always start with dry - run to show what would be deleted
             result = cleanup.safe_cleanup(root, dry_run=True)
 
             print("\nScan Results:")
@@ -518,7 +517,7 @@ def main(argv=None):
             # Real cleanup mode
             if not args.force:
                 response = input(
-                    f"\nAre you sure you want to delete {result['would_delete']} files? (y/N): "
+                    f"\nAre you sure you want to delete {result['would_delete']} files? (y / N): "
                 )
                 if response.lower() != "y":
                     print("Cleanup cancelled.")
@@ -542,7 +541,7 @@ def main(argv=None):
             return
 
         # Cleanup Safety Gates
-        if args.cmd == "cleanup-safety":
+        if args.cmd == "cleanup - safety":
             handle_cleanup_safety_commands(args, root)
             return
 
@@ -599,7 +598,7 @@ def main(argv=None):
             return
 
         # Progress scanning command
-        if args.cmd == "progress-scan":
+        if args.cmd == "progress - scan":
             # Scan for completed tasks with gate confirmation
             from ..core.gate_system import GateSystem
             from ..core.task_completion_detector import run_task_completion_scan
@@ -616,27 +615,27 @@ def main(argv=None):
                 gate_system = GateSystem(root)
                 gate_id = "progress_scan_confirmation"
 
-                # Create executive-level task descriptions function
+                # Create executive - level task descriptions function
                 def get_task_descriptions(task_ids):
-                    """Convert task IDs to executive-level descriptions."""
+                    """Convert task IDs to executive - level descriptions."""
                     task_descriptions = {
-                        # Core Infrastructure (T1-T7)
+                        # Core Infrastructure (T1 - T7)
                         "T1": "Project Structure & Setup - Basic project foundation and directory structure",
                         "T2": "Development Environment Configuration - Python virtual environment and dependency management",
-                        "T3": "CI/CD Pipeline Setup - GitHub Actions workflows for automated testing and deployment",
+                        "T3": "CI / CD Pipeline Setup - GitHub Actions workflows for automated testing and deployment",
                         "T4": "Vision System Design - Core AI agent vision and alignment framework architecture",
                         "T5": "Vision Validation Logic - Quality scoring and validation for AI agent vision",
                         "T6": "Vision Implementation - Complete vision interrogation system deployment",
-                        "T7": "AI Agent Collaboration - Multi-agent communication and orchestration protocols",
-                        # System Robustness & Quality (T20-T24)
+                        "T7": "AI Agent Collaboration - Multi - agent communication and orchestration protocols",
+                        # System Robustness & Quality (T20 - T24)
                         "T20": "Error Handling System - Automatic error interception and intelligent debugging",
                         "T22": "Learning Feedback Loops - Continuous improvement through system learning",
-                        "T24": "Code Quality Standards - Black formatting and pre-commit hooks enforcement",
-                        # Enhanced Testing Foundation (T29-T32)
+                        "T24": "Code Quality Standards - Black formatting and pre - commit hooks enforcement",
+                        # Enhanced Testing Foundation (T29 - T32)
                         "T29": "Advanced Test Metrics - Enhanced performance monitoring and confidence scoring",
                         "T30": "Intelligent Test Integration - SmartDebugger integration for error analysis",
                         "T31": "Performance Monitoring - Baseline monitoring and degradation alerts",
-                        "T32": "Comprehensive Reporting - JSON/HTML reports with trend analysis",
+                        "T32": "Comprehensive Reporting - JSON / HTML reports with trend analysis",
                     }
 
                     descriptions = []
@@ -652,7 +651,7 @@ def main(argv=None):
 
                     return descriptions
 
-                # Get executive-level task descriptions
+                # Get executive - level task descriptions
                 task_descriptions = get_task_descriptions(
                     scan_results["scan_results"]["completed_task_ids"]
                 )
@@ -726,11 +725,13 @@ def main(argv=None):
                     questions=questions,
                 )
 
-                gate_result = gate_system.create_gate(gate_request)
+                gate_system.create_gate(gate_request)
                 print_content(
                     f"Gate created for user confirmation: {gate_id}", "status"
                 )
-                print("Please check .ai_onboard/gates/current_gate.md for questions")
+                print(
+                    "Please check .ai_onboard / gates / current_gate.md for questions"
+                )
                 print("Run 'ai_onboard gate respond' after answering the questions")
 
             else:
@@ -755,7 +756,7 @@ def main(argv=None):
                 except json.JSONDecodeError:
                     print('{"error":"invalid JSON"}')
                 return
-            elif vcmd == "scope-change":
+            elif vcmd == "scope - change":
                 # Propose scope change
                 if hasattr(args, "change") and args.change:
                     change_data = args.change
@@ -829,12 +830,12 @@ def main(argv=None):
                 except json.JSONDecodeError:
                     print('{"error":"invalid JSON"}')
                 return
-            elif pcmd == "auto-update":
-                # Auto-update plan
+            elif pcmd == "auto - update":
+                # Auto - update plan
                 result = planner.auto_update_plan()
                 print(prompt_bridge.dumps_json(result))
                 return
-            elif pcmd == "progress-scan":
+            elif pcmd == "progress - scan":
                 # Scan for completed tasks with gate confirmation
                 from ..core.gate_system import GateSystem
                 from ..core.task_completion_detector import run_task_completion_scan
@@ -871,10 +872,10 @@ def main(argv=None):
                     }
 
                     # Submit gate for user confirmation
-                    gate_result = gate_system.submit_gate(gate_data)
+                    gate_system.submit_gate(gate_data)
                     print(f"📋 Gate created for user confirmation: {gate_id}")
                     print(
-                        "Please check .ai_onboard/gates/current_gate.md for questions"
+                        "Please check .ai_onboard / gates / current_gate.md for questions"
                     )
                     print("Run 'ai_onboard gate respond' after answering the questions")
 
@@ -882,7 +883,7 @@ def main(argv=None):
                     print_status("No new completed tasks detected", "success")
 
                 return
-            elif pcmd == "add-milestone":
+            elif pcmd == "add - milestone":
                 # Add new milestone
                 if hasattr(args, "milestone") and args.milestone:
                     milestone_data = args.milestone
@@ -940,7 +941,7 @@ def main(argv=None):
                     level = args.level
                 else:
                     level = (
-                        input("Enter summary level (brief/full): ").strip() or "brief"
+                        input("Enter summary level (brief / full): ").strip() or "brief"
                     )
                 result = context_manager.get_context_summary(level)
                 print(prompt_bridge.dumps_json(result))
@@ -1023,7 +1024,7 @@ def main(argv=None):
                 result = interrogator.get_interrogation_summary()
                 print(prompt_bridge.dumps_json(result))
                 return
-            elif icmd == "force-complete":
+            elif icmd == "force - complete":
                 # Force complete interrogation
                 result = interrogator.force_complete_interrogation()
                 print(prompt_bridge.dumps_json(result))
@@ -1032,7 +1033,7 @@ def main(argv=None):
             return
 
         # User preference learning commands
-        if args.cmd == "user-prefs":
+        if args.cmd == "user - prefs":
             from ..core import user_preference_learning as upl
 
             psys = upl.get_user_preference_learning_system(root)
@@ -1072,10 +1073,10 @@ def main(argv=None):
                 recs = psys.get_user_recommendations(user_id)
                 print(prompt_bridge.dumps_json({"recommendations": recs}))
                 return
-            print('{"error":"unknown user-prefs subcommand"}')
+            print('{"error":"unknown user - prefs subcommand"}')
             return
 
-        # UI/UX Design commands
+        # UI / UX Design commands
         if args.cmd == "design":
             dcmd = getattr(args, "design_cmd", None)
 
@@ -1133,7 +1134,7 @@ def main(argv=None):
         if args.cmd == "cleanup":
             print_activity("Scanning for files to clean up...", "search")
 
-            # Always start with dry-run to show what would be deleted
+            # Always start with dry - run to show what would be deleted
             result = cleanup.safe_cleanup(root, dry_run=True)
 
             print_content("Scan Results:", "stats")
@@ -1161,7 +1162,7 @@ def main(argv=None):
             # Real cleanup mode
             if not args.force:
                 response = input(
-                    f"\n⚠️  Are you sure you want to delete {result['would_delete']} files? (y/N): "
+                    f"\n⚠️  Are you sure you want to delete {result['would_delete']} files? (y / N): "
                 )
                 if response.lower() != "y":
                     print_status("Cleanup cancelled.", "error")
@@ -1187,7 +1188,7 @@ def main(argv=None):
             return
 
         # Cleanup Safety Gates
-        if args.cmd == "cleanup-safety":
+        if args.cmd == "cleanup - safety":
             handle_cleanup_safety_commands(args, root)
             return
 
@@ -1195,6 +1196,6 @@ def main(argv=None):
         print(e)
         return
     except Exception as e:
-        # Catch-all to avoid stack traces surfacing to users for known flows
+        # Catch - all to avoid stack traces surfacing to users for known flows
         print(e)
         return

@@ -1,8 +1,8 @@
 """
-AI Agent Gate System - File-based collaboration between ai-onboard and AI agents.
+AI Agent Gate System - File - based collaboration between ai - onboard and AI agents.
 
 This system enables real collaboration by:
-1. Detecting when ai-onboard needs user input
+1. Detecting when ai - onboard needs user input
 2. Writing structured prompts for AI agents to read
 3. Waiting for AI agent responses via file communication
 4. Continuing execution with user input
@@ -51,7 +51,7 @@ def create_progress_bar(percentage: float, width: int = 20) -> str:
 
 
 class GateSystem:
-    """Manages file-based communication between ai-onboard and AI agents."""
+    """Manages file - based communication between ai - onboard and AI agents."""
 
     def __init__(self, project_root: Path):
         self.project_root = project_root
@@ -63,13 +63,13 @@ class GateSystem:
         self.response_file = self.gates_dir / "gate_response.json"
         self.status_file = self.gates_dir / "gate_status.json"
         # Confirmation code removed (was previously used for strict approval)
-        # Cursor rules file (best-effort, ignored if unsupported). Not committed.
+        # Cursor rules file (best - effort, ignored if unsupported). Not committed.
         self.cursor_rules_file = self.project_root / ".cursorrules"
 
     def create_gate(self, gate_request: GateRequest) -> Dict[str, Any]:
         """Create a gate that requires AI agent collaboration.
 
-        This is now a mandatory two-step process:
+        This is now a mandatory two - step process:
         1) Collect user's answers
         2) Present a confirmation summary requiring an explicit approval code
         """
@@ -78,7 +78,7 @@ class GateSystem:
         gate_prompt = self._generate_gate_prompt(gate_request)
 
         # Write gate prompt file
-        self.current_gate_file.write_text(gate_prompt, encoding="utf-8")
+        self.current_gate_file.write_text(gate_prompt, encoding="utf - 8")
 
         # Write gate status
         status = {
@@ -88,12 +88,12 @@ class GateSystem:
             "phase": "collect",
             "waiting_for_response": True,
         }
-        self.status_file.write_text(json.dumps(status, indent=2), encoding="utf-8")
+        self.status_file.write_text(json.dumps(status, indent=2), encoding="utf - 8")
 
-        # Ensure files are visible and non-empty before returning control
+        # Ensure files are visible and non - empty before returning control
         self._finalize_gate_files()
 
-        # Best-effort: write Cursor AI rules to force chat behavior during gate handling
+        # Best - effort: write Cursor AI rules to force chat behavior during gate handling
         self._write_cursor_rules(self._cursor_rules_contract(code_hint=None))
 
         # Clean up any existing response
@@ -114,7 +114,7 @@ class GateSystem:
         # Wait for initial responses (step 1)
         initial_response = self._wait_for_response(timeout_seconds=2)
 
-        # If first step timed out or user decided to stop/modify, honor it immediately
+        # If first step timed out or user decided to stop / modify, honor it immediately
         if initial_response.get("user_decision") != "proceed":
             # Don't cleanup on timeout - let agent read the gate file
             if initial_response.get("user_decision") != "stop":
@@ -125,7 +125,7 @@ class GateSystem:
         confirm_prompt = self._generate_confirmation_prompt(
             gate_request, initial_response
         )
-        self.current_gate_file.write_text(confirm_prompt, encoding="utf-8")
+        self.current_gate_file.write_text(confirm_prompt, encoding="utf - 8")
 
         status = {
             "gate_active": True,
@@ -135,9 +135,9 @@ class GateSystem:
             "waiting_for_response": True,
             "confirmation_required": True,
         }
-        self.status_file.write_text(json.dumps(status, indent=2), encoding="utf-8")
+        self.status_file.write_text(json.dumps(status, indent=2), encoding="utf - 8")
 
-        # Ensure files are visible and non-empty before returning control
+        # Ensure files are visible and non - empty before returning control
         self._finalize_gate_files()
 
         # Update Cursor rules to include explicit confirmation flow
@@ -275,7 +275,7 @@ class GateSystem:
 
 **STEP 1: DETECT THIS GATE**
 - You are reading this because a gate is active
-- The gate file is at: `.ai_onboard/gates/current_gate.md`
+- The gate file is at: `.ai_onboard / gates / current_gate.md`
 - You MUST handle this gate before proceeding
 
 **STEP 2: ASK THE USER**
@@ -284,14 +284,14 @@ class GateSystem:
 - Do NOT generate fake responses
 
 **STEP 3: WRITE RESPONSE FILE**
-- Create `.ai_onboard/gates/gate_response.json` with user's answers
+- Create `.ai_onboard / gates / gate_response.json` with user's answers
 - Use the exact format shown below
 
 **STEP 4: CONTINUE**
 - Once the response file is created, the system will continue automatically
 
 ### Response Format:
-Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure:
+Create a JSON file at `.ai_onboard / gates / gate_response.json` with this structure:
 
 ```json
 {
@@ -350,7 +350,7 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
         while time.time() - start_time < timeout_seconds:
             if self.response_file.exists():
                 try:
-                    response_text = self.response_file.read_text(encoding="utf-8")
+                    response_text = self.response_file.read_text(encoding="utf - 8")
                     response = json.loads(response_text)
 
                     # Validate response structure
@@ -417,7 +417,7 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
         if not has_substance:
             return False
 
-        # Detect AI-generated responses
+        # Detect AI - generated responses
         fake_patterns = [
             "based on the context",
             "i'll assume",
@@ -438,7 +438,7 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
                             f"'{response_text}'"
                         )
                         print(
-                            "[WARNING] This looks like an AI-generated response, "
+                            "[WARNING] This looks like an AI - generated response, "
                             "not user input"
                         )
                         return False
@@ -446,7 +446,7 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
         return True
 
     def _generate_confirmation_code(self) -> str:
-        """Generate a short, hard-to-guess confirmation code."""
+        """Generate a short, hard - to - guess confirmation code."""
         import random
         import string
 
@@ -479,7 +479,7 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
                 "and updated answers.",
                 "- If you want to stop, reply with decision 'stop'.",
                 "",
-                "### Response Format (JSON in .ai_onboard/gates/gate_response.json):",
+                "### Response Format (JSON in .ai_onboard / gates / gate_response.json):",
                 "{",
                 '  "user_responses": ["..."],',
                 '  "user_decision": "proceed|modify|stop",',
@@ -517,9 +517,9 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
             return False
 
     def _finalize_gate_files(self) -> None:
-        """Best-effort to make gate files immediately discoverable by external agents.
+        """Best - effort to make gate files immediately discoverable by external agents.
 
-        - Wait until both current_gate.md and gate_status.json exist and are non-empty
+        - Wait until both current_gate.md and gate_status.json exist and are non - empty
         - Write a small readiness marker to reduce race conditions
         """
         try:
@@ -541,24 +541,24 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
                 time.sleep(0.05)
             # Write a readiness marker
             ready_file = self.gates_dir / "gate_ready.flag"
-            ready_file.write_text(str(time.time()), encoding="utf-8")
+            ready_file.write_text(str(time.time()), encoding="utf - 8")
         except Exception:
-            # Best-effort only; do not fail gate creation
+            # Best - effort only; do not fail gate creation
             pass
 
     def _cursor_rules_contract(self, code_hint: Optional[str]) -> str:
         """Return a Cursor rules contract that nudges chat agents to follow gates.
 
-        Placed in project root as `.cursorrules`. It's best-effort; if Cursor ignores
-        it, normal confirmation-code enforcement still prevents bypass.
+        Placed in project root as `.cursorrules`. It's best - effort; if Cursor ignores
+        it, normal confirmation - code enforcement still prevents bypass.
         """
         header = [
-            "SYSTEM CONTRACT: AI-Onboard Gate Handler",
+            "SYSTEM CONTRACT: AI - Onboard Gate Handler",
             "",
-            "You MUST handle gates as a two-step, human-confirmed process. "
-            "Never self-answer or self-confirm.",
+            "You MUST handle gates as a two - step, human - confirmed process. "
+            "Never self - answer or self - confirm.",
             "",
-            "When a gate is active (.ai_onboard/gates/current_gate.md exists):",
+            "When a gate is active (.ai_onboard / gates / current_gate.md exists):",
             "1) Read the gate and extract the 'Questions for User'.",
             "2) Ask the user those questions in chat. Do NOT answer yourself.",
             "3) Wait for the user's replies. Summarize them back to the user.",
@@ -583,9 +583,9 @@ Create a JSON file at `.ai_onboard/gates/gate_response.json` with this structure
 
     def _write_cursor_rules(self, content: str) -> None:
         try:
-            self.cursor_rules_file.write_text(content, encoding="utf-8")
+            self.cursor_rules_file.write_text(content, encoding="utf - 8")
         except Exception:
-            # Best-effort only
+            # Best - effort only
             pass
 
 
@@ -631,7 +631,7 @@ def create_scope_check_gate(
 
     questions = [
         "Does this plan align with your vision for the project?",
-        "Are there any parts of this plan that seem off-track?",
+        "Are there any parts of this plan that seem off - track?",
         "Should I modify the approach or continue as planned?",
     ]
 

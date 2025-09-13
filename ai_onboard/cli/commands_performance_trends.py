@@ -9,11 +9,8 @@ import argparse
 import json
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, Optional
 
-from ..core import utils
 from ..core.performance_trend_analyzer import (
-    ForecastConfidence,
     TrendDirection,
     TrendSeverity,
     get_performance_trend_analyzer,
@@ -23,7 +20,7 @@ from ..core.performance_trend_analyzer import (
 def add_performance_trend_commands(subparsers):
     """Add performance trend analysis commands to the CLI."""
     parser = subparsers.add_parser(
-        "perf-trends",
+        "perf - trends",
         help="Performance trend analysis and forecasting",
         description="Analyze performance trends, detect anomalies, and generate forecasts",
     )
@@ -137,7 +134,7 @@ def add_performance_trend_commands(subparsers):
         description="Display comprehensive performance trend dashboard",
     )
     dashboard_parser.add_argument(
-        "--refresh", type=int, help="Auto-refresh interval in seconds"
+        "--refresh", type=int, help="Auto - refresh interval in seconds"
     )
     dashboard_parser.add_argument(
         "--compact", action="store_true", help="Compact dashboard view"
@@ -552,7 +549,7 @@ def _display_anomalies_table(anomalies):
             TrendSeverity.CRITICAL: "🔴",
         }.get(anomaly.severity, "")
 
-        time_str = anomaly.anomaly_timestamp.strftime("%H:%M %m/%d")
+        time_str = anomaly.anomaly_timestamp.strftime("%H:%M %m /% d")
 
         print(
             f"{anomaly.metric_name:<20} {anomaly.anomaly_type:<10} "
@@ -621,13 +618,13 @@ def _display_forecast_table(forecast, include_confidence=False):
         for i, (pred, (lower, upper)) in enumerate(
             zip(forecast.predicted_values, forecast.confidence_intervals)
         ):
-            print(f"{i+1:<5} {pred:>10.2f} {lower:>10.2f} {upper:>10.2f}")
+            print(f"{i + 1:<5} {pred:>10.2f} {lower:>10.2f} {upper:>10.2f}")
     else:
         print(f"{'Day':<5} {'Predicted Value':<15}")
         print("-" * 25)
 
         for i, pred in enumerate(forecast.predicted_values):
-            print(f"{i+1:<5} {pred:>13.2f}")
+            print(f"{i + 1:<5} {pred:>13.2f}")
 
     print(f"\nForecast Confidence: {forecast.forecast_confidence.value}")
     print(f"Methodology: {forecast.methodology}")
@@ -666,7 +663,7 @@ def _display_forecast_chart(forecast):
     for i, value in enumerate(values):
         normalized = int(((value - min_val) / range_val) * 30)
         bar = "█" * normalized + "░" * (30 - normalized)
-        print(f"Day {i+1:2d}: {bar} {value:6.1f}")
+        print(f"Day {i + 1:2d}: {bar} {value:6.1f}")
 
     print(f"\nRange: {min_val:.1f} - {max_val:.1f}")
 
@@ -844,7 +841,7 @@ def _display_history_table(historical_trends):
         historical_trends, key=lambda x: x["timestamp"], reverse=True
     ):
         date_str = datetime.fromisoformat(trend_data["timestamp"]).strftime(
-            "%m/%d %H:%M"
+            "%m /% d %H:%M"
         )
 
         print(
@@ -868,7 +865,9 @@ def _display_history_timeline(historical_trends):
     by_date = defaultdict(list)
 
     for trend_data in historical_trends:
-        date_key = datetime.fromisoformat(trend_data["timestamp"]).strftime("%Y-%m-%d")
+        date_key = datetime.fromisoformat(trend_data["timestamp"]).strftime(
+            "%Y -% m-%d"
+        )
         by_date[date_key].append(trend_data)
 
     for date_key in sorted(by_date.keys(), reverse=True):

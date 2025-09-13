@@ -1,7 +1,7 @@
 """
 CLI commands for Advanced Agent Decision Pipeline.
 
-This module provides command-line interfaces for:
+This module provides command - line interfaces for:
 - Testing decision pipeline capabilities
 - Analyzing decision patterns and outcomes
 - Configuring decision thresholds and strategies
@@ -9,21 +9,12 @@ This module provides command-line interfaces for:
 """
 
 import argparse
-import json
 import time
 from pathlib import Path
-from typing import Optional
 
 from ..core.advanced_agent_decision_pipeline import (
     DecisionComplexity,
-    DecisionContext,
-    DecisionOutcome,
     get_advanced_decision_pipeline,
-)
-from ..core.ai_agent_orchestration import (
-    ConversationContext,
-    ConversationState,
-    DecisionStage,
 )
 
 
@@ -32,7 +23,7 @@ def add_decision_pipeline_commands(subparsers):
 
     # Main decision pipeline command
     pipeline_parser = subparsers.add_parser(
-        "decision-pipeline",
+        "decision - pipeline",
         help="Advanced agent decision pipeline management and testing",
     )
     pipeline_sub = pipeline_parser.add_subparsers(dest="pipeline_cmd", required=True)
@@ -42,15 +33,15 @@ def add_decision_pipeline_commands(subparsers):
         "test", help="Test decision pipeline with sample input"
     )
     test_parser.add_argument(
-        "--user-input", required=True, help="User input to process"
+        "--user - input", required=True, help="User input to process"
     )
     test_parser.add_argument(
-        "--user-id", default="test_user", help="User ID for testing"
+        "--user - id", default="test_user", help="User ID for testing"
     )
     test_parser.add_argument(
-        "--agent-id", default="test_agent", help="Agent ID for testing"
+        "--agent - id", default="test_agent", help="Agent ID for testing"
     )
-    test_parser.add_argument("--session-id", help="Existing session ID (optional)")
+    test_parser.add_argument("--session - id", help="Existing session ID (optional)")
     test_parser.add_argument(
         "--verbose", action="store_true", help="Show detailed pipeline stages"
     )
@@ -66,8 +57,8 @@ def add_decision_pipeline_commands(subparsers):
         "outcomes", help="Analyze decision outcomes"
     )
     outcomes_parser.add_argument("--days", type=int, default=7, help="Days to analyze")
-    outcomes_parser.add_argument("--user-id", help="Filter by user ID")
-    outcomes_parser.add_argument("--agent-id", help="Filter by agent ID")
+    outcomes_parser.add_argument("--user - id", help="Filter by user ID")
+    outcomes_parser.add_argument("--agent - id", help="Filter by agent ID")
 
     # Analyze performance
     perf_parser = analyze_sub.add_parser(
@@ -88,10 +79,10 @@ def add_decision_pipeline_commands(subparsers):
         "--days", type=int, default=7, help="Days to analyze"
     )
     confidence_parser.add_argument(
-        "--min-confidence", type=float, default=0.0, help="Minimum confidence"
+        "--min - confidence", type=float, default=0.0, help="Minimum confidence"
     )
     confidence_parser.add_argument(
-        "--max-confidence", type=float, default=1.0, help="Maximum confidence"
+        "--max - confidence", type=float, default=1.0, help="Maximum confidence"
     )
 
     # Configuration command
@@ -137,12 +128,12 @@ def add_decision_pipeline_commands(subparsers):
     debug_parser = pipeline_sub.add_parser(
         "debug", help="Debug decision pipeline issues"
     )
-    debug_parser.add_argument("--decision-id", help="Debug specific decision ID")
+    debug_parser.add_argument("--decision - id", help="Debug specific decision ID")
     debug_parser.add_argument(
-        "--session-id", help="Debug decisions for specific session"
+        "--session - id", help="Debug decisions for specific session"
     )
     debug_parser.add_argument(
-        "--show-context", action="store_true", help="Show full decision context"
+        "--show - context", action="store_true", help="Show full decision context"
     )
 
     # Stats command
@@ -235,7 +226,7 @@ def _handle_test_decision(args: argparse.Namespace, pipeline, root: Path) -> Non
         conversation_context=session,
     )
 
-    processing_time = time.time() - start_time
+    time.time() - start_time
 
     # Display results
     print(f"\n🎯 Decision Result:")
@@ -330,11 +321,11 @@ def _handle_analyze_commands(args: argparse.Namespace, pipeline, root: Path) -> 
         print("=" * 50)
 
         print("📈 Confidence Distribution:")
-        print("  • Very High (0.9-1.0): 15%")
-        print("  • High (0.7-0.9): 35%")
-        print("  • Medium (0.5-0.7): 30%")
-        print("  • Low (0.3-0.5): 15%")
-        print("  • Very Low (0.0-0.3): 5%")
+        print("  • Very High (0.9 - 1.0): 15%")
+        print("  • High (0.7 - 0.9): 35%")
+        print("  • Medium (0.5 - 0.7): 30%")
+        print("  • Low (0.3 - 0.5): 15%")
+        print("  • Very Low (0.0 - 0.3): 5%")
 
         print("\n🧠 Confidence Factors:")
         print("  • Intent Clarity: 0.65 avg")
@@ -435,18 +426,18 @@ def _handle_benchmark(args: argparse.Namespace, pipeline, root: Path) -> None:
             successful_runs += 1
 
             if i < 5:  # Show first 5 results
-                print(f"  Run {i+1}: {run_time:.1f}ms -> {result.outcome.value}")
+                print(f"  Run {i + 1}: {run_time:.1f}ms -> {result.outcome.value}")
 
         except Exception as e:
-            print(f"  Run {i+1}: FAILED - {str(e)}")
+            print(f"  Run {i + 1}: FAILED - {str(e)}")
 
     # Results
     print(f"\n📊 Benchmark Results:")
     print(f"  Total Runs: {min(args.iterations, 20)}")
     print(f"  Successful: {successful_runs}")
-    print(f"  Success Rate: {successful_runs/min(args.iterations, 20)*100:.1f}%")
+    print(f"  Success Rate: {successful_runs / min(args.iterations, 20)*100:.1f}%")
     if successful_runs > 0:
-        print(f"  Average Time: {total_time/successful_runs:.1f}ms")
+        print(f"  Average Time: {total_time / successful_runs:.1f}ms")
         print(f"  Total Time: {total_time:.1f}ms")
 
 
@@ -485,10 +476,10 @@ def _handle_stats(args: argparse.Namespace, pipeline, root: Path) -> None:
     print("=" * 40)
 
     print("🎯 Overall Performance:")
-    print("  • Total Decisions Processed: 1,247")
+    print("  • Total Decisions Processed: 1, 247")
     print("  • Average Processing Time: 125ms")
     print("  • Success Rate: 94.2%")
-    print("  • User Satisfaction: 4.7/5")
+    print("  • User Satisfaction: 4.7 / 5")
 
     print("\n🧠 Intelligence Metrics:")
     print("  • Context Enhancement Rate: 95%")

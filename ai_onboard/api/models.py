@@ -1,5 +1,5 @@
 """
-API Models - Pydantic models for request/response schemas.
+API Models - Pydantic models for request / response schemas.
 
 This module defines the data models used by the AI Onboard API for
 request validation, response serialization, and documentation generation.
@@ -7,7 +7,7 @@ request validation, response serialization, and documentation generation.
 
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -134,7 +134,7 @@ class AgentRegistrationRequest(BaseModel):
     """Request model for agent registration."""
 
     agent_id: str = Field(description="Unique agent identifier")
-    name: str = Field(description="Human-readable agent name")
+    name: str = Field(description="Human - readable agent name")
     version: str = Field(description="Agent version")
     capabilities: List[str] = Field(description="Agent capabilities")
     collaboration_mode: str = Field(description="Collaboration mode")

@@ -1,7 +1,7 @@
-#!/usr/bin/env python3
+#!/usr / bin / env python3
 """
-Enhanced System Test Suite for ai-onboard.
-Comprehensive testing with advanced capabilities and self-healing.
+Enhanced System Test Suite for ai - onboard.
+Comprehensive testing with advanced capabilities and self - healing.
 """
 
 import json
@@ -31,7 +31,7 @@ class TestLevel(Enum):
     """Test complexity levels."""
 
     SMOKE = "smoke"  # Basic functionality
-    INTEGRATION = "integration"  # Cross-system testing
+    INTEGRATION = "integration"  # Cross - system testing
     PERFORMANCE = "performance"  # Performance benchmarks
     STRESS = "stress"  # Load and stress testing
     CHAOS = "chaos"  # Chaos engineering
@@ -53,7 +53,7 @@ class TestResult:
 
 
 class EnhancedSystemTester:
-    """Advanced system tester with self-healing and optimization capabilities."""
+    """Advanced system tester with self - healing and optimization capabilities."""
 
     def __init__(self, root: Path):
         self.root = root
@@ -584,7 +584,7 @@ class EnhancedSystemTester:
             )
 
     def _test_component_integration(self) -> TestResult:
-        """Evaluate integration subset (non-data-integrity) from validation."""
+        """Evaluate integration subset (non - data - integrity) from validation."""
         start_time = time.time()
         try:
             self._ensure_validation_report()
@@ -632,7 +632,7 @@ class EnhancedSystemTester:
 
     def run_all_tests(self) -> Dict[str, Any]:
         """Run comprehensive test suite based on configuration."""
-        print("🚀 Running Enhanced AI-Onboard System Tests")
+        print("🚀 Running Enhanced AI - Onboard System Tests")
         print("=" * 60)
 
         # Initialize advanced components

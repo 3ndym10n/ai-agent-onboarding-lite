@@ -62,7 +62,7 @@ def create(root: Path, scope: Iterable[str], reason: str = "") -> Dict[str, Any]
         "scope": [str(p) for p in items],
         "reason": reason,
     }
-    with open(_ckpt_dir(root) / INDEX, "a", encoding="utf-8") as f:
+    with open(_ckpt_dir(root) / INDEX, "a", encoding="utf - 8") as f:
         f.write(json.dumps(rec, ensure_ascii=False, separators=(",", ":")) + "\n")
     return rec
 
@@ -72,7 +72,7 @@ def list(root: Path) -> List[Dict[str, Any]]:
     if not idxp.exists():
         return []
     out: List[Dict[str, Any]] = []
-    with open(idxp, "r", encoding="utf-8") as f:
+    with open(idxp, "r", encoding="utf - 8") as f:
         for line in f:
             line = line.strip()
             if not line:

@@ -165,7 +165,7 @@ class VisionInterrogator:
         return issues
 
     def complete_from_charter(self) -> Dict[str, Any]:
-        """Complete interrogation non-interactively using existing charter.
+        """Complete interrogation non - interactively using existing charter.
 
         This is a resilient path for cases where the human has already provided
         charter details and we simply need to mark the interrogation complete so
@@ -300,7 +300,7 @@ class VisionInterrogator:
             interrogation_data["status"] = "completed"
             interrogation_data["completed_at"] = utils.now_iso()
 
-            # Auto-sync to charter when interrogation is completed
+            # Auto - sync to charter when interrogation is completed
             try:
                 from .interrogation_to_charter import auto_sync_on_completion
 
@@ -470,7 +470,7 @@ class VisionInterrogator:
                 {
                     "type": "data_driven",
                     "category": "measurement",
-                    "description": "Response indicates data-driven approach",
+                    "description": "Response indicates data - driven approach",
                     "confidence": 0.7,
                 }
             )
@@ -480,7 +480,7 @@ class VisionInterrogator:
                 {
                     "type": "security_conscious",
                     "category": "security",
-                    "description": "Response indicates security/privacy awareness",
+                    "description": "Response indicates security / privacy awareness",
                     "confidence": 0.9,
                 }
             )

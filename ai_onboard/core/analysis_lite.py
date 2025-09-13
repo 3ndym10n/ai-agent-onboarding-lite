@@ -1,7 +1,7 @@
 """
 Lightweight repository analysis.
 
-Produces .ai_onboard/analysis.json with:
+Produces .ai_onboard / analysis.json with:
 - summary: counts, languages, important files
 - risks: coarse heuristics
 - quick_wins: simple actionable suggestions
@@ -97,5 +97,5 @@ def run(root: Path) -> Dict[str, Any]:
 
     ai_dir = root / ".ai_onboard"
     ai_dir.mkdir(parents=True, exist_ok=True)
-    (ai_dir / "analysis.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
+    (ai_dir / "analysis.json").write_text(json.dumps(out, indent=2), encoding="utf - 8")
     return out

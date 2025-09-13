@@ -41,7 +41,7 @@ def _read_policy_file(path: Path) -> Dict[str, Any]:
                 )
                 return {}
 
-            with open(path, "r", encoding="utf-8") as f:
+            with open(path, "r", encoding="utf - 8") as f:
                 return yaml.safe_load(f) or {}
 
         # Default JSON handling
@@ -55,13 +55,13 @@ def load(root: Path) -> dict:
     manifest = utils.read_json(root / "ai_onboard.json", default={"policies": {}}) or {
         "policies": {}
     }
-    base_default = "./ai_onboard/policies/base.yaml"
+    base_default = "./ai_onboard / policies / base.yaml"
     base_path = Path(manifest.get("policies", {}).get("base", base_default))
     base_full = root / base_path
     # If configured base points to json but yaml exists, prefer configured; otherwise if default and json missing, try yaml
     policy = _read_policy_file(base_full)
 
-    # Load self-preservation policies
+    # Load self - preservation policies
     self_preservation_path = root / "ai_onboard" / "policies" / "self_preservation.yaml"
     if self_preservation_path.exists():
         self_preservation_policy = _read_policy_file(self_preservation_path)

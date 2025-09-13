@@ -1,7 +1,7 @@
 """
 CLI commands for the Unified Metrics Collection System.
 
-This module provides command-line interfaces for:
+This module provides command - line interfaces for:
 - Querying collected metrics with filtering and aggregation
 - Generating performance and usage reports
 - Managing alerts and thresholds
@@ -14,18 +14,18 @@ import io
 import json
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Dict, List
 
 from ..core import unified_metrics_collector
 from ..core.unified_metrics_collector import MetricCategory, MetricQuery, MetricSource
 
 
 def add_metrics_commands(subparsers):
-    """Add metrics-related commands to the CLI."""
+    """Add metrics - related commands to the CLI."""
 
     # Main unified metrics command
     metrics_parser = subparsers.add_parser(
-        "unified-metrics", help="Unified metrics collection and analysis"
+        "unified - metrics", help="Unified metrics collection and analysis"
     )
     metrics_sub = metrics_parser.add_subparsers(dest="metrics_cmd", required=True)
 
@@ -56,7 +56,7 @@ def add_metrics_commands(subparsers):
         help="Output format",
     )
     query_parser.add_argument(
-        "--dimension", action="append", help="Filter by dimension (key=value)"
+        "--dimension", action="append", help="Filter by dimension (key = value)"
     )
 
     # Trend command
@@ -118,8 +118,12 @@ def add_metrics_commands(subparsers):
 
     # Export command
     export_parser = metrics_sub.add_parser("export", help="Export metrics data")
-    export_parser.add_argument("--start", required=True, help="Start date (YYYY-MM-DD)")
-    export_parser.add_argument("--end", help="End date (YYYY-MM-DD, default: today)")
+    export_parser.add_argument(
+        "--start", required=True, help="Start date (YYYY - MM - DD)"
+    )
+    export_parser.add_argument(
+        "--end", help="End date (YYYY - MM - DD, default: today)"
+    )
     export_parser.add_argument(
         "--format", choices=["json", "csv", "jsonl"], default="csv"
     )
@@ -271,7 +275,7 @@ def _handle_metrics_alert(args: argparse.Namespace, collector) -> None:
 
             print(f"{icon} {alert.metric_name}: {alert.current_value}")
             print(f"   Condition: {alert.condition}")
-            print(f"   Time: {alert.timestamp.strftime('%Y-%m-%d %H:%M:%S')}")
+            print(f"   Time: {alert.timestamp.strftime('%Y -% m-%d %H:%M:%S')}")
             print(f"   Actions: {', '.join(alert.suggested_actions[:2])}")
             print()
 
@@ -341,8 +345,8 @@ def _handle_metrics_report(args: argparse.Namespace, collector) -> None:
 def _handle_metrics_export(args: argparse.Namespace, collector) -> None:
     """Handle metrics data export."""
     # Parse dates
-    start_date = datetime.strptime(args.start, "%Y-%m-%d")
-    end_date = datetime.strptime(args.end, "%Y-%m-%d") if args.end else datetime.now()
+    start_date = datetime.strptime(args.start, "%Y -% m-%d")
+    end_date = datetime.strptime(args.end, "%Y -% m-%d") if args.end else datetime.now()
 
     # Query metrics
     query = MetricQuery(
@@ -495,7 +499,7 @@ def _output_table_result(result, aggregation) -> None:
     print("-" * 80)
 
     for m in result.metrics[:20]:  # Limit display
-        timestamp_str = m.timestamp.strftime("%m-%d %H:%M:%S")
+        timestamp_str = m.timestamp.strftime("%m -% d %H:%M:%S")
         unit_str = f" {m.unit}" if m.unit else ""
         print(
             f"{m.name:<25} {m.value:<12}{unit_str} {m.source.value:<12} {m.category.value:<12} {timestamp_str:<16}"
@@ -526,7 +530,7 @@ def _group_by_interval(metrics, interval: str) -> Dict[str, List]:
             minute=0, second=0, microsecond=0
         ) - timedelta(hours=timestamp.hour % interval_hours)
 
-        key = interval_start.strftime("%Y-%m-%d %H:%M")
+        key = interval_start.strftime("%Y -% m-%d %H:%M")
         groups[key].append(metric.value)
 
     # Calculate aggregates for each interval
@@ -662,10 +666,10 @@ def _generate_html_report(report: Dict, report_type: str) -> str:
     html = f"""
     <!DOCTYPE html>
     <html>
-    <head><title>{report_type.title()} Report</title></head>
+    <head >< title>{report_type.title()} Report </ title ></ head>
     <body>
-        <h1>{report_type.title()} Report</h1>
-        <pre>{json.dumps(report, indent=2)}</pre>
+        <h1>{report_type.title()} Report </ h1>
+        <pre>{json.dumps(report, indent = 2)}</pre>
     </body>
     </html>
     """
@@ -677,7 +681,7 @@ def _generate_csv_report(report: Dict) -> str:
     output = io.StringIO()
     writer = csv.writer(output)
 
-    # Write report data as key-value pairs
+    # Write report data as key - value pairs
     def write_dict(d, prefix=""):
         for key, value in d.items():
             full_key = f"{prefix}.{key}" if prefix else key

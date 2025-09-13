@@ -6,7 +6,7 @@ This enhanced system provides:
 - Intelligent insight analysis using NLP patterns
 - Dynamic phase progression
 - Vision quality scoring
-- Template-based questioning for different project types
+- Template - based questioning for different project types
 - Integration with AI agent collaboration
 """
 
@@ -31,7 +31,7 @@ class QuestionType(Enum):
 
 
 class ProjectType(Enum):
-    """Types of projects for template-based questioning."""
+    """Types of projects for template - based questioning."""
 
     WEB_APPLICATION = "web_application"
     MOBILE_APP = "mobile_app"
@@ -278,7 +278,7 @@ class EnhancedVisionInterrogator:
         interrogation_data["insights"].extend(insights)
         interrogation_data["ambiguities"].extend(ambiguities)
 
-        # Generate adaptive follow-up questions
+        # Generate adaptive follow - up questions
         follow_up_questions = self._generate_follow_up_questions(
             phase, question_id, response, interrogation_data
         )
@@ -355,7 +355,7 @@ class EnhancedVisionInterrogator:
                 ),
                 Question(
                     id="wa_sc_02",
-                    text="What features are nice-to-have but not essential?",
+                    text="What features are nice - to - have but not essential?",
                     question_type=QuestionType.OPEN_ENDED,
                     required=False,
                     category="optional_features",
@@ -369,12 +369,12 @@ class EnhancedVisionInterrogator:
             "vision_core": [
                 Question(
                     id="ma_vc_01",
-                    text="What mobile-specific problem does your app address?",
+                    text="What mobile - specific problem does your app address?",
                     question_type=QuestionType.OPEN_ENDED,
                     category="mobile_problem",
                     insight_triggers=[
                         "mobile",
-                        "on-the-go",
+                        "on - the - go",
                         "location",
                         "camera",
                         "sensors",
@@ -450,7 +450,7 @@ class EnhancedVisionInterrogator:
                     insight_triggers=[
                         "developers",
                         "applications",
-                        "third-party",
+                        "third - party",
                         "internal",
                     ],
                 ),
@@ -458,12 +458,12 @@ class EnhancedVisionInterrogator:
         }
 
     def _get_ai_ml_questions(self) -> Dict[str, List[Question]]:
-        """Get questions specific to AI/ML projects."""
+        """Get questions specific to AI / ML projects."""
         return {
             "vision_core": [
                 Question(
                     id="ai_vc_01",
-                    text="What AI/ML problem are you trying to solve?",
+                    text="What AI / ML problem are you trying to solve?",
                     question_type=QuestionType.OPEN_ENDED,
                     category="ai_problem",
                     insight_triggers=[
@@ -476,7 +476,7 @@ class EnhancedVisionInterrogator:
                 ),
                 Question(
                     id="ai_vc_02",
-                    text="What type of AI/ML approach are you considering?",
+                    text="What type of AI / ML approach are you considering?",
                     question_type=QuestionType.MULTIPLE_CHOICE,
                     validation_rules={
                         "options": [
@@ -746,7 +746,7 @@ class EnhancedVisionInterrogator:
                     "id": str(uuid.uuid4()),
                     "type": "business_focus",
                     "category": "project_approach",
-                    "description": "Response indicates business-oriented approach",
+                    "description": "Response indicates business - oriented approach",
                     "confidence": 0.8,
                     "source_question": question_id,
                     "source_phase": phase,
@@ -766,7 +766,7 @@ class EnhancedVisionInterrogator:
                     "id": str(uuid.uuid4()),
                     "type": "user_focus",
                     "category": "project_approach",
-                    "description": "Response indicates user-centered approach",
+                    "description": "Response indicates user - centered approach",
                     "confidence": 0.8,
                     "source_question": question_id,
                     "source_phase": phase,
@@ -795,7 +795,7 @@ class EnhancedVisionInterrogator:
                     "recommendations": [
                         "Consider additional research or stakeholder input",
                         "Break down complex aspects into smaller parts",
-                        "Schedule follow-up discussions",
+                        "Schedule follow - up discussions",
                     ],
                 }
             )
@@ -853,7 +853,7 @@ class EnhancedVisionInterrogator:
                         "id": str(uuid.uuid4()),
                         "type": "vague_language",
                         "priority": "low",
-                        "description": "Response contains vague or non-specific language",
+                        "description": "Response contains vague or non - specific language",
                         "source_question": question_id,
                         "source_phase": phase,
                         "suggested_clarifications": [
@@ -875,11 +875,11 @@ class EnhancedVisionInterrogator:
         response: Dict[str, Any],
         interrogation_data: Dict[str, Any],
     ) -> List[Dict[str, Any]]:
-        """Generate adaptive follow-up questions based on responses."""
+        """Generate adaptive follow - up questions based on responses."""
         follow_ups = []
         answer = response.get("answer", "").lower()
 
-        # Generate follow-ups based on content analysis
+        # Generate follow - ups based on content analysis
         if "user" in answer and "experience" in answer:
             follow_ups.append(
                 {
@@ -974,7 +974,7 @@ class EnhancedVisionInterrogator:
         # Enhanced completion criteria
         required_complete = answered_required == len(required_questions)
 
-        # Check for high-priority ambiguities that need resolution
+        # Check for high - priority ambiguities that need resolution
         phase_ambiguities = [
             a
             for a in interrogation_data.get("ambiguities", [])
@@ -1011,7 +1011,7 @@ class EnhancedVisionInterrogator:
                 self._generate_vision_quality_report(interrogation_data)
             )
 
-            # Auto-sync to charter
+            # Auto - sync to charter
             try:
                 from .interrogation_to_charter import auto_sync_on_completion
 
@@ -1092,7 +1092,7 @@ class EnhancedVisionInterrogator:
         high_ambiguities = [a for a in ambiguities if a.get("priority") == "high"]
         if len(high_ambiguities) > 3:
             recommendations.append(
-                "Consider additional stakeholder discussions to clarify high-priority ambiguities"
+                "Consider additional stakeholder discussions to clarify high - priority ambiguities"
             )
 
         return recommendations

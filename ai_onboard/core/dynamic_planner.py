@@ -311,7 +311,7 @@ class DynamicPlanner:
     def _log_milestone_event(
         self, event_type: str, milestone_id: str, data: Dict[str, Any]
     ) -> None:
-        """Log milestone-related events."""
+        """Log milestone - related events."""
         utils.ensure_dir(self.milestone_log_path.parent)
         entry = {
             "ts": utils.now_iso(),
@@ -319,7 +319,7 @@ class DynamicPlanner:
             "milestone_id": milestone_id,
             "data": data,
         }
-        with open(self.milestone_log_path, "a", encoding="utf-8") as f:
+        with open(self.milestone_log_path, "a", encoding="utf - 8") as f:
             json.dump(entry, f)
             f.write("\n")
 

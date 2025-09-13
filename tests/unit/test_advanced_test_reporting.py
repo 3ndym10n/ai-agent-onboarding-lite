@@ -7,10 +7,9 @@ with mocked dependencies to ensure reliability and performance.
 
 import json
 import tempfile
-import time
 from datetime import datetime
 from pathlib import Path
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -198,7 +197,7 @@ class TestAdvancedTestReportGenerator:
     def test_historical_comparison(self, report_generator, sample_test_results):
         """Test historical comparison functionality."""
         # Generate first report
-        report1 = report_generator.generate_comprehensive_report(sample_test_results)
+        report_generator.generate_comprehensive_report(sample_test_results)
 
         # Generate second report
         report2 = report_generator.generate_comprehensive_report(sample_test_results)
@@ -333,7 +332,7 @@ class TestAdvancedTestReportingIntegration:
     """Integration tests for the advanced test reporting system."""
 
     def test_end_to_end_report_generation(self, temp_root):
-        """Test complete end-to-end report generation."""
+        """Test complete end - to - end report generation."""
         with patch(
             "ai_onboard.core.advanced_test_reporting.ContinuousImprovementValidator"
         ), patch(

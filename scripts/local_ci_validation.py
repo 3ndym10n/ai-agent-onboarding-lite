@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr / bin / env python3
 """
 Local CI validation script that runs the same checks as GitHub Actions.
 This helps catch issues before pushing to remote.
@@ -35,7 +35,7 @@ class LocalCIValidator:
                 text=True,
                 timeout=timeout,
                 cwd=Path.cwd(),
-                encoding="utf-8",
+                encoding="utf - 8",
                 errors="replace",
             )
             end_time = time.time()
@@ -87,7 +87,10 @@ class LocalCIValidator:
             (["python", "--version"], "Python Version"),
             (["pip", "--version"], "Pip Version"),
             (["python", "scripts/validate_dev_env.py"], "Dev Environment"),
-            (["python", "scripts/validate_project_structure.py"], "Project Structure"),
+            (
+                ["python", "scripts/validate_project_structure.py"],
+                "Project Structure",
+            ),
             (
                 ["python", "scripts/check_requirements_consistency.py"],
                 "Requirements Consistency",
@@ -145,7 +148,7 @@ class LocalCIValidator:
                     "python",
                     "-m",
                     "mypy",
-                    "--config-file=config/mypy.ini",
+                    "--config - file = config / mypy.ini",
                     "ai_onboard/",
                 ],
                 "Type Checking",
@@ -195,7 +198,7 @@ class LocalCIValidator:
 
         checks = [
             (
-                ["python", "-m", "pytest", "tests/smoke/", "-v", "--tb=short"],
+                ["python", "-m", "pytest", "tests / smoke/", "-v", "--tb = short"],
                 "Smoke Tests",
             ),
             (
@@ -203,16 +206,23 @@ class LocalCIValidator:
                     "python",
                     "-m",
                     "pytest",
-                    "tests/unit/",
+                    "tests / unit/",
                     "-v",
-                    "--tb=short",
-                    "--cov=ai_onboard",
-                    "--cov-report=term-missing",
+                    "--tb = short",
+                    "--cov = ai_onboard",
+                    "--cov - report = term - missing",
                 ],
                 "Unit Tests",
             ),
             (
-                ["python", "-m", "pytest", "tests/integration/", "-v", "--tb=short"],
+                [
+                    "python",
+                    "-m",
+                    "pytest",
+                    "tests / integration/",
+                    "-v",
+                    "--tb = short",
+                ],
                 "Integration Tests",
             ),
         ]
@@ -235,7 +245,7 @@ class LocalCIValidator:
         print("=" * 50)
 
         success, _ = self.run_command(
-            ["python", "scripts/protected_paths.py"], "Protected Paths Check"
+            ["python", "scripts / protected_paths.py"], "Protected Paths Check"
         )
 
         return success
@@ -254,7 +264,7 @@ class LocalCIValidator:
         print(f"Passed: {passed_checks}")
         print(f"Failed: {failed_checks}")
         print(f"Total Time: {total_time:.2f}s")
-        print(f"Success Rate: {(passed_checks/total_checks)*100:.1f}%")
+        print(f"Success Rate: {(passed_checks / total_checks) * 100:.1f}%")
 
         if failed_checks > 0:
             print(f"\n❌ Failed Checks:")

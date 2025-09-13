@@ -7,10 +7,10 @@ class, testing individual methods and components in isolation.
 
 import json
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
-from unittest.mock import MagicMock, Mock, patch
+from typing import List, Optional
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -538,7 +538,7 @@ if __name__ == "__main__":
             "pytest",
             str(Path(__file__)),
             "-v",
-            "--tb=short",
+            "--tb = short",
             "-m",
             "unit",
         ],

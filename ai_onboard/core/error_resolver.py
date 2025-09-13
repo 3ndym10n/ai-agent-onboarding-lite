@@ -7,14 +7,14 @@ from .issue import Issue
 
 
 def fingerprint(message: str, where: str) -> str:
-    h = hashlib.sha256(f"{message}|{where}".encode("utf-8")).hexdigest()[:12]
+    h = hashlib.sha256(f"{message}|{where}".encode("utf - 8")).hexdigest()[:12]
     return f"F{h}"
 
 
 def record_kb(root: Path, fp: str, move: str, outcome: str) -> None:
     kb = root / ".ai_onboard" / "error_kb.jsonl"
     utils.ensure_dir(kb.parent)
-    with open(kb, "a", encoding="utf-8") as f:
+    with open(kb, "a", encoding="utf - 8") as f:
         f.write(
             f'{{"ts":"{utils.now_iso()}","fp":"{fp}","move":"{move}","outcome":"{outcome}"}}\n'
         )
@@ -37,7 +37,7 @@ def ask_card(root: Path, question: str, options: List[str]) -> None:
     card = root / ".ai_onboard" / "ask_card.md"
     text = ["# Ask Card", "", question, ""] + [f"- [ ] {opt}" for opt in options]
     utils.ensure_dir(card.parent)
-    card.write_text("\n".join(text), encoding="utf-8")
+    card.write_text("\n".join(text), encoding="utf - 8")
 
 
 def issue_from_fp(fp: str, rule_id: str, message: str) -> Issue:
@@ -53,12 +53,12 @@ def issue_from_fp(fp: str, rule_id: str, message: str) -> Issue:
 def suggest_move_from_rule(rule_id: str, message: str) -> dict:
     if "NODE_SCRIPTS_DEFINED" in rule_id:
         return {
-            "question": "No build/lint/test scripts detected. Add default scripts or relax this rule?",
+            "question": "No build / lint / test scripts detected. Add default scripts or relax this rule?",
             "options": ["Add default scripts", "Downgrade to warning for this repo"],
         }
     if "PY_PROJECT_META" in rule_id or "ModuleNotFoundError" in message:
         return {
-            "question": "Python dependency/config missing. Add requirement or skip this check?",
+            "question": "Python dependency / config missing. Add requirement or skip this check?",
             "options": ["Add to requirements.txt", "Skip this check for now"],
         }
     return {

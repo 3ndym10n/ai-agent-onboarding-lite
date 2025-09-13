@@ -1,6 +1,5 @@
-"""Prompt commands for ai-onboard CLI."""
+"""Prompt commands for ai - onboard CLI."""
 
-import argparse
 from pathlib import Path
 
 from ..core import prompt_bridge
@@ -14,7 +13,7 @@ def add_prompt_commands(subparsers):
 
     # state
     sp_sub.add_parser(
-        "state", help="Show prompt-related project state (manifest, last metrics)"
+        "state", help="Show prompt - related project state (manifest, last metrics)"
     )
 
     # summary
@@ -93,7 +92,7 @@ def handle_prompt_commands(args, root: Path):
                 "status": "ok",
             }
             if current_gate.exists():
-                content = current_gate.read_text(encoding="utf-8", errors="ignore")
+                content = current_gate.read_text(encoding="utf - 8", errors="ignore")
                 # crude parse for a percentage line
                 for line in content.splitlines():
                     if "%" in line and (

@@ -64,13 +64,13 @@ class TaskCompletionDetector:
                 "evidence": "pyproject.toml exists",
             }
 
-        # T3: Set up version control and CI/CD
+        # T3: Set up version control and CI / CD
         if (self.project_root / ".github" / "workflows" / "ci.yml").exists():
             completed["T3"] = {
                 "status": "completed",
                 "completion_date": datetime.now().isoformat(),
                 "verified_by": "ci_workflow_exists",
-                "evidence": ".github/workflows/ci.yml exists",
+                "evidence": ".github / workflows / ci.yml exists",
             }
 
         return completed
@@ -293,7 +293,7 @@ class TaskCompletionDetector:
         """Detect completion of quality restoration tasks."""
         completed = {}
 
-        # T24: Re-enable strict Black formatting checks in CI
+        # T24: Re - enable strict Black formatting checks in CI
         ci_workflow = self.project_root / ".github" / "workflows" / "ci.yml"
         if ci_workflow.exists():
             try:
@@ -320,7 +320,7 @@ class TaskCompletionDetector:
         if test_system_file.exists():
             try:
                 with open(
-                    test_system_file, "r", encoding="utf-8", errors="ignore"
+                    test_system_file, "r", encoding="utf - 8", errors="ignore"
                 ) as f:
                     content = f.read()
                     # Look for enhanced metrics collection features
@@ -530,7 +530,7 @@ class TaskCompletionDetector:
 
         # Sort by completion date (most recent first)
         completed_tasks.sort(
-            key=lambda x: x.get("completion_date", "2000-01-01"), reverse=True
+            key=lambda x: x.get("completion_date", "2000 - 01 - 01"), reverse=True
         )
 
         return completed_tasks[:5]  # Return top 5 most recent

@@ -8,14 +8,10 @@ were nearly broken.
 """
 
 import ast
-import json
-import re
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
-
-import yaml
+from typing import Any, Dict, List, Optional, Tuple
 
 from .unicode_utils import print_content, print_status, safe_print
 
@@ -177,7 +173,7 @@ class DependencyChecker:
         dependencies = []
 
         try:
-            content = source_file.read_text(encoding="utf-8", errors="ignore")
+            content = source_file.read_text(encoding="utf - 8", errors="ignore")
 
             # Check different types of references based on file type
             if source_file.suffix == ".py":
@@ -197,7 +193,7 @@ class DependencyChecker:
                     self._scan_generic_file(source_file, target_file, content)
                 )
 
-        except Exception as e:
+        except Exception:
             # Skip files that can't be read
             pass
 
@@ -251,7 +247,7 @@ class DependencyChecker:
                         )
                     )
 
-        # Additional Python-specific checks using AST
+        # Additional Python - specific checks using AST
         try:
             tree = ast.parse(content)
             for node in ast.walk(tree):

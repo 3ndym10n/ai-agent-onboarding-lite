@@ -10,12 +10,12 @@ DEFAULTS = {
 
 
 def _cfg(manifest: Dict[str, Any]) -> Dict[str, Any]:
-    # Read from manifest["metaPolicies"] or top-level thresholds fallback
+    # Read from manifest["metaPolicies"] or top - level thresholds fallback
     m = manifest or {}
     mp = m.get("metaPolicies") or {}
     out = DEFAULTS.copy()
     out.update({k: v for k, v in mp.items() if k in DEFAULTS})
-    # Legacy variables (if present at top-level)
+    # Legacy variables (if present at top - level)
     for k in DEFAULTS:
         if k in m:
             out[k] = m[k]
@@ -55,7 +55,7 @@ def rules_summary(manifest: Dict[str, Any]) -> List[Dict[str, Any]]:
 def evaluate(manifest: Dict[str, Any], diff: Dict[str, Any]) -> Dict[str, Any]:
     """Return a decision with rationale based on diff summary.
 
-    Diff schema (best-effort, optional keys):
+    Diff schema (best - effort, optional keys):
     - files_changed: list[str]
     - lines_deleted: int
     - has_tests: bool

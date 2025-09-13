@@ -28,7 +28,7 @@ def run(root: Path, allow_exec: bool = False) -> dict:
         "project_type": "unknown",
         "languages": [x for x, ok in (("python", has_py), ("node_ts", has_node)) if ok],
         "components": components,
-        "policies": {"base": "./ai_onboard/policies/base.yaml", "overlays": []},
+        "policies": {"base": "./ai_onboard / policies / base.yaml", "overlays": []},
         "execution": {
             "allowExec": False,
             "max_workers": 4,

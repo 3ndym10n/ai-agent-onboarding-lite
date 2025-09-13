@@ -1,25 +1,21 @@
 """
-Advanced Agent Decision Pipeline (T9) - Sophisticated decision-making system for AI agents.
+Advanced Agent Decision Pipeline (T9) - Sophisticated decision - making system for AI agents.
 
 This module provides an enhanced decision pipeline that integrates with conversation context,
 user preferences, project history, and advanced reasoning capabilities to make intelligent
 decisions about AI agent actions.
 """
 
-import json
 import time
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
-from . import alignment, utils
+from . import alignment
 from .ai_agent_orchestration import (
     ConversationContext,
-    ConversationState,
-    DecisionStage,
 )
 from .enhanced_conversation_context import get_enhanced_context_manager
 from .unified_metrics_collector import (
@@ -32,12 +28,12 @@ from .user_preference_learning import get_user_preference_learning_system
 
 
 class DecisionComplexity(Enum):
-    """Complexity levels for decision-making."""
+    """Complexity levels for decision - making."""
 
     SIMPLE = "simple"  # Single command, low risk
     MODERATE = "moderate"  # Multiple commands, medium risk
     COMPLEX = "complex"  # Complex workflow, high risk
-    CRITICAL = "critical"  # System-level changes, critical risk
+    CRITICAL = "critical"  # System - level changes, critical risk
 
 
 class DecisionConfidence(Enum):
@@ -66,7 +62,7 @@ class DecisionOutcome(Enum):
 
 @dataclass
 class DecisionContext:
-    """Enhanced context for decision-making."""
+    """Enhanced context for decision - making."""
 
     # Basic context
     session_id: str
@@ -117,7 +113,7 @@ class DecisionResult:
     pipeline_stages: Dict[str, Any] = field(default_factory=dict)
     decision_factors: Dict[str, Any] = field(default_factory=dict)
 
-    # Follow-up actions
+    # Follow - up actions
     requires_confirmation: bool = False
     confirmation_message: Optional[str] = None
     clarification_questions: List[str] = field(default_factory=list)
@@ -134,7 +130,7 @@ class ContextualReasoningEngine:
         self.metrics_collector = get_unified_metrics_collector(root)
 
     def analyze_decision_context(self, context: DecisionContext) -> Dict[str, Any]:
-        """Analyze the full context for decision-making."""
+        """Analyze the full context for decision - making."""
         analysis = {
             "user_behavior_analysis": self._analyze_user_behavior(context),
             "project_context_analysis": self._analyze_project_context(context),
@@ -153,7 +149,7 @@ class ContextualReasoningEngine:
                 context.user_id
             )
 
-            # Get cross-session context
+            # Get cross - session context
             continuity_summary = self.enhanced_context.get_context_continuity_summary(
                 context.user_id
             )
@@ -273,7 +269,7 @@ class ContextualReasoningEngine:
         risks = []
         risk_score = 0.0
 
-        # Check for high-risk intents
+        # Check for high - risk intents
         high_risk_intents = [
             "system_modification",
             "file_deletion",
@@ -281,7 +277,7 @@ class ContextualReasoningEngine:
         ]
         for intent, confidence in context.resolved_intents:
             if intent in high_risk_intents:
-                risks.append(f"High-risk intent: {intent}")
+                risks.append(f"High - risk intent: {intent}")
                 risk_score += 0.3
 
         # Check user experience level
@@ -356,7 +352,7 @@ class ContextualReasoningEngine:
     def _calculate_historical_success_rate(self, user_id: str) -> float:
         """Calculate historical success rate for user."""
         try:
-            # This would analyze historical command success/failure rates
+            # This would analyze historical command success / failure rates
             # For now, return a placeholder based on user experience
             user_sessions = self.enhanced_context.session_storage.get_user_sessions(
                 user_id

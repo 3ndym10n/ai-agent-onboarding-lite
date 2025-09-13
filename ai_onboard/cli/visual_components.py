@@ -6,14 +6,12 @@ This module provides:
 - Tables and formatted output
 - Icons and visual feedback
 - Dashboard components
-- Charts and graphs (ASCII-based)
+- Charts and graphs (ASCII - based)
 """
 
-import math
 import time
-from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional
 
 from ..core.ui_enhancement_system import get_ui_enhancement_system
 
@@ -247,7 +245,7 @@ class Chart:
 
         sparkline = ""
         for value in values:
-            # Normalize value to 0-7 range
+            # Normalize value to 0 - 7 range
             normalized = (value - min_val) / (max_val - min_val)
             block_index = min(int(normalized * len(blocks)), len(blocks) - 1)
             sparkline += blocks[block_index]
@@ -423,7 +421,7 @@ class Dashboard:
 
 
 class AnimatedSpinner:
-    """Animated spinner for long-running operations."""
+    """Animated spinner for long - running operations."""
 
     def __init__(self, root: Path, user_id: str = "default"):
         self.ui_system = get_ui_enhancement_system(root)

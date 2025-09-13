@@ -23,7 +23,7 @@ class AIAgentGateDetector:
     def check_for_active_gate(self) -> Optional[str]:
         """Check if there's an active gate that needs attention."""
         if self.current_gate_file.exists():
-            return self.current_gate_file.read_text(encoding="utf-8")
+            return self.current_gate_file.read_text(encoding="utf - 8")
         return None
 
     def extract_questions_from_gate(self, gate_content: str) -> list:
@@ -56,7 +56,7 @@ class AIAgentGateDetector:
         }
 
         self.response_file.write_text(
-            json.dumps(response_data, indent=2), encoding="utf-8"
+            json.dumps(response_data, indent=2), encoding="utf - 8"
         )
         print(f"[OK] Response file created: {self.response_file}")
 

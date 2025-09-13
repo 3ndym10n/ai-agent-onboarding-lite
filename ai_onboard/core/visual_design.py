@@ -1,7 +1,7 @@
 """
 Visual Design Analysis and Validation System
 
-This module provides AI-Onboard with the ability to analyze visual designs,
+This module provides AI - Onboard with the ability to analyze visual designs,
 screenshots, and UI mockups to validate design decisions against project vision.
 """
 
@@ -17,10 +17,10 @@ logger = logging.getLogger(__name__)
 class VisualAnalysis:
     """Results of visual design analysis"""
 
-    design_quality_score: float  # 0.0-1.0
-    brand_alignment_score: float  # 0.0-1.0
-    accessibility_score: float  # 0.0-1.0
-    user_experience_score: float  # 0.0-1.0
+    design_quality_score: float  # 0.0 - 1.0
+    brand_alignment_score: float  # 0.0 - 1.0
+    accessibility_score: float  # 0.0 - 1.0
+    user_experience_score: float  # 0.0 - 1.0
     issues: List[str]
     suggestions: List[str]
     overall_alignment: str  # "aligned", "needs_improvement", "misaligned"
@@ -32,7 +32,7 @@ class DesignPrinciple:
 
     name: str
     description: str
-    weight: float  # 0.0-1.0
+    weight: float  # 0.0 - 1.0
     criteria: List[str]
 
 
@@ -71,7 +71,7 @@ class VisualDesignValidator:
             ),
             DesignPrinciple(
                 name="User Experience",
-                description="Intuitive and user-friendly design",
+                description="Intuitive and user - friendly design",
                 weight=0.30,
                 criteria=[
                     "Clear navigation",
@@ -129,7 +129,7 @@ class VisualDesignValidator:
 
         # Extract project vision and brand guidelines
         vision = project_context.get("vision", "")
-        _brand_guidelines = project_context.get("brand_guidelines", {})
+        project_context.get("brand_guidelines", {})
 
         # Simulate analysis based on file properties and context
         file_path = Path(screenshot_path)
@@ -279,7 +279,7 @@ class VisualDesignValidator:
         """Generate contextual design feedback"""
         feedback = []
 
-        # Vision-based feedback
+        # Vision - based feedback
         if "modern" in vision.lower() and "modern" not in design_terms:
             feedback.append(
                 "Consider incorporating modern design elements to align with vision"
@@ -288,7 +288,7 @@ class VisualDesignValidator:
         if "intuitive" in vision.lower() and "user" not in design_terms:
             feedback.append("Focus on user experience to achieve intuitive design goal")
 
-        # Objective-based feedback
+        # Objective - based feedback
         for objective in objectives:
             if (
                 "accessibility" in objective.lower()

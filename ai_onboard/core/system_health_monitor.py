@@ -1,10 +1,10 @@
 """
-System Health Monitor - Comprehensive system health monitoring and self-healing.
+System Health Monitor - Comprehensive system health monitoring and self - healing.
 
 This module provides intelligent system health monitoring that:
 - Monitors system performance, errors, and resource usage
 - Detects health issues and anomalies
-- Implements automatic self-healing measures
+- Implements automatic self - healing measures
 - Provides health alerts and recommendations
 - Tracks system stability and reliability
 - Integrates with all system components for comprehensive monitoring
@@ -21,8 +21,8 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-# psutil is optional to avoid hard dependency in minimal environments/Windows gates
-try:  # pragma: no cover - environment-dependent
+# psutil is optional to avoid hard dependency in minimal environments / Windows gates
+try:  # pragma: no cover - environment - dependent
     import psutil  # type: ignore
 except Exception:  # pragma: no cover - fallback when not installed
     psutil = None  # type: ignore
@@ -71,7 +71,7 @@ class HealthIssueType(Enum):
 
 
 class SelfHealingAction(Enum):
-    """Types of self-healing actions."""
+    """Types of self - healing actions."""
 
     RESTART_COMPONENT = "restart_component"
     CLEAR_CACHE = "clear_cache"
@@ -116,7 +116,7 @@ class HealthIssue:
 
 @dataclass
 class SelfHealingAction:
-    """A self-healing action taken."""
+    """A self - healing action taken."""
 
     action_id: str
     action_type: SelfHealingAction
@@ -135,7 +135,7 @@ class SystemHealthSnapshot:
 
     timestamp: datetime
     overall_status: HealthStatus
-    health_score: float  # 0-100
+    health_score: float  # 0 - 100
     metrics: Dict[HealthMetric, HealthMetricValue]
     active_issues: List[HealthIssue]
     recent_actions: List[SelfHealingAction]
@@ -144,7 +144,7 @@ class SystemHealthSnapshot:
 
 
 class SystemHealthMonitor:
-    """Comprehensive system health monitoring and self-healing system."""
+    """Comprehensive system health monitoring and self - healing system."""
 
     def __init__(self, root: Path):
         self.root = root
@@ -224,11 +224,11 @@ class SystemHealthMonitor:
             HealthMetric.CPU_USAGE: (70.0, 90.0),  # 70% warning, 90% critical
             HealthMetric.MEMORY_USAGE: (80.0, 95.0),  # 80% warning, 95% critical
             HealthMetric.DISK_USAGE: (85.0, 95.0),  # 85% warning, 95% critical
-            HealthMetric.DISK_IO: (1000.0, 2000.0),  # MB/s
-            HealthMetric.NETWORK_IO: (100.0, 500.0),  # MB/s
+            HealthMetric.DISK_IO: (1000.0, 2000.0),  # MB / s
+            HealthMetric.NETWORK_IO: (100.0, 500.0),  # MB / s
             HealthMetric.ERROR_RATE: (0.05, 0.15),  # 5% warning, 15% critical
             HealthMetric.RESPONSE_TIME: (2.0, 5.0),  # seconds
-            HealthMetric.THROUGHPUT: (50.0, 20.0),  # requests/second (lower is worse)
+            HealthMetric.THROUGHPUT: (50.0, 20.0),  # requests / second (lower is worse)
             HealthMetric.AVAILABILITY: (0.95, 0.90),  # 95% warning, 90% critical
             HealthMetric.USER_SATISFACTION: (0.7, 0.5),  # 0.7 warning, 0.5 critical
         }
@@ -268,11 +268,11 @@ class SystemHealthMonitor:
             )
 
     def _load_self_healing_actions(self):
-        """Load self-healing actions from storage."""
+        """Load self - healing actions from storage."""
         if not self.self_healing_actions_path.exists():
             return
 
-        with open(self.self_healing_actions_path, "r", encoding="utf-8") as f:
+        with open(self.self_healing_actions_path, "r", encoding="utf - 8") as f:
             for line in f:
                 line = line.strip()
                 if not line:
@@ -334,7 +334,7 @@ class SystemHealthMonitor:
                 # Log health data
                 self._log_health_snapshot(snapshot)
 
-                # Check for self-healing opportunities
+                # Check for self - healing opportunities
                 if self.health_config["self_healing_enabled"]:
                     self._check_self_healing_opportunities(snapshot)
 
@@ -385,7 +385,7 @@ class SystemHealthMonitor:
                 unit="%",
             )
 
-            # Disk I/O
+            # Disk I / O
             disk_io = psutil.disk_io_counters()
             if disk_io:
                 disk_io_mb = (disk_io.read_bytes + disk_io.write_bytes) / (1024 * 1024)
@@ -398,7 +398,7 @@ class SystemHealthMonitor:
                     unit="MB",
                 )
 
-            # Network I/O
+            # Network I / O
             network_io = psutil.net_io_counters()
             if network_io:
                 network_io_mb = (network_io.bytes_sent + network_io.bytes_recv) / (
@@ -420,7 +420,7 @@ class SystemHealthMonitor:
         except Exception as e:
             telemetry.log_event("health_metrics_capture_error", error=str(e))
 
-        # Application-specific metrics
+        # Application - specific metrics
         self._capture_application_metrics(metrics, timestamp)
 
         # Calculate overall health score
@@ -455,7 +455,7 @@ class SystemHealthMonitor:
     def _capture_application_metrics(
         self, metrics: Dict[HealthMetric, HealthMetricValue], timestamp: datetime
     ):
-        """Capture application-specific health metrics."""
+        """Capture application - specific health metrics."""
         try:
             # Error rate (from telemetry)
             error_rate = self._calculate_error_rate()
@@ -537,7 +537,7 @@ class SystemHealthMonitor:
     def _calculate_health_score(
         self, metrics: Dict[HealthMetric, HealthMetricValue]
     ) -> float:
-        """Calculate overall health score (0-100)."""
+        """Calculate overall health score (0 - 100)."""
         if not metrics:
             return 0.0
 
@@ -572,7 +572,7 @@ class SystemHealthMonitor:
                     metric_value.threshold_critical - metric_value.threshold_warning
                 )
                 value_in_range = metric_value.value - metric_value.threshold_warning
-                score = 100.0 - (value_in_range / warning_range) * 30.0  # 70-100
+                score = 100.0 - (value_in_range / warning_range) * 30.0  # 70 - 100
             else:
                 # Critical range
                 score = max(
@@ -696,7 +696,7 @@ class SystemHealthMonitor:
                 )
 
     def _check_self_healing_opportunities(self, snapshot: SystemHealthSnapshot):
-        """Check for self-healing opportunities."""
+        """Check for self - healing opportunities."""
         if not self.health_config["auto_healing_enabled"]:
             return
 
@@ -712,7 +712,7 @@ class SystemHealthMonitor:
                 self._execute_self_healing_action(issue, snapshot)
 
     def _should_attempt_self_healing(self, issue: HealthIssue) -> bool:
-        """Determine if self-healing should be attempted for an issue."""
+        """Determine if self - healing should be attempted for an issue."""
         # Don't attempt if already tried recently
         recent_actions = [
             action
@@ -733,7 +733,7 @@ class SystemHealthMonitor:
     def _execute_self_healing_action(
         self, issue: HealthIssue, snapshot: SystemHealthSnapshot
     ):
-        """Execute a self-healing action for an issue."""
+        """Execute a self - healing action for an issue."""
         action_type = self._determine_healing_action(issue)
 
         action_id = f"action_{int(time.time())}_{utils.random_string(8)}"
@@ -792,7 +792,7 @@ class SystemHealthMonitor:
         )
 
     def _determine_healing_action(self, issue: HealthIssue) -> SelfHealingAction:
-        """Determine the appropriate self-healing action for an issue."""
+        """Determine the appropriate self - healing action for an issue."""
         issue_type = issue.issue_type.value
 
         if "memory" in issue_type:
@@ -913,7 +913,7 @@ class SystemHealthMonitor:
             if issue.resolved_at and issue.resolved_at >= cutoff_time
         )
 
-        # Count self-healing actions
+        # Count self - healing actions
         recent_actions = [
             action
             for action in self.self_healing_actions
@@ -968,7 +968,7 @@ class SystemHealthMonitor:
         ]
 
     def get_self_healing_history(self, days: int = 7) -> List[Dict[str, Any]]:
-        """Get self-healing action history."""
+        """Get self - healing action history."""
         cutoff_date = datetime.now() - timedelta(days=days)
 
         recent_actions = [
@@ -1010,12 +1010,12 @@ class SystemHealthMonitor:
             "recommendations": snapshot.recommendations,
         }
 
-        with open(self.health_data_path, "a", encoding="utf-8") as f:
+        with open(self.health_data_path, "a", encoding="utf - 8") as f:
             json.dump(snapshot_data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 
     def _log_self_healing_action(self, action: SelfHealingAction):
-        """Log self-healing action to storage."""
+        """Log self - healing action to storage."""
         action_data = {
             "action_id": action.action_id,
             "action_type": action.action_type.value,
@@ -1028,7 +1028,7 @@ class SystemHealthMonitor:
             "rollback_required": action.rollback_required,
         }
 
-        with open(self.self_healing_actions_path, "a", encoding="utf-8") as f:
+        with open(self.self_healing_actions_path, "a", encoding="utf - 8") as f:
             json.dump(action_data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 

@@ -6,7 +6,7 @@ This module provides intelligent user preference learning that:
 - Learns individual user preferences and workflows
 - Provides personalized system adaptations
 - Tracks user satisfaction and feedback
-- Generates user-specific recommendations
+- Generates user - specific recommendations
 - Adapts system behavior based on learned preferences
 """
 
@@ -315,13 +315,11 @@ class UserPreferenceLearningSystem:
         """Load preference learning rules from storage."""
         # This would load from a separate file if we had one
         # For now, we initialize with defaults
-        pass
 
     def _load_behavior_pattern_detectors(self):
         """Load behavior pattern detectors from storage."""
         # This would load from a separate file if we had one
         # For now, we initialize with defaults
-        pass
 
     def record_user_interaction(
         self,
@@ -794,7 +792,7 @@ class UserPreferenceLearningSystem:
         self._detect_satisfaction_patterns(profile)
 
     def _detect_timing_patterns(self, profile: UserProfile):
-        """Detect timing-related behavior patterns."""
+        """Detect timing - related behavior patterns."""
         interactions = list(profile.interaction_history)
 
         # Analyze interaction timing
@@ -830,7 +828,7 @@ class UserPreferenceLearningSystem:
             profile.behavior_patterns.append(pattern)
 
     def _detect_workflow_patterns(self, profile: UserProfile):
-        """Detect workflow-related behavior patterns."""
+        """Detect workflow - related behavior patterns."""
         interactions = list(profile.interaction_history)
 
         # Analyze command sequences
@@ -873,7 +871,7 @@ class UserPreferenceLearningSystem:
                 profile.behavior_patterns.append(pattern)
 
     def _detect_error_patterns(self, profile: UserProfile):
-        """Detect error-related behavior patterns."""
+        """Detect error - related behavior patterns."""
         error_interactions = [
             i
             for i in profile.interaction_history
@@ -915,7 +913,7 @@ class UserPreferenceLearningSystem:
             profile.behavior_patterns.append(pattern)
 
     def _detect_satisfaction_patterns(self, profile: UserProfile):
-        """Detect satisfaction-related behavior patterns."""
+        """Detect satisfaction - related behavior patterns."""
         if len(profile.satisfaction_scores) < 5:
             return
 
@@ -1105,7 +1103,7 @@ class UserPreferenceLearningSystem:
             "feedback": interaction.feedback,
         }
 
-        with open(self.interaction_log_path, "a", encoding="utf-8") as f:
+        with open(self.interaction_log_path, "a", encoding="utf - 8") as f:
             json.dump(interaction_data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 
@@ -1129,7 +1127,7 @@ class UserPreferenceLearningSystem:
             "evidence": evidence,
         }
 
-        with open(self.preference_learning_path, "a", encoding="utf-8") as f:
+        with open(self.preference_learning_path, "a", encoding="utf - 8") as f:
             json.dump(learning_data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 

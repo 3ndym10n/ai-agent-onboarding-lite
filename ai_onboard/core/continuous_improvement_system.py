@@ -1,11 +1,11 @@
 """
-Continuous Improvement System - Self-evolving system that learns and optimizes.
+Continuous Improvement System - Self - evolving system that learns and optimizes.
 
 This system creates intelligent feedback loops that:
 - Learn from user interactions and system performance
 - Optimize system behavior based on usage patterns
 - Adapt configuration based on project types and user preferences
-- Monitor system health and implement self-healing
+- Monitor system health and implement self - healing
 - Evolve knowledge base and improve recommendations
 """
 
@@ -69,8 +69,8 @@ class ImprovementRecommendation:
     rationale: str
     expected_impact: float
     confidence: float
-    priority: int  # 1-10, higher is more important
-    implementation_effort: int  # 1-10, higher is more effort
+    priority: int  # 1 - 10, higher is more important
+    implementation_effort: int  # 1 - 10, higher is more effort
     dependencies: List[str] = field(default_factory=list)
     created_at: datetime = field(default_factory=datetime.now)
     status: str = "pending"  # pending, approved, implemented, rejected
@@ -286,7 +286,7 @@ class ContinuousImprovementSystem:
             "source": event.source,
         }
 
-        with open(self.learning_events_path, "a", encoding="utf-8") as f:
+        with open(self.learning_events_path, "a", encoding="utf - 8") as f:
             json.dump(event_data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 
@@ -477,7 +477,7 @@ class ContinuousImprovementSystem:
             }
         )
 
-        # Generate project-specific recommendations
+        # Generate project - specific recommendations
         self._generate_project_specific_recommendations(project_type, event)
 
     def _process_system_health_learning(self, event: LearningEvent):
@@ -530,7 +530,7 @@ class ContinuousImprovementSystem:
 
     def _generate_performance_recommendations(self, event: LearningEvent):
         """Generate recommendations based on performance learning."""
-        performance_metrics = event.context.get("performance_metrics", {})
+        event.context.get("performance_metrics", {})
         optimization_result = event.outcome.get("optimization_result", {})
 
         if optimization_result.get("success", False):
@@ -640,7 +640,7 @@ class ContinuousImprovementSystem:
             "recommendations": health_record.recommendations,
         }
 
-        with open(self.system_health_path, "a", encoding="utf-8") as f:
+        with open(self.system_health_path, "a", encoding="utf - 8") as f:
             json.dump(health_data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 
@@ -773,7 +773,7 @@ class ContinuousImprovementSystem:
 
         health_records = []
         if self.system_health_path.exists():
-            with open(self.system_health_path, "r", encoding="utf-8") as f:
+            with open(self.system_health_path, "r", encoding="utf - 8") as f:
                 for line in f:
                     line = line.strip()
                     if not line:
@@ -828,7 +828,7 @@ class ContinuousImprovementSystem:
 
         learning_events = []
         if self.learning_events_path.exists():
-            with open(self.learning_events_path, "r", encoding="utf-8") as f:
+            with open(self.learning_events_path, "r", encoding="utf - 8") as f:
                 for line in f:
                     line = line.strip()
                     if not line:

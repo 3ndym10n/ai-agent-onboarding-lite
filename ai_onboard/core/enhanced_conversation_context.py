@@ -3,23 +3,16 @@ Enhanced Conversation Context Management (T8) - Advanced context tracking for AI
 
 This module provides enhanced conversation context management capabilities specifically
 designed for seamless AI agent collaboration, including context sharing, memory persistence,
-and cross-session continuity.
+and cross - session continuity.
 """
 
-import json
 import time
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional
 
 from . import utils
-from .ai_agent_orchestration import (
-    ConversationContext,
-    ConversationState,
-    DecisionStage,
-)
 from .session_storage import SessionStorageManager
 from .unified_metrics_collector import (
     MetricCategory,
@@ -123,7 +116,7 @@ class EnhancedConversationContextManager:
         self.sharing_profiles_file = self.context_dir / "sharing_profiles.json"
         self.context_graph_file = self.context_dir / "context_graph.json"
 
-        # In-memory caches
+        # In - memory caches
         self.memories: Dict[str, ContextMemory] = {}
         self.cross_session_contexts: Dict[str, CrossSessionContext] = {}
         self.sharing_profiles: Dict[str, ContextSharingProfile] = {}
@@ -147,7 +140,7 @@ class EnhancedConversationContextManager:
                 for memory_id, memory_data in data.items():
                     self.memories[memory_id] = ContextMemory(**memory_data)
 
-            # Load cross-session contexts
+            # Load cross - session contexts
             if self.cross_session_file.exists():
                 data = utils.read_json(self.cross_session_file, default={})
                 for user_id, context_data in data.items():
@@ -181,7 +174,7 @@ class EnhancedConversationContextManager:
                 memories_data[memory_id] = asdict(memory)
             utils.write_json(self.memories_file, memories_data)
 
-            # Save cross-session contexts
+            # Save cross - session contexts
             cross_session_data = {}
             for user_id, context in self.cross_session_contexts.items():
                 cross_session_data[user_id] = asdict(context)
@@ -200,7 +193,7 @@ class EnhancedConversationContextManager:
             print(f"Warning: Failed to save persistent context data: {e}")
 
     def enhance_session_context(self, session_id: str) -> Dict[str, Any]:
-        """Enhance a session with cross-session context and memories."""
+        """Enhance a session with cross - session context and memories."""
         try:
             # Load base session
             session = self.session_storage.load_session(session_id)
@@ -209,7 +202,7 @@ class EnhancedConversationContextManager:
 
             user_id = session.user_id
 
-            # Get cross-session context
+            # Get cross - session context
             cross_context = self._get_or_create_cross_session_context(user_id)
 
             # Get relevant memories
@@ -315,7 +308,7 @@ class EnhancedConversationContextManager:
             self.memories[memory_id] = memory
             self._save_persistent_data()
 
-            # Update cross-session context
+            # Update cross - session context
             self._update_cross_session_context(user_id, session_id, topic, key_facts)
 
             self._record_metric(
@@ -330,7 +323,7 @@ class EnhancedConversationContextManager:
 
             return memory_id
 
-        except Exception as e:
+        except Exception:
             self._record_metric("context_memory_error", 1)
             return ""
 
@@ -429,10 +422,10 @@ class EnhancedConversationContextManager:
     def get_context_continuity_summary(self, user_id: str) -> Dict[str, Any]:
         """Get a summary of context continuity for a user across sessions."""
         try:
-            # Get cross-session context
+            # Get cross - session context
             cross_context = self.cross_session_contexts.get(user_id)
             if not cross_context:
-                return {"error": "No cross-session context found"}
+                return {"error": "No cross - session context found"}
 
             # Get user's memories
             user_memories = [
@@ -495,7 +488,7 @@ class EnhancedConversationContextManager:
             return {"error": str(e)}
 
     def _get_or_create_cross_session_context(self, user_id: str) -> CrossSessionContext:
-        """Get or create cross-session context for a user."""
+        """Get or create cross - session context for a user."""
         if user_id not in self.cross_session_contexts:
             self.cross_session_contexts[user_id] = CrossSessionContext(
                 user_id=user_id,
@@ -584,7 +577,7 @@ class EnhancedConversationContextManager:
     def _update_cross_session_context(
         self, user_id: str, session_id: str, topic: str, key_facts: List[str]
     ):
-        """Update cross-session context with new insights."""
+        """Update cross - session context with new insights."""
         cross_context = self._get_or_create_cross_session_context(user_id)
 
         # Update recurring topics
@@ -613,7 +606,7 @@ class EnhancedConversationContextManager:
 
         filtered = []
         for item in content:
-            # Simple keyword-based filtering
+            # Simple keyword - based filtering
             item_text = str(item).lower()
             if not any(topic.lower() in item_text for topic in sensitive_topics):
                 filtered.append(item)
@@ -633,7 +626,7 @@ class EnhancedConversationContextManager:
         return count
 
     def _assess_user_experience(self, cross_context: CrossSessionContext) -> str:
-        """Assess user experience level based on cross-session context."""
+        """Assess user experience level based on cross - session context."""
         total_commands = sum(cross_context.preferred_commands.values())
         unique_commands = len(cross_context.preferred_commands)
         workflows = len(cross_context.successful_workflows)

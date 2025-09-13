@@ -7,7 +7,7 @@ This module provides comprehensive analytics and reporting capabilities for the 
 - Custom report generation
 - Dashboard data aggregation
 - Export capabilities for various formats
-- Real-time monitoring and alerts
+- Real - time monitoring and alerts
 """
 
 import csv
@@ -199,7 +199,7 @@ class ContinuousImprovementAnalytics:
             "learning_rate": {
                 "name": "Learning Rate",
                 "description": "Rate of new learning events per day",
-                "unit": "events/day",
+                "unit": "events / day",
                 "target": 10.0,
                 "calculation": self._calculate_learning_rate,
             },
@@ -227,7 +227,7 @@ class ContinuousImprovementAnalytics:
             "knowledge_growth_rate": {
                 "name": "Knowledge Growth Rate",
                 "description": "Rate of knowledge base growth",
-                "unit": "items/day",
+                "unit": "items / day",
                 "target": 5.0,
                 "calculation": self._calculate_knowledge_growth_rate,
             },
@@ -256,7 +256,7 @@ class ContinuousImprovementAnalytics:
             days=self.analytics_config["metrics_retention_days"]
         )
 
-        with open(self.metrics_path, "r", encoding="utf-8") as f:
+        with open(self.metrics_path, "r", encoding="utf - 8") as f:
             for line in f:
                 line = line.strip()
                 if not line:
@@ -314,7 +314,7 @@ class ContinuousImprovementAnalytics:
         if not self.reports_path.exists():
             return
 
-        with open(self.reports_path, "r", encoding="utf-8") as f:
+        with open(self.reports_path, "r", encoding="utf - 8") as f:
             for line in f:
                 line = line.strip()
                 if not line:
@@ -344,7 +344,7 @@ class ContinuousImprovementAnalytics:
         if not self.alerts_path.exists():
             return
 
-        with open(self.alerts_path, "r", encoding="utf-8") as f:
+        with open(self.alerts_path, "r", encoding="utf - 8") as f:
             for line in f:
                 line = line.strip()
                 if not line:
@@ -424,7 +424,7 @@ class ContinuousImprovementAnalytics:
             "metadata": metric.metadata,
         }
 
-        with open(self.metrics_path, "a", encoding="utf-8") as f:
+        with open(self.metrics_path, "a", encoding="utf - 8") as f:
             json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 
@@ -507,7 +507,7 @@ class ContinuousImprovementAnalytics:
             "metadata": alert.metadata,
         }
 
-        with open(self.alerts_path, "a", encoding="utf-8") as f:
+        with open(self.alerts_path, "a", encoding="utf - 8") as f:
             json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 
@@ -890,7 +890,7 @@ class ContinuousImprovementAnalytics:
             "export_formats": report.export_formats,
         }
 
-        with open(self.reports_path, "a", encoding="utf-8") as f:
+        with open(self.reports_path, "a", encoding="utf - 8") as f:
             json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 
@@ -984,24 +984,24 @@ class ContinuousImprovementAnalytics:
             <head>
                 <title>{report.title}</title>
                 <style>
-                    body {{ font-family: Arial, sans-serif; margin: 40px; }}
-                    .header {{ background-color: #f0f0f0; padding: 20px; border-radius: 5px; }}
+                    body {{ font - family: Arial, sans - serif; margin: 40px; }}
+                    .header {{ background - color: #f0f0f0; padding: 20px; border - radius: 5px; }}
                     .summary {{ margin: 20px 0; }}
-                    .recommendations {{ background-color: #e8f4f8; padding: 15px; border-radius: 5px; }}
+                    .recommendations {{ background - color: #e8f4f8; padding: 15px; border - radius: 5px; }}
                 </style>
             </head>
             <body>
                 <div class="header">
                     <h1>{report.title}</h1>
-                    <p>Generated: {report.generated_at.strftime('%Y-%m-%d %H:%M:%S')}</p>
-                    <p>Period: {report.period_start.strftime('%Y-%m-%d')} to {report.period_end.strftime('%Y-%m-%d')}</p>
+                    <p > Generated: {report.generated_at.strftime('%Y -% m-%d %H:%M:%S')}</p>
+                    <p > Period: {report.period_start.strftime('%Y -% m-%d')} to {report.period_end.strftime('%Y -% m-%d')}</p>
                 </div>
                 <div class="summary">
-                    <h2>Summary</h2>
+                    <h2 > Summary </ h2>
                     <p>{report.summary}</p>
                 </div>
                 <div class="recommendations">
-                    <h2>Recommendations</h2>
+                    <h2 > Recommendations </ h2>
                     <ul>
                         {''.join(f'<li>{rec}</li>' for rec in report.recommendations)}
                     </ul>

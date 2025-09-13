@@ -13,7 +13,7 @@ def build(root: Path, goal: str = "") -> Dict[str, Any]:
     analysis_path = ai_dir / "analysis.json"
     analysis: Dict[str, Any] = {}
     if analysis_path.exists():
-        analysis = json.loads(analysis_path.read_text(encoding="utf-8"))
+        analysis = json.loads(analysis_path.read_text(encoding="utf - 8"))
 
     tasks: List[Dict[str, Any]] = []
 
@@ -48,6 +48,6 @@ def build(root: Path, goal: str = "") -> Dict[str, Any]:
     }
 
     (ai_dir / "roadmap.json").write_text(
-        json.dumps(roadmap, indent=2), encoding="utf-8"
+        json.dumps(roadmap, indent=2), encoding="utf - 8"
     )
     return roadmap

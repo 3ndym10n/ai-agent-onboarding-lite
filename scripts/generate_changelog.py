@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-# mypy: ignore-errors
+#!/usr / bin / env python3
+# mypy: ignore - errors
 """
 Generate changelog for releases.
 
@@ -7,10 +7,9 @@ This script generates a changelog based on git commits and conventional commit m
 """
 
 import subprocess
-import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Dict, List
 
 
 def run_git_command(command: List[str]) -> str:
@@ -26,15 +25,15 @@ def run_git_command(command: List[str]) -> str:
 def get_commits_since_last_tag() -> List[Dict[str, str]]:
     """Get commits since the last tag."""
     # Get the last tag
-    last_tag = run_git_command(["git", "describe", "--tags", "--abbrev=0"])
+    last_tag = run_git_command(["git", "describe", "--tags", "--abbrev = 0"])
 
     if not last_tag:
         # If no tags exist, get all commits
-        commits = run_git_command(["git", "log", "--oneline", "--no-merges"])
+        commits = run_git_command(["git", "log", "--oneline", "--no - merges"])
     else:
         # Get commits since last tag
         commits = run_git_command(
-            ["git", "log", f"{last_tag}..HEAD", "--oneline", "--no-merges"]
+            ["git", "log", f"{last_tag}..HEAD", "--oneline", "--no - merges"]
         )
 
     if not commits:
@@ -89,7 +88,7 @@ def generate_changelog(categories: Dict[str, List[Dict[str, str]]]) -> str:
     # Header
     changelog.append("# Changelog")
     changelog.append("")
-    changelog.append(f"Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    changelog.append(f"Generated on {datetime.now().strftime('%Y -% m-%d %H:%M:%S')}")
     changelog.append("")
 
     # Features
@@ -159,7 +158,7 @@ def generate_changelog(categories: Dict[str, List[Dict[str, str]]]) -> str:
     changelog.append("---")
     changelog.append("")
     changelog.append(
-        "For more details, see the [full commit history](https://github.com/3ndym10n/ai-agent-onboarding-lite/commits/main)."
+        "For more details, see the [full commit history](https://github.com / 3ndym10n / ai - agent - onboarding - lite / commits / main)."
     )
 
     return "\n".join(changelog)
@@ -186,7 +185,7 @@ def main():
 
     # Write to file
     changelog_path = Path("CHANGELOG.md")
-    changelog_path.write_text(changelog_content, encoding="utf-8")
+    changelog_path.write_text(changelog_content, encoding="utf - 8")
 
     print(f"Changelog generated: {changelog_path}")
     print(f"Categories: {', '.join([k for k, v in categories.items() if v])}")

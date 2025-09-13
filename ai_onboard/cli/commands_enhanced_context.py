@@ -1,18 +1,16 @@
 """
 CLI commands for Enhanced Conversation Context Management.
 
-This module provides command-line interfaces for:
+This module provides command - line interfaces for:
 - Managing conversation context memories
-- Cross-session context tracking
+- Cross - session context tracking
 - Context sharing between AI agents
 - Context continuity analysis
 """
 
 import argparse
-import json
 import time
 from pathlib import Path
-from typing import Optional
 
 from ..core.enhanced_conversation_context import get_enhanced_context_manager
 
@@ -22,17 +20,17 @@ def add_enhanced_context_commands(subparsers):
 
     # Main enhanced context command
     context_parser = subparsers.add_parser(
-        "enhanced-context",
+        "enhanced - context",
         help="Enhanced conversation context management for AI agents",
     )
     context_sub = context_parser.add_subparsers(dest="context_cmd", required=True)
 
     # Enhance session command
     enhance_parser = context_sub.add_parser(
-        "enhance", help="Enhance a session with cross-session context and memories"
+        "enhance", help="Enhance a session with cross - session context and memories"
     )
     enhance_parser.add_argument(
-        "--session-id", required=True, help="Session ID to enhance"
+        "--session - id", required=True, help="Session ID to enhance"
     )
 
     # Create memory command
@@ -43,8 +41,10 @@ def add_enhanced_context_commands(subparsers):
     create_memory_parser = memory_sub.add_parser(
         "create", help="Create a new context memory"
     )
-    create_memory_parser.add_argument("--session-id", required=True, help="Session ID")
-    create_memory_parser.add_argument("--user-id", required=True, help="User ID")
+    create_memory_parser.add_argument(
+        "--session - id", required=True, help="Session ID"
+    )
+    create_memory_parser.add_argument("--user - id", required=True, help="User ID")
     create_memory_parser.add_argument("--topic", required=True, help="Memory topic")
     create_memory_parser.add_argument(
         "--facts", nargs="+", required=True, help="Key facts"
@@ -58,7 +58,7 @@ def add_enhanced_context_commands(subparsers):
 
     # List memories
     list_memory_parser = memory_sub.add_parser("list", help="List context memories")
-    list_memory_parser.add_argument("--user-id", help="Filter by user ID")
+    list_memory_parser.add_argument("--user - id", help="Filter by user ID")
     list_memory_parser.add_argument("--topic", help="Filter by topic")
     list_memory_parser.add_argument(
         "--limit", type=int, default=20, help="Limit results"
@@ -68,10 +68,12 @@ def add_enhanced_context_commands(subparsers):
     share_parser = context_sub.add_parser(
         "share", help="Share context with another AI agent"
     )
-    share_parser.add_argument("--session-id", required=True, help="Session ID to share")
-    share_parser.add_argument("--target-agent", required=True, help="Target agent ID")
     share_parser.add_argument(
-        "--context-types",
+        "--session - id", required=True, help="Session ID to share"
+    )
+    share_parser.add_argument("--target - agent", required=True, help="Target agent ID")
+    share_parser.add_argument(
+        "--context - types",
         nargs="+",
         choices=[
             "conversation_history",
@@ -87,7 +89,7 @@ def add_enhanced_context_commands(subparsers):
     continuity_parser = context_sub.add_parser(
         "continuity", help="Get context continuity summary"
     )
-    continuity_parser.add_argument("--user-id", required=True, help="User ID")
+    continuity_parser.add_argument("--user - id", required=True, help="User ID")
 
     # Context graph command
     graph_parser = context_sub.add_parser("graph", help="Context relationship analysis")
@@ -100,7 +102,7 @@ def add_enhanced_context_commands(subparsers):
     patterns_parser = graph_sub.add_parser(
         "patterns", help="Find conversation patterns"
     )
-    patterns_parser.add_argument("--user-id", help="Filter by user ID")
+    patterns_parser.add_argument("--user - id", help="Filter by user ID")
     patterns_parser.add_argument("--days", type=int, default=7, help="Days to analyze")
 
     # Analytics command
@@ -115,10 +117,10 @@ def add_enhanced_context_commands(subparsers):
     insights_parser = analytics_sub.add_parser(
         "insights", help="Get user behavior insights"
     )
-    insights_parser.add_argument("--user-id", required=True, help="User ID")
+    insights_parser.add_argument("--user - id", required=True, help="User ID")
 
     # System stats
-    analytics_sub.add_parser("stats", help="Get system-wide context statistics")
+    analytics_sub.add_parser("stats", help="Get system - wide context statistics")
 
     # Cleanup command
     cleanup_parser = context_sub.add_parser("cleanup", help="Clean up old context data")
@@ -126,7 +128,7 @@ def add_enhanced_context_commands(subparsers):
         "--days", type=int, default=30, help="Keep data newer than N days"
     )
     cleanup_parser.add_argument(
-        "--dry-run", action="store_true", help="Show what would be cleaned up"
+        "--dry - run", action="store_true", help="Show what would be cleaned up"
     )
 
 
@@ -174,9 +176,9 @@ def _handle_enhance_session(args: argparse.Namespace, context_manager) -> None:
     print(f"State: {base['state']}")
     print(f"Conversation Rounds: {base['conversation_rounds']}")
 
-    # Cross-session insights
+    # Cross - session insights
     insights = result["cross_session_insights"]
-    print(f"\n🧠 Cross-Session Insights:")
+    print(f"\n🧠 Cross - Session Insights:")
     print(f"Communication Style: {insights['communication_style']}")
     print(
         f"Expertise Areas: {', '.join(insights['expertise_areas']) if insights['expertise_areas'] else 'None identified'}"
@@ -374,7 +376,7 @@ def _handle_graph_commands(args: argparse.Namespace, context_manager) -> None:
         print("• Common conversation flows")
         print("• Recurring topics and themes")
         print("• User behavior patterns")
-        print("• Success/failure patterns")
+        print("• Success / failure patterns")
 
 
 def _handle_analytics_commands(args: argparse.Namespace, context_manager) -> None:
@@ -425,7 +427,7 @@ def _handle_analytics_commands(args: argparse.Namespace, context_manager) -> Non
             print(f"  • Most used command: {top_command}")
 
     elif args.analytics_action == "stats":
-        print("📊 System-wide Context Statistics:")
+        print("📊 System - wide Context Statistics:")
         print("=" * 40)
 
         total_memories = len(context_manager.memories)
@@ -433,7 +435,7 @@ def _handle_analytics_commands(args: argparse.Namespace, context_manager) -> Non
         total_sharing_profiles = len(context_manager.sharing_profiles)
 
         print(f"Total Memories: {total_memories}")
-        print(f"Cross-session Contexts: {total_cross_contexts}")
+        print(f"Cross - session Contexts: {total_cross_contexts}")
         print(f"Sharing Profiles: {total_sharing_profiles}")
         print(f"Context Relationships: {len(context_manager.context_graph)}")
 
@@ -463,7 +465,7 @@ def _handle_cleanup(args: argparse.Namespace, context_manager) -> None:
         if memory.created_at < cutoff_time
     ]
 
-    # Find old cross-session contexts
+    # Find old cross - session contexts
     old_contexts = [
         context
         for context in context_manager.cross_session_contexts.values()
@@ -473,7 +475,7 @@ def _handle_cleanup(args: argparse.Namespace, context_manager) -> None:
     if args.dry_run:
         print("🔍 Dry Run - Items that would be cleaned up:")
         print(f"  Old Memories: {len(old_memories)}")
-        print(f"  Old Cross-session Contexts: {len(old_contexts)}")
+        print(f"  Old Cross - session Contexts: {len(old_contexts)}")
 
         if old_memories:
             print("\nOld Memories:")

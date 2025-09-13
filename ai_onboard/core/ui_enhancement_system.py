@@ -10,16 +10,12 @@ This module provides intelligent UI enhancements that:
 """
 
 import json
-import re
-import shutil
-import time
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Set
 
-from . import utils
 from .user_preference_learning import get_user_preference_learning_system
 
 
@@ -37,11 +33,11 @@ class CommandCategory(Enum):
 
     PROJECT = "project"  # charter, plan, align, validate, progress
     OPTIMIZATION = "optimization"  # kaizen, experiments, performance
-    AI_SYSTEMS = "ai_systems"  # agent, collaboration, context, decision-pipeline
+    AI_SYSTEMS = "ai_systems"  # agent, collaboration, context, decision - pipeline
     DEVELOPMENT = "development"  # cursor, api, debug, metrics
-    LEARNING = "learning"  # user-prefs, continuous-improvement, knowledge
+    LEARNING = "learning"  # user - prefs, continuous - improvement, knowledge
     CORE = "core"  # Basic functionality
-    ADVANCED = "advanced"  # Advanced/experimental features
+    ADVANCED = "advanced"  # Advanced / experimental features
 
 
 class InterfaceMode(Enum):
@@ -246,29 +242,29 @@ class UIEnhancementSystem:
                 tags=["optimization", "improvement", "manual"],
             ),
             CommandInfo(
-                name="kaizen-auto",
+                name="kaizen - auto",
                 category=CommandCategory.OPTIMIZATION,
                 description="Automated continuous improvement system",
-                usage_example="ai_onboard kaizen-auto start",
+                usage_example="ai_onboard kaizen - auto start",
                 expertise_level=UserExpertiseLevel.ADVANCED,
-                related_commands=["kaizen", "opt-experiments"],
+                related_commands=["kaizen", "opt - experiments"],
                 tags=["optimization", "automation", "continuous"],
             ),
             CommandInfo(
-                name="opt-experiments",
+                name="opt - experiments",
                 category=CommandCategory.OPTIMIZATION,
                 description="Design and run optimization experiments",
-                usage_example="ai_onboard opt-experiments design --name 'Performance Test'",
+                usage_example="ai_onboard opt - experiments design --name 'Performance Test'",
                 expertise_level=UserExpertiseLevel.ADVANCED,
-                related_commands=["kaizen-auto"],
+                related_commands=["kaizen - auto"],
                 tags=["optimization", "experiments", "testing"],
             ),
             # AI Systems
             CommandInfo(
-                name="ai-agent",
+                name="ai - agent",
                 category=CommandCategory.AI_SYSTEMS,
                 description="AI agent collaboration and management",
-                usage_example="ai_onboard ai-agent status",
+                usage_example="ai_onboard ai - agent status",
                 expertise_level=UserExpertiseLevel.INTERMEDIATE,
                 tags=["ai", "agent", "collaboration"],
             ),
@@ -278,25 +274,25 @@ class UIEnhancementSystem:
                 description="AI Agent Orchestration Layer",
                 usage_example="ai_onboard aaol session create",
                 expertise_level=UserExpertiseLevel.ADVANCED,
-                related_commands=["ai-agent", "enhanced-context"],
+                related_commands=["ai - agent", "enhanced - context"],
                 tags=["ai", "orchestration", "advanced"],
             ),
             CommandInfo(
-                name="enhanced-context",
+                name="enhanced - context",
                 category=CommandCategory.AI_SYSTEMS,
                 description="Advanced conversation context management",
-                usage_example="ai_onboard enhanced-context enhance",
+                usage_example="ai_onboard enhanced - context enhance",
                 expertise_level=UserExpertiseLevel.ADVANCED,
-                related_commands=["aaol", "decision-pipeline"],
+                related_commands=["aaol", "decision - pipeline"],
                 tags=["ai", "context", "conversation"],
             ),
             CommandInfo(
-                name="decision-pipeline",
+                name="decision - pipeline",
                 category=CommandCategory.AI_SYSTEMS,
                 description="Advanced agent decision processing",
-                usage_example="ai_onboard decision-pipeline test",
+                usage_example="ai_onboard decision - pipeline test",
                 expertise_level=UserExpertiseLevel.EXPERT,
-                related_commands=["enhanced-context", "aaol"],
+                related_commands=["enhanced - context", "aaol"],
                 tags=["ai", "decision", "pipeline", "advanced"],
             ),
             # Development
@@ -318,29 +314,29 @@ class UIEnhancementSystem:
                 tags=["development", "api", "server"],
             ),
             CommandInfo(
-                name="unified-metrics",
+                name="unified - metrics",
                 category=CommandCategory.DEVELOPMENT,
                 description="Comprehensive metrics collection",
-                usage_example="ai_onboard unified-metrics query",
+                usage_example="ai_onboard unified - metrics query",
                 expertise_level=UserExpertiseLevel.ADVANCED,
                 tags=["development", "metrics", "monitoring"],
             ),
             # Learning
             CommandInfo(
-                name="user-prefs",
+                name="user - prefs",
                 category=CommandCategory.LEARNING,
                 description="User preference learning and adaptation",
-                usage_example="ai_onboard user-prefs summary --user me",
+                usage_example="ai_onboard user - prefs summary --user me",
                 expertise_level=UserExpertiseLevel.INTERMEDIATE,
                 tags=["learning", "preferences", "personalization"],
             ),
             CommandInfo(
-                name="continuous-improvement",
+                name="continuous - improvement",
                 category=CommandCategory.LEARNING,
                 description="System learning and improvement",
-                usage_example="ai_onboard continuous-improvement status",
+                usage_example="ai_onboard continuous - improvement status",
                 expertise_level=UserExpertiseLevel.ADVANCED,
-                related_commands=["kaizen-auto", "user-prefs"],
+                related_commands=["kaizen - auto", "user - prefs"],
                 tags=["learning", "improvement", "system"],
             ),
         ]
@@ -453,7 +449,7 @@ class UIEnhancementSystem:
     def get_user_profile(self, user_id: str = "default") -> UserProfile:
         """Get or create user profile."""
         if user_id not in self.user_profiles:
-            # Create new profile with auto-detected expertise
+            # Create new profile with auto - detected expertise
             expertise = self._detect_user_expertise(user_id)
 
             self.user_profiles[user_id] = UserProfile(
@@ -467,7 +463,7 @@ class UIEnhancementSystem:
         return self.user_profiles[user_id]
 
     def _detect_user_expertise(self, user_id: str) -> UserExpertiseLevel:
-        """Auto-detect user expertise level based on usage patterns."""
+        """Auto - detect user expertise level based on usage patterns."""
         if not self.config.get("auto_detect_expertise", True):
             return UserExpertiseLevel.BEGINNER
 
@@ -543,14 +539,14 @@ class UIEnhancementSystem:
         profile = self.get_user_profile(user_id)
         suggestions = []
 
-        # Context-based suggestions
+        # Context - based suggestions
         if context:
             suggestions.extend(self._get_context_suggestions(context, profile))
 
         # Usage pattern suggestions
         suggestions.extend(self._get_usage_pattern_suggestions(profile))
 
-        # Expertise-based suggestions
+        # Expertise - based suggestions
         suggestions.extend(self._get_expertise_suggestions(profile))
 
         # Filter by confidence threshold
@@ -574,14 +570,14 @@ class UIEnhancementSystem:
         context_mappings = {
             "project": ["charter", "plan", "align", "validate"],
             "planning": ["charter", "plan", "prompt"],
-            "optimization": ["kaizen", "kaizen-auto", "opt-experiments"],
-            "performance": ["kaizen", "opt-experiments", "unified-metrics"],
-            "ai": ["ai-agent", "aaol", "enhanced-context"],
-            "error": ["validate", "debug", "continuous-improvement"],
-            "development": ["cursor", "api", "unified-metrics"],
-            "learning": ["user-prefs", "continuous-improvement"],
-            "experiment": ["opt-experiments", "kaizen-auto"],
-            "metrics": ["unified-metrics", "prompt"],
+            "optimization": ["kaizen", "kaizen - auto", "opt - experiments"],
+            "performance": ["kaizen", "opt - experiments", "unified - metrics"],
+            "ai": ["ai - agent", "aaol", "enhanced - context"],
+            "error": ["validate", "debug", "continuous - improvement"],
+            "development": ["cursor", "api", "unified - metrics"],
+            "learning": ["user - prefs", "continuous - improvement"],
+            "experiment": ["opt - experiments", "kaizen - auto"],
+            "metrics": ["unified - metrics", "prompt"],
         }
 
         for keyword, commands in context_mappings.items():
@@ -773,7 +769,7 @@ class UIEnhancementSystem:
         if not profile.show_progress_bars or not self.config.get(
             "enable_progress_bars", True
         ):
-            return f"{current}/{total} ({current/total*100:.1f}%)"
+            return f"{current}/{total} ({current / total * 100:.1f}%)"
 
         filled = int(width * current / total) if total > 0 else 0
         bar = "█" * filled + "░" * (width - filled)

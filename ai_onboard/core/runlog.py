@@ -1,4 +1,4 @@
-"""Append-only run log (.ai_onboard/log.jsonl)."""
+"""Append - only run log (.ai_onboard / log.jsonl)."""
 
 import json
 import time
@@ -19,5 +19,5 @@ def write_event(root: Path, kind: str, payload: Dict[str, Any]) -> None:
         "data": payload,
     }
     p = _path(root)
-    with p.open("a", encoding="utf-8") as f:
+    with p.open("a", encoding="utf - 8") as f:
         f.write(json.dumps(rec) + "\n")

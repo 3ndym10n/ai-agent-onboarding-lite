@@ -7,9 +7,7 @@ including agent registration, session management, and guidance.
 
 import argparse
 from pathlib import Path
-from typing import Any, Dict, List
 
-from ..core import utils
 from ..core.ai_agent_collaboration_protocol import (
     AgentCapability,
     AgentProfile,
@@ -366,7 +364,7 @@ def _handle_contextual_guidance(args: argparse.Namespace, guidance_system) -> No
 
 def _handle_collaboration_status(args: argparse.Namespace, root: Path) -> None:
     """Handle getting overall collaboration status."""
-    protocol = get_collaboration_protocol(root)
+    get_collaboration_protocol(root)
 
     print("🤖 AI Agent Collaboration Status")
     print("=" * 35)
@@ -433,7 +431,7 @@ def _handle_test_collaboration(args: argparse.Namespace, root: Path) -> None:
 def add_ai_agent_collaboration_parser(subparsers) -> None:
     """Add AI agent collaboration commands to the argument parser."""
     collaboration_parser = subparsers.add_parser(
-        "ai-collaboration", help="AI agent collaboration management"
+        "ai - collaboration", help="AI agent collaboration management"
     )
 
     collaboration_subparsers = collaboration_parser.add_subparsers(
@@ -454,31 +452,31 @@ def add_ai_agent_collaboration_parser(subparsers) -> None:
         help="Agent capabilities",
     )
     register_parser.add_argument(
-        "--collaboration-mode",
+        "--collaboration - mode",
         choices=[mode.value for mode in CollaborationMode],
         default="collaborative",
         help="Collaboration mode",
     )
     register_parser.add_argument(
-        "--safety-level",
+        "--safety - level",
         choices=[level.value for level in SafetyLevel],
         default="medium",
         help="Safety level",
     )
     register_parser.add_argument(
-        "--max-actions", type=int, help="Maximum autonomous actions"
+        "--max - actions", type=int, help="Maximum autonomous actions"
     )
     register_parser.add_argument(
-        "--require-confirmation", nargs="+", help="Actions requiring confirmation"
+        "--require - confirmation", nargs="+", help="Actions requiring confirmation"
     )
     register_parser.add_argument(
-        "--allowed-commands", nargs="+", help="Allowed commands"
+        "--allowed - commands", nargs="+", help="Allowed commands"
     )
     register_parser.add_argument(
-        "--blocked-commands", nargs="+", help="Blocked commands"
+        "--blocked - commands", nargs="+", help="Blocked commands"
     )
     register_parser.add_argument(
-        "--session-timeout", type=int, help="Session timeout in seconds"
+        "--session - timeout", type=int, help="Session timeout in seconds"
     )
 
     # Session management

@@ -5,7 +5,7 @@ import string
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List
 
 
 def ensure_dir(path: Path):
@@ -20,7 +20,7 @@ def generate_id(length: int = 8) -> str:
 
 def write_json(path: Path, data):
     ensure_dir(path.parent)
-    path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+    path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf - 8")
 
 
 # Global cache for JSON files
@@ -54,7 +54,7 @@ def read_json_cached(path: Path, default=None) -> Any:
         return default
 
     try:
-        content = json.loads(path.read_text(encoding="utf-8"))
+        content = json.loads(path.read_text(encoding="utf - 8"))
         # Cache the result
         _json_cache[cache_key] = content
         _json_cache_access[cache_key] = time.time()
@@ -69,15 +69,15 @@ async def read_json_async(path: Path, default=None) -> Any:
     if not path.exists():
         return default
     try:
-        # Use asyncio.to_thread for the blocking I/O operation
-        content = await asyncio.to_thread(path.read_text, encoding="utf-8")
+        # Use asyncio.to_thread for the blocking I / O operation
+        content = await asyncio.to_thread(path.read_text, encoding="utf - 8")
         return json.loads(content)
     except (json.JSONDecodeError, OSError):
         return default
 
 
 def read_json(path: Path, default=None):
-    """Backward-compatible JSON reading - now uses optimized cached version."""
+    """Backward - compatible JSON reading - now uses optimized cached version."""
     return read_json_cached(path, default)
 
 
@@ -109,7 +109,7 @@ def now_iso() -> str:
 def dumps_json(data) -> str:
     """Safe JSON serializer used by CLI output paths.
 
-    Falls back to default=str for objects that aren't natively serializable.
+    Falls back to default = str for objects that aren't natively serializable.
     """
     try:
         return json.dumps(data, ensure_ascii=False)
@@ -130,5 +130,5 @@ def append_jsonl(path: Path, data: Dict[str, Any]):
     json_line = json.dumps(data, ensure_ascii=False, default=str) + "\n"
 
     # Append to file
-    with open(path, "a", encoding="utf-8") as f:
+    with open(path, "a", encoding="utf - 8") as f:
         f.write(json_line)

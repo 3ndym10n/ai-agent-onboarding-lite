@@ -37,7 +37,7 @@ def get_applicable_rules(
     try:
         parsed = json.loads(change_summary) if change_summary else {}
     except Exception:
-        parsed = {"_note": "non-json change summary provided"}
+        parsed = {"_note": "non - json change summary provided"}
     rules = intent_checks.applicable_rules(root, man, target_path, parsed)
     return {"rules": rules}
 

@@ -6,7 +6,6 @@ with the AI Agent Onboarding system, including agent registration, session manag
 and command translation capabilities.
 """
 
-import json
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -233,7 +232,7 @@ class CursorAIIntegration:
         self, natural_language: str
     ) -> Dict[str, Any]:
         """Translate natural language to AI Onboard commands."""
-        # Simple rule-based translation (can be enhanced with ML)
+        # Simple rule - based translation (can be enhanced with ML)
         command_mappings = {
             "analyze": ["analyze", "scan", "examine", "inspect"],
             "charter": ["charter", "vision", "goals", "objectives"],
@@ -430,7 +429,7 @@ class CursorAIIntegration:
                 "status": "active",
                 "retrieved_at": datetime.now().isoformat(),
             }
-        except Exception as e:
+        except Exception:
             self._record_metric("agent_profile_retrieval_error", 1)
             return None
 
@@ -472,7 +471,7 @@ class CursorAIIntegration:
                 return session_data
             else:
                 return None
-        except Exception as e:
+        except Exception:
             self._record_metric("session_retrieval_error", 1)
             return None
 

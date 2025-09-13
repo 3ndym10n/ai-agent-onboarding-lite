@@ -1,4 +1,4 @@
-"""Interrogate commands for ai-onboard CLI."""
+"""Interrogate commands for ai - onboard CLI."""
 
 import json
 import os
@@ -24,17 +24,17 @@ def add_interrogate_commands(subparsers):
         "submit", help="Submit response to interrogation question"
     )
     submit_parser.add_argument("--phase", help="Interrogation phase")
-    submit_parser.add_argument("--question-id", help="Question ID")
+    submit_parser.add_argument("--question - id", help="Question ID")
     submit_parser.add_argument("--response", help="Response data (JSON)")
 
     si_sub.add_parser("questions", help="Get current interrogation questions")
     si_sub.add_parser("summary", help="Get interrogation summary")
     si_sub.add_parser(
-        "force-complete", help="Force complete interrogation (use with caution)"
+        "force - complete", help="Force complete interrogation (use with caution)"
     )
     si_sub.add_parser(
-        "complete-from-charter",
-        help="Mark interrogation complete using existing charter.json (non-interactive)",
+        "complete - from - charter",
+        help="Mark interrogation complete using existing charter.json (non - interactive)",
     )
 
 
@@ -72,7 +72,7 @@ def handle_interrogate_commands(args, root: Path):
             questions = []
 
         if questions:
-            # Lean approve server (one-click). Stronger guarantee than chat gates.
+            # Lean approve server (one - click). Stronger guarantee than chat gates.
             resp = request_approval(
                 title="Vision Interrogation - Provide Your Answers",
                 description="Answer the questions below, then click Approve to submit.",
@@ -95,18 +95,18 @@ def handle_interrogate_commands(args, root: Path):
         print(prompt_bridge.dumps_json(result))
         return True
     elif icmd == "submit":
-        # Submit response (gate-enforced)
+        # Submit response (gate - enforced)
         phase = getattr(args, "phase", None)
         question_id = getattr(args, "question_id", None)
         provided_response = getattr(args, "response", None)
 
         if not all([phase, question_id]):
             print(
-                '{"error":"missing required arguments: phase and question-id are required"}'
+                '{"error":"missing required arguments: phase and question - id are required"}'
             )
             return True
 
-        # CI-only bypass maintains previous behavior
+        # CI - only bypass maintains previous behavior
         if (
             os.getenv("GITHUB_ACTIONS", "").lower() == "true"
             and os.getenv("AI_ONBOARD_BYPASS", "") == "ci"
@@ -123,7 +123,7 @@ def handle_interrogate_commands(args, root: Path):
                 print(f'{{"error":"failed to submit response: {str(e)}"}}')
             return True
 
-        # Gate-enforced path: always ask the human in chat to answer
+        # Gate - enforced path: always ask the human in chat to answer
         # Find the question text for better UX
         question_text = None
         try:
@@ -186,13 +186,13 @@ def handle_interrogate_commands(args, root: Path):
         result = interrogator.get_interrogation_summary()
         print(prompt_bridge.dumps_json(result))
         return True
-    elif icmd == "force-complete":
+    elif icmd == "force - complete":
         # Force complete interrogation
         result = interrogator.force_complete_interrogation()
         print(prompt_bridge.dumps_json(result))
         return True
-    elif icmd == "complete-from-charter":
-        # Non-interactive completion using existing charter
+    elif icmd == "complete - from - charter":
+        # Non - interactive completion using existing charter
         result = interrogator.complete_from_charter()
         print(prompt_bridge.dumps_json(result))
         return True

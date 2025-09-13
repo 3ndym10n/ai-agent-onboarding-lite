@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+#!/usr / bin / env python3
 """
-Enhanced System Test Script for ai-onboard.
+Enhanced System Test Script for ai - onboard.
 
 Phase 1: Enhanced Testing Foundation
 Tests all major system capabilities with comprehensive metrics collection,
@@ -8,7 +8,6 @@ performance monitoring, confidence scoring, and detailed reporting.
 """
 
 import json
-import os
 import sys
 import time
 from datetime import datetime
@@ -144,7 +143,7 @@ class EnhancedMetricsCollector:
         if execution_time > 2.0:
             base_score *= 0.8  # Penalty for slow execution
 
-        # Test-specific adjustments
+        # Test - specific adjustments
         if test_name == "Error Monitoring":
             base_score *= 1.0  # High confidence for error monitoring
         elif test_name == "Vision System":
@@ -159,7 +158,7 @@ class EnhancedMetricsCollector:
     def _calculate_performance_score(
         self, execution_time: float, memory_delta: float
     ) -> float:
-        """Calculate performance score from 0-100."""
+        """Calculate performance score from 0 - 100."""
         time_score = max(0, 100 - (execution_time * 25))
         memory_score = max(0, 100 - (memory_delta * 1.5))
         return round((time_score + memory_score) / 2, 1)
@@ -340,7 +339,7 @@ class EnhancedMetricsCollector:
 
         if high_conf_analyses > 0:
             insights.append(
-                f"🔍 SmartDebugger provided high-confidence analysis for {high_conf_analyses} error cases"
+                f"🔍 SmartDebugger provided high - confidence analysis for {high_conf_analyses} error cases"
             )
         else:
             insights.append(
@@ -583,7 +582,7 @@ class PerformanceBaselineMonitor:
         high_alerts = [a for a in self.alerts if a.get("severity") == "high"]
         if high_alerts:
             recommendations.append(
-                f"Address {len(high_alerts)} high-severity performance issues"
+                f"Address {len(high_alerts)} high - severity performance issues"
             )
 
         # Check baseline age
@@ -614,7 +613,7 @@ class PerformanceBaselineMonitor:
 
         if stale_tests:
             recommendations.append(
-                f"Re-run performance monitoring for {len(stale_tests)} stale tests"
+                f"Re - run performance monitoring for {len(stale_tests)} stale tests"
             )
 
         return recommendations
@@ -864,7 +863,7 @@ def main():
         # Run test with enhanced metrics collection
         test_metrics = metrics_collector.collect_test_metrics(name, test_func)
 
-        # Establish/update performance baseline
+        # Establish / update performance baseline
         performance_monitor.establish_baseline(name, test_metrics)
 
         # Monitor performance against baseline
@@ -914,7 +913,7 @@ def main():
             f"   🎯 Average confidence: {smart_debugger_analysis.get('average_confidence_score', 0):.1f}"
         )
         print(
-            f"   📊 High-confidence analyses: {smart_debugger_analysis.get('high_confidence_analyses', 0)}"
+            f"   📊 High - confidence analyses: {smart_debugger_analysis.get('high_confidence_analyses', 0)}"
         )
         print(
             f"   🔍 Total error analyses: {smart_debugger_analysis.get('total_error_analyses', 0)}"

@@ -63,13 +63,13 @@ def sync_interrogation_to_charter(root: Path) -> bool:
                 "time": "Limited but can give time as needed",
                 "budget": "Very low cost or free solutions only",
                 "compliance": [
-                    "Must work within cursor-ai",
+                    "Must work within cursor - ai",
                     "Python 3.8+ compatibility",
                 ],
             },
             "assumptions": [
                 "Users have limited programming background",
-                "Users are tech-savvy but lack technical implementation knowledge",
+                "Users are tech - savvy but lack technical implementation knowledge",
                 "AI agents need structured collaboration mechanisms",
             ],
             "success_metrics": [

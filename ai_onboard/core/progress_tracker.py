@@ -12,7 +12,7 @@ def write_report(root: Path, res: dict) -> None:
     for r in (res or {}).get("results", []):
         comp = r.get("component", "unknown")
         score = r.get("score")
-        score_s = f"{score:.2f}" if isinstance(score, (int, float)) else "n/a"
+        score_s = f"{score:.2f}" if isinstance(score, (int, float)) else "n / a"
         out.append(f"## Component: {comp} — score {score_s}")
         issues = r.get("issues", []) or []
         if not issues:
@@ -27,7 +27,7 @@ def write_report(root: Path, res: dict) -> None:
     utils.ensure_dir(root / ".ai_onboard")
     content = "\n".join(out)
     # canonical
-    (root / ".ai_onboard" / "report.md").write_text(content, encoding="utf-8")
+    (root / ".ai_onboard" / "report.md").write_text(content, encoding="utf - 8")
     # versioned copy
     v = versioning.get_version(root)
-    (root / ".ai_onboard" / f"report_v{v}.md").write_text(content, encoding="utf-8")
+    (root / ".ai_onboard" / f"report_v{v}.md").write_text(content, encoding="utf - 8")

@@ -2,11 +2,10 @@
 AI Agent Collaboration Protocol - Comprehensive protocol for AI agent integration.
 
 This module defines the complete protocol for how AI agents should interact with
-the ai-onboard system, including communication standards, safety mechanisms,
+the ai - onboard system, including communication standards, safety mechanisms,
 integration points, and best practices.
 """
 
-import json
 import time
 import uuid
 from dataclasses import dataclass, field
@@ -27,7 +26,7 @@ from .universal_error_monitor import get_error_monitor
 class CollaborationMode(Enum):
     """Modes of AI agent collaboration."""
 
-    ASSISTIVE = "assistive"  # AI agent assists user with ai-onboard
+    ASSISTIVE = "assistive"  # AI agent assists user with ai - onboard
     AUTONOMOUS = "autonomous"  # AI agent operates independently with oversight
     COLLABORATIVE = "collaborative"  # AI agent and user work together
     SUPERVISED = "supervised"  # AI agent works under human supervision
@@ -77,7 +76,7 @@ class AgentProfile:
 
 @dataclass
 class CollaborationSession:
-    """Active collaboration session between AI agent and ai-onboard."""
+    """Active collaboration session between AI agent and ai - onboard."""
 
     session_id: str
     agent_profile: AgentProfile
@@ -92,7 +91,7 @@ class CollaborationSession:
 
 
 class AIAgentCollaborationProtocol:
-    """Main protocol for AI agent collaboration with ai-onboard."""
+    """Main protocol for AI agent collaboration with ai - onboard."""
 
     def __init__(self, project_root: Path):
         self.project_root = project_root
@@ -508,7 +507,7 @@ class AIAgentCollaborationProtocol:
             "session_start": session.started_at.isoformat(),
         }
 
-        # Add project-specific context
+        # Add project - specific context
         try:
             # Check if vision interrogation is complete
             vision_status = self.vision_interrogator.check_vision_readiness()
@@ -597,8 +596,8 @@ class AIAgentCollaborationProtocol:
     def _is_protected_file(self, file_path: str) -> bool:
         """Check if a file is protected from modification."""
         protected_patterns = [
-            ".ai_onboard/policies/",
-            ".ai_onboard/charter.json",
+            ".ai_onboard / policies/",
+            ".ai_onboard / charter.json",
             "pyproject.toml",
             "README.md",
             "AGENTS.md",
@@ -712,7 +711,7 @@ class AIAgentCollaborationProtocol:
         if operation == "read":
             try:
                 file_content = (session.project_root / file_path).read_text(
-                    encoding="utf-8"
+                    encoding="utf - 8"
                 )
                 return {
                     "status": "success",
@@ -724,7 +723,9 @@ class AIAgentCollaborationProtocol:
 
         elif operation == "write":
             try:
-                (session.project_root / file_path).write_text(content, encoding="utf-8")
+                (session.project_root / file_path).write_text(
+                    content, encoding="utf - 8"
+                )
                 return {
                     "status": "success",
                     "action": "file_written",

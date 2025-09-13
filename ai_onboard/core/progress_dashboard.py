@@ -126,7 +126,7 @@ class ProgressDashboard:
 
         for task in plan["tasks"]:
             if task.get("status") == "completed" and "completion_date" in task:
-                completion_date = task["completion_date"][:10]  # YYYY-MM-DD
+                completion_date = task["completion_date"][:10]  # YYYY - MM - DD
                 week_start = self._get_week_start(completion_date)
 
                 weekly_completions[week_start] += 1
@@ -156,7 +156,7 @@ class ProgressDashboard:
         )
         overdue_tasks = self._count_overdue_tasks(plan)
 
-        # Calculate health score (0-100)
+        # Calculate health score (0 - 100)
         completion_score = (
             (completed_tasks / total_tasks) * 50 if total_tasks > 0 else 0
         )
@@ -365,7 +365,7 @@ class ProgressDashboard:
         days_remaining = remaining_tasks / progress_rate
         estimated_date = datetime.now() + timedelta(days=days_remaining)
 
-        return estimated_date.strftime("%Y-%m-%d")
+        return estimated_date.strftime("%Y -% m-%d")
 
     def _generate_progress_bar(self, percentage: float) -> str:
         """Legacy wrapper kept for compatibility; delegates to canonical utils."""
@@ -415,7 +415,7 @@ class ProgressDashboard:
         date = datetime.fromisoformat(date_str)
         # Monday is 0 in isocalendar
         week_start = date - timedelta(days=date.weekday())
-        return week_start.strftime("%Y-%m-%d")
+        return week_start.strftime("%Y -% m-%d")
 
     def _count_overdue_tasks(self, plan: Dict[str, Any]) -> int:
         """Count overdue tasks."""

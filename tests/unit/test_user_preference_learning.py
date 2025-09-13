@@ -9,7 +9,7 @@ import json
 import tempfile
 from datetime import datetime, timedelta
 from pathlib import Path
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -328,7 +328,7 @@ class TestUserPreferenceLearningSystem:
 
     def test_error_handling_invalid_user(self, preference_system):
         """Test error handling with invalid user IDs."""
-        # Non-existent user
+        # Non - existent user
         preferences = preference_system.get_user_preferences("non_existent_user")
         assert isinstance(preferences, list)
         assert len(preferences) == 0
@@ -455,7 +455,7 @@ class TestUserPreferenceLearningIntegration:
     """Integration tests for the user preference learning system."""
 
     def test_end_to_end_learning_cycle(self, temp_root):
-        """Test complete end-to-end learning cycle."""
+        """Test complete end - to - end learning cycle."""
         with patch("ai_onboard.core.user_preference_learning.telemetry"), patch(
             "ai_onboard.core.user_preference_learning.get_unified_metrics_collector"
         ):

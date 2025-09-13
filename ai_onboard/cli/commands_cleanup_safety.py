@@ -5,9 +5,7 @@ This module provides commands to manage cleanup safety gates,
 view backups, perform rollbacks, and configure safety settings.
 """
 
-import argparse
 from pathlib import Path
-from typing import List
 
 from ..core.cleanup_safety_gates import (
     CleanupOperation,
@@ -20,9 +18,9 @@ from ..core.unicode_utils import print_activity, print_content, print_status, sa
 def add_cleanup_safety_commands(subparsers):
     """Add cleanup safety commands to the CLI."""
 
-    # Main cleanup-safety command
+    # Main cleanup - safety command
     safety_parser = subparsers.add_parser(
-        "cleanup-safety",
+        "cleanup - safety",
         help="Cleanup safety gate management",
         description="Manage cleanup safety gates, backups, and rollback operations",
     )
@@ -42,14 +40,14 @@ def add_cleanup_safety_commands(subparsers):
         help="Type of operation to test",
     )
     test_parser.add_argument(
-        "--dry-run",
+        "--dry - run",
         action="store_true",
         help="Show what would happen without executing",
     )
 
     # List backups
     list_parser = safety_subparsers.add_parser(
-        "list-backups", help="List available backups"
+        "list - backups", help="List available backups"
     )
     list_parser.add_argument(
         "--limit", type=int, default=10, help="Maximum number of backups to show"
@@ -66,13 +64,13 @@ def add_cleanup_safety_commands(subparsers):
 
     # Clean old backups
     clean_parser = safety_subparsers.add_parser(
-        "clean-backups", help="Clean old backup files"
+        "clean - backups", help="Clean old backup files"
     )
     clean_parser.add_argument(
         "--days", type=int, default=30, help="Delete backups older than N days"
     )
     clean_parser.add_argument(
-        "--dry-run",
+        "--dry - run",
         action="store_true",
         help="Show what would be deleted without deleting",
     )
@@ -82,12 +80,14 @@ def add_cleanup_safety_commands(subparsers):
         "config", help="Configure safety gate settings"
     )
     config_parser.add_argument(
-        "--strict-mode", choices=["on", "off"], help="Enable/disable strict safety mode"
+        "--strict - mode",
+        choices=["on", "off"],
+        help="Enable / disable strict safety mode",
     )
     config_parser.add_argument(
-        "--auto-rollback",
+        "--auto - rollback",
         choices=["on", "off"],
-        help="Enable/disable automatic rollback on failure",
+        help="Enable / disable automatic rollback on failure",
     )
     config_parser.add_argument(
         "--show", action="store_true", help="Show current configuration"
@@ -107,11 +107,11 @@ def handle_cleanup_safety_commands(args, root: Path):
 
     if args.safety_action == "test":
         _handle_test_safety_gates(args, root)
-    elif args.safety_action == "list-backups":
+    elif args.safety_action == "list - backups":
         _handle_list_backups(args, root)
     elif args.safety_action == "rollback":
         _handle_rollback(args, root)
-    elif args.safety_action == "clean-backups":
+    elif args.safety_action == "clean - backups":
         _handle_clean_backups(args, root)
     elif args.safety_action == "config":
         _handle_config(args, root)
@@ -165,7 +165,7 @@ def _handle_test_safety_gates(args, root: Path):
             status = "✅ Enabled" if gate.enabled else "❌ Disabled"
             safe_print(f"   {i}. {gate.name}: {status}")
 
-        safe_print(f"\n💡 To run actual test: remove --dry-run flag")
+        safe_print(f"\n💡 To run actual test: remove --dry - run flag")
         return
 
     # Run actual test
@@ -197,7 +197,7 @@ def _handle_list_backups(args, root: Path):
     safe_print("=" * 60)
 
     for i, backup in enumerate(backups[: args.limit]):
-        safe_print(f"\n{i+1}. Backup ID: {backup['backup_id']}")
+        safe_print(f"\n{i + 1}. Backup ID: {backup['backup_id']}")
         safe_print(f"   Timestamp: {backup['timestamp']}")
         safe_print(f"   Operation: {backup['operation']['type'].upper()}")
         safe_print(f"   Description: {backup['operation']['description']}")
@@ -216,7 +216,7 @@ def _handle_list_backups(args, root: Path):
         safe_print(f"\n... and {len(backups) - args.limit} more backups")
         safe_print(f"Use --limit {len(backups)} to see all backups")
 
-    safe_print(f"\n💡 To rollback: ai_onboard cleanup-safety rollback <backup_id>")
+    safe_print(f"\n💡 To rollback: ai_onboard cleanup - safety rollback <backup_id>")
 
 
 def _handle_rollback(args, root: Path):
@@ -287,7 +287,7 @@ def _handle_clean_backups(args, root: Path):
     """Handle cleaning old backups."""
     print_content(f"Cleaning backups older than {args.days} days...", "search")
 
-    framework = CleanupSafetyGateFramework(root)
+    CleanupSafetyGateFramework(root)
     backups_dir = root / ".ai_onboard" / "backups"
 
     if not backups_dir.exists():
@@ -309,7 +309,9 @@ def _handle_clean_backups(args, root: Path):
                 timestamp_str = (
                     backup_dir.name.split("_")[2] + "_" + backup_dir.name.split("_")[3]
                 )
-                backup_date = datetime.datetime.strptime(timestamp_str, "%Y%m%d_%H%M%S")
+                backup_date = datetime.datetime.strptime(
+                    timestamp_str, "%Y % m%d_ % H%M % S"
+                )
 
                 if backup_date < cutoff_date:
                     # Calculate size
@@ -331,7 +333,7 @@ def _handle_clean_backups(args, root: Path):
     safe_print(f"\n🧹 BACKUP CLEANUP SUMMARY:")
     safe_print("=" * 40)
     safe_print(f"Backups to clean: {len(old_backups)}")
-    safe_print(f"Total size: {total_size / (1024*1024):.1f} MB")
+    safe_print(f"Total size: {total_size / (1024 * 1024):.1f} MB")
     safe_print(f"Age cutoff: {args.days} days")
 
     if args.dry_run:
@@ -339,16 +341,16 @@ def _handle_clean_backups(args, root: Path):
         for backup_dir, backup_date, size in old_backups:
             age_days = (datetime.datetime.now() - backup_date).days
             safe_print(
-                f"  - {backup_dir.name} ({age_days} days old, {size/(1024*1024):.1f} MB)"
+                f"  - {backup_dir.name} ({age_days} days old, {size/(1024 * 1024):.1f} MB)"
             )
 
-        safe_print(f"\n💡 Remove --dry-run to actually delete these backups")
+        safe_print(f"\n💡 Remove --dry - run to actually delete these backups")
         return
 
     # Confirm deletion
     try:
         confirmation = (
-            input(f"\nDelete {len(old_backups)} old backups? (y/N): ").strip().lower()
+            input(f"\nDelete {len(old_backups)} old backups? (y / N): ").strip().lower()
         )
         if confirmation not in ["y", "yes"]:
             print_status("Cleanup cancelled", "info")
@@ -373,7 +375,7 @@ def _handle_clean_backups(args, root: Path):
             safe_print(f"  ❌ Failed to delete {backup_dir.name}: {e}")
 
     print_status(
-        f"Cleanup completed: {deleted_count} backups deleted, {deleted_size/(1024*1024):.1f} MB freed",
+        f"Cleanup completed: {deleted_count} backups deleted, {deleted_size/(1024 * 1024):.1f} MB freed",
         "success",
     )
 

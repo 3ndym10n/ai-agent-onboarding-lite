@@ -67,14 +67,14 @@ class SessionStorageManager:
     def _load_index(self) -> Dict[str, Dict[str, Any]]:
         """Load the sessions index."""
         try:
-            with open(self.index_file, "r", encoding="utf-8") as f:
+            with open(self.index_file, "r", encoding="utf - 8") as f:
                 return json.load(f)
         except (FileNotFoundError, json.JSONDecodeError):
             return {}
 
     def _save_index(self, index: Dict[str, Dict[str, Any]]):
         """Save the sessions index."""
-        with open(self.index_file, "w", encoding="utf-8") as f:
+        with open(self.index_file, "w", encoding="utf - 8") as f:
             json.dump(index, f, indent=2, default=str)
 
     def _get_session_file(self, session_id: str) -> Path:
@@ -108,7 +108,7 @@ class SessionStorageManager:
 
             # Save session file
             session_file = self._get_session_file(context.session_id)
-            with open(session_file, "w", encoding="utf-8") as f:
+            with open(session_file, "w", encoding="utf - 8") as f:
                 json.dump(asdict(stored_session), f, indent=2, default=str)
 
             # Update index
@@ -135,7 +135,7 @@ class SessionStorageManager:
             if not session_file.exists():
                 return None
 
-            with open(session_file, "r", encoding="utf-8") as f:
+            with open(session_file, "r", encoding="utf - 8") as f:
                 data = json.load(f)
 
             # Import here to avoid circular import
@@ -186,7 +186,6 @@ class SessionStorageManager:
 
     def get_user_sessions(self, user_id: str) -> List[Any]:
         """Get all sessions for a specific user as ConversationContext objects."""
-        from .ai_agent_orchestration import ConversationContext
 
         index = self._load_index()
         sessions = []

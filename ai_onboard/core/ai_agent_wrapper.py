@@ -14,7 +14,7 @@ from . import alignment
 class IASGuardrails:
     """Guardrails to prevent AI agent drift from core processes."""
 
-    # NON-NEGOTIABLE: These cannot be changed by AI agents
+    # NON - NEGOTIABLE: These cannot be changed by AI agents
     REQUIRED_WORKFLOW_STEPS = ["analyze", "charter", "plan", "validate"]
     MIN_CONFIDENCE_THRESHOLDS = {"proceed": 0.8, "quick_confirm": 0.6}
     MANDATORY_CONFIRMATIONS = ["vision_alignment", "priority_agreement"]
@@ -71,7 +71,7 @@ class AIAgentIASWrapper:
 
     def validate_conversation_boundaries(self, user_input: str) -> Tuple[bool, str]:
         """Validate that user input stays within allowed conversation areas."""
-        # Simple keyword-based validation - can be enhanced
+        # Simple keyword - based validation - can be enhanced
         input_lower = user_input.lower()
 
         # Check for attempts to change locked decisions
@@ -113,7 +113,7 @@ class AIAgentIASWrapper:
                 content.append(f"  • {key}: {value}")
 
         if data.get("report_path"):
-            content.append(f"\n**Report saved to:** {data['report_path']}")
+            content.append(f"\n ** Report saved to:** {data['report_path']}")
 
         return "\n".join(content)
 
@@ -127,12 +127,12 @@ class AIAgentIASWrapper:
                 content.append(f"  • {key}: {value}")
 
         if data.get("ambiguities"):
-            content.append("\n**What I'm Unsure About:**")
+            content.append("\n ** What I'm Unsure About:**")
             for issue in data["ambiguities"]:
                 content.append(f"  ❌ {issue}")
 
         if data.get("report_path"):
-            content.append(f"\n**Detailed report:** {data['report_path']}")
+            content.append(f"\n ** Detailed report:** {data['report_path']}")
 
         return "\n".join(content)
 

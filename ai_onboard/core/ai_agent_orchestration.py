@@ -2,17 +2,16 @@
 AI Agent Orchestration Layer (AAOL) - Revolutionary collaborative system for AI agents.
 
 This system provides:
-- Session-based conversation management with persistent context
-- Multi-stage decision engine with confidence scoring and risk assessment
+- Session - based conversation management with persistent context
+- Multi - stage decision engine with confidence scoring and risk assessment
 - Command orchestration with rollback capabilities and safety monitoring
-- Real-time intervention system that can halt dangerous operations
+- Real - time intervention system that can halt dangerous operations
 - Context continuity across conversation rounds with memory management
 - Novel "Intent Resolution" system that maps conversations to actions
 """
 
 from __future__ import annotations
 
-import json
 import threading
 import time
 import uuid
@@ -27,7 +26,7 @@ from .session_storage import SessionStorageManager
 
 
 class DecisionStage(Enum):
-    """Multi-stage decision pipeline stages."""
+    """Multi - stage decision pipeline stages."""
 
     INTAKE = "intake"  # Initial conversation analysis
     INTENT_RESOLUTION = "intent_resolution"  # Map conversation to specific intents
@@ -165,7 +164,7 @@ class IntentResolver:
 
 
 class SafetyMonitor:
-    """Real-time safety monitoring system with intervention capabilities."""
+    """Real - time safety monitoring system with intervention capabilities."""
 
     def __init__(self):
         self.danger_patterns = [
@@ -292,9 +291,9 @@ class CommandOrchestrator:
 
         # Identify critical files to backup
         critical_files = [
-            ".ai_onboard/charter.json",
-            ".ai_onboard/plan.json",
-            ".ai_onboard/alignment_report.json",
+            ".ai_onboard / charter.json",
+            ".ai_onboard / plan.json",
+            ".ai_onboard / alignment_report.json",
         ]
 
         for file_path in critical_files:
@@ -452,7 +451,7 @@ class AIAgentOrchestrationLayer:
             return session_id
 
     def process_conversation(self, session_id: str, user_input: str) -> Dict[str, Any]:
-        """Process user conversation through multi-stage decision pipeline."""
+        """Process user conversation through multi - stage decision pipeline."""
         if session_id not in self.sessions:
             # Try to load from storage
             context = self.session_storage.load_session(session_id)
@@ -483,7 +482,7 @@ class AIAgentOrchestrationLayer:
     def _run_decision_pipeline(
         self, context: ConversationContext, user_input: str
     ) -> Dict[str, Any]:
-        """Run the multi-stage decision pipeline."""
+        """Run the multi - stage decision pipeline."""
         pipeline_results: Dict[str, Any] = {
             "session_id": context.session_id,
             "pipeline_stages": {},

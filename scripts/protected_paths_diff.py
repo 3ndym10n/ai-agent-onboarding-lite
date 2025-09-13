@@ -11,22 +11,22 @@ PROTECTED = [
     "pyproject.toml",
     "README.md",
     "AGENTS.md",
-    "ai_onboard/__init__.py",
-    "ai_onboard/__main__.py",
-    "ai_onboard/VERSION.txt",
-    "ai_onboard/cli/commands_refactored.py",
-    "ai_onboard/core/**",
-    "ai_onboard/policies/**",
-    "ai_onboard/schemas/**",
+    "ai_onboard / __init__.py",
+    "ai_onboard / __main__.py",
+    "ai_onboard / VERSION.txt",
+    "ai_onboard / cli / commands_refactored.py",
+    "ai_onboard / core/**",
+    "ai_onboard / policies/**",
+    "ai_onboard / schemas/**",
 ]
 
 
 def is_feature_branch() -> bool:
-    """Check if we're on a feature branch (not main/master)."""
+    """Check if we're on a feature branch (not main / master)."""
     try:
         # First try: get current branch name
         result = subprocess.run(
-            ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+            ["git", "rev - parse", "--abbrev - ref", "HEAD"],
             text=True,
             capture_output=True,
             check=True,
@@ -73,7 +73,7 @@ def is_feature_branch() -> bool:
             # Method 2: Check if we're in a PR by looking at the base ref
             try:
                 # In GitHub Actions, we can check if we're comparing against main
-                base_ref = sys.argv[1] if len(sys.argv) > 1 else "origin/main"
+                base_ref = sys.argv[1] if len(sys.argv) > 1 else "origin / main"
                 if "main" in base_ref:
                     print(
                         "DEBUG: Comparing against main branch, likely a feature branch"
@@ -110,7 +110,7 @@ def is_feature_branch() -> bool:
 
 
 def main() -> int:
-    base = sys.argv[1] if len(sys.argv) > 1 else "origin/main"
+    base = sys.argv[1] if len(sys.argv) > 1 else "origin / main"
     print(f"DEBUG: Base reference: '{base}'")
 
     # Check if we're on a feature branch
@@ -126,13 +126,13 @@ def main() -> int:
         print(f"DEBUG: Error getting git status: {e}")
 
     cp = subprocess.run(
-        ["git", "diff", "--name-status", base, "HEAD"],
+        ["git", "diff", "--name - status", base, "HEAD"],
         text=True,
         capture_output=True,
         check=False,
     )
 
-    print(f"DEBUG: Git diff command: git diff --name-status {base} HEAD")
+    print(f"DEBUG: Git diff command: git diff --name - status {base} HEAD")
     print(f"DEBUG: Git diff exit code: {cp.returncode}")
     if cp.stderr:
         print(f"DEBUG: Git diff stderr: {cp.stderr}")

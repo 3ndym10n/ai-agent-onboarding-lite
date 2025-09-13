@@ -5,7 +5,7 @@ from typing import Any, Dict
 
 from . import utils
 
-STATE_PATH = ".ai_onboard/optimizer_state.json"
+STATE_PATH = ".ai_onboard / optimizer_state.json"
 
 
 def load(root: Path) -> Dict[str, Any]:

@@ -12,16 +12,14 @@ This module implements comprehensive user experience enhancements that:
 
 import json
 import time
-import traceback
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 from . import utils
-from .kaizen_automation import get_kaizen_automation
 from .ui_enhancement_system import get_ui_enhancement_system
 from .user_preference_learning import get_user_preference_learning_system
 
@@ -95,7 +93,7 @@ class UXIntervention:
     message: str
     suggested_actions: List[str] = field(default_factory=list)
     help_content: Optional[str] = None
-    priority: int = 1  # 1-5 scale
+    priority: int = 1  # 1 - 5 scale
 
     # Timing and delivery
     created_at: datetime = field(default_factory=datetime.now)
@@ -147,7 +145,7 @@ class SmartErrorHandler:
         return {
             "AttributeError": {
                 "common_causes": [
-                    "Accessing non-existent attribute",
+                    "Accessing non - existent attribute",
                     "Object not initialized properly",
                     "Module not imported correctly",
                 ],
@@ -178,7 +176,7 @@ class SmartErrorHandler:
                 "recovery_actions": [
                     "Validate JSON syntax",
                     "Check parameter format",
-                    "Use simple key=value format instead",
+                    "Use simple key = value format instead",
                 ],
             },
             "CommandError": {
@@ -210,7 +208,7 @@ class SmartErrorHandler:
             ],
             "complex_command": [
                 "Complex commands can be tricky. Let's break it down.",
-                "Try the interactive wizard: wizard <workflow-type>",
+                "Try the interactive wizard: wizard <workflow - type>",
                 "Use 'help <command> --examples' for detailed examples",
             ],
         }
@@ -318,7 +316,7 @@ class OnboardingAssistant:
                         "step": "power_features",
                         "title": "Explore Advanced Features",
                         "message": "Discover powerful automation and AI features.",
-                        "actions": ["kaizen-auto status", "opt-experiments --help"],
+                        "actions": ["kaizen - auto status", "opt - experiments --help"],
                     },
                     {
                         "step": "integration",
@@ -385,7 +383,7 @@ class OnboardingAssistant:
             trigger_event="onboarding_check",
             message=f"📚 {next_step['title']}\n\n{next_step['message']}",
             suggested_actions=next_step.get("actions", []),
-            priority=3,  # Medium-high priority
+            priority=3,  # Medium - high priority
         )
 
         return intervention
@@ -405,25 +403,25 @@ class WorkflowOptimizer:
                 "name": "Project Setup Workflow",
                 "steps": ["charter", "plan", "align", "validate"],
                 "description": "Complete project setup from vision to validation",
-                "estimated_time": "15-30 minutes",
+                "estimated_time": "15 - 30 minutes",
             },
             "optimization_cycle": {
                 "name": "Optimization Workflow",
-                "steps": ["validate", "kaizen", "opt-experiments", "validate"],
+                "steps": ["validate", "kaizen", "opt - experiments", "validate"],
                 "description": "Identify and implement optimizations",
-                "estimated_time": "30-60 minutes",
+                "estimated_time": "30 - 60 minutes",
             },
             "ai_collaboration": {
                 "name": "AI Collaboration Setup",
-                "steps": ["ai-agent", "aaol", "enhanced-context"],
+                "steps": ["ai - agent", "aaol", "enhanced - context"],
                 "description": "Set up advanced AI collaboration features",
-                "estimated_time": "20-40 minutes",
+                "estimated_time": "20 - 40 minutes",
             },
             "development_integration": {
                 "name": "Development Integration",
-                "steps": ["cursor", "api", "unified-metrics"],
+                "steps": ["cursor", "api", "unified - metrics"],
                 "description": "Integrate with development tools",
-                "estimated_time": "25-45 minutes",
+                "estimated_time": "25 - 45 minutes",
             },
         }
 
@@ -672,7 +670,7 @@ class UserExperienceEnhancementSystem:
             if event.error_details:
                 try:
                     # Create a mock exception for error handling
-                    error_type = event.context.get("error_type", "Exception")
+                    event.context.get("error_type", "Exception")
                     error_msg = event.error_details
 
                     # Create error recovery intervention
@@ -730,7 +728,7 @@ class UserExperienceEnhancementSystem:
             trigger_event="satisfaction_milestone",
             message="📝 How is your experience with AI Onboard so far?\n\nYour feedback helps us improve the system.",
             suggested_actions=[
-                "Rate your experience (1-5 scale)",
+                "Rate your experience (1 - 5 scale)",
                 "Share what's working well",
                 "Suggest improvements",
             ],

@@ -1,7 +1,7 @@
 """
 CLI commands for Background Agent Management.
 
-This module provides command-line interfaces for:
+This module provides command - line interfaces for:
 - Managing background agent lifecycle (start, stop, status)
 - Configuring agent settings and resource limits
 - Monitoring agent performance and health
@@ -10,15 +10,12 @@ This module provides command-line interfaces for:
 """
 
 import argparse
-import json
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
 from ..core.background_agent_manager import (
     AgentConfiguration,
     AgentPriority,
-    AgentResourceLimits,
     AgentState,
     ScheduleType,
     get_background_agent_manager,
@@ -31,7 +28,7 @@ def add_background_agent_commands(subparsers):
 
     # Main background agents command
     bg_parser = subparsers.add_parser(
-        "background-agents", help="Manage autonomous background AI agents"
+        "background - agents", help="Manage autonomous background AI agents"
     )
     bg_sub = bg_parser.add_subparsers(dest="bg_cmd", required=True)
 
@@ -66,17 +63,17 @@ def add_background_agent_commands(subparsers):
 
     # Agent status commands
     status_parser = bg_sub.add_parser("status", help="View agent status")
-    status_parser.add_argument("--agent-id", help="Specific agent to view")
+    status_parser.add_argument("--agent - id", help="Specific agent to view")
     status_parser.add_argument(
         "--detailed", action="store_true", help="Show detailed status"
     )
     status_parser.add_argument(
-        "--running-only", action="store_true", help="Show only running agents"
+        "--running - only", action="store_true", help="Show only running agents"
     )
 
     # Agent monitoring
     monitor_parser = bg_sub.add_parser("monitor", help="Monitor agent performance")
-    monitor_parser.add_argument("--agent-id", help="Specific agent to monitor")
+    monitor_parser.add_argument("--agent - id", help="Specific agent to monitor")
     monitor_parser.add_argument(
         "--interval", type=int, default=5, help="Monitoring interval in seconds"
     )
@@ -111,10 +108,10 @@ def add_background_agent_commands(subparsers):
     )
     update_config_parser.add_argument("agent_id", help="Agent ID to update")
     update_config_parser.add_argument(
-        "--enabled", type=bool, help="Enable/disable agent"
+        "--enabled", type=bool, help="Enable / disable agent"
     )
     update_config_parser.add_argument(
-        "--auto-start", type=bool, help="Auto-start on system boot"
+        "--auto - start", type=bool, help="Auto - start on system boot"
     )
     update_config_parser.add_argument(
         "--priority",
@@ -122,10 +119,10 @@ def add_background_agent_commands(subparsers):
         help="Agent priority level",
     )
     update_config_parser.add_argument(
-        "--max-cpu", type=float, help="Maximum CPU usage percentage"
+        "--max - cpu", type=float, help="Maximum CPU usage percentage"
     )
     update_config_parser.add_argument(
-        "--max-memory", type=float, help="Maximum memory usage in MB"
+        "--max - memory", type=float, help="Maximum memory usage in MB"
     )
 
     # Create new agent
@@ -135,9 +132,11 @@ def add_background_agent_commands(subparsers):
     create_parser.add_argument("agent_id", help="New agent ID")
     create_parser.add_argument("--name", required=True, help="Agent name")
     create_parser.add_argument("--description", required=True, help="Agent description")
-    create_parser.add_argument("--agent-class", required=True, help="Agent class name")
     create_parser.add_argument(
-        "--schedule-type",
+        "--agent - class", required=True, help="Agent class name"
+    )
+    create_parser.add_argument(
+        "--schedule - type",
         choices=[s.value for s in ScheduleType],
         default="interval",
         help="Schedule type",
@@ -164,14 +163,14 @@ def add_background_agent_commands(subparsers):
     resource_parser = analytics_sub.add_parser(
         "resources", help="Resource usage analysis"
     )
-    resource_parser.add_argument("--agent-id", help="Specific agent to analyze")
+    resource_parser.add_argument("--agent - id", help="Specific agent to analyze")
     resource_parser.add_argument("--period", default="24h", help="Analysis period")
 
     # Execution history
     history_parser = analytics_sub.add_parser(
         "history", help="Execution history analysis"
     )
-    history_parser.add_argument("--agent-id", help="Specific agent to analyze")
+    history_parser.add_argument("--agent - id", help="Specific agent to analyze")
     history_parser.add_argument(
         "--days", type=int, default=7, help="Number of days to analyze"
     )
@@ -195,7 +194,7 @@ def add_background_agent_commands(subparsers):
     coord_sub.add_parser("sync", help="Force agent synchronization")
 
     # Resolve conflicts
-    coord_sub.add_parser("resolve-conflicts", help="Resolve agent conflicts")
+    coord_sub.add_parser("resolve - conflicts", help="Resolve agent conflicts")
 
     # Emergency commands
     emergency_parser = bg_sub.add_parser("emergency", help="Emergency agent management")
@@ -253,7 +252,7 @@ def _handle_lifecycle_commands(args: argparse.Namespace, manager, root: Path) ->
         if not agents:
             print(status.info("No background agents configured"))
             print(
-                "💡 Use 'ai_onboard background-agents config create' to create agents"
+                "💡 Use 'ai_onboard background - agents config create' to create agents"
             )
             return
 
@@ -263,7 +262,7 @@ def _handle_lifecycle_commands(args: argparse.Namespace, manager, root: Path) ->
             "Name",
             "State",
             "Priority",
-            "Auto-Start",
+            "Auto - Start",
             "Last Activity",
         ]
         table = create_table(headers, root, "default")
@@ -329,13 +328,13 @@ def _handle_lifecycle_commands(args: argparse.Namespace, manager, root: Path) ->
             # Show possible reasons
             if agent_id not in manager.agent_configs:
                 print(
-                    "💡 Agent not found. Use 'background-agents lifecycle list' to see available agents"
+                    "💡 Agent not found. Use 'background - agents lifecycle list' to see available agents"
                 )
             else:
                 config = manager.agent_configs[agent_id]
                 if not config.enabled:
                     print(
-                        "💡 Agent is disabled. Enable it with 'background-agents config update --enabled true'"
+                        "💡 Agent is disabled. Enable it with 'background - agents config update --enabled true'"
                     )
 
     elif args.lifecycle_action == "stop":
@@ -417,7 +416,7 @@ def _handle_status_commands(args: argparse.Namespace, manager, root: Path) -> No
             print("📈 Performance Metrics:")
             print(f"   CPU Usage: {agent_status.cpu_usage_percent:.1f}%")
             print(f"   Memory Usage: {agent_status.memory_usage_mb:.1f} MB")
-            print(f"   I/O Operations: {agent_status.io_operations}")
+            print(f"   I / O Operations: {agent_status.io_operations}")
             print(f"   Network Requests: {agent_status.network_requests}")
             print()
 
@@ -485,14 +484,14 @@ def _handle_status_commands(args: argparse.Namespace, manager, root: Path) -> No
                     "inactive": "⚪",
                 }.get(agent_status.state.value, "❓")
 
-                uptime = "N/A"
+                uptime = "N / A"
                 if agent_status.started_at and agent_status.state == AgentState.RUNNING:
                     delta = datetime.now() - agent_status.started_at
                     hours = int(delta.total_seconds() / 3600)
                     minutes = int((delta.total_seconds() % 3600) / 60)
                     uptime = f"{hours}h {minutes}m"
 
-                success_rate = "N/A"
+                success_rate = "N / A"
                 if agent_status.total_executions > 0:
                     rate = (
                         agent_status.successful_executions
@@ -559,7 +558,7 @@ def _handle_monitor_commands(args: argparse.Namespace, manager, root: Path) -> N
             print(f"Duration: {args.duration}s")
         print()
 
-        # Real-time monitoring loop (simplified)
+        # Real - time monitoring loop (simplified)
         import time
 
         start_time = time.time()
@@ -647,7 +646,7 @@ def _handle_monitor_commands(args: argparse.Namespace, manager, root: Path) -> N
                 for row in rows:
                     table.add_row(row)
                 print(table.render())
-                print(f"\nPress Ctrl+C to stop monitoring...")
+                print(f"\nPress Ctrl + C to stop monitoring...")
 
                 time.sleep(args.interval)
 
@@ -666,14 +665,14 @@ def _handle_logs_commands(args: argparse.Namespace, manager, root: Path) -> None
 
     # Mock log entries
     log_entries = [
-        "[2025-01-15 10:30:15] INFO: Agent started successfully",
-        "[2025-01-15 10:30:16] DEBUG: Initializing health monitoring",
-        "[2025-01-15 10:30:17] INFO: Health check completed - status: healthy",
-        "[2025-01-15 10:35:15] INFO: Scheduled execution started",
-        "[2025-01-15 10:35:17] INFO: Execution completed successfully",
-        "[2025-01-15 10:40:15] WARNING: CPU usage slightly elevated (12.5%)",
-        "[2025-01-15 10:45:15] INFO: Scheduled execution started",
-        "[2025-01-15 10:45:16] INFO: Execution completed successfully",
+        "[2025 - 01 - 15 10:30:15] INFO: Agent started successfully",
+        "[2025 - 01 - 15 10:30:16] DEBUG: Initializing health monitoring",
+        "[2025 - 01 - 15 10:30:17] INFO: Health check completed - status: healthy",
+        "[2025 - 01 - 15 10:35:15] INFO: Scheduled execution started",
+        "[2025 - 01 - 15 10:35:17] INFO: Execution completed successfully",
+        "[2025 - 01 - 15 10:40:15] WARNING: CPU usage slightly elevated (12.5%)",
+        "[2025 - 01 - 15 10:45:15] INFO: Scheduled execution started",
+        "[2025 - 01 - 15 10:45:16] INFO: Execution completed successfully",
     ]
 
     # Filter by level if specified
@@ -685,7 +684,7 @@ def _handle_logs_commands(args: argparse.Namespace, manager, root: Path) -> None
         print(entry)
 
     if args.follow:
-        print("\n📡 Following log output (Press Ctrl+C to stop)...")
+        print("\n📡 Following log output (Press Ctrl + C to stop)...")
         try:
             import time
 
@@ -720,7 +719,7 @@ def _handle_config_commands(args: argparse.Namespace, manager, root: Path) -> No
 
         print(f"Status:")
         print(f"  Enabled: {'✅' if config.enabled else '❌'}")
-        print(f"  Auto-start: {'✅' if config.auto_start else '❌'}")
+        print(f"  Auto - start: {'✅' if config.auto_start else '❌'}")
         print(f"  Restart on failure: {'✅' if config.restart_on_failure else '❌'}")
         print(f"  Max restart attempts: {config.max_restart_attempts}")
         print()
@@ -729,8 +728,8 @@ def _handle_config_commands(args: argparse.Namespace, manager, root: Path) -> No
         limits = config.resource_limits
         print(f"  Max CPU: {limits.max_cpu_percent}%")
         print(f"  Max Memory: {limits.max_memory_mb} MB")
-        print(f"  Max I/O ops/sec: {limits.max_io_ops_per_sec}")
-        print(f"  Max network requests/min: {limits.max_network_requests_per_min}")
+        print(f"  Max I / O ops / sec: {limits.max_io_ops_per_sec}")
+        print(f"  Max network requests / min: {limits.max_network_requests_per_min}")
         print(f"  Max execution time: {limits.max_execution_time_sec}s")
         print()
 
@@ -744,8 +743,8 @@ def _handle_config_commands(args: argparse.Namespace, manager, root: Path) -> No
         print()
 
         print(f"Metadata:")
-        print(f"  Created: {config.created_at.strftime('%Y-%m-%d %H:%M:%S')}")
-        print(f"  Updated: {config.updated_at.strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"  Created: {config.created_at.strftime('%Y -% m-%d %H:%M:%S')}")
+        print(f"  Updated: {config.updated_at.strftime('%Y -% m-%d %H:%M:%S')}")
         if config.tags:
             print(f"  Tags: {', '.join(config.tags)}")
 
@@ -770,7 +769,7 @@ def _handle_config_commands(args: argparse.Namespace, manager, root: Path) -> No
         if manager.create_agent(config):
             print(status.success(f"Agent '{agent_id}' created successfully"))
             print(
-                f"💡 Use 'background-agents lifecycle start {agent_id}' to start the agent"
+                f"💡 Use 'background - agents lifecycle start {agent_id}' to start the agent"
             )
         else:
             print(status.error(f"Failed to create agent '{agent_id}'"))
@@ -791,7 +790,7 @@ def _handle_config_commands(args: argparse.Namespace, manager, root: Path) -> No
 
         if args.auto_start is not None:
             config.auto_start = args.auto_start
-            updates.append(f"Auto-start: {args.auto_start}")
+            updates.append(f"Auto - start: {args.auto_start}")
 
         if args.priority:
             config.priority = AgentPriority[args.priority.upper()]
@@ -894,7 +893,7 @@ def _handle_analytics_commands(args: argparse.Namespace, manager, root: Path) ->
             print("📈 Current Resource Usage:")
             print(f"  CPU: {status.cpu_usage_percent:.1f}%")
             print(f"  Memory: {status.memory_usage_mb:.1f} MB")
-            print(f"  I/O Operations: {status.io_operations}")
+            print(f"  I / O Operations: {status.io_operations}")
             print(f"  Network Requests: {status.network_requests}")
 
             # Resource usage chart (mock data)
@@ -904,7 +903,7 @@ def _handle_analytics_commands(args: argparse.Namespace, manager, root: Path) ->
             print(chart.bar_chart(cpu_data, max_width=40))
 
         else:
-            # System-wide resource analysis
+            # System - wide resource analysis
             running_agents = manager.list_running_agents()
 
             total_cpu = sum(
@@ -914,7 +913,7 @@ def _handle_analytics_commands(args: argparse.Namespace, manager, root: Path) ->
                 manager.get_agent_status(a).memory_usage_mb for a in running_agents
             )
 
-            print(f"System-wide Resource Usage:")
+            print(f"System - wide Resource Usage:")
             print(f"  Total CPU: {total_cpu:.1f}%")
             print(f"  Total Memory: {total_memory:.1f} MB")
             print(f"  Running Agents: {len(running_agents)}")
@@ -1021,7 +1020,7 @@ def _handle_coordination_commands(
         print("🔄 Forcing agent synchronization...")
         print("✅ Synchronization completed")
 
-    elif args.coord_action == "resolve-conflicts":
+    elif args.coord_action == "resolve - conflicts":
         print("🛠️ Resolving agent conflicts...")
         print("✅ No conflicts found")
 

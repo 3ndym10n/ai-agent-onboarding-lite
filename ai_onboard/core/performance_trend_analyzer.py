@@ -9,32 +9,19 @@ This module provides comprehensive performance trend analysis capabilities that:
 - Support multiple time series analysis techniques
 """
 
-import json
 import math
 import statistics
 import time
-import warnings
-from collections import defaultdict, deque
+from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple
 
 from . import telemetry, utils
-from .performance_optimizer import (
-    PerformanceMetric,
-    PerformanceOptimizer,
-    PerformanceSnapshot,
-    get_performance_optimizer,
-)
-from .unified_metrics_collector import (
-    MetricCategory,
-    MetricEvent,
-    MetricSource,
-    UnifiedMetricsCollector,
-    get_unified_metrics_collector,
-)
+from .performance_optimizer import get_performance_optimizer
+from .unified_metrics_collector import get_unified_metrics_collector
 
 
 class TrendDirection(Enum):
@@ -60,8 +47,8 @@ class ForecastConfidence(Enum):
     """Confidence levels for performance forecasts."""
 
     LOW = "low"  # < 60%
-    MEDIUM = "medium"  # 60-80%
-    HIGH = "high"  # 80-95%
+    MEDIUM = "medium"  # 60 - 80%
+    HIGH = "high"  # 80 - 95%
     VERY_HIGH = "very_high"  # > 95%
 
 
@@ -154,7 +141,7 @@ class PerformanceTrendAnalyzer:
         # Analysis configuration
         self.config = self._load_config()
 
-        # In-memory caches for performance
+        # In - memory caches for performance
         self.trend_cache: Dict[str, TrendAnalysis] = {}
         self.anomaly_cache: List[AnomalyDetection] = []
         self.forecast_cache: Dict[str, PerformanceForecast] = {}
@@ -337,7 +324,7 @@ class PerformanceTrendAnalyzer:
         sum_y = sum(values)
         sum_xy = sum(x[i] * values[i] for i in range(n))
         sum_x2 = sum(x[i] ** 2 for i in range(n))
-        sum_y2 = sum(y**2 for y in values)
+        sum(y**2 for y in values)
 
         # Avoid division by zero
         denominator = n * sum_x2 - sum_x**2
@@ -347,14 +334,14 @@ class PerformanceTrendAnalyzer:
         slope = (n * sum_xy - sum_x * sum_y) / denominator
         intercept = (sum_y - slope * sum_x) / n
 
-        # Calculate R-squared (coefficient of determination)
+        # Calculate R - squared (coefficient of determination)
         y_mean = sum_y / n
         ss_tot = sum((y - y_mean) ** 2 for y in values)
         ss_res = sum((values[i] - (slope * i + intercept)) ** 2 for i in range(n))
 
         r_squared = 1 - (ss_res / ss_tot) if ss_tot > 0 else 0
 
-        # Calculate confidence based on R-squared and data points
+        # Calculate confidence based on R - squared and data points
         confidence = min(r_squared * (1 + math.log(n) / 10), 1.0)
 
         return {
@@ -372,7 +359,7 @@ class PerformanceTrendAnalyzer:
         confidence = stats["confidence"]
         r_squared = stats["r_squared"]
 
-        # Low confidence or R-squared indicates unknown/volatile trend
+        # Low confidence or R - squared indicates unknown / volatile trend
         if confidence < 0.3 or r_squared < 0.1:
             return (
                 TrendDirection.VOLATILE if r_squared > 0.05 else TrendDirection.UNKNOWN
@@ -454,7 +441,7 @@ class PerformanceTrendAnalyzer:
         r_squared = stats["r_squared"]
         confidence = stats["confidence"]
 
-        # Trend strength is high R-squared, high confidence, low volatility
+        # Trend strength is high R - squared, high confidence, low volatility
         volatility_factor = max(0, 1 - volatility)
         trend_strength = r_squared * 0.4 + confidence * 0.4 + volatility_factor * 0.2
 
@@ -511,7 +498,7 @@ class PerformanceTrendAnalyzer:
 
             anomalies = []
 
-            # Method 1: Z-score based detection
+            # Method 1: Z - score based detection
             z_score_anomalies = self._detect_zscore_anomalies(
                 metric_name, values, timestamps
             )
@@ -538,7 +525,7 @@ class PerformanceTrendAnalyzer:
     def _detect_zscore_anomalies(
         self, metric_name: str, values: List[float], timestamps: List[str]
     ) -> List[AnomalyDetection]:
-        """Detect anomalies using Z-score method."""
+        """Detect anomalies using Z - score method."""
         if len(values) < 3:
             return []
 
@@ -794,7 +781,7 @@ class PerformanceTrendAnalyzer:
 
         for i in range(1, horizon_days + 1):
             predicted_value = slope * (n + i) + intercept
-            forecast.append(max(0, predicted_value))  # Ensure non-negative values
+            forecast.append(max(0, predicted_value))  # Ensure non - negative values
 
         return forecast
 
@@ -862,7 +849,7 @@ class PerformanceTrendAnalyzer:
         # Calculate volatility
         volatility = self._calculate_volatility(historical)
 
-        # Confidence score based on R-squared and inverse volatility
+        # Confidence score based on R - squared and inverse volatility
         confidence_score = r_squared * (1 - min(volatility, 0.8))
 
         if confidence_score > 0.8:
@@ -908,7 +895,7 @@ class PerformanceTrendAnalyzer:
                     f"📈 {metric_name} expected to improve by {abs(change_percent):.1f}% - monitor for sustained improvement"
                 )
 
-        # Confidence-based recommendations
+        # Confidence - based recommendations
         if confidence == ForecastConfidence.LOW:
             recommendations.append(
                 "⚠️ Low forecast confidence - increase monitoring frequency and collect more data"
@@ -918,7 +905,7 @@ class PerformanceTrendAnalyzer:
                 "✅ High forecast confidence - suitable for capacity planning and SLA setting"
             )
 
-        # Metric-specific recommendations
+        # Metric - specific recommendations
         if metric_name == "cpu_usage":
             if max(forecast) > 80:
                 recommendations.append(
@@ -1117,7 +1104,7 @@ class PerformanceTrendAnalyzer:
         if "cpu" in metric:
             recommendations.extend(
                 [
-                    "Analyze CPU-intensive processes and optimize algorithms",
+                    "Analyze CPU - intensive processes and optimize algorithms",
                     "Consider horizontal scaling or CPU upgrade",
                     "Review recent code changes for performance regressions",
                     "Implement CPU usage monitoring and alerting",

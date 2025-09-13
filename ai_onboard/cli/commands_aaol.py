@@ -18,34 +18,34 @@ def add_aaol_commands(subparsers):
 
     # Create session
     s_create = aaol_sub.add_parser(
-        "create-session", help="Create new AI agent conversation session"
+        "create - session", help="Create new AI agent conversation session"
     )
-    s_create.add_argument("--user-id", default="default", help="User identifier")
+    s_create.add_argument("--user - id", default="default", help="User identifier")
 
     # Process conversation
     s_converse = aaol_sub.add_parser(
         "converse", help="Process conversation through decision pipeline"
     )
-    s_converse.add_argument("--session-id", required=True, help="Session identifier")
-    s_converse.add_argument("--message", required=True, help="User message/input")
+    s_converse.add_argument("--session - id", required=True, help="Session identifier")
+    s_converse.add_argument("--message", required=True, help="User message / input")
 
     # Execute plan
     s_execute = aaol_sub.add_parser(
         "execute", help="Execute planned commands for session"
     )
-    s_execute.add_argument("--session-id", required=True, help="Session identifier")
+    s_execute.add_argument("--session - id", required=True, help="Session identifier")
 
     # Session status
     s_status = aaol_sub.add_parser("status", help="Get session status and details")
-    s_status.add_argument("--session-id", required=True, help="Session identifier")
+    s_status.add_argument("--session - id", required=True, help="Session identifier")
 
     # List sessions
-    s_list = aaol_sub.add_parser("list-sessions", help="List all available sessions")
-    s_list.add_argument("--user-id", help="Filter sessions by user ID")
+    s_list = aaol_sub.add_parser("list - sessions", help="List all available sessions")
+    s_list.add_argument("--user - id", help="Filter sessions by user ID")
 
     # Delete session
-    s_delete = aaol_sub.add_parser("delete-session", help="Delete a session")
-    s_delete.add_argument("--session-id", required=True, help="Session identifier")
+    s_delete = aaol_sub.add_parser("delete - session", help="Delete a session")
+    s_delete.add_argument("--session - id", required=True, help="Session identifier")
 
     # Cleanup expired sessions
     s_cleanup = aaol_sub.add_parser("cleanup", help="Clean up expired sessions")
@@ -59,7 +59,7 @@ def handle_aaol_commands(args, root: Path):
 
     orchestrator = create_ai_agent_orchestrator(root)
 
-    # Windows-safe output: replace emojis with ASCII fallbacks
+    # Windows - safe output: replace emojis with ASCII fallbacks
     def _ascii_safe(text: str) -> str:
         mapping = {
             "🤖": "[AI]",
@@ -80,7 +80,7 @@ def handle_aaol_commands(args, root: Path):
             out = out.replace(k, v)
         return out
 
-    if args.aaol_cmd == "create-session":
+    if args.aaol_cmd == "create - session":
         # Create new session
         session_id = orchestrator.create_session(args.user_id)
 
@@ -121,7 +121,7 @@ def handle_aaol_commands(args, root: Path):
             )
             print(
                 _ascii_safe(
-                    f"   Run: ai_onboard aaol execute --session-id {args.session_id}"
+                    f"   Run: ai_onboard aaol execute --session - id {args.session_id}"
                 )
             )
         else:
@@ -169,7 +169,7 @@ def handle_aaol_commands(args, root: Path):
 
         return True
 
-    elif args.aaol_cmd == "list-sessions":
+    elif args.aaol_cmd == "list - sessions":
         # List all sessions
         sessions = orchestrator.list_sessions(
             args.user_id if hasattr(args, "user_id") else None
@@ -195,7 +195,7 @@ def handle_aaol_commands(args, root: Path):
 
         return True
 
-    elif args.aaol_cmd == "delete-session":
+    elif args.aaol_cmd == "delete - session":
         # Delete a session
         if orchestrator.delete_session(args.session_id):
             print(_ascii_safe("✅ Session deleted successfully"))
@@ -220,7 +220,7 @@ def handle_aaol_commands(args, root: Path):
                 "This demo shows how AI agents can have collaborative conversations"
             )
         )
-        print(_ascii_safe("with advanced decision-making and safety monitoring.\n"))
+        print(_ascii_safe("with advanced decision - making and safety monitoring.\n"))
 
         # Create demo session
         session_id = orchestrator.create_session("demo_user")
@@ -229,7 +229,7 @@ def handle_aaol_commands(args, root: Path):
         # Demo conversation scenarios
         demo_scenarios = [
             "I want to analyze my project and understand what it does",
-            "Actually, I want to focus on real-time orderflow visualizations",
+            "Actually, I want to focus on real - time orderflow visualizations",
             "Can you add features for chart visualizations and data streaming?",
             "Yes, proceed with the plan",
         ]
@@ -255,10 +255,10 @@ def handle_aaol_commands(args, root: Path):
 
         print(_ascii_safe("🎯 Demo completed! The AAOL system provides:"))
         print(_ascii_safe("✅ Natural conversation processing"))
-        print(_ascii_safe("✅ Multi-stage decision pipeline"))
-        print(_ascii_safe("✅ Real-time safety monitoring"))
+        print(_ascii_safe("✅ Multi - stage decision pipeline"))
+        print(_ascii_safe("✅ Real - time safety monitoring"))
         print(_ascii_safe("✅ Command orchestration with rollback"))
-        print(_ascii_safe("✅ Session-based context management"))
+        print(_ascii_safe("✅ Session - based context management"))
 
         return True
 

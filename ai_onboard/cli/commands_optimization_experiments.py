@@ -1,25 +1,21 @@
 """
 CLI commands for Optimization Experiment Framework.
 
-This module provides command-line interfaces for:
+This module provides command - line interfaces for:
 - Designing and managing optimization experiments
-- Running A/B tests and multivariate experiments
+- Running A / B tests and multivariate experiments
 - Analyzing experiment results and statistical significance
 - Managing experiment lifecycle and monitoring
 """
 
 import argparse
 import json
-import time
 from pathlib import Path
-from typing import Optional
 
 from ..core.optimization_experiment_framework import (
     ExperimentCondition,
     ExperimentMetric,
-    ExperimentOutcome,
     ExperimentType,
-    StatisticalSignificance,
     get_optimization_experiment_framework,
 )
 
@@ -29,7 +25,7 @@ def add_optimization_experiment_commands(subparsers):
 
     # Main experiment command
     exp_parser = subparsers.add_parser(
-        "opt-experiments",
+        "opt - experiments",
         help="Optimization experiment framework for systematic testing",
     )
     exp_sub = exp_parser.add_subparsers(dest="exp_cmd", required=True)
@@ -49,22 +45,22 @@ def add_optimization_experiment_commands(subparsers):
         help="Experiment type",
     )
     design_parser.add_argument(
-        "--primary-metric", required=True, help="Primary metric to optimize"
+        "--primary - metric", required=True, help="Primary metric to optimize"
     )
     design_parser.add_argument(
-        "--sample-size", type=int, default=100, help="Sample size per condition"
+        "--sample - size", type=int, default=100, help="Sample size per condition"
     )
     design_parser.add_argument(
-        "--min-runtime", type=int, default=1, help="Minimum runtime in hours"
+        "--min - runtime", type=int, default=1, help="Minimum runtime in hours"
     )
     design_parser.add_argument(
-        "--max-runtime", type=int, default=24, help="Maximum runtime in hours"
+        "--max - runtime", type=int, default=24, help="Maximum runtime in hours"
     )
     design_parser.add_argument(
         "--confidence", type=float, default=0.95, help="Confidence level"
     )
     design_parser.add_argument(
-        "--min-effect", type=float, default=0.05, help="Minimum detectable effect"
+        "--min - effect", type=float, default=0.05, help="Minimum detectable effect"
     )
 
     # Start experiment command
@@ -188,7 +184,7 @@ def _handle_design_experiment(args: argparse.Namespace, framework) -> None:
     # Convert experiment type
     exp_type = ExperimentType(args.type)
 
-    # Create default conditions for A/B test
+    # Create default conditions for A / B test
     if exp_type == ExperimentType.AB_TEST:
         conditions = [
             ExperimentCondition(
@@ -253,7 +249,7 @@ def _handle_design_experiment(args: argparse.Namespace, framework) -> None:
         ExperimentMetric(
             name="throughput",
             description="Operations per second",
-            unit="ops/sec",
+            unit="ops / sec",
             higher_is_better=True,
         ),
         ExperimentMetric(
@@ -303,9 +299,9 @@ def _handle_design_experiment(args: argparse.Namespace, framework) -> None:
 
     print(f"\n🚀 Next Steps:")
     print(f"   1. Review experiment design")
-    print(f"   2. Start experiment: opt-experiments start {design.experiment_id}")
+    print(f"   2. Start experiment: opt - experiments start {design.experiment_id}")
     print(f"   3. Record measurements as they occur")
-    print(f"   4. Monitor results: opt-experiments status {design.experiment_id}")
+    print(f"   4. Monitor results: opt - experiments status {design.experiment_id}")
 
 
 def _handle_start_experiment(args: argparse.Namespace, framework) -> None:
@@ -316,9 +312,9 @@ def _handle_start_experiment(args: argparse.Namespace, framework) -> None:
 
     if success:
         print("✅ Experiment started successfully!")
-        print(f"📊 Monitor progress: opt-experiments status {args.experiment_id}")
+        print(f"📊 Monitor progress: opt - experiments status {args.experiment_id}")
         print(
-            f"📝 Record data: opt-experiments record {args.experiment_id} <condition> <metric> <value>"
+            f"📝 Record data: opt - experiments record {args.experiment_id} <condition> <metric> <value>"
         )
     else:
         print("❌ Failed to start experiment")
@@ -333,7 +329,7 @@ def _handle_stop_experiment(args: argparse.Namespace, framework) -> None:
 
     if success:
         print("✅ Experiment stopped and analyzed")
-        print(f"📊 View results: opt-experiments results {args.experiment_id}")
+        print(f"📊 View results: opt - experiments results {args.experiment_id}")
     else:
         print("❌ Failed to stop experiment")
         print("💡 Check that experiment ID exists and is currently running")
@@ -462,7 +458,7 @@ def _handle_show_results(args: argparse.Namespace, framework) -> None:
     print(f"Outcome: {results.outcome.value}")
     print(f"Statistical Significance: {results.significance.value}")
     print(f"Improvement: {results.improvement_percentage:.2f}%")
-    print(f"P-value: {results.p_value:.4f}")
+    print(f"P - value: {results.p_value:.4f}")
 
     if results.best_condition:
         print(f"Best Condition: {results.best_condition}")
@@ -577,10 +573,10 @@ def _handle_analytics_commands(args: argparse.Namespace, framework) -> None:
         )
 
         print(f"Total Experiments: {total_experiments}")
-        print(f"Successful: {successful} ({successful/total_experiments*100:.1f}%)")
-        print(f"Harmful: {harmful} ({harmful/total_experiments*100:.1f}%)")
+        print(f"Successful: {successful} ({successful / total_experiments * 100:.1f}%)")
+        print(f"Harmful: {harmful} ({harmful / total_experiments * 100:.1f}%)")
         print(
-            f"Inconclusive: {inconclusive} ({inconclusive/total_experiments*100:.1f}%)"
+            f"Inconclusive: {inconclusive} ({inconclusive / total_experiments * 100:.1f}%)"
         )
 
         # Average improvement
@@ -612,7 +608,7 @@ def _handle_analytics_commands(args: argparse.Namespace, framework) -> None:
         for sig, count in significance_counts.items():
             print(f"   {sig}: {count} experiments")
 
-        # P-value analysis would go here
+        # P - value analysis would go here
         print(
             f"\nNote: Statistical analysis based on {len(completed)} completed experiments"
         )
@@ -642,8 +638,8 @@ def _handle_template_commands(args: argparse.Namespace, framework) -> None:
 
         templates = {
             "performance_ab_test": {
-                "name": "Performance A/B Test",
-                "description": "Standard A/B test for performance optimization",
+                "name": "Performance A / B Test",
+                "description": "Standard A / B test for performance optimization",
                 "type": "ab_test",
                 "metrics": ["response_time", "throughput", "error_rate"],
             },
@@ -676,14 +672,14 @@ def _handle_template_commands(args: argparse.Namespace, framework) -> None:
 
         print(f"\n🚀 Usage:")
         print(
-            f"   opt-experiments templates create <template_id> --name 'My Experiment'"
+            f"   opt - experiments templates create <template_id> --name 'My Experiment'"
         )
 
     elif args.template_action == "create":
         print(f"🧪 Creating Experiment from Template: {args.template_name}")
 
-        # This would implement template-based experiment creation
-        print("✅ Template-based experiment creation coming soon!")
+        # This would implement template - based experiment creation
+        print("✅ Template - based experiment creation coming soon!")
         print(
-            "💡 For now, use: opt-experiments design --name 'My Experiment' --description '...'"
+            "💡 For now, use: opt - experiments design --name 'My Experiment' --description '...'"
         )

@@ -1,4 +1,4 @@
-# mypy: ignore-errors
+# mypy: ignore - errors
 import json
 import sys
 from pathlib import Path
@@ -6,7 +6,7 @@ from typing import Any, Dict
 
 
 def load_json(path: Path, default=None):
-    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else default
+    return json.loads(path.read_text(encoding="utf - 8")) if path.exists() else default
 
 
 def check_acceptance(root: Path) -> Dict[str, Any]:
@@ -18,7 +18,7 @@ def check_acceptance(root: Path) -> Dict[str, Any]:
     criteria = (charter.get("scope", {}) or {}).get("acceptance_criteria", [])
 
     # Pull metrics from system
-    # Best-effort reads; if files missing, mark unknown
+    # Best - effort reads; if files missing, mark unknown
     readiness = {
         "ready_for_agents": False,
         "vision_clarity": {"score": 0.0},
@@ -47,7 +47,7 @@ def check_acceptance(root: Path) -> Dict[str, Any]:
     )
 
     # 2) Guardrail false positives <= 5% (placeholder; no live metric source yet)
-    # If we later store in .ai_onboard/metrics.json, read it; for now mark unknown
+    # If we later store in .ai_onboard / metrics.json, read it; for now mark unknown
     guardrail_fp = None  # unknown
     checks.append(
         {
@@ -64,19 +64,19 @@ def check_acceptance(root: Path) -> Dict[str, Any]:
     checks.append(
         {
             "name": "AI Drift Interventions",
-            "target": "<= 2/100 actions (30d)",
+            "target": "<= 2 / 100 actions (30d)",
             "actual": drift_interventions,
             "pass": drift_interventions is None,
             "note": "No data source yet; integrate when available",
         }
     )
 
-    # 4) Owner satisfaction >= 4.5/5 over last 10 sessions (placeholder; unknown)
+    # 4) Owner satisfaction >= 4.5 / 5 over last 10 sessions (placeholder; unknown)
     satisfaction = None
     checks.append(
         {
             "name": "Owner Satisfaction",
-            "target": ">= 4.5/5 (last 10)",
+            "target": ">= 4.5 / 5 (last 10)",
             "actual": satisfaction,
             "pass": satisfaction is None,
             "note": "No data source yet; integrate when available",
@@ -96,7 +96,7 @@ def check_acceptance(root: Path) -> Dict[str, Any]:
     out_dir = ai_dir / "reports"
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "acceptance_report.json").write_text(
-        json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8"
+        json.dumps(report, indent=2, ensure_ascii=False), encoding="utf - 8"
     )
 
     # Simple markdown summary
@@ -114,7 +114,7 @@ def check_acceptance(root: Path) -> Dict[str, Any]:
         )
         if c.get("note"):
             lines.append(f"  - Note: {c['note']}")
-    (out_dir / "acceptance_report.md").write_text("\n".join(lines), encoding="utf-8")
+    (out_dir / "acceptance_report.md").write_text("\n".join(lines), encoding="utf - 8")
 
     return report
 

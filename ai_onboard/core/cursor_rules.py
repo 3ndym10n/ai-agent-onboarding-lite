@@ -1,9 +1,9 @@
 """
-Cursor Rule System: prompt-first workflow for Cursor/LLM agents.
+Cursor Rule System: prompt - first workflow for Cursor / LLM agents.
 
 Goals
-- Provide a simple, NL-first checklist and guardrails as a single system prompt.
-- Log observations and decisions to .ai_onboard/ as JSONL and human-readable files.
+- Provide a simple, NL - first checklist and guardrails as a single system prompt.
+- Log observations and decisions to .ai_onboard/ as JSONL and human - readable files.
 - Offer lightweight "next steps" based on what has been logged so far.
 
 No external deps. Python 3.8+.
@@ -18,14 +18,14 @@ from typing import Any, Dict, List, Optional
 
 from . import prompt_bridge, utils
 
-CONVO_FILE = ".ai_onboard/conversation.jsonl"
-DECISIONS_FILE = ".ai_onboard/decisions.jsonl"
-OBS_DIR = ".ai_onboard/obs"
+CONVO_FILE = ".ai_onboard / conversation.jsonl"
+DECISIONS_FILE = ".ai_onboard / decisions.jsonl"
+OBS_DIR = ".ai_onboard / obs"
 
 
 def _append_jsonl(path: Path, record: Dict[str, Any]) -> None:
     utils.ensure_dir(path.parent)
-    with path.open("a", encoding="utf-8") as f:
+    with path.open("a", encoding="utf - 8") as f:
         f.write(utils.dumps_json(record) + "\n")
 
 
@@ -33,7 +33,7 @@ def _read_jsonl(path: Path) -> List[Dict[str, Any]]:
     if not path.exists():
         return []
     lines: List[Dict[str, Any]] = []
-    for line in path.read_text(encoding="utf-8").splitlines():
+    for line in path.read_text(encoding="utf - 8").splitlines():
         line = line.strip()
         if not line:
             continue
@@ -48,7 +48,7 @@ def _read_jsonl(path: Path) -> List[Dict[str, Any]]:
 def record_observation(
     root: Path, rule_id: str, text: str, tags: Optional[List[str]] = None
 ) -> Dict[str, Any]:
-    """Record a free-form observation for a rule, both JSONL and a plain .md note."""
+    """Record a free - form observation for a rule, both JSONL and a plain .md note."""
     rec: Dict[str, Any] = {
         "ts": utils.now_iso(),
         "rule": rule_id,
@@ -60,7 +60,7 @@ def record_observation(
     safe_rule = rule_id.replace("/", "-")
     md_path = root / OBS_DIR / f"{safe_rule}.md"
     utils.ensure_dir(md_path.parent)
-    with md_path.open("a", encoding="utf-8") as f:
+    with md_path.open("a", encoding="utf - 8") as f:
         f.write(f"[{rec['ts']}] {text}\n")
     return rec
 
@@ -68,7 +68,7 @@ def record_observation(
 def record_decision(
     root: Path, decision: str, rationale: str, meta: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
-    """Record a decision with rationale (allow/deny/clarify/quick_confirm/custom)."""
+    """Record a decision with rationale (allow / deny / clarify / quick_confirm / custom)."""
     rec: Dict[str, Any] = {
         "ts": utils.now_iso(),
         "decision": decision,
@@ -90,9 +90,9 @@ class ChecklistItem:
 def _compute_checklist(root: Path) -> List[ChecklistItem]:
     """Derive a checklist based on current repo state and recent decisions.
 
-    This uses prompt_bridge summaries (read-only) and whether a manifest exists.
+    This uses prompt_bridge summaries (read - only) and whether a manifest exists.
     """
-    manifest_present = (root / "ai_onboard.json").exists()
+    (root / "ai_onboard.json").exists()
     state = prompt_bridge.get_project_state(root)
 
     items: List[ChecklistItem] = [
@@ -123,10 +123,10 @@ def next_checklist(root: Path) -> List[Dict[str, Any]]:
 def load_agent_profile(root: Path) -> Dict[str, Any]:
     """Load optional agent profile that constrains what the agent focuses on.
 
-    Format (.ai_onboard/agent_profile.json):
+    Format (.ai_onboard / agent_profile.json):
     {"include": ["paths..."], "exclude": ["globs..."]}
     """
-    prof = utils.read_json(root / ".ai_onboard/agent_profile.json", default={}) or {}
+    prof = utils.read_json(root / ".ai_onboard / agent_profile.json", default={}) or {}
     include = [p for p in (prof.get("include") or []) if isinstance(p, str)]
     exclude = [p for p in (prof.get("exclude") or []) if isinstance(p, str)]
     return {"include": include, "exclude": exclude}
@@ -154,7 +154,7 @@ def generate_system_prompt(root: Path) -> str:
     )
 
     prompt = f"""
-You are a repository guide operating in a prompt-only workflow. Do not run CLI commands.
+You are a repository guide operating in a prompt - only workflow. Do not run CLI commands.
 Work strictly through reading files and writing logs under .ai_onboard/.
 
 Operating rules:
@@ -172,11 +172,11 @@ Checklist:
 
 What to log per step:
 - Scan docs: list key goals, constraints, unknowns (bullets)
-- Guardrails: note presence of AGENTS.md, protected paths, meta-policies
+- Guardrails: note presence of AGENTS.md, protected paths, meta - policies
 - Manifest: if missing, propose minimal fields (name, topOutcomes) as JSON in notes
-- Summary: produce a brief summary using prompt_bridge.summary logic (NL-only paraphrase)
+- Summary: produce a brief summary using prompt_bridge.summary logic (NL - only paraphrase)
 - Ambiguities: enumerate concrete questions to unblock work
-- Alignment preview: read .ai_onboard/alignment_report.json if present; otherwise infer risk areas
+- Alignment preview: read .ai_onboard / alignment_report.json if present; otherwise infer risk areas
 
 Output policy:
 - After each action, update the checklist status in natural language and suggest the single next step.
@@ -197,14 +197,14 @@ def status(root: Path) -> Dict[str, Any]:
 
 
 def suggest_next_actions(root: Path) -> List[Dict[str, Any]]:
-    """Compute minimal, non-invasive next actions the agent can take.
+    """Compute minimal, non - invasive next actions the agent can take.
 
     Returns a small list of suggestions with rationale. Does not perform any action.
     """
     suggestions: List[Dict[str, Any]] = []
 
     # 1) Interrogation: if alignment confidence is low or many ambiguities
-    prev = _read_json_safe(root / ".ai_onboard/alignment_report.json")
+    prev = _read_json_safe(root / ".ai_onboard / alignment_report.json")
     conf = float(prev.get("confidence", 0.0)) if isinstance(prev, dict) else 0.0
     ambiguities = prev.get("ambiguities", []) if isinstance(prev, dict) else []
     if conf < 0.6 or (isinstance(ambiguities, list) and len(ambiguities) >= 2):
@@ -218,7 +218,7 @@ def suggest_next_actions(root: Path) -> List[Dict[str, Any]]:
 
     # 2) Alignment drift check: if no recent preview or time gap
     # Lightweight check: if report missing, suggest preview
-    if not (root / ".ai_onboard/alignment_report.json").exists():
+    if not (root / ".ai_onboard / alignment_report.json").exists():
         suggestions.append(
             {
                 "id": "alignment_preview",
@@ -227,14 +227,14 @@ def suggest_next_actions(root: Path) -> List[Dict[str, Any]]:
             }
         )
 
-    # 3) Plan update: if alignment is proceed/approved but plan missing
-    plan_path = root / ".ai_onboard/plan.json"
-    decision_log = root / ".ai_onboard/decision_log.jsonl"
+    # 3) Plan update: if alignment is proceed / approved but plan missing
+    plan_path = root / ".ai_onboard / plan.json"
+    decision_log = root / ".ai_onboard / decision_log.jsonl"
     proceed = False
     if prev and isinstance(prev, dict) and prev.get("decision") == "proceed":
         proceed = True
     if decision_log.exists():
-        for line in decision_log.read_text(encoding="utf-8").splitlines():
+        for line in decision_log.read_text(encoding="utf - 8").splitlines():
             try:
                 entry = json.loads(line)
             except Exception:
@@ -256,6 +256,6 @@ def suggest_next_actions(root: Path) -> List[Dict[str, Any]]:
 
 def _read_json_safe(path: Path):
     try:
-        return json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+        return json.loads(path.read_text(encoding="utf - 8")) if path.exists() else {}
     except Exception:
         return {}

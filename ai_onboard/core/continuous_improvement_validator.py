@@ -5,7 +5,7 @@ This module provides comprehensive testing and validation for the continuous imp
 - System integration testing
 - Component validation
 - Performance testing
-- End-to-end workflow testing
+- End - to - end workflow testing
 - Data integrity validation
 - Configuration validation
 """
@@ -266,8 +266,8 @@ class ContinuousImprovementValidator:
         return tests
 
     def _run_end_to_end_tests(self) -> List["ValidationTestCase"]:
-        """Run end-to-end workflow tests."""
-        print("\n🔄 Running End-to-End Tests...")
+        """Run end - to - end workflow tests."""
+        print("\n🔄 Running End - to - End Tests...")
         tests = []
 
         # Test 1: Complete Learning Workflow
@@ -1022,7 +1022,7 @@ class ContinuousImprovementValidator:
             return ValidationTestCase(
                 test_id="e2e_003",
                 name="Complete Health Monitoring Workflow",
-                description="Test complete health monitoring start/stop/summary workflow",
+                description="Test complete health monitoring start / stop / summary workflow",
                 category=ValidationCategory.END_TO_END,
                 result=ValidationResult.PASS,
                 duration=duration,
@@ -1099,7 +1099,7 @@ class ContinuousImprovementValidator:
             [t for t in test_results if t.result == ValidationResult.WARNING]
         )
 
-        # Calculate weighted score: pass=100%, warning=50%, fail=0%
+        # Calculate weighted score: pass = 100%, warning = 50%, fail = 0%
         score = (passed_tests + (warning_tests * 0.5)) / total_tests * 100
         return round(score, 1)
 
@@ -1111,7 +1111,6 @@ class ContinuousImprovementValidator:
         timeout_seconds: int = 30,
     ) -> "ValidationTestCase":
         """Run a test function with timeout handling."""
-        import signal
         import time
         from threading import Event, Thread
 
@@ -1209,7 +1208,7 @@ class ContinuousImprovementValidator:
         import uuid
         from datetime import datetime
 
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now().strftime("%Y % m%d_ % H%M % S")
         unique_id = str(uuid.uuid4())[:8]
         return f"validation_report_{timestamp}_{unique_id}"
 
@@ -1344,7 +1343,7 @@ class ContinuousImprovementValidator:
             "summary": report.summary,
         }
 
-        with open(self.validation_path, "a", encoding="utf-8") as f:
+        with open(self.validation_path, "a", encoding="utf - 8") as f:
             json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 

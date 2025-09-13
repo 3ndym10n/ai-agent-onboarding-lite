@@ -1,5 +1,5 @@
 """
-Gate-Vision Integration - Connects gate responses to vision interrogation system.
+Gate - Vision Integration - Connects gate responses to vision interrogation system.
 
 This module ensures that when users provide responses through gates,
 those responses are automatically integrated into the vision interrogation data.
@@ -34,7 +34,7 @@ class GateVisionIntegrator:
         try:
             # Read gate response
             gate_response = json.loads(
-                self.gate_response_file.read_text(encoding="utf-8")
+                self.gate_response_file.read_text(encoding="utf - 8")
             )
 
             # Read or create vision data
@@ -57,7 +57,7 @@ class GateVisionIntegrator:
         """Load existing vision interrogation data or create new structure."""
         if self.vision_file.exists():
             try:
-                return json.loads(self.vision_file.read_text(encoding="utf-8"))
+                return json.loads(self.vision_file.read_text(encoding="utf - 8"))
             except (json.JSONDecodeError, FileNotFoundError, OSError):
                 pass
 
@@ -119,7 +119,7 @@ class GateVisionIntegrator:
             response_lower = response.lower()
 
             if "domain agnostic" in response_lower:
-                insights.append("User wants a domain-agnostic tool")
+                insights.append("User wants a domain - agnostic tool")
 
             if "vibe coding" in response_lower:
                 insights.append("Target audience: vibe coders")
@@ -143,7 +143,9 @@ class GateVisionIntegrator:
 
     def _save_vision_data(self, vision_data: Dict[str, Any]):
         """Save vision data to file."""
-        self.vision_file.write_text(json.dumps(vision_data, indent=2), encoding="utf-8")
+        self.vision_file.write_text(
+            json.dumps(vision_data, indent=2), encoding="utf - 8"
+        )
 
 
 def integrate_latest_gate_response(project_root: Path = None) -> bool:

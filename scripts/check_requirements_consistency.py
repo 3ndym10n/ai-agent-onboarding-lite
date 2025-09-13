@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr / bin / env python3
 """
 Check consistency between requirements.txt and pyproject.toml dependencies.
 """
@@ -6,7 +6,7 @@ Check consistency between requirements.txt and pyproject.toml dependencies.
 import sys
 import tomllib
 from pathlib import Path
-from typing import Dict, Set, Tuple
+from typing import Dict, Tuple
 
 
 def parse_requirements_txt() -> Dict[str, str]:
@@ -55,10 +55,10 @@ def parse_pyproject_toml() -> Tuple[Dict[str, str], Dict[str, str]]:
     # Parse dev dependencies
     if (
         "project" in data
-        and "optional-dependencies" in data["project"]
-        and "dev" in data["project"]["optional-dependencies"]
+        and "optional - dependencies" in data["project"]
+        and "dev" in data["project"]["optional - dependencies"]
     ):
-        for dep in data["project"]["optional-dependencies"]["dev"]:
+        for dep in data["project"]["optional - dependencies"]["dev"]:
             if "==" in dep:
                 name, version = dep.split("==", 1)
                 dev_deps[name.strip()] = version.strip()

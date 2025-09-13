@@ -7,7 +7,7 @@ from . import utils
 def open_checkpoint(root: Path, name: str) -> None:
     log = root / ".ai_onboard" / "decision_log.jsonl"
     utils.ensure_dir(log.parent)
-    with open(log, "a", encoding="utf-8") as f:
+    with open(log, "a", encoding="utf - 8") as f:
         f.write(f'{{"ts":"{utils.now_iso()}","decision":"OPEN","subject":"{name}"}}\n')
 
 
@@ -28,7 +28,7 @@ def record_decision(
         "approved": approved,
         "note": note,
     }
-    with open(log, "a", encoding="utf-8") as f:
+    with open(log, "a", encoding="utf - 8") as f:
         json.dump(entry, f)
         f.write("\n")
 
@@ -44,7 +44,7 @@ def require_alignment(root: Path, checkpoint: str) -> None:
         raise SystemExit(f"Alignment required: {checkpoint}")
 
     ok = False
-    for line in log.read_text(encoding="utf-8").splitlines():
+    for line in log.read_text(encoding="utf - 8").splitlines():
         try:
             entry = json.loads(line)
         except json.JSONDecodeError:
@@ -67,7 +67,7 @@ def require_state(root: Path, needed: str) -> None:
     state.require_gate(root, needed)
 
 
-# --- Intelligent Alignment Preview (non-invasive) ---
+# --- Intelligent Alignment Preview (non - invasive) ---
 
 
 def _load_policy(root: Path) -> dict:
@@ -89,14 +89,14 @@ def _load_policy(root: Path) -> dict:
                 "change_impact_inverse": 0.10,
             },
         },
-        "outputs": {"report_path": ".ai_onboard/alignment_report.json"},
+        "outputs": {"report_path": ".ai_onboard / alignment_report.json"},
     }
     if not policy_path.exists():
         return defaults
     try:
         import yaml  # type: ignore
 
-        with open(policy_path, "r", encoding="utf-8") as f:
+        with open(policy_path, "r", encoding="utf - 8") as f:
             data = yaml.safe_load(f) or {}
         # Merge shallowly with defaults
         out = defaults.copy()
@@ -110,7 +110,7 @@ def _load_policy(root: Path) -> dict:
 def _read_json(path: Path, default):
     try:
         return (
-            json.loads(path.read_text(encoding="utf-8")) if path.exists() else default
+            json.loads(path.read_text(encoding="utf - 8")) if path.exists() else default
         )
     except Exception:
         return default
@@ -126,7 +126,7 @@ def _compute_confidence(root: Path, policy: dict) -> dict:
     Heuristics (v1):
     - vision_completeness: presence of charter and top_outcomes
     - prior_confirmations: ALIGN approvals in decision_log
-    - benchmark_fit: coarse heuristic using presence of tests/docs
+    - benchmark_fit: coarse heuristic using presence of tests / docs
     - ambiguity_inverse: inverse of detected ambiguities (0 if many)
     - change_impact_inverse: neutral 0.5 (unknown until diff known)
     """
@@ -147,7 +147,7 @@ def _compute_confidence(root: Path, policy: dict) -> dict:
     log = root / ".ai_onboard" / "decision_log.jsonl"
     approved = 0
     if log.exists():
-        for line in log.read_text(encoding="utf-8").splitlines():
+        for line in log.read_text(encoding="utf - 8").splitlines():
             try:
                 entry = json.loads(line)
             except json.JSONDecodeError:
@@ -207,7 +207,7 @@ def _compute_confidence(root: Path, policy: dict) -> dict:
 
 
 def preview(root: Path) -> dict:
-    """Compute a read-only alignment preview and write a JSON report.
+    """Compute a read - only alignment preview and write a JSON report.
 
     Returns a dict with confidence, decision (proceed|quick_confirm|clarify),
     components, and path of the written report.
@@ -237,7 +237,7 @@ def preview(root: Path) -> dict:
     }
 
     report_rel = policy.get("outputs", {}).get(
-        "report_path", ".ai_onboard/alignment_report.json"
+        "report_path", ".ai_onboard / alignment_report.json"
     )
     report_path = root / report_rel
     utils.write_json(report_path, report)

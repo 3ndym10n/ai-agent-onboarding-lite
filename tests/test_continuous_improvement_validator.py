@@ -4,15 +4,14 @@ Comprehensive test suite for ContinuousImprovementValidator.
 This module provides comprehensive pytest integration for the ContinuousImprovementValidator,
 including integration tests, performance tests, and validation reporting.
 
-Note: Unit tests have been moved to tests/unit/test_ci_validator_unit.py
+Note: Unit tests have been moved to tests / unit / test_ci_validator_unit.py
 """
 
 import json
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -191,7 +190,7 @@ class TestContinuousImprovementValidator:
                 ValidationTestCase(
                     "e2e_test",
                     "e2e_test",
-                    "End-to-end test",
+                    "End - to - end test",
                     ValidationCategory.END_TO_END,
                     ValidationResult.PASS,
                     500.0,
@@ -255,7 +254,7 @@ class TestContinuousImprovementValidator:
 
     @pytest.mark.integration
     def test_end_to_end_test_execution(self, validator, mock_subsystems):
-        """Test that end-to-end tests execute properly."""
+        """Test that end - to - end tests execute properly."""
         tests = validator._run_end_to_end_tests()
 
         assert isinstance(tests, list)
@@ -466,15 +465,12 @@ class TestContinuousImprovementValidator:
     def test_cli_integration(self, validator, root_path):
         """Test integration with CLI commands."""
         # This would test the CLI integration points
-        from ai_onboard.cli.commands_continuous_improvement import (
-            _handle_validation_commands,
-        )
 
         # Mock the args
         class MockArgs:
             validation_action = "run"
 
-        args = MockArgs()
+        MockArgs()
 
         # Test that CLI can call the validator without errors
         try:
@@ -594,7 +590,7 @@ class TestValidationReporting:
 
 
 class TestPerformanceValidation:
-    """Test suite for performance-related validation."""
+    """Test suite for performance - related validation."""
 
     @pytest.mark.slow
     @pytest.mark.integration
@@ -637,7 +633,7 @@ class TestPerformanceValidation:
                 )
             ]
 
-            report = validator.run_comprehensive_validation()
+            validator.run_comprehensive_validation()
 
             final_memory = process.memory_info().rss / 1024 / 1024  # MB
             memory_increase = final_memory - initial_memory
@@ -648,7 +644,7 @@ class TestPerformanceValidation:
             ), f"Memory usage increased by {memory_increase}MB"
 
 
-# Pytest hooks and fixtures for CI/CD integration
+# Pytest hooks and fixtures for CI / CD integration
 def pytest_configure(config):
     """Configure pytest for continuous improvement validation."""
     config.addinivalue_line(
@@ -717,13 +713,13 @@ def pytest_configure(config):
 def pytest_addoption(parser):
     """Add custom command line options for validation."""
     parser.addoption(
-        "--generate-validation-report",
+        "--generate - validation - report",
         action="store_true",
         default=False,
         help="Generate validation report at end of test session",
     )
     parser.addoption(
-        "--validation-timeout",
+        "--validation - timeout",
         action="store",
         default=300,
         type=int,
@@ -735,10 +731,10 @@ def pytest_addoption(parser):
 @pytest.fixture(scope="session")
 def validation_timeout(request):
     """Provide validation timeout from command line."""
-    return request.config.getoption("--validation-timeout")
+    return request.config.getoption("--validation - timeout")
 
 
 @pytest.fixture(scope="session")
 def generate_validation_report(request):
     """Provide validation report generation flag from command line."""
-    return request.config.getoption("--generate-validation-report")
+    return request.config.getoption("--generate - validation - report")

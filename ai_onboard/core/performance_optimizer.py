@@ -2,7 +2,7 @@
 Performance Optimizer - Advanced performance optimization system.
 
 This module provides intelligent performance optimization capabilities that:
-- Monitors system performance in real-time
+- Monitors system performance in real - time
 - Identifies performance bottlenecks and optimization opportunities
 - Implements automatic optimizations based on learned patterns
 - Tracks optimization effectiveness and learns from results
@@ -20,7 +20,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 # psutil is optional at runtime to avoid hard dependency during CLI import paths
-try:  # pragma: no cover - environment-dependent
+try:  # pragma: no cover - environment - dependent
     import psutil  # type: ignore
 except Exception:  # pragma: no cover - fallback when not installed
     psutil = None  # type: ignore
@@ -77,8 +77,8 @@ class OptimizationOpportunity:
     current_performance: Dict[PerformanceMetric, float]
     expected_improvement: float
     confidence: float
-    implementation_effort: int  # 1-10
-    risk_level: int  # 1-10, lower is safer
+    implementation_effort: int  # 1 - 10
+    risk_level: int  # 1 - 10, lower is safer
     context: Dict[str, Any] = field(default_factory=dict)
     created_at: datetime = field(default_factory=datetime.now)
 
@@ -523,7 +523,7 @@ class PerformanceOptimizer:
             end_snapshot.operation_id = operation_id
             end_snapshot.context["operation_name"] = operation_name
 
-            # Calculate operation-specific metrics
+            # Calculate operation - specific metrics
             execution_time = end_time - start_time
             memory_delta = (
                 end_snapshot.metrics[PerformanceMetric.MEMORY_USAGE]
@@ -713,8 +713,8 @@ class PerformanceOptimizer:
         return True
 
     def _optimize_io(self, context: Dict[str, Any]) -> bool:
-        """Implement I/O optimization."""
-        # This would implement specific I/O optimizations
+        """Implement I / O optimization."""
+        # This would implement specific I / O optimizations
         return True
 
     def _optimize_algorithm(self, context: Dict[str, Any]) -> bool:
@@ -745,7 +745,7 @@ class PerformanceOptimizer:
             "session_id": snapshot.session_id,
         }
 
-        with open(self.performance_data_path, "a", encoding="utf-8") as f:
+        with open(self.performance_data_path, "a", encoding="utf - 8") as f:
             json.dump(snapshot_data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 
@@ -771,7 +771,7 @@ class PerformanceOptimizer:
             "created_at": result.created_at.isoformat(),
         }
 
-        with open(self.optimization_results_path, "a", encoding="utf-8") as f:
+        with open(self.optimization_results_path, "a", encoding="utf - 8") as f:
             json.dump(result_data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 
@@ -905,7 +905,7 @@ class PerformanceOptimizer:
         # Load recent optimization results
         results = []
         if self.optimization_results_path.exists():
-            with open(self.optimization_results_path, "r", encoding="utf-8") as f:
+            with open(self.optimization_results_path, "r", encoding="utf - 8") as f:
                 for line in f:
                     line = line.strip()
                     if not line:

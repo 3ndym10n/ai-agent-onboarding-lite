@@ -1,7 +1,7 @@
 """
 Integration tests for cleanup safety gates.
 
-Tests the complete safety gate framework end-to-end,
+Tests the complete safety gate framework end - to - end,
 ensuring all gates work together to prevent system damage.
 """
 
@@ -39,7 +39,7 @@ class TestCleanupSafetyGatesIntegration(unittest.TestCase):
         self.test_file.write_text("Test content")
 
         self.protected_file = self.test_dir / "pyproject.toml"
-        self.protected_file.write_text("[build-system]\nrequires = ['setuptools']")
+        self.protected_file.write_text("[build - system]\nrequires = ['setuptools']")
 
         # Create a file with dependencies
         self.dependent_file = self.test_dir / "config.py"
@@ -61,7 +61,7 @@ class TestCleanupSafetyGatesIntegration(unittest.TestCase):
             description="Delete safe temporary file",
         )
 
-        # Mock human confirmation to auto-approve
+        # Mock human confirmation to auto - approve
         with patch("builtins.input", return_value="CONFIRM"):
             success, message = self.framework.execute_cleanup_operation(operation)
 
@@ -69,7 +69,7 @@ class TestCleanupSafetyGatesIntegration(unittest.TestCase):
         self.assertFalse(safe_file.exists(), "Safe file should be deleted")
 
     def test_protected_file_deletion_blocked_by_preflight(self):
-        """Test that protected files are blocked by pre-flight gate."""
+        """Test that protected files are blocked by pre - flight gate."""
         operation = CleanupOperation(
             operation_type="delete",
             targets=[self.protected_file],
@@ -104,7 +104,7 @@ class TestCleanupSafetyGatesIntegration(unittest.TestCase):
         )
 
     def test_risk_assessment_escalation(self):
-        """Test that high-risk operations require complex confirmation."""
+        """Test that high - risk operations require complex confirmation."""
         # Create multiple files to increase risk score
         risk_files = []
         for i in range(15):  # Large number of targets increases risk
@@ -170,8 +170,8 @@ class TestCleanupSafetyGatesIntegration(unittest.TestCase):
         )
 
     def test_post_operation_validation_with_failure(self):
-        """Test post-operation validation and automatic rollback."""
-        # Create a scenario that will fail post-validation
+        """Test post - operation validation and automatic rollback."""
+        # Create a scenario that will fail post - validation
         test_file = self.test_dir / "validation_test.py"
         test_file.write_text("import ai_onboard")
 
@@ -181,22 +181,22 @@ class TestCleanupSafetyGatesIntegration(unittest.TestCase):
             description="Test validation failure",
         )
 
-        # Mock post-validation to fail with correct return format
+        # Mock post - validation to fail with correct return format
         from ai_onboard.core.cleanup_safety_gates import GateResult
 
         with patch.object(PostOperationGate, "validate") as mock_validate:
             mock_validate.return_value = (
                 GateResult.FAIL,
-                "Post-validation failed - test scenario",
+                "Post - validation failed - test scenario",
             )
 
             # Mock human confirmation
             with patch("builtins.input", return_value="CONFIRM"):
                 success, message = self.framework.execute_cleanup_operation(operation)
 
-        # The operation should fail due to post-validation failure
+        # The operation should fail due to post - validation failure
         self.assertFalse(
-            success, "Operation should fail due to post-validation failure"
+            success, "Operation should fail due to post - validation failure"
         )
         self.assertIn("failed", message.lower())
 
@@ -236,7 +236,7 @@ class TestCleanupSafetyGatesIntegration(unittest.TestCase):
         self.framework.config["strict_mode"] = True
         self.framework.config["require_confirmation_for_medium_risk"] = True
 
-        # Create medium-risk operation
+        # Create medium - risk operation
         medium_risk_file = self.test_dir / "medium_risk.txt"
         medium_risk_file.write_text("Some content")
 
@@ -276,7 +276,7 @@ class TestCleanupSafetyGatesIntegration(unittest.TestCase):
             description="Mixed risk file deletion",
         )
 
-        # Should be blocked due to high-risk file with dependencies
+        # Should be blocked due to high - risk file with dependencies
         success, message = self.framework.execute_cleanup_operation(operation)
 
         self.assertFalse(
@@ -347,7 +347,7 @@ class TestIndividualSafetyGates(unittest.TestCase):
         shutil.rmtree(self.test_dir, ignore_errors=True)
 
     def test_preflight_gate_protected_paths(self):
-        """Test that pre-flight gate correctly identifies protected paths."""
+        """Test that pre - flight gate correctly identifies protected paths."""
         gate = PreFlightGate()
 
         # Test protected file
@@ -388,7 +388,7 @@ class TestIndividualSafetyGates(unittest.TestCase):
         """Test risk assessment scoring algorithm."""
         gate = RiskAssessmentGate()
 
-        # Test low-risk operation
+        # Test low - risk operation
         low_risk_file = self.test_dir / "temp.log"
         low_risk_file.write_text("log")
 
@@ -414,7 +414,7 @@ class TestIndividualSafetyGates(unittest.TestCase):
         # Test complex confirmation code
         complex_code = gate._generate_complex_confirmation_code()
         self.assertIsInstance(complex_code, str)
-        self.assertIn("-", complex_code)  # Should have format like "ABC123-4567"
+        self.assertIn("-", complex_code)  # Should have format like "ABC123 - 4567"
 
     def test_backup_manifest_creation(self):
         """Test backup manifest creation and structure."""

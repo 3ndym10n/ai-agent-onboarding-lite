@@ -15,23 +15,22 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional
 
-from . import utils
-from .unified_metrics_collector import MetricCategory, get_unified_metrics_collector
+from .unified_metrics_collector import get_unified_metrics_collector
 
 
 class CapabilityCategory(Enum):
     """Categories of system capabilities."""
 
     PROJECT_MANAGEMENT = "project_management"  # charter, plan, align, validate
-    AI_COLLABORATION = "ai_collaboration"  # cursor, ai-agent, aaol, context
+    AI_COLLABORATION = "ai_collaboration"  # cursor, ai - agent, aaol, context
     OPTIMIZATION = "optimization"  # kaizen, experiments, metrics
     USER_EXPERIENCE = "user_experience"  # ux, help, suggestions, dashboard
     DEVELOPMENT_TOOLS = "development_tools"  # api, debug, cleanup, checkpoint
-    ANALYTICS = "analytics"  # prompt, status, unified-metrics
-    LEARNING = "learning"  # user-prefs, continuous-improvement
-    ADVANCED_FEATURES = "advanced_features"  # decision-pipeline, enhanced-context
+    ANALYTICS = "analytics"  # prompt, status, unified - metrics
+    LEARNING = "learning"  # user - prefs, continuous - improvement
+    ADVANCED_FEATURES = "advanced_features"  # decision - pipeline, enhanced - context
 
 
 class UsageContext(Enum):
@@ -39,9 +38,9 @@ class UsageContext(Enum):
 
     INTERACTIVE_CLI = "interactive_cli"  # Direct CLI usage
     API_INTEGRATION = "api_integration"  # Via API calls
-    AUTOMATED_WORKFLOW = "automated_workflow"  # Automated/scripted usage
-    BACKGROUND_PROCESS = "background_process"  # Background/daemon processes
-    TESTING = "testing"  # During testing/validation
+    AUTOMATED_WORKFLOW = "automated_workflow"  # Automated / scripted usage
+    BACKGROUND_PROCESS = "background_process"  # Background / daemon processes
+    TESTING = "testing"  # During testing / validation
     ONBOARDING = "onboarding"  # During user onboarding
     TROUBLESHOOTING = "troubleshooting"  # During problem resolution
 
@@ -49,12 +48,12 @@ class UsageContext(Enum):
 class UsagePattern(Enum):
     """Common usage patterns."""
 
-    SINGLE_USE = "single_use"  # One-off command execution
-    WORKFLOW_SEQUENCE = "workflow_sequence"  # Part of multi-step workflow
+    SINGLE_USE = "single_use"  # One - off command execution
+    WORKFLOW_SEQUENCE = "workflow_sequence"  # Part of multi - step workflow
     REPEATED_USE = "repeated_use"  # Frequent repeated usage
-    EXPLORATION = "exploration"  # Feature discovery/learning
-    POWER_USER = "power_user"  # Advanced/expert usage
-    AUTOMATION = "automation"  # Automated/scripted usage
+    EXPLORATION = "exploration"  # Feature discovery / learning
+    POWER_USER = "power_user"  # Advanced / expert usage
+    AUTOMATION = "automation"  # Automated / scripted usage
 
 
 @dataclass
@@ -204,7 +203,7 @@ class CapabilityRegistry:
                 "complexity": "high",
                 "user_level": "intermediate",
             },
-            "ai-agent": {
+            "ai - agent": {
                 "category": CapabilityCategory.AI_COLLABORATION,
                 "description": "AI agent management and collaboration",
                 "complexity": "high",
@@ -216,15 +215,15 @@ class CapabilityRegistry:
                 "complexity": "very_high",
                 "user_level": "expert",
             },
-            "enhanced-context": {
+            "enhanced - context": {
                 "category": CapabilityCategory.AI_COLLABORATION,
                 "description": "Advanced conversation context management",
                 "complexity": "high",
                 "user_level": "advanced",
             },
-            "decision-pipeline": {
+            "decision - pipeline": {
                 "category": CapabilityCategory.AI_COLLABORATION,
-                "description": "Multi-stage decision processing",
+                "description": "Multi - stage decision processing",
                 "complexity": "very_high",
                 "user_level": "expert",
             },
@@ -235,13 +234,13 @@ class CapabilityRegistry:
                 "complexity": "medium",
                 "user_level": "intermediate",
             },
-            "kaizen-auto": {
+            "kaizen - auto": {
                 "category": CapabilityCategory.OPTIMIZATION,
                 "description": "Automated Kaizen cycle management",
                 "complexity": "high",
                 "user_level": "advanced",
             },
-            "opt-experiments": {
+            "opt - experiments": {
                 "category": CapabilityCategory.OPTIMIZATION,
                 "description": "Optimization experiment framework",
                 "complexity": "high",
@@ -256,7 +255,7 @@ class CapabilityRegistry:
             },
             "help": {
                 "category": CapabilityCategory.USER_EXPERIENCE,
-                "description": "Context-aware help system",
+                "description": "Context - aware help system",
                 "complexity": "low",
                 "user_level": "beginner",
             },
@@ -310,20 +309,20 @@ class CapabilityRegistry:
                 "complexity": "low",
                 "user_level": "beginner",
             },
-            "unified-metrics": {
+            "unified - metrics": {
                 "category": CapabilityCategory.ANALYTICS,
                 "description": "Comprehensive metrics collection",
                 "complexity": "high",
                 "user_level": "advanced",
             },
             # Learning
-            "user-prefs": {
+            "user - prefs": {
                 "category": CapabilityCategory.LEARNING,
                 "description": "User preference learning system",
                 "complexity": "medium",
                 "user_level": "intermediate",
             },
-            "continuous-improvement": {
+            "continuous - improvement": {
                 "category": CapabilityCategory.LEARNING,
                 "description": "Continuous improvement automation",
                 "complexity": "high",
@@ -370,7 +369,7 @@ class SystemCapabilityTracker:
         self.reports_dir = self.data_dir / "reports"
         self.reports_dir.mkdir(exist_ok=True)
 
-        # In-memory caches
+        # In - memory caches
         self.capability_metrics: Dict[str, CapabilityMetrics] = {}
         self.recent_events: List[CapabilityUsageEvent] = []
         self.session_tracking: Dict[str, List[str]] = defaultdict(list)
@@ -502,7 +501,7 @@ class SystemCapabilityTracker:
         # Store event
         self._store_usage_event(event)
 
-        # Update in-memory tracking
+        # Update in - memory tracking
         self.recent_events.append(event)
         if len(self.recent_events) > self.config.get("max_events_in_memory", 1000):
             self.recent_events = self.recent_events[
@@ -841,7 +840,7 @@ class SystemCapabilityTracker:
         # Save report
         report_file = (
             self.reports_dir
-            / f"capability_report_{end_date.strftime('%Y%m%d_%H%M%S')}.json"
+            / f"capability_report_{end_date.strftime('%Y % m%d_ % H%M % S')}.json"
         )
         try:
             with open(report_file, "w") as f:
@@ -979,7 +978,7 @@ class SystemCapabilityTracker:
         """Generate feature promotion recommendations."""
         recommendations = []
 
-        # Find underutilized beginner-friendly features
+        # Find underutilized beginner - friendly features
         for name, metrics in self.capability_metrics.items():
             capability_info = self.registry.get_capability_info(name)
             if (

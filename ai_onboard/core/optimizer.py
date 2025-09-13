@@ -17,9 +17,9 @@ def parse_budget(s: str) -> int:
 def quick_optimize(root: Path, budget: str = "300s") -> None:
     trials = root / ".ai_onboard" / "optimizer_trials.jsonl"
     utils.ensure_dir(trials.parent)
-    with open(trials, "a", encoding="utf-8") as f:
+    with open(trials, "a", encoding="utf - 8") as f:
         f.write(
-            f'{{"ts":"{utils.now_iso()}","trial":"ordering/parallel","budget_s":{parse_budget(budget)},"result":"stub"}}\n'
+            f'{{"ts":"{utils.now_iso()}","trial":"ordering / parallel","budget_s":{parse_budget(budget)},"result":"stub"}}\n'
         )
     print("Optimizer ran a quick (stub) trial. (Hooks are ready for deeper logic.)")
 
@@ -33,7 +33,7 @@ def nudge_from_metrics(root: Path) -> None:
     last = items[-1]
     comps = ", ".join(
         [
-            f"{c.get('name', '?')}:{c.get('score', 'n/a')}"
+            f"{c.get('name', '?')}:{c.get('score', 'n / a')}"
             for c in last.get("components", [])
         ]
     )
@@ -56,7 +56,7 @@ def _find_latest_test_report(root: Path) -> Optional[Path]:
 
 def _load_json(path: Path) -> Optional[Dict[str, Any]]:
     try:
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, "r", encoding="utf - 8") as f:
             return json.load(f)
     except Exception:
         return None
@@ -102,13 +102,13 @@ def _ensure_prefs(root: Path, prefs: Dict[str, Any]) -> Path:
     utils.ensure_dir(prefs_path.parent)
     try:
         if not prefs_path.exists():
-            with open(prefs_path, "w", encoding="utf-8") as f:
+            with open(prefs_path, "w", encoding="utf - 8") as f:
                 json.dump(prefs, f, indent=2)
         else:
-            # Merge-lite: keep existing keys, update with new ones
+            # Merge - lite: keep existing keys, update with new ones
             existing = _load_json(prefs_path) or {}
             existing.update(prefs)
-            with open(prefs_path, "w", encoding="utf-8") as f:
+            with open(prefs_path, "w", encoding="utf - 8") as f:
                 json.dump(existing, f, indent=2)
     except Exception:
         pass
@@ -122,7 +122,7 @@ def _analyze_hotspot_patterns(
     patterns = []
 
     for func_name, exec_time in hotspots:
-        # CPU-bound patterns
+        # CPU - bound patterns
         if any(
             keyword in func_name.lower()
             for keyword in ["loop", "calculate", "compute", "process", "math"]
@@ -136,7 +136,7 @@ def _analyze_hotspot_patterns(
                 }
             )
 
-        # Memory-bound patterns
+        # Memory - bound patterns
         elif any(
             keyword in func_name.lower()
             for keyword in ["dict", "list", "object", "memory", "cache"]
@@ -150,7 +150,7 @@ def _analyze_hotspot_patterns(
                 }
             )
 
-        # I/O-bound patterns
+        # I / O-bound patterns
         elif any(
             keyword in func_name.lower()
             for keyword in ["read", "write", "file", "network", "db", "open"]
@@ -204,7 +204,7 @@ def generate_optimization_proposals(
         "allowed_tech": [
             "Numba",
             "Cython",
-            "Rust/WASM",
+            "Rust / WASM",
             "PyPy",
             "asyncio",
             "C",
@@ -257,7 +257,7 @@ def generate_optimization_proposals(
     # Analyze hotspot patterns for targeted recommendations
     hotspot_patterns = _analyze_hotspot_patterns(hotspots)
 
-    # Heuristic: if we have hotspots, target top 1-3 with pattern-matched optimizations
+    # Heuristic: if we have hotspots, target top 1 - 3 with pattern - matched optimizations
     for name, secs in hotspots[:3]:
         # Get pattern recommendations for this specific hotspot
         pattern_recs = []
@@ -268,23 +268,23 @@ def generate_optimization_proposals(
 
         # Enhanced idea bank with more sophisticated optimizations
         idea_bank: List[Tuple[str, str, str, str]] = [
-            # CPU-bound optimizations
+            # CPU - bound optimizations
             (
                 "numba_jit",
                 "Numba JIT hot loops",
-                "Apply @njit/@jit to CPU-bound sections and avoid Python overhead",
+                "Apply @njit/@jit to CPU - bound sections and avoid Python overhead",
                 "cpu_bound",
             ),
             (
                 "vectorize_numpy",
                 "NumPy vectorization",
-                "Replace Python loops with NumPy vector ops for 10-100x speedup",
+                "Replace Python loops with NumPy vector ops for 10 - 100x speedup",
                 "cpu_bound",
             ),
             (
                 "cython_compile",
                 "Cython compilation",
-                "Compile performance-critical sections to C extensions",
+                "Compile performance - critical sections to C extensions",
                 "cpu_bound",
             ),
             (
@@ -297,7 +297,7 @@ def generate_optimization_proposals(
             (
                 "weakref_cache",
                 "Weak reference caching",
-                "Use weakref for memory-efficient caching without leaks",
+                "Use weakref for memory - efficient caching without leaks",
                 "memory_bound",
             ),
             (
@@ -309,7 +309,7 @@ def generate_optimization_proposals(
             (
                 "memoryview",
                 "Memory views",
-                "Use memoryview for zero-copy buffer access",
+                "Use memoryview for zero - copy buffer access",
                 "memory_bound",
             ),
             (
@@ -318,28 +318,28 @@ def generate_optimization_proposals(
                 "Use __slots__ to reduce memory footprint",
                 "memory_bound",
             ),
-            # I/O optimizations
+            # I / O optimizations
             (
                 "async_io",
-                "Async I/O refactoring",
-                "Convert blocking I/O to async/await patterns",
+                "Async I / O refactoring",
+                "Convert blocking I / O to async / await patterns",
                 "io_bound",
             ),
             (
                 "concurrent_futures",
                 "Thread pool execution",
-                "Use concurrent.futures for parallel I/O operations",
+                "Use concurrent.futures for parallel I / O operations",
                 "io_bound",
             ),
             (
                 "aiofiles",
                 "Async file operations",
-                "Replace sync file ops with aiofiles for non-blocking I/O",
+                "Replace sync file ops with aiofiles for non - blocking I / O",
                 "io_bound",
             ),
             (
                 "mmap_files",
-                "Memory-mapped files",
+                "Memory - mapped files",
                 "Use mmap for efficient large file access",
                 "io_bound",
             ),
@@ -353,32 +353,32 @@ def generate_optimization_proposals(
             (
                 "heapq_priority",
                 "Priority queue optimization",
-                "Use heapq for efficient priority-based operations",
+                "Use heapq for efficient priority - based operations",
                 "algorithm",
             ),
             (
                 "set_lookup",
-                "Set-based lookups",
+                "Set - based lookups",
                 "Replace list membership tests with set lookups",
                 "algorithm",
             ),
             (
                 "dict_comprehension",
                 "Dict comprehensions",
-                "Use dict comprehensions for memory-efficient dict building",
+                "Use dict comprehensions for memory - efficient dict building",
                 "algorithm",
             ),
             # Creative techniques
             (
                 "rust_microkernel",
-                "Rust/WASM micro-kernel",
-                "Move tight numeric loop to Rust compiled to native/WASM and call via FFI",
+                "Rust / WASM micro - kernel",
+                "Move tight numeric loop to Rust compiled to native / WASM and call via FFI",
                 "creative",
             ),
             (
                 "c_extension",
                 "C extension modules",
-                "Write performance-critical code in C with Python bindings",
+                "Write performance - critical code in C with Python bindings",
                 "creative",
             ),
             (
@@ -411,13 +411,13 @@ def generate_optimization_proposals(
                     "title": title,
                     "description": desc,
                     "evidence": {
-                        "source": str(report_path) if report_path else "n/a",
+                        "source": str(report_path) if report_path else "n / a",
                         "hotspot_seconds": secs,
                         "hotspot_rank": next(
                             (i for i, h in enumerate(hotspots, 1) if h[0] == name), 1
                         ),
                     },
-                    "estimated_gain": "10-50%",
+                    "estimated_gain": "10 - 50%",
                     "risk": (
                         "balanced"
                         if pid in ("numba_jit", "vectorize_numpy", "asyncio_refactor")
@@ -431,14 +431,14 @@ def generate_optimization_proposals(
                 }
             )
 
-    # Fallback if no hotspots/evidence
+    # Fallback if no hotspots / evidence
     if not proposals:
         proposals.append(
             {
                 "id": "profiling_baseline",
                 "target": "system",
                 "title": "Capture profiling baseline",
-                "description": "Run cProfile/py-spy to gather flame graphs and identify real hotspots",
+                "description": "Run cProfile / py - spy to gather flame graphs and identify real hotspots",
                 "evidence": {"reason": "No recent test report with timings found"},
                 "estimated_gain": "TBD",
                 "risk": "low",
@@ -467,7 +467,7 @@ def create_sandbox_plan(
     """Produce a sandbox execution plan for a given proposal (or top proposal).
 
     The plan is descriptive only (no side effects). Branching is recommended for
-    high-risk items. Returns a dict with selected proposal and step plan.
+    high - risk items. Returns a dict with selected proposal and step plan.
     """
     proposals_bundle = generate_optimization_proposals(root, budget_seconds)
     proposals = proposals_bundle.get("proposals", [])
@@ -489,10 +489,10 @@ def create_sandbox_plan(
     branch_name = f"opt/{selected.get('tech', 'idea')}-{selected.get('target', 'unknown').replace(' ', '_')[:32]}"
     steps: List[str] = [
         f"Create branch {branch_name}",
-        "Add micro-benchmark around target function/path",
+        "Add micro - benchmark around target function / path",
         "Implement minimal change scoped to idea",
-        "Run unit/system tests",
-        "Run micro-bench and compare to baseline",
+        "Run unit / system tests",
+        "Run micro - bench and compare to baseline",
         "Generate report (gains, regressions, diff scope)",
     ]
     if selected.get("risk") == "high":

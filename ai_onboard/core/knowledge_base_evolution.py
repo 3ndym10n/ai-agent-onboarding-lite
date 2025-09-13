@@ -113,7 +113,7 @@ class KnowledgePattern:
 
 @dataclass
 class KnowledgeRecommendation:
-    """A knowledge-based recommendation."""
+    """A knowledge - based recommendation."""
 
     recommendation_id: str
     knowledge_item_id: str
@@ -216,7 +216,7 @@ class KnowledgeBaseEvolution:
         if not self.knowledge_path.exists():
             return
 
-        with open(self.knowledge_path, "r", encoding="utf-8") as f:
+        with open(self.knowledge_path, "r", encoding="utf - 8") as f:
             for line in f:
                 line = line.strip()
                 if not line:
@@ -291,7 +291,7 @@ class KnowledgeBaseEvolution:
         if not self.recommendations_path.exists():
             return
 
-        with open(self.recommendations_path, "r", encoding="utf-8") as f:
+        with open(self.recommendations_path, "r", encoding="utf - 8") as f:
             for line in f:
                 line = line.strip()
                 if not line:
@@ -424,7 +424,7 @@ class KnowledgeBaseEvolution:
 
     def _calculate_text_similarity(self, text1: str, text2: str) -> float:
         """Calculate similarity between two text strings."""
-        # Simple word-based similarity
+        # Simple word - based similarity
         words1 = set(text1.lower().split())
         words2 = set(text2.lower().split())
 
@@ -545,7 +545,7 @@ class KnowledgeBaseEvolution:
     def get_knowledge_recommendations(
         self, context: Dict[str, Any], limit: int = 5
     ) -> List[KnowledgeRecommendation]:
-        """Get knowledge-based recommendations for a given context."""
+        """Get knowledge - based recommendations for a given context."""
         recommendations = []
 
         # Find relevant knowledge items
@@ -639,7 +639,7 @@ class KnowledgeBaseEvolution:
         workflow_patterns = self._discover_workflow_patterns()
         patterns.extend(workflow_patterns)
 
-        # Discover error-solution patterns
+        # Discover error - solution patterns
         error_patterns = self._discover_error_solution_patterns()
         patterns.extend(error_patterns)
 
@@ -659,7 +659,7 @@ class KnowledgeBaseEvolution:
         """Discover workflow patterns from knowledge."""
         patterns = []
 
-        # Group knowledge by workflow-related tags
+        # Group knowledge by workflow - related tags
         workflow_groups = defaultdict(list)
 
         for item in self.knowledge_items.values():
@@ -688,7 +688,7 @@ class KnowledgeBaseEvolution:
         return patterns
 
     def _discover_error_solution_patterns(self) -> List[KnowledgePattern]:
-        """Discover error-solution patterns."""
+        """Discover error - solution patterns."""
         patterns = []
 
         # Group error solutions by error type
@@ -981,7 +981,7 @@ class KnowledgeBaseEvolution:
         """Improve knowledge quality through validation and enhancement."""
         for item in self.knowledge_items.values():
             if item.status == KnowledgeStatus.DRAFT:
-                # Re-validate draft items
+                # Re - validate draft items
                 if self._validate_knowledge_quality(item):
                     item.status = KnowledgeStatus.ACTIVE
                     item.updated_at = datetime.now()
@@ -1107,7 +1107,7 @@ class KnowledgeBaseEvolution:
             "usage_statistics": knowledge_item.usage_statistics,
         }
 
-        with open(self.knowledge_path, "a", encoding="utf-8") as f:
+        with open(self.knowledge_path, "a", encoding="utf - 8") as f:
             json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 
@@ -1136,7 +1136,7 @@ class KnowledgeBaseEvolution:
 
     def _save_knowledge_recommendations(self):
         """Save knowledge recommendations to storage."""
-        with open(self.recommendations_path, "w", encoding="utf-8") as f:
+        with open(self.recommendations_path, "w", encoding="utf - 8") as f:
             for recommendation in self.knowledge_recommendations:
                 data = {
                     "recommendation_id": recommendation.recommendation_id,

@@ -11,7 +11,7 @@ import tempfile
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 import pytest
 
@@ -162,31 +162,33 @@ class ValidationTestCollector:
         longrepr: Optional[str] = None,
     ):
         """Add a test result to the collection."""
-        # Map pytest outcomes to our TestResult enum
+        # Map pytest outcomes to our ValidationResult enum
         result_mapping = {
-            "passed": TestResult.PASS,
-            "failed": TestResult.FAIL,
-            "skipped": TestResult.SKIP,
-            "error": TestResult.FAIL,
+            "passed": ValidationResult.PASS,
+            "failed": ValidationResult.FAIL,
+            "skipped": ValidationResult.SKIP,
+            "error": ValidationResult.FAIL,
         }
 
         # Determine test category from keywords/markers
-        category = TestCategory.INTEGRATION  # Default
+        category = ValidationCategory.INTEGRATION  # Default
         if "unit" in keywords:
-            category = TestCategory.INTEGRATION  # Unit tests are part of integration
+            category = (
+                ValidationCategory.INTEGRATION
+            )  # Unit tests are part of integration
         elif "performance" in keywords or "slow" in keywords:
-            category = TestCategory.PERFORMANCE
+            category = ValidationCategory.PERFORMANCE
         elif "integration" in keywords:
-            category = TestCategory.INTEGRATION
+            category = ValidationCategory.INTEGRATION
         elif "end_to_end" in keywords or "e2e" in keywords:
-            category = TestCategory.END_TO_END
+            category = ValidationCategory.END_TO_END
 
-        test_case = TestCase(
+        test_case = ValidationTestCase(
             test_id=f"pytest_{nodeid.replace('::', '_').replace('/', '_')}",
             name=nodeid.split("::")[-1],  # Extract test function name
             description=f"Pytest test: {nodeid}",
             category=category,
-            result=result_mapping.get(outcome, TestResult.FAIL),
+            result=result_mapping.get(outcome, ValidationResult.FAIL),
             duration=duration,  # Keep in seconds
             error_message=str(longrepr) if longrepr else None,
         )
@@ -199,12 +201,18 @@ class ValidationTestCollector:
             return None
 
         total_tests = len(self.test_results)
-        passed_tests = sum(1 for t in self.test_results if t.result == TestResult.PASS)
-        failed_tests = sum(1 for t in self.test_results if t.result == TestResult.FAIL)
-        warning_tests = sum(
-            1 for t in self.test_results if t.result == TestResult.WARNING
+        passed_tests = sum(
+            1 for t in self.test_results if t.result == ValidationResult.PASS
         )
-        skipped_tests = sum(1 for t in self.test_results if t.result == TestResult.SKIP)
+        failed_tests = sum(
+            1 for t in self.test_results if t.result == ValidationResult.FAIL
+        )
+        warning_tests = sum(
+            1 for t in self.test_results if t.result == ValidationResult.WARNING
+        )
+        skipped_tests = sum(
+            1 for t in self.test_results if t.result == ValidationResult.SKIP
+        )
 
         # Calculate health score based on test results
         if total_tests == 0:
@@ -218,11 +226,11 @@ class ValidationTestCollector:
         # Generate recommendations based on failures
         recommendations = []
         for test in self.test_results:
-            if test.result == TestResult.FAIL and test.error_message:
+            if test.result == ValidationResult.FAIL and test.error_message:
                 recommendations.append(
                     f"Fix failing test: {test.name} - {test.error_message}"
                 )
-            elif test.result == TestResult.WARNING:
+            elif test.result == ValidationResult.WARNING:
                 recommendations.append(f"Address warning in test: {test.name}")
 
         if not recommendations:
@@ -450,12 +458,12 @@ def integration_test_helper():
         @staticmethod
         def create_test_case(
             name: str,
-            result: TestResult,
+            result: ValidationResult,
             duration: float = 0.1,
-            category: TestCategory = TestCategory.INTEGRATION,
+            category: ValidationCategory = ValidationCategory.INTEGRATION,
             error_message: Optional[str] = None,
-        ) -> TestCase:
-            return TestCase(
+        ) -> ValidationTestCase:
+            return ValidationTestCase(
                 test_id=f"helper_{name}",
                 name=name,
                 description=f"Test case: {name}",
@@ -466,14 +474,22 @@ def integration_test_helper():
             )
 
         @staticmethod
-        def create_validation_report(test_results: List[TestCase]) -> ValidationReport:
+        def create_validation_report(
+            test_results: List[ValidationTestCase],
+        ) -> ValidationReport:
             total_tests = len(test_results)
-            passed_tests = sum(1 for t in test_results if t.result == TestResult.PASS)
-            failed_tests = sum(1 for t in test_results if t.result == TestResult.FAIL)
-            warning_tests = sum(
-                1 for t in test_results if t.result == TestResult.WARNING
+            passed_tests = sum(
+                1 for t in test_results if t.result == ValidationResult.PASS
             )
-            skipped_tests = sum(1 for t in test_results if t.result == TestResult.SKIP)
+            failed_tests = sum(
+                1 for t in test_results if t.result == ValidationResult.FAIL
+            )
+            warning_tests = sum(
+                1 for t in test_results if t.result == ValidationResult.WARNING
+            )
+            skipped_tests = sum(
+                1 for t in test_results if t.result == ValidationResult.SKIP
+            )
 
             health_score = (
                 (passed_tests / total_tests * 100.0) if total_tests > 0 else 0.0

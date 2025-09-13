@@ -1,11 +1,11 @@
-#!/usr/bin/env python3
-# mypy: ignore-errors
+#!/usr / bin / env python3
+# mypy: ignore - errors
 """
-Summarize recent CI logs fetched into `.ai_onboard/logs/` into a single JSON report.
+Summarize recent CI logs fetched into `.ai_onboard / logs/` into a single JSON report.
 
 - Scans for job logs like `ci__quality.log`, `ci__test__3_9_.log`, etc.
 - Extracts key failure indicators and last lines.
-- Writes `.ai_onboard/logs/summary.json` with a compact overview.
+- Writes `.ai_onboard / logs / summary.json` with a compact overview.
 """
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ import re
 from pathlib import Path
 from typing import Dict, List, Set
 
-LOG_DIR = Path(".ai_onboard/logs")
+LOG_DIR = Path(".ai_onboard / logs")
 SUMMARY_PATH = LOG_DIR / "summary.json"
 
 ERROR_PATTERNS: List[re.Pattern[str]] = [
@@ -29,7 +29,7 @@ ERROR_PATTERNS: List[re.Pattern[str]] = [
 
 def _read_tail_lines(path: Path, max_lines: int = 200) -> List[str]:
     try:
-        lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+        lines = path.read_text(encoding="utf - 8", errors="replace").splitlines()
         return lines[-max_lines:]
     except Exception:  # noqa: BLE001 - defensive
         return []
@@ -72,7 +72,7 @@ def summarize() -> Dict[str, object]:
         try:
             # Grab only the last few
             events_lines = events_path.read_text(
-                encoding="utf-8", errors="replace"
+                encoding="utf - 8", errors="replace"
             ).splitlines()[-50:]
             report["events_tail"] = events_lines
         except Exception:  # noqa: BLE001
@@ -83,7 +83,7 @@ def summarize() -> Dict[str, object]:
 
 def main() -> None:
     report = summarize()
-    SUMMARY_PATH.write_text(json.dumps(report, indent=2), encoding="utf-8")
+    SUMMARY_PATH.write_text(json.dumps(report, indent=2), encoding="utf - 8")
     print(f"Wrote summary: {SUMMARY_PATH}")
 
 

@@ -1,5 +1,5 @@
 """
-Enhanced CLI Commands - UI-improved command implementations.
+Enhanced CLI Commands - UI - improved command implementations.
 
 This module provides enhanced versions of CLI commands with:
 - Intelligent help and discovery
@@ -13,27 +13,22 @@ import argparse
 import json
 import time
 from pathlib import Path
-from typing import Optional
 
 from ..core.ui_enhancement_system import (
     CommandCategory,
-    InterfaceMode,
     get_ui_enhancement_system,
 )
-from ..core.unicode_utils import get_safe_formatter, print_content, safe_print
+from ..core.unicode_utils import print_content, safe_print
 from .help_system import get_help_system
 from .visual_components import (
-    create_chart,
     create_dashboard,
-    create_progress_bar,
-    create_spinner,
     create_status_indicator,
     create_table,
 )
 
 
 def add_ui_enhanced_commands(subparsers):
-    """Add UI-enhanced commands to the CLI."""
+    """Add UI - enhanced commands to the CLI."""
 
     # Enhanced help command
     help_parser = subparsers.add_parser(
@@ -71,7 +66,7 @@ def add_ui_enhanced_commands(subparsers):
         "--health", action="store_true", help="Show system health dashboard"
     )
     dashboard_parser.add_argument(
-        "--refresh", type=int, help="Auto-refresh interval in seconds"
+        "--refresh", type=int, help="Auto - refresh interval in seconds"
     )
 
     # Suggest command
@@ -147,9 +142,9 @@ def add_ui_enhanced_commands(subparsers):
     wizard_parser = subparsers.add_parser("wizard", help="Interactive workflow wizards")
     wizard_sub = wizard_parser.add_subparsers(dest="wizard_type", required=True)
 
-    wizard_sub.add_parser("project-setup", help="Project setup wizard")
+    wizard_sub.add_parser("project - setup", help="Project setup wizard")
     wizard_sub.add_parser("optimization", help="Optimization workflow wizard")
-    wizard_sub.add_parser("ai-setup", help="AI features setup wizard")
+    wizard_sub.add_parser("ai - setup", help="AI features setup wizard")
 
     # Status command with visual enhancements
     status_parser = subparsers.add_parser(
@@ -165,7 +160,7 @@ def add_ui_enhanced_commands(subparsers):
 
 
 def handle_ui_enhanced_commands(args: argparse.Namespace, root: Path) -> None:
-    """Handle UI-enhanced commands."""
+    """Handle UI - enhanced commands."""
 
     ui_system = get_ui_enhancement_system(root)
     help_system = get_help_system(root)
@@ -273,7 +268,7 @@ def _handle_dashboard(args: argparse.Namespace, root: Path, user_id: str) -> Non
     print(output)
 
     if args.refresh:
-        print(f"\nAuto-refreshing every {args.refresh} seconds (Ctrl+C to stop)...")
+        print(f"\nAuto - refreshing every {args.refresh} seconds (Ctrl + C to stop)...")
         try:
             while True:
                 time.sleep(args.refresh)
@@ -472,7 +467,9 @@ def _show_config(ui_system, user_id: str) -> None:
     output.append(ui_system.format_output("🔧 System Settings", "info", user_id))
     output.append(f"Default Theme: {config.get('default_theme', 'modern')}")
     output.append(f"Enable Suggestions: {config.get('enable_suggestions', True)}")
-    output.append(f"Auto-detect Expertise: {config.get('auto_detect_expertise', True)}")
+    output.append(
+        f"Auto - detect Expertise: {config.get('auto_detect_expertise', True)}"
+    )
 
     print("\n".join(output))
 
@@ -602,11 +599,11 @@ def _handle_wizard(args: argparse.Namespace, root: Path, user_id: str) -> None:
     """Handle interactive wizards."""
     ui_system = get_ui_enhancement_system(root)
 
-    if args.wizard_type == "project-setup":
+    if args.wizard_type == "project - setup":
         _run_project_setup_wizard(root, ui_system, user_id)
     elif args.wizard_type == "optimization":
         _run_optimization_wizard(root, ui_system, user_id)
-    elif args.wizard_type == "ai-setup":
+    elif args.wizard_type == "ai - setup":
         _run_ai_setup_wizard(root, ui_system, user_id)
 
 
@@ -625,7 +622,7 @@ def _run_project_setup_wizard(root: Path, ui_system, user_id: str) -> None:
     print(status.info("Step 1: Project Charter"))
     print("First, let's create your project charter and vision.")
 
-    response = input("Would you like to create a charter now? (y/n): ")
+    response = input("Would you like to create a charter now? (y / n): ")
     if response.lower().startswith("y"):
         print(status.progress("Running: ai_onboard charter"))
         # Would run charter command
@@ -637,7 +634,7 @@ def _run_project_setup_wizard(root: Path, ui_system, user_id: str) -> None:
     print(status.info("Step 2: Project Plan"))
     print("Next, let's generate your project plan.")
 
-    response = input("Would you like to generate a plan now? (y/n): ")
+    response = input("Would you like to generate a plan now? (y / n): ")
     if response.lower().startswith("y"):
         print(status.progress("Running: ai_onboard plan"))
         # Would run plan command
@@ -722,8 +719,8 @@ def _show_visual_status(root: Path, user_id: str, compact: bool = False) -> None
 
 def _show_standard_status(root: Path, user_id: str) -> None:
     """Show standard enhanced status."""
-    ui_system = get_ui_enhancement_system(root)
-    status = create_status_indicator(root, user_id)
+    get_ui_enhancement_system(root)
+    create_status_indicator(root, user_id)
 
     print_content("Project Status", "status")
     print("=" * 30)

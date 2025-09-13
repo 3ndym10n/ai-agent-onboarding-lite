@@ -1,12 +1,10 @@
-#!/usr/bin/env python3
+#!/usr / bin / env python3
 """
 Validate project structure against expected layout.
 """
 
 import os
 import sys
-from pathlib import Path
-from typing import List, Tuple
 
 
 def validate_structure() -> bool:
@@ -18,27 +16,27 @@ def validate_structure() -> bool:
         "requirements.txt",
         "README.md",
         "AGENTS.md",
-        "ai_onboard/__init__.py",
-        "ai_onboard/__main__.py",
-        "ai_onboard/VERSION.txt",
-        "ai_onboard/core/__init__.py",
-        "ai_onboard/cli/__init__.py",
-        "ai_onboard/plugins/__init__.py",
-        "ai_onboard/policies/__init__.py",
-        "ai_onboard/schemas/__init__.py",
+        "ai_onboard / __init__.py",
+        "ai_onboard / __main__.py",
+        "ai_onboard / VERSION.txt",
+        "ai_onboard / core / __init__.py",
+        "ai_onboard / cli / __init__.py",
+        "ai_onboard / plugins / __init__.py",
+        "ai_onboard / policies / __init__.py",
+        "ai_onboard / schemas / __init__.py",
     ]
 
     required_dirs = [
         "ai_onboard",
-        "ai_onboard/core",
-        "ai_onboard/cli",
-        "ai_onboard/plugins",
-        "ai_onboard/policies",
-        "ai_onboard/schemas",
+        "ai_onboard / core",
+        "ai_onboard / cli",
+        "ai_onboard / plugins",
+        "ai_onboard / policies",
+        "ai_onboard / schemas",
         "tests",
-        "tests/unit",
-        "tests/integration",
-        "tests/smoke",
+        "tests / unit",
+        "tests / integration",
+        "tests / smoke",
         "scripts",
         "config",
         "docs",
@@ -46,10 +44,10 @@ def validate_structure() -> bool:
     ]
 
     protected_files = [
-        "ai_onboard/policies/base.json",
-        "ai_onboard/policies/base.yaml",
-        "scripts/protected_paths.py",
-        "scripts/protected_paths_diff.py",
+        "ai_onboard / policies / base.json",
+        "ai_onboard / policies / base.yaml",
+        "scripts / protected_paths.py",
+        "scripts / protected_paths_diff.py",
     ]
 
     issues = []
@@ -74,15 +72,15 @@ def validate_structure() -> bool:
     # Check for proper __init__.py files in Python packages
     python_packages = [
         "ai_onboard",
-        "ai_onboard/core",
-        "ai_onboard/cli",
-        "ai_onboard/plugins",
-        "ai_onboard/policies",
-        "ai_onboard/schemas",
+        "ai_onboard / core",
+        "ai_onboard / cli",
+        "ai_onboard / plugins",
+        "ai_onboard / policies",
+        "ai_onboard / schemas",
         "tests",
-        "tests/unit",
-        "tests/integration",
-        "tests/smoke",
+        "tests / unit",
+        "tests / integration",
+        "tests / smoke",
     ]
 
     for package in python_packages:
@@ -92,9 +90,9 @@ def validate_structure() -> bool:
 
     # Check configuration structure
     config_files = [
-        "config/mypy.ini",
-        "config/tox.ini",
-        "config/dev-config.yaml",
+        "config / mypy.ini",
+        "config / tox.ini",
+        "config / dev - config.yaml",
     ]
 
     for config_file in config_files:
@@ -116,11 +114,11 @@ def check_file_permissions() -> bool:
     print("🔍 Checking file permissions...")
 
     executable_files = [
-        "scripts/protected_paths.py",
-        "scripts/protected_paths_diff.py",
-        "scripts/validate_dev_env.py",
-        "scripts/check_requirements_consistency.py",
-        "scripts/validate_project_structure.py",
+        "scripts / protected_paths.py",
+        "scripts / protected_paths_diff.py",
+        "scripts / validate_dev_env.py",
+        "scripts / check_requirements_consistency.py",
+        "scripts / validate_project_structure.py",
     ]
 
     issues = []

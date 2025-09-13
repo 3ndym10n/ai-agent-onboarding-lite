@@ -1,5 +1,5 @@
 """
-Unicode utilities for cross-platform compatibility.
+Unicode utilities for cross - platform compatibility.
 
 This module provides utilities to handle Unicode characters safely across different
 platforms and terminal encodings, particularly for Windows systems that may not
@@ -8,7 +8,7 @@ support Unicode emojis in the console.
 
 import os
 import sys
-from typing import Any, Dict, Optional
+from typing import Optional
 
 # Emoji fallbacks for systems that don't support Unicode
 EMOJI_FALLBACKS = {
@@ -46,7 +46,7 @@ EMOJI_FALLBACKS = {
     "🔗": "[LINK]",
     # Progress indicators
     "▶️": "[PLAY]",
-    "⏯️": "[PLAY/PAUSE]",
+    "⏯️": "[PLAY / PAUSE]",
     "🔁": "[REPEAT]",
     "↩️": "[BACK]",
     "↪️": "[FORWARD]",
@@ -77,13 +77,13 @@ def is_unicode_supported() -> bool:
     try:
         # Try to encode a simple emoji
         test_emoji = "✅"
-        test_emoji.encode(sys.stdout.encoding or "utf-8")
+        test_emoji.encode(sys.stdout.encoding or "utf - 8")
 
         # Check if stdout supports Unicode
         if hasattr(sys.stdout, "encoding") and sys.stdout.encoding:
             encoding = sys.stdout.encoding.lower()
             # These encodings typically don't support full Unicode
-            if encoding in ["cp1252", "ascii", "latin-1"]:
+            if encoding in ["cp1252", "ascii", "latin - 1"]:
                 return False
 
         return True
@@ -224,7 +224,7 @@ class SafeFormatter:
         Initialize the formatter.
 
         Args:
-            use_unicode: Force Unicode on/off, or None for auto-detection
+            use_unicode: Force Unicode on / off, or None for auto - detection
         """
         self.use_unicode = (
             use_unicode if use_unicode is not None else is_unicode_supported()
@@ -270,7 +270,7 @@ def configure_unicode_support(force_ascii: bool = False) -> None:
     Configure Unicode support globally.
 
     Args:
-        force_ascii: If True, force ASCII-only output
+        force_ascii: If True, force ASCII - only output
     """
     global _formatter
     _formatter = SafeFormatter(use_unicode=not force_ascii)

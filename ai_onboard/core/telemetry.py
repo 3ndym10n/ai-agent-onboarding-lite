@@ -20,7 +20,7 @@ def _safe_components(results: Iterable[Dict[str, Any]]) -> List[Dict[str, Any]]:
         score = r.get("score", None)
         issues = r.get("issues", [])
         try:
-            issue_count = len(issues) if isinstance(issues, (list, tuple)) else int(issues)  # type: ignore[arg-type]
+            issue_count = len(issues) if isinstance(issues, (list, tuple)) else int(issues)  # type: ignore[arg - type]
         except Exception:
             issue_count = 0
         out.append({"name": name, "score": score, "issue_count": issue_count})
@@ -30,10 +30,10 @@ def _safe_components(results: Iterable[Dict[str, Any]]) -> List[Dict[str, Any]]:
 def record_run(root: Path, res: Dict[str, Any]) -> None:
     """Append a single metrics record in JSONL format.
 
-    Best-effort: never raises on write failures; logs a minimal error entry instead.
+    Best - effort: never raises on write failures; logs a minimal error entry instead.
     Schema (stable):
     - ts: ISO8601 timestamp
-    - pass: bool (overall pass/fail)
+    - pass: bool (overall pass / fail)
     - components: list of { name, score, issue_count }
     """
     metrics_path = root / ".ai_onboard" / "metrics.jsonl"
@@ -47,14 +47,14 @@ def record_run(root: Path, res: Dict[str, Any]) -> None:
     }
 
     try:
-        with open(metrics_path, "a", encoding="utf-8") as f:
+        with open(metrics_path, "a", encoding="utf - 8") as f:
             json.dump(rec, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
     except Exception as e:
-        # Best-effort: capture minimal error info without crashing the CLI.
+        # Best - effort: capture minimal error info without crashing the CLI.
         err_path = metrics_path.with_suffix(".errors.log")
         try:
-            with open(err_path, "a", encoding="utf-8") as ef:
+            with open(err_path, "a", encoding="utf - 8") as ef:
                 ef.write(
                     f"{utils.now_iso()} | telemetry_write_error | {type(e).__name__}: {e}\n"
                 )
@@ -69,7 +69,7 @@ def read_metrics(root: Path) -> List[Dict[str, Any]]:
     if not metrics_path.exists():
         return []
     out: List[Dict[str, Any]] = []
-    with open(metrics_path, "r", encoding="utf-8") as f:
+    with open(metrics_path, "r", encoding="utf - 8") as f:
         for line in f:
             line = line.strip()
             if not line:
@@ -92,13 +92,13 @@ def last_run(root: Path) -> Dict[str, Any] | None:
 def log_event(event: str, **fields: Any) -> None:
     logs_dir = Path(".ai_onboard") / "logs"
     utils.ensure_dir(logs_dir)
-    rec = {"ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "event": event}
+    rec = {"ts": time.strftime("%Y -% m-%dT % H:%M:%SZ", time.gmtime()), "event": event}
     rec.update(fields or {})
     path = logs_dir / "events.jsonl"
     try:
-        with open(path, "a", encoding="utf-8") as f:
+        with open(path, "a", encoding="utf - 8") as f:
             json.dump(rec, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
     except Exception:
-        # Best-effort; do not raise from telemetry
+        # Best - effort; do not raise from telemetry
         pass

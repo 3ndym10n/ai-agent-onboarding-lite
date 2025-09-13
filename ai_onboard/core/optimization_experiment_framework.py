@@ -3,7 +3,7 @@ Optimization Experiment Framework (T13) - Systematic optimization testing and va
 
 This module provides a comprehensive framework for:
 - Designing and running optimization experiments
-- A/B testing different optimization strategies
+- A / B testing different optimization strategies
 - Statistical analysis of optimization effectiveness
 - Automated rollback of failed experiments
 - Learning from experiment results to improve future optimizations
@@ -17,18 +17,13 @@ import time
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
-from . import telemetry, utils
-from .kaizen_automation import get_kaizen_automation
 from .performance_optimizer import get_performance_optimizer
 from .unified_metrics_collector import (
-    MetricCategory,
-    MetricEvent,
-    MetricSource,
     get_unified_metrics_collector,
 )
 
@@ -36,7 +31,7 @@ from .unified_metrics_collector import (
 class ExperimentType(Enum):
     """Types of optimization experiments."""
 
-    AB_TEST = "ab_test"  # A/B test between two approaches
+    AB_TEST = "ab_test"  # A / B test between two approaches
     MULTIVARIATE = "multivariate"  # Test multiple variables simultaneously
     SEQUENTIAL = "sequential"  # Sequential testing of improvements
     CANARY = "canary"  # Gradual rollout experiment
@@ -91,7 +86,7 @@ class ExperimentMetric:
 
 @dataclass
 class ExperimentCondition:
-    """A specific condition/treatment in an experiment."""
+    """A specific condition / treatment in an experiment."""
 
     condition_id: str
     name: str
@@ -99,7 +94,7 @@ class ExperimentCondition:
     configuration: Dict[str, Any]
     implementation_function: Optional[str] = None
     rollback_function: Optional[str] = None
-    risk_level: int = 1  # 1-5 scale
+    risk_level: int = 1  # 1 - 5 scale
     expected_impact: float = 0.0  # Expected improvement percentage
 
 
@@ -205,7 +200,7 @@ class StatisticalAnalyzer:
     def analyze_ab_test(
         self, control_values: List[float], treatment_values: List[float]
     ) -> Dict[str, Any]:
-        """Analyze A/B test results."""
+        """Analyze A / B test results."""
         if not control_values or not treatment_values:
             return {"error": "Insufficient data for analysis"}
 
@@ -224,7 +219,7 @@ class StatisticalAnalyzer:
             else 0
         )
 
-        # Simple t-test approximation (for demonstration)
+        # Simple t - test approximation (for demonstration)
         n1, n2 = len(control_values), len(treatment_values)
 
         if n1 < 2 or n2 < 2:
@@ -236,10 +231,10 @@ class StatisticalAnalyzer:
             if pooled_se == 0:
                 p_value = 0.0 if control_mean != treatment_mean else 1.0
             else:
-                # t-statistic
+                # t - statistic
                 t_stat = abs(treatment_mean - control_mean) / pooled_se
 
-                # Simplified p-value estimation (proper implementation would use t-distribution)
+                # Simplified p - value estimation (proper implementation would use t - distribution)
                 if t_stat > 3.0:
                     p_value = 0.001
                 elif t_stat > 2.6:
@@ -771,7 +766,7 @@ class OptimizationExperimentFramework:
     def _suggest_next_experiments(
         self, running_exp: RunningExperiment, analysis: Dict[str, Any]
     ) -> List[str]:
-        """Suggest follow-up experiments based on results."""
+        """Suggest follow - up experiments based on results."""
         suggestions = []
 
         outcome = self._determine_experiment_outcome(analysis)

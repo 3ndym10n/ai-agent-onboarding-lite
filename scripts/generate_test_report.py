@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr / bin / env python3
 """
 Comprehensive Test Report Generator
 
@@ -10,8 +10,7 @@ This is part of Phase 1: Enhanced Testing Foundation (T32)
 
 import json
 import sys
-from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -277,7 +276,7 @@ class ComprehensiveTestReporter:
     def _generate_visualizations(
         self, current_report: Dict[str, Any], historical_reports: List[Dict[str, Any]]
     ) -> Dict[str, Any]:
-        """Generate text-based visualizations."""
+        """Generate text - based visualizations."""
         visualizations = {
             "performance_chart": self._generate_performance_chart(current_report),
             "trend_chart": self._generate_trend_chart(historical_reports),
@@ -406,7 +405,7 @@ Total:   {'█' * width} 100.0% ({total_tests})
         """Generate an HTML report from the comprehensive data."""
         html_content = self._generate_html_content(comprehensive_report)
 
-        with open(output_path, "w", encoding="utf-8") as f:
+        with open(output_path, "w", encoding="utf - 8") as f:
             f.write(html_content)
 
     def _generate_html_content(self, report: Dict[str, Any]) -> str:
@@ -418,44 +417,44 @@ Total:   {'█' * width} 100.0% ({total_tests})
 <!DOCTYPE html>
 <html>
 <head>
-    <title>AI Onboarding System - Comprehensive Test Report</title>
+    <title > AI Onboarding System - Comprehensive Test Report </ title>
     <style>
-        body {{ font-family: Arial, sans-serif; margin: 20px; }}
-        .header {{ background: #2c3e50; color: white; padding: 20px; border-radius: 5px; }}
-        .summary {{ background: #ecf0f1; padding: 15px; margin: 10px 0; border-radius: 5px; }}
+        body {{ font - family: Arial, sans - serif; margin: 20px; }}
+        .header {{ background: #2c3e50; color: white; padding: 20px; border - radius: 5px; }}
+        .summary {{ background: #ecf0f1; padding: 15px; margin: 10px 0; border - radius: 5px; }}
         .success {{ color: #27ae60; }}
         .warning {{ color: #f39c12; }}
         .error {{ color: #e74c3c; }}
-        .metric {{ display: inline-block; margin: 10px; padding: 10px; background: white; border-radius: 5px; }}
+        .metric {{ display: inline - block; margin: 10px; padding: 10px; background: white; border - radius: 5px; }}
         .insights {{ background: #f8f9fa; padding: 15px; margin: 10px 0; }}
-        .recommendations {{ background: #d4edda; padding: 15px; margin: 10px 0; border-left: 4px solid #27ae60; }}
+        .recommendations {{ background: #d4edda; padding: 15px; margin: 10px 0; border - left: 4px solid #27ae60; }}
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>🚀 AI Onboarding System - Comprehensive Test Report</h1>
-        <p>Generated: {report['generated_at']}</p>
-        <p>Report Version: {report['metadata']['report_version']}</p>
+        <h1>🚀 AI Onboarding System - Comprehensive Test Report </ h1>
+        <p > Generated: {report['generated_at']}</p>
+        <p > Report Version: {report['metadata']['report_version']}</p>
     </div>
 
     <div class="summary">
-        <h2>📊 Executive Summary</h2>
+        <h2>📊 Executive Summary </ h2>
         <div class="metric">
-            <strong>Success Rate:</strong> <span class="success">{summary.get('success_rate', 0):.1f}%</span>
+            <strong > Success Rate:</strong> <span class="success">{summary.get('success_rate', 0):.1f}%</span>
         </div>
         <div class="metric">
-            <strong>Total Tests:</strong> {summary.get('total_tests', 0)}
+            <strong > Total Tests:</strong> {summary.get('total_tests', 0)}
         </div>
         <div class="metric">
-            <strong>Passed:</strong> {summary.get('passed_tests', 0)}
+            <strong > Passed:</strong> {summary.get('passed_tests', 0)}
         </div>
         <div class="metric">
-            <strong>Failed:</strong> {summary.get('total_tests', 0) - summary.get('passed_tests', 0)}
+            <strong > Failed:</strong> {summary.get('total_tests', 0) - summary.get('passed_tests', 0)}
         </div>
     </div>
 
     <div class="insights">
-        <h3>💡 Key Insights</h3>
+        <h3>💡 Key Insights </ h3>
         <ul>
 """
 
@@ -467,7 +466,7 @@ Total:   {'█' * width} 100.0% ({total_tests})
         # Add recommendations
         html += """
     <div class="recommendations">
-        <h3>🎯 Recommendations</h3>
+        <h3>🎯 Recommendations </ h3>
         <ul>
 """
 
@@ -479,7 +478,7 @@ Total:   {'█' * width} 100.0% ({total_tests})
     </div>
 
     <div class="summary">
-        <h3>📈 Trend Analysis</h3>
+        <h3>📈 Trend Analysis </ h3>
         <pre>
 """
 
@@ -494,7 +493,7 @@ Total:   {'█' * width} 100.0% ({total_tests})
     </div>
 
     <div class="summary">
-        <h3>🏥 System Health</h3>
+        <h3>🏥 System Health </ h3>
         <pre>
 """
 
@@ -547,7 +546,7 @@ def generate_comprehensive_test_report(
     comprehensive_report = reporter.generate_comprehensive_report(current_report)
 
     # Save comprehensive report
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    timestamp = datetime.now().strftime("%Y % m%d_ % H%M % S")
     json_output = output_dir / f"comprehensive_test_report_{timestamp}.json"
     html_output = output_dir / f"comprehensive_test_report_{timestamp}.html"
 

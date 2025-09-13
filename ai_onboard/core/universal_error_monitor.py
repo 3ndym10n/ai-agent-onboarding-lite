@@ -154,7 +154,7 @@ class UniversalErrorMonitor:
 
     def _log_error(self, error_data: Dict[str, Any]):
         """Log error to persistent storage."""
-        with open(self.error_log_path, "a", encoding="utf-8") as f:
+        with open(self.error_log_path, "a", encoding="utf - 8") as f:
             json.dump(error_data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 
@@ -192,7 +192,7 @@ class UniversalErrorMonitor:
             return []
 
         errors = []
-        with open(self.error_log_path, "r", encoding="utf-8") as f:
+        with open(self.error_log_path, "r", encoding="utf - 8") as f:
             lines = f.readlines()
             for line in lines[-limit:]:
                 try:

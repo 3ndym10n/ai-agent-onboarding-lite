@@ -1,5 +1,5 @@
 """
-Smart Debugger: Self-improving debugging system that learns from past issues.
+Smart Debugger: Self - improving debugging system that learns from past issues.
 """
 
 import json
@@ -12,7 +12,7 @@ from . import utils
 
 
 class SmartDebugger:
-    """Self-improving debugging system that learns from past issues."""
+    """Self - improving debugging system that learns from past issues."""
 
     def __init__(self, root: Path):
         self.root = root
@@ -208,7 +208,7 @@ class SmartDebugger:
         # Basic analysis based on error type
         if "import" in error_type.lower() or "module" in error_message.lower():
             solution = {
-                "description": "Import/module error detected",
+                "description": "Import / module error detected",
                 "steps": [
                     "Check if required module is installed",
                     "Verify import statements",
@@ -230,7 +230,7 @@ class SmartDebugger:
             confidence = 0.7
         elif "permission" in error_type.lower() or "access" in error_message.lower():
             solution = {
-                "description": "Permission/access error detected",
+                "description": "Permission / access error detected",
                 "steps": [
                     "Check file permissions",
                     "Verify user has required access",
@@ -259,7 +259,7 @@ class SmartDebugger:
         """Generate specific debugging steps for the error."""
         steps = solution.get("steps", []).copy()
 
-        # Add context-specific steps
+        # Add context - specific steps
         context = error_data.get("context", {})
         if isinstance(context, dict):
             if context.get("file_path"):
@@ -322,7 +322,7 @@ class SmartDebugger:
             "approach": approach,
             "success": None,  # Will be updated later
         }
-        with open(self.debug_log_path, "a", encoding="utf-8") as f:
+        with open(self.debug_log_path, "a", encoding="utf - 8") as f:
             json.dump(entry, f)
             f.write("\n")
 
@@ -349,7 +349,7 @@ class SmartDebugger:
     def _extract_pattern(
         self, error_data: Dict[str, Any], solution: Dict[str, Any]
     ) -> Optional[Dict[str, Any]]:
-        """Extract a pattern from successful error-solution pair."""
+        """Extract a pattern from successful error - solution pair."""
         error_type = error_data.get("type", "")
         error_message = error_data.get("message", "")
 
@@ -445,7 +445,7 @@ class SmartDebugger:
         return successful / len(sessions)
 
     def _calculate_pattern_success_rate(self, learning_data: Dict[str, Any]) -> float:
-        """Calculate success rate for pattern-based solutions."""
+        """Calculate success rate for pattern - based solutions."""
         pattern_sessions = [
             s
             for s in learning_data.get("sessions", [])

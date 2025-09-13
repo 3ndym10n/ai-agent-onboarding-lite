@@ -51,7 +51,7 @@ class VisionGuardian:
             if self._conflicts_with_non_goals(
                 decision.get("description", ""), vision_context["non_goals"]
             ):
-                issues.append("Proposed change conflicts with project non-goals")
+                issues.append("Proposed change conflicts with project non - goals")
                 alignment_score -= 0.5
             elif not self._aligns_with_objectives(
                 decision.get("description", ""), vision_context["objectives"]
@@ -61,7 +61,7 @@ class VisionGuardian:
 
         # Check risk tolerance
         if risk_level == "high" and vision_context["risk_appetite"] == "low":
-            warnings.append("High-risk change proposed but risk appetite is low")
+            warnings.append("High - risk change proposed but risk appetite is low")
             alignment_score -= 0.2
 
         # Check milestone impact
@@ -126,7 +126,7 @@ class VisionGuardian:
                 },
             }
 
-        # Auto-approve if alignment score is good
+        # Auto - approve if alignment score is good
         return {
             "status": "approved",
             "reason": "Scope change aligns with project vision",
@@ -140,7 +140,7 @@ class VisionGuardian:
 
         changes_made = []
 
-        # Update charter if vision/objectives changed
+        # Update charter if vision / objectives changed
         if "vision" in updates:
             old_vision = charter_data.get("vision", "")
             charter_data["vision"] = updates["vision"]
@@ -205,14 +205,14 @@ class VisionGuardian:
         return False
 
     def _conflicts_with_non_goals(self, description: str, non_goals: List[str]) -> bool:
-        """Check if a change conflicts with project non-goals."""
+        """Check if a change conflicts with project non - goals."""
         description_lower = description.lower()
         for non_goal in non_goals:
             non_goal_lower = non_goal.lower()
-            # Check if the non-goal phrase appears in the description
+            # Check if the non - goal phrase appears in the description
             if non_goal_lower in description_lower:
                 return True
-            # Also check for key words that are specific to non-goals
+            # Also check for key words that are specific to non - goals
             if "video" in description_lower and "video" in non_goal_lower:
                 return True
             if "conferencing" in description_lower and "conferencing" in non_goal_lower:
@@ -242,10 +242,10 @@ class VisionGuardian:
         return []
 
     def _log_vision_event(self, event_type: str, data: Dict[str, Any]) -> None:
-        """Log vision-related events for audit trail."""
+        """Log vision - related events for audit trail."""
         utils.ensure_dir(self.vision_log_path.parent)
         entry = {"ts": utils.now_iso(), "event": event_type, "data": data}
-        with open(self.vision_log_path, "a", encoding="utf-8") as f:
+        with open(self.vision_log_path, "a", encoding="utf - 8") as f:
             json.dump(entry, f)
             f.write("\n")
 

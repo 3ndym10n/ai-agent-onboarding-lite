@@ -103,7 +103,7 @@ class AdaptationRule:
     description: str
     condition: Dict[str, Any]  # Conditions that trigger the rule
     action: Dict[str, Any]  # Configuration changes to apply
-    priority: int  # 1-10, higher is more important
+    priority: int  # 1 - 10, higher is more important
     enabled: bool = True
     success_rate: float = 0.0
     usage_count: int = 0
@@ -244,7 +244,7 @@ class AdaptiveConfigManager:
                 key="auto_save_interval",
                 value=30,
                 category=ConfigurationCategory.SYSTEM_PERFORMANCE,
-                description="Auto-save interval in seconds",
+                description="Auto - save interval in seconds",
                 default_value=30,
                 min_value=5,
                 max_value=300,
@@ -348,7 +348,7 @@ class AdaptiveConfigManager:
         if not self.config_history_path.exists():
             return
 
-        with open(self.config_history_path, "r", encoding="utf-8") as f:
+        with open(self.config_history_path, "r", encoding="utf - 8") as f:
             for line in f:
                 line = line.strip()
                 if not line:
@@ -458,7 +458,7 @@ class AdaptiveConfigManager:
                 action={
                     "vision_interrogation_adaptive": {
                         "value": True,
-                        "reason": "Project-specific questions needed",
+                        "reason": "Project - specific questions needed",
                     }
                 },
                 priority=4,
@@ -596,7 +596,7 @@ class AdaptiveConfigManager:
         if setting.allowed_values and value not in setting.allowed_values:
             return False
 
-        # Check min/max values for numeric types
+        # Check min / max values for numeric types
         if isinstance(value, (int, float)):
             if setting.min_value is not None and value < setting.min_value:
                 return False
@@ -847,7 +847,7 @@ class AdaptiveConfigManager:
             "reversion_reason": change.reversion_reason,
         }
 
-        with open(self.config_history_path, "a", encoding="utf-8") as f:
+        with open(self.config_history_path, "a", encoding="utf - 8") as f:
             json.dump(change_data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 

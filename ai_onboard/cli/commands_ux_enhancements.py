@@ -1,7 +1,7 @@
 """
 CLI commands for User Experience Enhancements.
 
-This module provides command-line interfaces for:
+This module provides command - line interfaces for:
 - Managing UX interventions and assistance
 - Tracking user satisfaction and feedback
 - Analyzing user journeys and experience metrics
@@ -11,15 +11,13 @@ This module provides command-line interfaces for:
 import argparse
 import json
 from pathlib import Path
-from typing import Optional
 
 from ..core.ui_enhancement_system import get_ui_enhancement_system
 from ..core.user_experience_enhancements import (
     UXEventType,
-    UXSatisfactionLevel,
     get_ux_enhancement_system,
 )
-from .visual_components import create_chart, create_status_indicator, create_table
+from .visual_components import create_chart, create_status_indicator
 
 
 def add_ux_enhancement_commands(subparsers):
@@ -60,7 +58,7 @@ def add_ux_enhancement_commands(subparsers):
         type=int,
         choices=[1, 2, 3, 4, 5],
         required=True,
-        help="Satisfaction score (1=very dissatisfied, 5=very satisfied)",
+        help="Satisfaction score (1 = very dissatisfied, 5 = very satisfied)",
     )
     feedback_parser.add_argument(
         "--context", default="general", help="Feedback context"
@@ -110,16 +108,18 @@ def add_ux_enhancement_commands(subparsers):
     # Update config
     update_parser = config_sub.add_parser("update", help="Update UX configuration")
     update_parser.add_argument(
-        "--enable-proactive-help", type=bool, help="Enable proactive help"
+        "--enable - proactive - help", type=bool, help="Enable proactive help"
     )
     update_parser.add_argument(
-        "--enable-error-recovery", type=bool, help="Enable error recovery"
+        "--enable - error - recovery", type=bool, help="Enable error recovery"
     )
     update_parser.add_argument(
-        "--enable-workflow-optimization", type=bool, help="Enable workflow optimization"
+        "--enable - workflow - optimization",
+        type=bool,
+        help="Enable workflow optimization",
     )
     update_parser.add_argument(
-        "--satisfaction-frequency",
+        "--satisfaction - frequency",
         choices=["milestone", "periodic", "never"],
         help="Satisfaction request frequency",
     )
@@ -127,12 +127,14 @@ def add_ux_enhancement_commands(subparsers):
     # Test command (for development)
     test_parser = ux_sub.add_parser("test", help="Test UX enhancements")
     test_parser.add_argument(
-        "--trigger-error", action="store_true", help="Trigger test error"
+        "--trigger - error", action="store_true", help="Trigger test error"
     )
     test_parser.add_argument(
-        "--trigger-onboarding", action="store_true", help="Trigger onboarding"
+        "--trigger - onboarding", action="store_true", help="Trigger onboarding"
     )
-    test_parser.add_argument("--trigger-workflow", help="Trigger workflow optimization")
+    test_parser.add_argument(
+        "--trigger - workflow", help="Trigger workflow optimization"
+    )
 
 
 def handle_ux_enhancement_commands(args: argparse.Namespace, root: Path) -> None:
@@ -182,7 +184,7 @@ def _handle_interventions_commands(
             print(f"{priority_icon} {intervention.intervention_id}")
             print(f"   Type: {intervention.intervention_type.value}")
             print(f"   Priority: {intervention.priority}/5")
-            print(f"   Created: {intervention.created_at.strftime('%Y-%m-%d %H:%M')}")
+            print(f"   Created: {intervention.created_at.strftime('%Y -% m-%d %H:%M')}")
             print()
 
             # Show message preview
@@ -209,16 +211,16 @@ def _handle_interventions_commands(
         print(f"Type: {intervention.intervention_type.value}")
         print(f"Priority: {intervention.priority}/5")
         print(f"Trigger: {intervention.trigger_event}")
-        print(f"Created: {intervention.created_at.strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"Created: {intervention.created_at.strftime('%Y -% m-%d %H:%M:%S')}")
 
         if intervention.delivered_at:
             print(
-                f"Delivered: {intervention.delivered_at.strftime('%Y-%m-%d %H:%M:%S')}"
+                f"Delivered: {intervention.delivered_at.strftime('%Y -% m-%d %H:%M:%S')}"
             )
 
         if intervention.dismissed_at:
             print(
-                f"Dismissed: {intervention.dismissed_at.strftime('%Y-%m-%d %H:%M:%S')}"
+                f"Dismissed: {intervention.dismissed_at.strftime('%Y -% m-%d %H:%M:%S')}"
             )
             print(
                 f"User Followed: {'Yes' if intervention.user_followed_suggestion else 'No'}"
@@ -309,11 +311,11 @@ def _handle_journey_commands(
         print()
 
         print(f"Journey ID: {journey.journey_id}")
-        print(f"Started: {journey.started_at.strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"Started: {journey.started_at.strftime('%Y -% m-%d %H:%M:%S')}")
         print(f"Current Step: {journey.current_step}")
 
         if journey.completed_at:
-            print(f"Completed: {journey.completed_at.strftime('%Y-%m-%d %H:%M:%S')}")
+            print(f"Completed: {journey.completed_at.strftime('%Y -% m-%d %H:%M:%S')}")
             print(f"Success: {'Yes' if journey.success else 'No'}")
 
         print()
@@ -434,7 +436,7 @@ def _handle_analytics_commands(
         if satisfaction["recent_scores"]:
             chart = create_chart(root, user_id)
             scores_dict = {
-                f"Response {i+1}": score
+                f"Response {i + 1}": score
                 for i, score in enumerate(satisfaction["recent_scores"][-5:])
             }
             print(f"\n📈 Recent Satisfaction Scores:")
@@ -474,7 +476,7 @@ def _handle_analytics_commands(
 
         if satisfaction_data["trend"] == "no_data":
             print("No satisfaction data available")
-            print("💡 Use 'ux feedback --score <1-5>' to provide feedback")
+            print("💡 Use 'ux feedback --score <1 - 5>' to provide feedback")
             return
 
         print(f"Average Satisfaction: {satisfaction_data['average']:.1f}/5")
@@ -582,7 +584,7 @@ def _handle_config_commands(
         print(
             f"Intervention Cooldown: {config['intervention_cooldown_minutes']} minutes"
         )
-        print(f"Max Interventions/Session: {config['max_interventions_per_session']}")
+        print(f"Max Interventions / Session: {config['max_interventions_per_session']}")
         print(f"Satisfaction Frequency: {config['satisfaction_request_frequency']}")
 
     elif args.config_action == "update":
@@ -634,7 +636,7 @@ def _handle_test_commands(
             UXEventType.ERROR_ENCOUNTER,
             user_id,
             context={"error_type": "TestError", "test_mode": True},
-            command="test-command",
+            command="test - command",
             success=False,
             error_details="This is a test error for UX enhancement testing",
         )
@@ -672,11 +674,11 @@ def _handle_test_commands(
         workflow_commands = {
             "project_setup": ["charter", "plan"],
             "optimization": ["validate", "kaizen"],
-            "ai_setup": ["ai-agent", "aaol"],
+            "ai_setup": ["ai - agent", "aaol"],
         }
 
         commands = workflow_commands.get(
-            args.trigger_workflow, ["test-cmd1", "test-cmd2"]
+            args.trigger_workflow, ["test - cmd1", "test - cmd2"]
         )
 
         for cmd in commands:
@@ -695,6 +697,6 @@ def _handle_test_commands(
 
     else:
         print(status.info("Available test options:"))
-        print("   --trigger-error: Test error recovery")
-        print("   --trigger-onboarding: Test onboarding assistance")
-        print("   --trigger-workflow <type>: Test workflow optimization")
+        print("   --trigger - error: Test error recovery")
+        print("   --trigger - onboarding: Test onboarding assistance")
+        print("   --trigger - workflow <type>: Test workflow optimization")

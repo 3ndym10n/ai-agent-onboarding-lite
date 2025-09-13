@@ -27,9 +27,9 @@ class AgentsGuidancePresent:
                 )
             )
 
-        # Ensure README references AGENTS.md so humans/agents see it early
+        # Ensure README references AGENTS.md so humans / agents see it early
         try:
-            readme_text = open(readme_md, "r", encoding="utf-8").read()
+            readme_text = open(readme_md, "r", encoding="utf - 8").read()
         except Exception:
             readme_text = ""
         if "AGENTS.md" not in readme_text:

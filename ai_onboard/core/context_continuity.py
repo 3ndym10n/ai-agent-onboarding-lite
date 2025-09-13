@@ -254,7 +254,7 @@ class ContextContinuityManager:
             "session_data": session_data,
             "session_summary": session_summary,
         }
-        with open(self.session_log_path, "a", encoding="utf-8") as f:
+        with open(self.session_log_path, "a", encoding="utf - 8") as f:
             json.dump(entry, f)
             f.write("\n")
 
@@ -468,7 +468,7 @@ class ContextContinuityManager:
 
         recent_decisions = []
         try:
-            with open(decision_log, "r", encoding="utf-8") as f:
+            with open(decision_log, "r", encoding="utf - 8") as f:
                 for line in f:
                     try:
                         entry = json.loads(line.strip())

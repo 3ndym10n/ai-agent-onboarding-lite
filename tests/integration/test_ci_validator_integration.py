@@ -8,9 +8,8 @@ correctly in realistic scenarios.
 
 import json
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
 
 import pytest
 
@@ -47,11 +46,11 @@ class TestContinuousImprovementValidatorIntegration:
         (temp_project_root / "ai_onboard" / "core" / "__init__.py").touch()
         (temp_project_root / "pyproject.toml").write_text(
             """
-[build-system]
-requires = ["setuptools>=61.0"]
+[build - system]
+requires = ["setuptools >= 61.0"]
 
 [project]
-name = "test-project"
+name = "test - project"
 version = "0.1.0"
         """
         )
@@ -187,7 +186,7 @@ version = "0.1.0"
             class MockArgs:
                 validation_action = "run"
 
-            args = MockArgs()
+            MockArgs()
 
             # Test that CLI can work with validator
             # Note: This is a basic integration test - full CLI testing would require more setup
@@ -216,7 +215,7 @@ version = "0.1.0"
 
             try:
                 # Run a subset of validation to avoid long test times
-                tests = real_validator._run_integration_tests()
+                real_validator._run_integration_tests()
 
                 end_time = time.time()
                 end_memory = process.memory_info().rss / 1024 / 1024
@@ -354,7 +353,6 @@ version = "0.1.0"
     def test_concurrent_validation_safety(self, real_validator, temp_project_root):
         """Test that concurrent validation runs don't interfere with each other."""
         import concurrent.futures
-        import threading
 
         results = []
         errors = []
@@ -503,11 +501,11 @@ def create_mock_project_structure(root: Path):
     # Create basic configuration files
     (root / "pyproject.toml").write_text(
         """
-[build-system]
-requires = ["setuptools>=61.0"]
+[build - system]
+requires = ["setuptools >= 61.0"]
 
 [project]
-name = "test-ai-onboard"
+name = "test - ai - onboard"
 version = "0.1.0"
 description = "Test project for AI Onboard validation"
     """

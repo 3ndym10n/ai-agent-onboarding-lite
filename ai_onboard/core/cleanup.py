@@ -4,9 +4,9 @@ from typing import Any, Dict, List
 
 from . import utils
 from .dependency_checker import check_cleanup_dependencies
-from .unicode_utils import print_content, print_status, safe_print
+from .unicode_utils import print_content, print_status
 
-# CRITICAL: Never delete these files/directories
+# CRITICAL: Never delete these files / directories
 CRITICAL_PATTERNS = {
     # Core ai_onboard system (NEVER DELETE)
     "ai_onboard/",
@@ -20,7 +20,7 @@ CRITICAL_PATTERNS = {
     "setup.py",
     "setup.cfg",
     "package.json",
-    "package-lock.json",
+    "package - lock.json",
     "yarn.lock",
     # Documentation (NEVER DELETE)
     "README*",
@@ -28,17 +28,17 @@ CRITICAL_PATTERNS = {
     "AGENTS.md",
     "LICENSE*",
     "CHANGELOG*",
-    # CI/CD (NEVER DELETE)
+    # CI / CD (NEVER DELETE)
     ".github/",
-    ".gitlab-ci.yml",
+    ".gitlab - ci.yml",
     ".travis.yml",
-    "azure-pipelines.yml",
+    "azure - pipelines.yml",
     # Environment files (NEVER DELETE)
     ".env*",
     "venv/",
     "env/",
     "ENV/",
-    # IDE/Editor configs (NEVER DELETE)
+    # IDE / Editor configs (NEVER DELETE)
     ".vscode/",
     ".idea/",
     ".editorconfig",
@@ -47,7 +47,7 @@ CRITICAL_PATTERNS = {
     "Thumbs.db",
 }
 
-# Common non-critical patterns that can be safely removed
+# Common non - critical patterns that can be safely removed
 NON_CRITICAL_PATTERNS = {
     # Build artifacts
     "__pycache__/",
@@ -57,7 +57,7 @@ NON_CRITICAL_PATTERNS = {
     "*.so",
     "build/",
     "dist/",
-    "*.egg-info/",
+    "*.egg - info/",
     "*.egg",
     # Test artifacts
     ".pytest_cache/",
@@ -75,10 +75,10 @@ NON_CRITICAL_PATTERNS = {
     "*~",
     # Node.js artifacts
     "node_modules/",
-    "npm-debug.log*",
-    "yarn-debug.log*",
-    "yarn-error.log*",
-    # Python virtual environments (user-created)
+    "npm - debug.log*",
+    "yarn - debug.log*",
+    "yarn - error.log*",
+    # Python virtual environments (user - created)
     "venv*/",
     "env*/",
     "ENV*/",
@@ -111,7 +111,7 @@ def is_critical(path: Path, root: Path) -> bool:
 
 
 def is_non_critical(path: Path, root: Path) -> bool:
-    """Check if a path matches non-critical patterns that can be safely removed."""
+    """Check if a path matches non - critical patterns that can be safely removed."""
     rel_path = path.relative_to(root)
     rel_str = str(rel_path).replace("\\", "/")
 
@@ -148,7 +148,7 @@ def scan_for_cleanup(root: Path) -> Dict[str, List[Path]]:
             elif is_non_critical(path, root):
                 non_critical_files.append(path)
             else:
-                # For directories, check if they're empty or contain only non-critical files
+                # For directories, check if they're empty or contain only non - critical files
                 contents = list(path.rglob("*"))
                 if not contents or all(is_non_critical(p, root) for p in contents):
                     non_critical_files.append(path)
@@ -165,14 +165,14 @@ def scan_for_cleanup(root: Path) -> Dict[str, List[Path]]:
 def safe_cleanup(
     root: Path, dry_run: bool = True, force: bool = False
 ) -> Dict[str, Any]:
-    """Perform safe cleanup of non-critical files with dependency checking."""
+    """Perform safe cleanup of non - critical files with dependency checking."""
     scan_result = scan_for_cleanup(root)
 
     # CRITICAL: Check dependencies for all files before deletion
     if not force and scan_result["non_critical"]:
         print_content("Running dependency check on files to be deleted...", "search")
 
-        # Check dependencies for all non-critical files
+        # Check dependencies for all non - critical files
         is_safe = check_cleanup_dependencies(root, scan_result["non_critical"])
 
         if not is_safe:
@@ -199,7 +199,7 @@ def safe_cleanup(
             "unknown": len(scan_result["unknown"]),
         }
 
-    # In real mode, only delete non-critical files
+    # In real mode, only delete non - critical files
     deleted_count = 0
     errors = []
 

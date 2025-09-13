@@ -5,7 +5,6 @@ This module provides commands to check dependencies before cleanup operations
 or file modifications. Prevents accidental breakage of system dependencies.
 """
 
-import argparse
 from pathlib import Path
 from typing import List
 
@@ -18,7 +17,7 @@ def add_dependency_check_commands(subparsers):
 
     # Main dependency check command
     dep_parser = subparsers.add_parser(
-        "dependency-check",
+        "dependency - check",
         help="Check file dependencies before cleanup or modification",
         description="Analyze file dependencies to prevent accidental system breakage",
     )
@@ -51,10 +50,10 @@ def add_dependency_check_commands(subparsers):
 
     # Validate cleanup safety
     validate_parser = dep_subparsers.add_parser(
-        "validate-cleanup", help="Validate that cleanup operations are safe"
+        "validate - cleanup", help="Validate that cleanup operations are safe"
     )
     validate_parser.add_argument(
-        "--dry-run", action="store_true", help="Show what would be checked"
+        "--dry - run", action="store_true", help="Show what would be checked"
     )
 
 
@@ -70,7 +69,7 @@ def handle_dependency_check_commands(args, root: Path):
         _handle_check_files(args, root)
     elif args.dep_action == "scan":
         _handle_scan_project(args, root)
-    elif args.dep_action == "validate-cleanup":
+    elif args.dep_action == "validate - cleanup":
         _handle_validate_cleanup(args, root)
     else:
         print_status(f"Unknown dependency check action: {args.dep_action}", "error")
@@ -240,7 +239,7 @@ def _handle_validate_cleanup(args, root: Path):
             )
             safe_print("\nRecommendation: Fix dependencies before running cleanup")
             safe_print(
-                "Or use 'ai_onboard dependency-check check <file>' for detailed analysis"
+                "Or use 'ai_onboard dependency - check check <file>' for detailed analysis"
             )
 
     except ImportError as e:

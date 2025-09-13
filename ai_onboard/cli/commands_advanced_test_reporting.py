@@ -7,23 +7,18 @@ advanced test reports with comprehensive analytics.
 
 import argparse
 import json
-import os
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 from ..core import utils
 from ..core.advanced_test_reporting import (
-    AdvancedTestReportGenerator,
     ReportFormat,
     ReportLevel,
-    TestQualityScore,
     get_advanced_test_report_generator,
 )
 from ..core.continuous_improvement_validator import (
     ContinuousImprovementValidator,
-    ValidationCategory,
-    ValidationResult,
     ValidationTestCase,
 )
 
@@ -31,7 +26,7 @@ from ..core.continuous_improvement_validator import (
 def add_advanced_test_reporting_commands(subparsers):
     """Add advanced test reporting commands to the CLI."""
     parser = subparsers.add_parser(
-        "test-reports",
+        "test - reports",
         help="Advanced test reporting and analytics",
         description="Generate comprehensive test reports with advanced analytics and insights",
     )
@@ -60,10 +55,10 @@ def add_advanced_test_reporting_commands(subparsers):
         help="Report detail level",
     )
     generate_parser.add_argument(
-        "--run-tests", action="store_true", help="Run tests before generating report"
+        "--run - tests", action="store_true", help="Run tests before generating report"
     )
     generate_parser.add_argument(
-        "--test-categories",
+        "--test - categories",
         nargs="+",
         choices=[
             "integration",
@@ -72,10 +67,10 @@ def add_advanced_test_reporting_commands(subparsers):
             "data_integrity",
             "ci_validation",
         ],
-        help="Specific test categories to run (if --run-tests is used)",
+        help="Specific test categories to run (if --run - tests is used)",
     )
     generate_parser.add_argument(
-        "--output-dir", help="Custom output directory for reports"
+        "--output - dir", help="Custom output directory for reports"
     )
 
     # View reports command
@@ -84,7 +79,7 @@ def add_advanced_test_reporting_commands(subparsers):
         help="View existing test reports",
         description="View and browse existing test reports",
     )
-    view_parser.add_argument("--report-id", help="Specific report ID to view")
+    view_parser.add_argument("--report - id", help="Specific report ID to view")
     view_parser.add_argument(
         "--latest", action="store_true", help="View the latest report"
     )
@@ -119,7 +114,9 @@ def add_advanced_test_reporting_commands(subparsers):
         help="Output format",
     )
     analytics_parser.add_argument(
-        "--trend-analysis", action="store_true", help="Include detailed trend analysis"
+        "--trend - analysis",
+        action="store_true",
+        help="Include detailed trend analysis",
     )
 
     # Quality command
@@ -151,7 +148,7 @@ def add_advanced_test_reporting_commands(subparsers):
         "--format", choices=["csv", "json", "xml"], default="csv", help="Export format"
     )
     export_parser.add_argument(
-        "--data-type",
+        "--data - type",
         choices=["results", "metrics", "trends", "all"],
         default="all",
         help="Type of data to export",
@@ -166,7 +163,7 @@ def add_advanced_test_reporting_commands(subparsers):
         description="Display comprehensive test reporting dashboard",
     )
     dashboard_parser.add_argument(
-        "--refresh", type=int, help="Auto-refresh interval in seconds"
+        "--refresh", type=int, help="Auto - refresh interval in seconds"
     )
     dashboard_parser.add_argument(
         "--compact", action="store_true", help="Compact dashboard view"
@@ -254,7 +251,7 @@ def _handle_generate_report(args: argparse.Namespace, root: Path) -> None:
 
         if not test_results:
             print(
-                "⚠️ No test results available. Consider running tests first with --run-tests"
+                "⚠️ No test results available. Consider running tests first with --run - tests"
             )
             return
 
@@ -461,7 +458,7 @@ def _handle_export_data(args: argparse.Namespace, root: Path) -> None:
         if args.output:
             output_file = Path(args.output)
         else:
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            timestamp = datetime.now().strftime("%Y % m%d_ % H%M % S")
             output_file = root / f"test_export_{timestamp}.{args.format}"
 
         # Load data based on period
@@ -686,7 +683,7 @@ def _list_recent_reports(reports_dir: Path, days: int, format_type: str):
 
     for report in recent_reports:
         report_date = datetime.fromisoformat(report["timestamp"]).strftime(
-            "%Y-%m-%d %H:%M"
+            "%Y -% m-%d %H:%M"
         )
         quality_grade = report["quality_grade"][:4].upper()
 
@@ -819,7 +816,7 @@ def _display_full_dashboard(latest: Dict, recent: List[Dict], metrics: List[str]
     print(f"\n📋 Current Status")
     print(f"Report ID: {latest['report_id']}")
     print(
-        f"Generated: {datetime.fromisoformat(latest['timestamp']).strftime('%Y-%m-%d %H:%M')}"
+        f"Generated: {datetime.fromisoformat(latest['timestamp']).strftime('%Y -% m-%d %H:%M')}"
     )
     print(f"Total Tests: {latest['total_tests']}")
 
@@ -882,7 +879,7 @@ def _export_csv(root: Path, output_file: Path, data_type: str, cutoff_date: date
                     data.append(record)
 
     # Write CSV
-    with open(output_file, "w", newline="", encoding="utf-8") as f:
+    with open(output_file, "w", newline="", encoding="utf - 8") as f:
         if data_type in ["results", "all"]:
             writer = csv.DictWriter(f, fieldnames=data[0].keys())
             writer.writeheader()
@@ -907,7 +904,7 @@ def _export_json(root: Path, output_file: Path, data_type: str, cutoff_date: dat
                     data.append(record)
 
     # Write JSON
-    with open(output_file, "w", encoding="utf-8") as f:
+    with open(output_file, "w", encoding="utf - 8") as f:
         json.dump(data, f, indent=2)
 
 
@@ -930,8 +927,8 @@ def _export_xml(root: Path, output_file: Path, data_type: str, cutoff_date: date
                     data.append(record)
 
     # Write XML
-    with open(output_file, "w", encoding="utf-8") as f:
-        f.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+    with open(output_file, "w", encoding="utf - 8") as f:
+        f.write('<?xml version="1.0" encoding="UTF - 8"?>\n')
         f.write("<test_reports>\n")
 
         for record in data:
@@ -1010,7 +1007,7 @@ def _display_simple_chart(values: List[float], metric: str):
     for i, value in enumerate(values):
         normalized = int(((value - min_val) / range_val) * 20)
         bar = "█" * normalized + "░" * (20 - normalized)
-        print(f"T{i+1:2d}: [{bar}] {value:.3f}")
+        print(f"T{i + 1:2d}: [{bar}] {value:.3f}")
 
 
 def _print_config_recursive(config: Dict, prefix: str):

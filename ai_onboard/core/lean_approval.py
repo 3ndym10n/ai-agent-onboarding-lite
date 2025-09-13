@@ -1,7 +1,7 @@
 """
-Lean localhost approval server for human-in-the-loop confirmation.
+Lean localhost approval server for human - in - the - loop confirmation.
 
-No external dependencies. Serves a single page with Approve/Stop and
+No external dependencies. Serves a single page with Approve / Stop and
 optional textareas for questions. Returns a result dict and shuts down.
 
 Compatible with Python 3.8+.
@@ -28,23 +28,23 @@ def _find_free_port(preferred: int = 8765) -> int:
 
 
 class _ApprovalHandler(BaseHTTPRequestHandler):
-    server_version = "LeanApproval/1.0"
+    server_version = "LeanApproval / 1.0"
 
     def _html(self, body: str) -> bytes:
         return (
             (
-                "<!doctype html><html><head><meta charset='utf-8'>"
-                "<title>AI Onboard Approval</title>"
-                "<style>body{font-family:system-ui,Arial;margin:24px;max-width:860px}"
-                "button{padding:10px 16px;margin-right:8px}</style>"
-                "</head><body>"
+                "<!doctype html >< html >< head >< meta charset='utf - 8'>"
+                "<title > AI Onboard Approval </ title>"
+                "<style > body{font - family:system - ui, Arial;margin:24px;max - width:860px}"
+                "button{padding:10px 16px;margin - right:8px}</style>"
+                "</head >< body>"
             )
             + body
-            + "</body></html>"
-        ).encode("utf-8")
+            + "</body ></ html>"
+        ).encode("utf - 8")
 
     def do_GET(self):  # noqa: N802
-        ctx = self.server.context  # type: ignore[attr-defined]
+        ctx = self.server.context  # type: ignore[attr - defined]
         title = ctx.get("title", "Approval Required")
         description = ctx.get("description", "Please review and choose.")
         questions: List[str] = ctx.get("questions", [])
@@ -52,8 +52,8 @@ class _ApprovalHandler(BaseHTTPRequestHandler):
         inputs = []
         for idx, q in enumerate(questions):
             inputs.append(
-                f"<div style='margin:12px 0'><div><strong>Q{idx + 1}.</strong> {q}</div>"
-                f"<textarea name='answer_{idx}' rows='3' style='width:100%;margin-top:6px'></textarea></div>"
+                f"<div style='margin:12px 0'><div >< strong > Q{idx + 1}.</strong> {q}</div>"
+                f"<textarea name='answer_{idx}' rows='3' style='width:100%;margin - top:6px'></textarea ></ div>"
             )
 
         body = (
@@ -61,21 +61,21 @@ class _ApprovalHandler(BaseHTTPRequestHandler):
             f"<p>{description}</p>"
             "<form method='POST' action='/submit'>"
             + "".join(inputs)
-            + "<div style='margin-top:16px'>"
-            "<button type='submit' name='decision' value='proceed'>Approve</button>"
-            "<button type='submit' name='decision' value='stop'>Stop</button>"
+            + "<div style='margin - top:16px'>"
+            "<button type='submit' name='decision' value='proceed'>Approve </ button>"
+            "<button type='submit' name='decision' value='stop'>Stop </ button>"
             "</div>"
             "</form>"
         )
 
         self.send_response(200)
-        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content - Type", "text / html; charset = utf - 8")
         self.end_headers()
         self.wfile.write(self._html(body))
 
     def do_POST(self):  # noqa: N802
-        length = int(self.headers.get("Content-Length", "0"))
-        data = self.rfile.read(length).decode("utf-8")
+        length = int(self.headers.get("Content - Length", "0"))
+        data = self.rfile.read(length).decode("utf - 8")
         form = parse_qs(data)
         decision = (form.get("decision", [""])[0] or "stop").strip()
 
@@ -88,17 +88,17 @@ class _ApprovalHandler(BaseHTTPRequestHandler):
             answers.append((form.get(key, [""])[0] or "").strip())
 
         # Store and shutdown
-        self.server.result = {  # type: ignore[attr-defined]
+        self.server.result = {  # type: ignore[attr - defined]
             "user_decision": "proceed" if decision == "proceed" else "stop",
             "user_responses": answers,
             "ts": time.time(),
         }
         self.send_response(200)
-        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content - Type", "text / html; charset = utf - 8")
         self.end_headers()
-        self.wfile.write(self._html("<h3>Thanks! You may close this tab.</h3>"))
+        self.wfile.write(self._html("<h3 > Thanks! You may close this tab.</h3>"))
         # Shutdown in background to let response flush
-        Thread(target=self.server.shutdown, daemon=True).start()  # type: ignore[attr-defined]
+        Thread(target=self.server.shutdown, daemon=True).start()  # type: ignore[attr - defined]
 
 
 def request_approval(
@@ -115,13 +115,13 @@ def request_approval(
     port = _find_free_port()
     addr = ("127.0.0.1", port)
     httpd = HTTPServer(addr, _ApprovalHandler)
-    # attach context/result to server instance
-    httpd.context = {  # type: ignore[attr-defined]
+    # attach context / result to server instance
+    httpd.context = {  # type: ignore[attr - defined]
         "title": title,
         "description": description,
         "questions": questions,
     }
-    httpd.result = None  # type: ignore[attr-defined]
+    httpd.result = None  # type: ignore[attr - defined]
 
     t = Thread(target=httpd.serve_forever, daemon=True)
     t.start()
@@ -133,7 +133,7 @@ def request_approval(
         while time.time() - start < timeout_seconds:
             res = getattr(httpd, "result", None)
             if res:
-                return res  # type: ignore[return-value]
+                return res  # type: ignore[return - value]
             time.sleep(0.2)
     finally:
         try:

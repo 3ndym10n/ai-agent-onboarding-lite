@@ -1,7 +1,7 @@
 """
 CLI commands for System Capability Usage Tracking.
 
-This module provides command-line interfaces for:
+This module provides command - line interfaces for:
 - Viewing capability usage metrics and analytics
 - Generating usage reports and insights
 - Managing capability tracking configuration
@@ -10,14 +10,11 @@ This module provides command-line interfaces for:
 
 import argparse
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
 from ..core.system_capability_tracker import (
     CapabilityCategory,
-    UsageContext,
-    UsagePattern,
     get_system_capability_tracker,
 )
 from .visual_components import create_chart, create_status_indicator, create_table
@@ -28,7 +25,7 @@ def add_capability_tracking_commands(subparsers):
 
     # Main capability tracking command
     cap_parser = subparsers.add_parser(
-        "capability-tracking", help="System capability usage tracking and analytics"
+        "capability - tracking", help="System capability usage tracking and analytics"
     )
     cap_sub = cap_parser.add_subparsers(dest="cap_cmd", required=True)
 
@@ -70,7 +67,7 @@ def add_capability_tracking_commands(subparsers):
     # User profiles
     profile_parser = cap_sub.add_parser("profile", help="User capability profiles")
     profile_parser.add_argument(
-        "--user-id", default="default", help="User ID to analyze"
+        "--user - id", default="default", help="User ID to analyze"
     )
     profile_parser.add_argument(
         "--detailed", action="store_true", help="Show detailed profile"
@@ -119,15 +116,17 @@ def add_capability_tracking_commands(subparsers):
     # Update config
     update_parser = config_sub.add_parser("update", help="Update configuration")
     update_parser.add_argument(
-        "--tracking-enabled", type=bool, help="Enable/disable tracking"
+        "--tracking - enabled", type=bool, help="Enable / disable tracking"
     )
     update_parser.add_argument(
-        "--detailed-tracking", type=bool, help="Enable detailed tracking"
+        "--detailed - tracking", type=bool, help="Enable detailed tracking"
     )
     update_parser.add_argument(
-        "--retention-days", type=int, help="Data retention period"
+        "--retention - days", type=int, help="Data retention period"
     )
-    update_parser.add_argument("--privacy-mode", type=bool, help="Enable privacy mode")
+    update_parser.add_argument(
+        "--privacy - mode", type=bool, help="Enable privacy mode"
+    )
 
 
 def handle_capability_tracking_commands(args: argparse.Namespace, root: Path) -> None:
@@ -180,7 +179,7 @@ def _handle_metrics_commands(args: argparse.Namespace, tracker, root: Path) -> N
                     (
                         f"{metrics.avg_duration_ms:.0f}ms"
                         if metrics.avg_duration_ms > 0
-                        else "N/A"
+                        else "N / A"
                     ),
                 ]
             )
@@ -279,7 +278,7 @@ def _handle_metrics_commands(args: argparse.Namespace, tracker, root: Path) -> N
                     (
                         f"{metrics.avg_duration_ms:.0f}ms"
                         if metrics.avg_duration_ms > 0
-                        else "N/A"
+                        else "N / A"
                     ),
                     growth_str,
                 ]
@@ -458,9 +457,7 @@ def _handle_report_commands(args: argparse.Namespace, tracker, root: Path) -> No
     if args.format == "json":
         report_data = tracker._serialize_report(report)
         if args.save:
-            filename = (
-                f"capability_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-            )
+            filename = f"capability_report_{datetime.now().strftime('%Y % m%d_ % H%M % S')}.json"
             with open(filename, "w") as f:
                 json.dump(report_data, f, indent=2)
             print(f"📁 Report saved to: {filename}")
@@ -470,9 +467,9 @@ def _handle_report_commands(args: argparse.Namespace, tracker, root: Path) -> No
 
     # Text format report
     print(
-        f"Report Period: {report.period_start.strftime('%Y-%m-%d')} to {report.period_end.strftime('%Y-%m-%d')}"
+        f"Report Period: {report.period_start.strftime('%Y -% m-%d')} to {report.period_end.strftime('%Y -% m-%d')}"
     )
-    print(f"Generated: {report.generated_at.strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"Generated: {report.generated_at.strftime('%Y -% m-%d %H:%M:%S')}")
     print()
 
     # Overview
@@ -542,7 +539,9 @@ def _handle_report_commands(args: argparse.Namespace, tracker, root: Path) -> No
         print()
 
     if args.save:
-        filename = f"capability_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+        filename = (
+            f"capability_report_{datetime.now().strftime('%Y % m%d_ % H%M % S')}.txt"
+        )
         # Save text report (implementation would write formatted text)
         print(f"📁 Report saved to: {filename}")
 
@@ -595,7 +594,7 @@ def _handle_analytics_commands(args: argparse.Namespace, tracker, root: Path) ->
                 all_contexts[context] = all_contexts.get(context, 0) + count
 
         if all_patterns:
-            print("📊 System-wide Usage Patterns:")
+            print("📊 System - wide Usage Patterns:")
             chart = create_chart(root, "default")
             pattern_display = {
                 k.replace("_", " ").title(): v for k, v in all_patterns.items()
@@ -603,7 +602,7 @@ def _handle_analytics_commands(args: argparse.Namespace, tracker, root: Path) ->
             print(chart.bar_chart(pattern_display, max_width=40))
 
         if all_contexts:
-            print(f"\n🔍 System-wide Usage Contexts:")
+            print(f"\n🔍 System - wide Usage Contexts:")
             context_display = {
                 k.replace("_", " ").title(): v for k, v in all_contexts.items()
             }

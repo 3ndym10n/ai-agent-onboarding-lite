@@ -10,12 +10,11 @@ import base64
 import json
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 from ..core import utils
 from ..core.adaptive_config_manager import (
     AdaptationTrigger,
-    ConfigurationCategory,
     get_adaptive_config_manager,
 )
 from ..core.continuous_improvement_analytics import (
@@ -25,13 +24,10 @@ from ..core.continuous_improvement_analytics import (
     get_continuous_improvement_analytics,
 )
 from ..core.continuous_improvement_system import (
-    ImprovementAction,
     LearningType,
     get_continuous_improvement_system,
 )
 from ..core.continuous_improvement_validator import (
-    TestCategory,
-    TestResult,
     get_continuous_improvement_validator,
 )
 from ..core.knowledge_base_evolution import (
@@ -42,27 +38,19 @@ from ..core.knowledge_base_evolution import (
     get_knowledge_base_evolution,
 )
 from ..core.performance_optimizer import (
-    OptimizationType,
-    PerformanceMetric,
     get_performance_optimizer,
 )
 from ..core.system_health_monitor import (
-    HealthIssue,
-    HealthMetric,
-    HealthStatus,
-    SelfHealingAction,
     get_system_health_monitor,
 )
 from ..core.user_preference_learning import (
     InteractionType,
-    PreferenceCategory,
-    UserExperienceLevel,
     get_user_preference_learning_system,
 )
 
 
 def _coerce_scalar(value: str):
-    """Coerce a string scalar to bool/int/float when possible, else return as-is."""
+    """Coerce a string scalar to bool / int / float when possible, else return as - is."""
     lower = value.strip().lower()
     if lower in ("true", "false"):
         return lower == "true"
@@ -75,7 +63,7 @@ def _coerce_scalar(value: str):
 
 
 def _parse_kv_pairs(text: str) -> Dict[str, Any]:
-    """Parse simple key=value[,key=value] pairs into a dict with light type coercion."""
+    """Parse simple key = value[,key = value] pairs into a dict with light type coercion."""
     result: Dict[str, Any] = {}
     if not text:
         return result
@@ -96,7 +84,7 @@ def _parse_json_source(
     b64: Optional[str] = None,
     allow_kv: bool = True,
 ) -> Dict[str, Any]:
-    """Parse structured input from one of: file, base64, raw JSON string, or key=value pairs.
+    """Parse structured input from one of: file, base64, raw JSON string, or key = value pairs.
 
     Precedence: file > base64 > raw.
     Returns an empty dict when no input provided.
@@ -107,10 +95,10 @@ def _parse_json_source(
             if not p.exists():
                 print(f"❌ File not found: {file}")
                 return {}
-            return json.loads(p.read_text(encoding="utf-8"))
+            return json.loads(p.read_text(encoding="utf - 8"))
 
         if b64:
-            decoded = base64.b64decode(b64).decode("utf-8")
+            decoded = base64.b64decode(b64).decode("utf - 8")
             return json.loads(decoded)
 
         if raw:
@@ -132,8 +120,8 @@ def handle_continuous_improvement_commands(
     args: argparse.Namespace, root: Path
 ) -> None:
     """Handle continuous improvement commands."""
-    # Handle user-prefs as top-level command (quick-path routing)
-    if args.cmd == "user-prefs":
+    # Handle user - prefs as top - level command (quick - path routing)
+    if args.cmd == "user - prefs":
         _handle_user_preference_commands(args, root)
         return
 
@@ -151,7 +139,7 @@ def handle_continuous_improvement_commands(
         _handle_performance_commands(args, root)
     elif args.improvement_cmd == "config":
         _handle_config_commands(args, root)
-    elif args.improvement_cmd == "user-preferences":
+    elif args.improvement_cmd == "user - preferences":
         _handle_user_preference_commands(args, root)
     elif args.improvement_cmd == "health":
         _handle_health_monitor_commands(args, root)
@@ -163,8 +151,8 @@ def handle_continuous_improvement_commands(
         _handle_test_commands(args, root)
     elif args.improvement_cmd == "validate":
         _handle_validation_commands(args, root)
-    elif args.cmd == "user-prefs":
-        # Quick-path handler for user preference learning
+    elif args.cmd == "user - prefs":
+        # Quick - path handler for user preference learning
         from ..core import user_preference_learning as upl
 
         psys = upl.get_user_preference_learning_system(root)
@@ -201,14 +189,14 @@ def handle_continuous_improvement_commands(
                 )
             )
             return
-        print('{"error":"unknown user-prefs subcommand"}')
+        print('{"error":"unknown user - prefs subcommand"}')
         return
     else:
         print(f"Unknown improvement command: {args.improvement_cmd}")
 
 
 def _handle_learning_commands(args: argparse.Namespace, root: Path) -> None:
-    """Handle learning-related commands."""
+    """Handle learning - related commands."""
     system = get_continuous_improvement_system(root)
 
     if args.learning_action == "record":
@@ -300,7 +288,7 @@ def _handle_learning_events(args: argparse.Namespace, system) -> None:
 
 
 def _handle_recommendations_commands(args: argparse.Namespace, root: Path) -> None:
-    """Handle recommendations-related commands."""
+    """Handle recommendations - related commands."""
     system = get_continuous_improvement_system(root)
 
     if args.recommendations_action == "list":
@@ -681,7 +669,7 @@ def _handle_config_set(args: argparse.Namespace, config_manager) -> None:
             elif args.value.lower() in ["false", "0", "no", "off"]:
                 value = False
             else:
-                print(f"❌ Value must be true/false for {args.setting_key}")
+                print(f"❌ Value must be true / false for {args.setting_key}")
                 return
 
     success = config_manager.set_setting(
@@ -844,7 +832,7 @@ def _handle_record_interaction(args: argparse.Namespace, preference_system) -> N
         print(f"Available types: {', '.join([it.value for it in InteractionType])}")
         return
 
-    # Parse context/outcome (flexible sources)
+    # Parse context / outcome (flexible sources)
     context = _parse_json_source(
         raw=getattr(args, "context", None),
         file=getattr(args, "context_file", None),
@@ -1078,7 +1066,7 @@ def _handle_health_monitor_control(args: argparse.Namespace, health_monitor) -> 
         print(
             f"Active issues: {len([i for i in health_monitor.active_issues if not i.resolved_at])}"
         )
-        print(f"Self-healing actions: {len(health_monitor.self_healing_actions)}")
+        print(f"Self - healing actions: {len(health_monitor.self_healing_actions)}")
 
 
 def _handle_health_status(args: argparse.Namespace, health_monitor) -> None:
@@ -1203,7 +1191,7 @@ def _handle_show_health_issue(args: argparse.Namespace, health_monitor) -> None:
 
 
 def _handle_self_healing(args: argparse.Namespace, health_monitor) -> None:
-    """Handle self-healing commands."""
+    """Handle self - healing commands."""
     if args.healing_action == "history":
         _handle_healing_history(args, health_monitor)
     elif args.healing_action == "stats":
@@ -1213,16 +1201,16 @@ def _handle_self_healing(args: argparse.Namespace, health_monitor) -> None:
 
 
 def _handle_healing_history(args: argparse.Namespace, health_monitor) -> None:
-    """Handle self-healing history display."""
+    """Handle self - healing history display."""
     days = args.days or 7
 
     history = health_monitor.get_self_healing_history(days)
 
     if not history:
-        print(f"📊 No self-healing actions in the last {days} days")
+        print(f"📊 No self - healing actions in the last {days} days")
         return
 
-    print(f"📊 Self-Healing History (Last {days} days)")
+    print(f"📊 Self - Healing History (Last {days} days)")
     print("=" * 40)
 
     for i, action in enumerate(history, 1):
@@ -1238,11 +1226,11 @@ def _handle_healing_history(args: argparse.Namespace, health_monitor) -> None:
 
 
 def _handle_healing_stats(health_monitor) -> None:
-    """Handle self-healing statistics display."""
+    """Handle self - healing statistics display."""
     history = health_monitor.get_self_healing_history(7)
 
     if not history:
-        print("📊 No self-healing actions in the last 7 days")
+        print("📊 No self - healing actions in the last 7 days")
         return
 
     total_actions = len(history)
@@ -1261,7 +1249,7 @@ def _handle_healing_stats(health_monitor) -> None:
         if action["success"]:
             action_types[action_type]["successful"] += 1
 
-    print("📊 Self-Healing Statistics (Last 7 days)")
+    print("📊 Self - Healing Statistics (Last 7 days)")
     print("=" * 40)
     print(f"Total Actions: {total_actions}")
     print(f"Successful Actions: {successful_actions}")
@@ -1304,7 +1292,7 @@ def _handle_health_summary(args: argparse.Namespace, health_monitor) -> None:
     print(f"  Total Issues: {summary['total_issues']}")
     print(f"  Resolved Issues: {summary['resolved_issues']}")
 
-    print(f"\nSelf-Healing:")
+    print(f"\nSelf - Healing:")
     print(f"  Actions Taken: {summary['self_healing_actions']}")
     print(f"  Successful Actions: {summary['successful_healing_actions']}")
     print(f"  Success Rate: {summary['healing_success_rate']:.1%}")
@@ -1439,7 +1427,7 @@ def _handle_list_knowledge(args: argparse.Namespace, knowledge_base) -> None:
         print(f"   Status: {item.status.value}")
         print(f"   Quality: {item.quality.value}")
         print(f"   Confidence: {item.confidence_score:.2f}")
-        print(f"   Created: {item.created_at.strftime('%Y-%m-%d %H:%M')}")
+        print(f"   Created: {item.created_at.strftime('%Y -% m-%d %H:%M')}")
         print(f"   Tags: {', '.join(item.tags)}")
         print()
 
@@ -1471,7 +1459,7 @@ def _handle_show_knowledge(args: argparse.Namespace, knowledge_base) -> None:
         print(f"Tags: {', '.join(item.tags)}")
 
     if item.metadata:
-        print(f"Metadata: {json.dumps(item.metadata, indent=2)}")
+        print(f"Metadata: {json.dumps(item.metadata, indent = 2)}")
 
     if item.related_knowledge:
         print(f"Related Knowledge: {', '.join(item.related_knowledge)}")
@@ -1510,7 +1498,7 @@ def _handle_list_patterns(knowledge_base) -> None:
         print(f"   Frequency: {pattern.frequency}")
         print(f"   Confidence: {pattern.confidence:.2f}")
         print(f"   Success Rate: {pattern.success_rate:.2f}")
-        print(f"   Discovered: {pattern.discovered_at.strftime('%Y-%m-%d')}")
+        print(f"   Discovered: {pattern.discovered_at.strftime('%Y -% m-%d')}")
         print(f"   Examples: {len(pattern.examples)}")
         print()
 
@@ -1610,7 +1598,7 @@ def _handle_list_knowledge_recommendations(knowledge_base) -> None:
         print(f"   Confidence: {rec.confidence:.2f}")
         print(f"   Usage Count: {rec.usage_count}")
         print(f"   Feedback Score: {rec.feedback_score:.2f}")
-        print(f"   Created: {rec.created_at.strftime('%Y-%m-%d %H:%M')}")
+        print(f"   Created: {rec.created_at.strftime('%Y -% m-%d %H:%M')}")
         print()
 
 
@@ -1746,7 +1734,7 @@ def _handle_list_metrics(args: argparse.Namespace, analytics) -> None:
         print(f"{i}. {metric.name}")
         print(f"   Value: {metric.value}")
         print(f"   Type: {metric.metric_type.value}")
-        print(f"   Timestamp: {metric.timestamp.strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"   Timestamp: {metric.timestamp.strftime('%Y -% m-%d %H:%M:%S')}")
         if metric.tags:
             print(f"   Tags: {', '.join(f'{k}={v}' for k, v in metric.tags.items())}")
         print()
@@ -1783,7 +1771,7 @@ def _handle_list_kpis(analytics) -> None:
         print(f"   Current: {kpi.current_value:.2f} {kpi.unit}")
         print(f"   Target: {kpi.target_value:.2f} {kpi.unit}")
         print(f"   Trend: {trend_icon} {kpi.trend}")
-        print(f"   Last Updated: {kpi.last_updated.strftime('%Y-%m-%d %H:%M')}")
+        print(f"   Last Updated: {kpi.last_updated.strftime('%Y -% m-%d %H:%M')}")
         print()
 
 
@@ -1808,7 +1796,7 @@ def _handle_show_kpi(args: argparse.Namespace, analytics) -> None:
     if kpi.historical_values:
         print(f"\nHistorical Values (last 5):")
         for timestamp, value in kpi.historical_values[-5:]:
-            print(f"  {timestamp.strftime('%Y-%m-%d %H:%M')}: {value:.2f} {kpi.unit}")
+            print(f"  {timestamp.strftime('%Y -% m-%d %H:%M')}: {value:.2f} {kpi.unit}")
 
 
 def _handle_reports_commands(args: argparse.Namespace, analytics) -> None:
@@ -1854,7 +1842,7 @@ def _handle_generate_report(args: argparse.Namespace, analytics) -> None:
     print(f"Report ID: {report_id}")
     print(f"Type: {report_type.value}")
     print(
-        f"Period: {period_start.strftime('%Y-%m-%d')} to {period_end.strftime('%Y-%m-%d')}"
+        f"Period: {period_start.strftime('%Y -% m-%d')} to {period_end.strftime('%Y -% m-%d')}"
     )
 
 
@@ -1876,9 +1864,9 @@ def _handle_list_reports(args: argparse.Namespace, analytics) -> None:
     for i, report in enumerate(reports, 1):
         print(f"{i}. {report.title}")
         print(f"   Type: {report.report_type.value}")
-        print(f"   Generated: {report.generated_at.strftime('%Y-%m-%d %H:%M')}")
+        print(f"   Generated: {report.generated_at.strftime('%Y -% m-%d %H:%M')}")
         print(
-            f"   Period: {report.period_start.strftime('%Y-%m-%d')} to {report.period_end.strftime('%Y-%m-%d')}"
+            f"   Period: {report.period_start.strftime('%Y -% m-%d')} to {report.period_end.strftime('%Y -% m-%d')}"
         )
         print(f"   ID: {report.report_id}")
         print()
@@ -1962,7 +1950,7 @@ def _handle_list_alerts(args: argparse.Namespace, analytics) -> None:
         print(f"   Level: {alert.alert_level.value}")
         print(f"   Status: {status}")
         print(f"   Acknowledged: {acknowledged}")
-        print(f"   Triggered: {alert.triggered_at.strftime('%Y-%m-%d %H:%M')}")
+        print(f"   Triggered: {alert.triggered_at.strftime('%Y -% m-%d %H:%M')}")
         print(f"   Metric: {alert.metric_name} ({alert.current_value:.2f})")
         print(f"   Threshold: {alert.threshold_value:.2f}")
         print()
@@ -2083,7 +2071,7 @@ def _handle_export_report(args: argparse.Namespace, analytics) -> None:
         exported_data = analytics.export_report(report_id, format)
 
         if args.output_file:
-            with open(args.output_file, "w", encoding="utf-8") as f:
+            with open(args.output_file, "w", encoding="utf - 8") as f:
                 f.write(exported_data)
             print(f"✅ Report exported to {args.output_file}")
         else:
@@ -2137,7 +2125,7 @@ def _handle_test_commands(args: argparse.Namespace, root: Path) -> None:
 def add_continuous_improvement_parser(subparsers) -> None:
     """Add continuous improvement commands to the argument parser."""
     improvement_parser = subparsers.add_parser(
-        "continuous-improvement", help="Continuous improvement system management"
+        "continuous - improvement", help="Continuous improvement system management"
     )
 
     improvement_subparsers = improvement_parser.add_subparsers(
@@ -2156,25 +2144,25 @@ def add_continuous_improvement_parser(subparsers) -> None:
         "record", help="Record a learning event"
     )
     record_parser.add_argument("learning_type", help="Type of learning event")
-    # Flexible context/outcome inputs
-    record_parser.add_argument("--context", help="Context (JSON or key=value pairs)")
+    # Flexible context / outcome inputs
+    record_parser.add_argument("--context", help="Context (JSON or key = value pairs)")
     record_parser.add_argument(
-        "--context-file", dest="context_file", help="Path to JSON file for context"
+        "--context - file", dest="context_file", help="Path to JSON file for context"
     )
     record_parser.add_argument(
-        "--context-b64", dest="context_b64", help="Base64-encoded JSON for context"
+        "--context - b64", dest="context_b64", help="Base64 - encoded JSON for context"
     )
-    record_parser.add_argument("--outcome", help="Outcome (JSON or key=value pairs)")
+    record_parser.add_argument("--outcome", help="Outcome (JSON or key = value pairs)")
     record_parser.add_argument(
-        "--outcome-file", dest="outcome_file", help="Path to JSON file for outcome"
-    )
-    record_parser.add_argument(
-        "--outcome-b64", dest="outcome_b64", help="Base64-encoded JSON for outcome"
+        "--outcome - file", dest="outcome_file", help="Path to JSON file for outcome"
     )
     record_parser.add_argument(
-        "--confidence", type=float, help="Confidence score (0-1)"
+        "--outcome - b64", dest="outcome_b64", help="Base64 - encoded JSON for outcome"
     )
-    record_parser.add_argument("--impact", type=float, help="Impact score (0-1)")
+    record_parser.add_argument(
+        "--confidence", type=float, help="Confidence score (0 - 1)"
+    )
+    record_parser.add_argument("--impact", type=float, help="Impact score (0 - 1)")
     record_parser.add_argument("--source", help="Source of the learning event")
 
     learn_subparsers.add_parser("summary", help="Get learning summary").add_argument(
@@ -2247,7 +2235,7 @@ def add_continuous_improvement_parser(subparsers) -> None:
 
     # User preference learning (quick path exposure)
     prefs_parser = subparsers.add_parser(
-        "user-prefs", help="User preference learning commands"
+        "user - prefs", help="User preference learning commands"
     )
     prefs_sub = prefs_parser.add_subparsers(dest="prefs_cmd", required=True)
     pref_rec = prefs_sub.add_parser(
@@ -2272,22 +2260,22 @@ def add_continuous_improvement_parser(subparsers) -> None:
     )
     health_issues_show_parser.add_argument("issue_id", help="Health issue ID")
 
-    # Self-healing
+    # Self - healing
     health_healing_parser = health_subparsers.add_parser(
-        "healing", help="Self-healing commands"
+        "healing", help="Self - healing commands"
     )
     health_healing_subparsers = health_healing_parser.add_subparsers(
         dest="healing_action", help="Healing actions"
     )
 
     health_healing_history_parser = health_healing_subparsers.add_parser(
-        "history", help="Show self-healing history"
+        "history", help="Show self - healing history"
     )
     health_healing_history_parser.add_argument(
         "--days", type=int, default=7, help="Number of days to show (default: 7)"
     )
 
-    health_healing_subparsers.add_parser("stats", help="Show self-healing statistics")
+    health_healing_subparsers.add_parser("stats", help="Show self - healing statistics")
 
     # Health summary
     health_summary_parser = health_subparsers.add_parser(
@@ -2327,18 +2315,20 @@ def add_continuous_improvement_parser(subparsers) -> None:
         choices=[kq.value for kq in KnowledgeQuality],
         help="Knowledge quality",
     )
-    add_knowledge_parser.add_argument("--tags", help="Comma-separated tags")
+    add_knowledge_parser.add_argument("--tags", help="Comma - separated tags")
     add_knowledge_parser.add_argument(
-        "--metadata", help="Metadata (JSON or key=value pairs)"
+        "--metadata", help="Metadata (JSON or key = value pairs)"
     )
     add_knowledge_parser.add_argument(
-        "--metadata-file", dest="metadata_file", help="Path to JSON file for metadata"
+        "--metadata - file", dest="metadata_file", help="Path to JSON file for metadata"
     )
     add_knowledge_parser.add_argument(
-        "--metadata-b64", dest="metadata_b64", help="Base64-encoded JSON for metadata"
+        "--metadata - b64",
+        dest="metadata_b64",
+        help="Base64 - encoded JSON for metadata",
     )
     add_knowledge_parser.add_argument(
-        "--confidence", type=float, help="Confidence score (0-1)"
+        "--confidence", type=float, help="Confidence score (0 - 1)"
     )
 
     # Search knowledge
@@ -2347,11 +2337,11 @@ def add_continuous_improvement_parser(subparsers) -> None:
     )
     search_knowledge_parser.add_argument("query", help="Search query")
     search_knowledge_parser.add_argument(
-        "--types", help="Comma-separated knowledge types"
+        "--types", help="Comma - separated knowledge types"
     )
-    search_knowledge_parser.add_argument("--tags", help="Comma-separated tags")
+    search_knowledge_parser.add_argument("--tags", help="Comma - separated tags")
     search_knowledge_parser.add_argument(
-        "--quality-threshold", type=float, help="Minimum quality threshold"
+        "--quality - threshold", type=float, help="Minimum quality threshold"
     )
     search_knowledge_parser.add_argument(
         "--limit", type=int, help="Maximum results to return"
@@ -2362,7 +2352,7 @@ def add_continuous_improvement_parser(subparsers) -> None:
         "list", help="List knowledge items"
     )
     list_knowledge_parser.add_argument(
-        "--knowledge-type",
+        "--knowledge - type",
         choices=[kt.value for kt in KnowledgeType],
         help="Filter by knowledge type",
     )
@@ -2444,13 +2434,13 @@ def add_continuous_improvement_parser(subparsers) -> None:
     record_metric_parser.add_argument("name", help="Metric name")
     record_metric_parser.add_argument("value", type=float, help="Metric value")
     record_metric_parser.add_argument(
-        "--metric-type", choices=[mt.value for mt in MetricType], help="Metric type"
+        "--metric - type", choices=[mt.value for mt in MetricType], help="Metric type"
     )
     record_metric_parser.add_argument("--tags", help="Tags JSON")
     record_metric_parser.add_argument("--metadata", help="Metadata JSON")
 
     list_metrics_parser = metrics_subparsers.add_parser("list", help="List metrics")
-    list_metrics_parser.add_argument("--name-filter", help="Filter by metric name")
+    list_metrics_parser.add_argument("--name - filter", help="Filter by metric name")
     list_metrics_parser.add_argument(
         "--limit", type=int, help="Maximum metrics to show"
     )
@@ -2488,10 +2478,10 @@ def add_continuous_improvement_parser(subparsers) -> None:
         help="Report period",
     )
     generate_report_parser.add_argument(
-        "--period-start", help="Custom period start (ISO format)"
+        "--period - start", help="Custom period start (ISO format)"
     )
     generate_report_parser.add_argument(
-        "--period-end", help="Custom period end (ISO format)"
+        "--period - end", help="Custom period end (ISO format)"
     )
     generate_report_parser.add_argument("--title", help="Report title")
     generate_report_parser.add_argument("--description", help="Report description")
@@ -2517,7 +2507,7 @@ def add_continuous_improvement_parser(subparsers) -> None:
         "--level", choices=[al.value for al in AlertLevel], help="Filter by alert level"
     )
     list_alerts_parser.add_argument(
-        "--active-only", action="store_true", help="Show only active alerts"
+        "--active - only", action="store_true", help="Show only active alerts"
     )
     list_alerts_parser.add_argument("--limit", type=int, help="Maximum alerts to show")
 
@@ -2552,7 +2542,7 @@ def add_continuous_improvement_parser(subparsers) -> None:
         default="json",
         help="Export format",
     )
-    export_report_parser.add_argument("--output-file", help="Output file path")
+    export_report_parser.add_argument("--output - file", help="Output file path")
 
     # Implement commands
     implement_parser = improvement_subparsers.add_parser(
@@ -2649,12 +2639,12 @@ def add_continuous_improvement_parser(subparsers) -> None:
     adapt_parser = config_subparsers.add_parser(
         "adapt", help="Adapt configuration based on context"
     )
-    adapt_parser.add_argument("--context", help="Context (JSON or key=value pairs)")
+    adapt_parser.add_argument("--context", help="Context (JSON or key = value pairs)")
     adapt_parser.add_argument(
-        "--context-file", dest="context_file", help="Path to JSON file for context"
+        "--context - file", dest="context_file", help="Path to JSON file for context"
     )
     adapt_parser.add_argument(
-        "--context-b64", dest="context_b64", help="Base64-encoded JSON for context"
+        "--context - b64", dest="context_b64", help="Base64 - encoded JSON for context"
     )
 
     # Configuration profiles
@@ -2671,12 +2661,12 @@ def add_continuous_improvement_parser(subparsers) -> None:
     )
     create_parser.add_argument("profile_name", help="Profile name")
     create_parser.add_argument("--description", help="Profile description")
-    create_parser.add_argument("--context", help="Context (JSON or key=value pairs)")
+    create_parser.add_argument("--context", help="Context (JSON or key = value pairs)")
     create_parser.add_argument(
-        "--context-file", dest="context_file", help="Path to JSON file for context"
+        "--context - file", dest="context_file", help="Path to JSON file for context"
     )
     create_parser.add_argument(
-        "--context-b64", dest="context_b64", help="Base64-encoded JSON for context"
+        "--context - b64", dest="context_b64", help="Base64 - encoded JSON for context"
     )
 
     apply_parser = profiles_subparsers.add_parser(
@@ -2694,7 +2684,7 @@ def add_continuous_improvement_parser(subparsers) -> None:
 
     # User preference commands
     user_pref_parser = improvement_subparsers.add_parser(
-        "user-preferences", help="User preference learning management"
+        "user - preferences", help="User preference learning management"
     )
     user_pref_subparsers = user_pref_parser.add_subparsers(
         dest="user_pref_action", help="User preference actions"
@@ -2706,26 +2696,26 @@ def add_continuous_improvement_parser(subparsers) -> None:
     )
     record_parser.add_argument("user_id", help="User ID")
     record_parser.add_argument("interaction_type", help="Type of interaction")
-    # Flexible context/outcome inputs
-    record_parser.add_argument("--context", help="Context (JSON or key=value pairs)")
+    # Flexible context / outcome inputs
+    record_parser.add_argument("--context", help="Context (JSON or key = value pairs)")
     record_parser.add_argument(
-        "--context-file", dest="context_file", help="Path to JSON file for context"
+        "--context - file", dest="context_file", help="Path to JSON file for context"
     )
     record_parser.add_argument(
-        "--context-b64", dest="context_b64", help="Base64-encoded JSON for context"
+        "--context - b64", dest="context_b64", help="Base64 - encoded JSON for context"
     )
     record_parser.add_argument(
         "--duration", type=float, help="Interaction duration in seconds"
     )
-    record_parser.add_argument("--outcome", help="Outcome (JSON or key=value pairs)")
+    record_parser.add_argument("--outcome", help="Outcome (JSON or key = value pairs)")
     record_parser.add_argument(
-        "--outcome-file", dest="outcome_file", help="Path to JSON file for outcome"
+        "--outcome - file", dest="outcome_file", help="Path to JSON file for outcome"
     )
     record_parser.add_argument(
-        "--outcome-b64", dest="outcome_b64", help="Base64-encoded JSON for outcome"
+        "--outcome - b64", dest="outcome_b64", help="Base64 - encoded JSON for outcome"
     )
     record_parser.add_argument(
-        "--satisfaction", type=float, help="Satisfaction score (0-1)"
+        "--satisfaction", type=float, help="Satisfaction score (0 - 1)"
     )
     record_parser.add_argument("--feedback", help="User feedback")
 
@@ -2873,7 +2863,7 @@ def _handle_list_validation_reports(args: argparse.Namespace, validator) -> None
         print("📋 Validation Reports:")
         print("-" * 50)
 
-        with open(reports_path, "r", encoding="utf-8") as f:
+        with open(reports_path, "r", encoding="utf - 8") as f:
             for line_num, line in enumerate(f, 1):
                 try:
                     report_data = json.loads(line.strip())
@@ -2904,7 +2894,7 @@ def _handle_view_validation_report(args: argparse.Namespace, validator) -> None:
         report_id = args.report_id
         found_report = None
 
-        with open(reports_path, "r", encoding="utf-8") as f:
+        with open(reports_path, "r", encoding="utf - 8") as f:
             for line in f:
                 try:
                     report_data = json.loads(line.strip())

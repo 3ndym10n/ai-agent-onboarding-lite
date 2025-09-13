@@ -1,14 +1,13 @@
-#!/usr/bin/env python3
+#!/usr / bin / env python3
 """
 Comprehensive CI testing script.
 
-This script runs all the tests and validations that would be run in CI/CD.
+This script runs all the tests and validations that would be run in CI / CD.
 """
 
 import subprocess
 import sys
-from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import List, Tuple
 
 
 def run_command(command: List[str], description: str) -> Tuple[bool, str]:
@@ -75,7 +74,7 @@ def main():
                 sys.executable,
                 "-m",
                 "isort",
-                "--check-only",
+                "--check - only",
                 "ai_onboard/",
                 "tests/",
                 "scripts/",
@@ -97,7 +96,13 @@ def main():
 
     results.append(
         run_command(
-            [sys.executable, "-m", "mypy", "ai_onboard/", "--ignore-missing-imports"],
+            [
+                sys.executable,
+                "-m",
+                "mypy",
+                "ai_onboard/",
+                "--ignore - missing - imports",
+            ],
             "MyPy type checking",
         )
     )
@@ -132,8 +137,8 @@ def main():
                 "pytest",
                 "tests/",
                 "-v",
-                "--cov=ai_onboard",
-                "--cov-report=xml",
+                "--cov = ai_onboard",
+                "--cov - report = xml",
             ],
             "Unit tests with coverage",
         )
@@ -144,12 +149,12 @@ def main():
     print("-" * 30)
 
     results.append(
-        run_script_command("scripts/test_system.py", "System integration tests")
+        run_script_command("scripts / test_system.py", "System integration tests")
     )
 
     results.append(
         run_script_command(
-            "scripts/validate_dev_env.py", "Development environment validation"
+            "scripts / validate_dev_env.py", "Development environment validation"
         )
     )
 
@@ -159,7 +164,7 @@ def main():
 
     results.append(
         run_python_command(
-            "ai_onboard ai-collaboration test", "AI Agent Collaboration Protocol test"
+            "ai_onboard ai - collaboration test", "AI Agent Collaboration Protocol test"
         )
     )
 
@@ -169,7 +174,7 @@ def main():
 
     results.append(
         run_python_command(
-            "ai_onboard enhanced-vision status", "Enhanced Vision System status check"
+            "ai_onboard enhanced - vision status", "Enhanced Vision System status check"
         )
     )
 
@@ -204,13 +209,13 @@ def main():
     print(f"Total tests: {total}")
     print(f"Passed: {passed}")
     print(f"Failed: {total - passed}")
-    print(f"Success rate: {(passed/total)*100:.1f}%")
+    print(f"Success rate: {(passed / total) * 100:.1f}%")
 
     if passed == total:
-        print("\n🎉 All tests passed! CI/CD pipeline would succeed.")
+        print("\n🎉 All tests passed! CI / CD pipeline would succeed.")
         return 0
     else:
-        print(f"\n❌ {total - passed} tests failed. CI/CD pipeline would fail.")
+        print(f"\n❌ {total - passed} tests failed. CI / CD pipeline would fail.")
         return 1
 
 

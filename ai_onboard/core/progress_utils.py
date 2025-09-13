@@ -8,20 +8,20 @@ and render progress bars to ensure consistency across CLI, gates, and reports.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from . import utils
 
 
 def load_plan(root: Path) -> Dict[str, Any]:
-    """Load the plan JSON from .ai_onboard/plan.json, or an empty stub."""
+    """Load the plan JSON from .ai_onboard / plan.json, or an empty stub."""
     return utils.read_json(
         root / ".ai_onboard" / "plan.json", default={"tasks": [], "milestones": []}
     )
 
 
 def create_progress_bar(percentage: float, width: int = 20) -> str:
-    """Create an ASCII/Unicode progress bar for a percentage using canonical logic.
+    """Create an ASCII / Unicode progress bar for a percentage using canonical logic.
 
     - percentage is clamped to [0, 100]
     - filled cells computed with rounding instead of truncation
@@ -69,7 +69,7 @@ def compute_milestone_progress(
 ) -> List[Dict[str, Any]]:
     """Compute progress for each milestone in the plan.
 
-    Progress is task-count based to match existing semantics.
+    Progress is task - count based to match existing semantics.
     """
     milestones: List[Dict[str, Any]] = plan.get("milestones", [])
     tasks_index: Dict[str, Dict[str, Any]] = {

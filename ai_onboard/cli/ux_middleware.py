@@ -14,7 +14,7 @@ import traceback
 from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Optional
 
 from ..core.system_capability_tracker import (
     UsageContext,
@@ -56,7 +56,7 @@ class UXMiddleware:
         error_details = None
 
         try:
-            # Pre-execution: Show pending interventions
+            # Pre - execution: Show pending interventions
             self._show_pending_interventions(user_id)
 
             # Execute command (yield control)
@@ -69,17 +69,17 @@ class UXMiddleware:
             # Handle error with UX enhancements
             self._handle_command_error(e, command, user_id)
 
-            # Re-raise the exception
+            # Re - raise the exception
             raise
 
         finally:
-            # Post-execution: Record UX event
+            # Post - execution: Record UX event
             duration_ms = (time.time() - start_time) * 1000
             self._record_command_execution(
                 command, user_id, success, error_details, duration_ms
             )
 
-            # Post-execution: Check for new interventions
+            # Post - execution: Check for new interventions
             if success:
                 self._check_post_execution_interventions(command, user_id)
 
@@ -105,7 +105,7 @@ class UXMiddleware:
                     print(message)
                     print()
 
-                    # Auto-dismiss after showing
+                    # Auto - dismiss after showing
                     ux_system.dismiss_intervention(intervention.intervention_id, False)
 
         except Exception:
@@ -152,7 +152,7 @@ class UXMiddleware:
                 print(message)
             print()
 
-            # Auto-dismiss intervention
+            # Auto - dismiss intervention
             ux_system.dismiss_intervention(intervention.intervention_id, False)
 
         except Exception:
@@ -261,7 +261,7 @@ class UXMiddleware:
                     print(message)
                     print()
 
-                    # Auto-dismiss after showing
+                    # Auto - dismiss after showing
                     ux_system.dismiss_intervention(intervention.intervention_id, False)
 
             # Check for satisfaction requests (very low priority)
@@ -280,10 +280,12 @@ class UXMiddleware:
                     print()
                     print(ui_system.format_output("📝 Quick Feedback", "info", user_id))
                     print(message)
-                    print("💡 Use 'ux feedback --score <1-5>' to share your experience")
+                    print(
+                        "💡 Use 'ux feedback --score <1 - 5>' to share your experience"
+                    )
                     print()
 
-                    # Auto-dismiss after showing
+                    # Auto - dismiss after showing
                     ux_system.dismiss_intervention(intervention.intervention_id, False)
 
         except Exception:
@@ -298,7 +300,7 @@ class UXMiddleware:
             user_profile = ui_system.get_user_profile(user_id)
             total_usage = sum(user_profile.command_usage_count.values())
 
-            # Show welcome for first-time users
+            # Show welcome for first - time users
             if total_usage == 0:
                 print()
                 print(
@@ -361,7 +363,7 @@ class UXMiddleware:
                     )
                 elif total_usage == 25:
                     print(
-                        "You're becoming an AI Onboard expert! Check out 'opt-experiments' for advanced optimization."
+                        "You're becoming an AI Onboard expert! Check out 'opt - experiments' for advanced optimization."
                     )
                 elif total_usage >= 50:
                     print(
@@ -388,6 +390,6 @@ def get_ux_middleware(root: Path) -> UXMiddleware:
 
 
 def with_ux_enhancements(root: Path, command: str, user_id: str = "default"):
-    """Context manager for UX-enhanced command execution."""
+    """Context manager for UX - enhanced command execution."""
     middleware = get_ux_middleware(root)
     return middleware.enhanced_command_execution(command, user_id)

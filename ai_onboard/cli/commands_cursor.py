@@ -1,7 +1,7 @@
 """
 CLI commands for Cursor AI integration.
 
-This module provides command-line interfaces for:
+This module provides command - line interfaces for:
 - Initializing and configuring Cursor AI integration
 - Managing collaboration sessions
 - Translating natural language commands
@@ -32,7 +32,7 @@ def add_cursor_commands(subparsers):
     # Initialize command
     init_parser = cursor_sub.add_parser("init", help="Initialize Cursor AI integration")
     init_parser.add_argument(
-        "--force", action="store_true", help="Force re-initialization"
+        "--force", action="store_true", help="Force re - initialization"
     )
 
     # Status command
@@ -57,7 +57,7 @@ def add_cursor_commands(subparsers):
         "create", help="Create collaboration session"
     )
     create_parser.add_argument(
-        "--user-id", default="cursor_user", help="User ID for session"
+        "--user - id", default="cursor_user", help="User ID for session"
     )
 
     # Session list
@@ -118,7 +118,7 @@ def _handle_cursor_init(args: argparse.Namespace, root: Path) -> None:
 
     try:
         if args.force:
-            # Force re-initialization by recreating the integration
+            # Force re - initialization by recreating the integration
             global _cursor_integration
             from ..core.cursor_ai_integration import _cursor_integration
 
@@ -285,7 +285,7 @@ def _handle_cursor_session(args: argparse.Namespace, root: Path) -> None:
                 print(f"📊 Session Status: {args.session_id}")
                 print("=" * 40)
                 print(f"Status: {status.get('status')}")
-                print(f"Message: {status.get('message', 'N/A')}")
+                print(f"Message: {status.get('message', 'N / A')}")
 
                 if status.get("session_info"):
                     info = status["session_info"]
@@ -408,7 +408,7 @@ def _handle_cursor_config(args: argparse.Namespace, root: Path) -> None:
             print(f"✅ Configuration updated: {args.key} = {value}")
             print("💡 Restart may be required for some changes to take effect")
 
-        except ValueError as e:
+        except ValueError:
             print(f"❌ Invalid value for {args.key}: {args.value}")
         except Exception as e:
             print(f"❌ Failed to set config: {e}")

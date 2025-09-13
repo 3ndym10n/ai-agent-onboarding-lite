@@ -9,7 +9,9 @@ def add_ai_agent_commands(subparsers):
     """Add AI agent command parsers."""
 
     # AI Agent IAS Conversation
-    s_ai = subparsers.add_parser("ai-agent", help="AI Agent IAS conversation interface")
+    s_ai = subparsers.add_parser(
+        "ai - agent", help="AI Agent IAS conversation interface"
+    )
     s_ai.add_argument(
         "--conversation",
         action="store_true",
@@ -21,7 +23,7 @@ def add_ai_agent_commands(subparsers):
         help="Show alignment preview without conversation",
     )
     s_ai.add_argument(
-        "--test-guardrails", action="store_true", help="Test guardrail functionality"
+        "--test - guardrails", action="store_true", help="Test guardrail functionality"
     )
     s_ai.add_argument("--command", help="Execute command with AI agent decision making")
 

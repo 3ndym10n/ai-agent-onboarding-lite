@@ -17,13 +17,14 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
-from . import optimizer, telemetry, utils
+from . import utils
 from .enhanced_conversation_context import get_enhanced_context_manager
 from .unified_metrics_collector import (
     MetricCategory,
     MetricEvent,
+    MetricQuery,
     MetricSource,
     get_unified_metrics_collector,
 )
@@ -89,9 +90,9 @@ class ImprovementOpportunity:
 
     # Implementation details
     proposed_actions: List[str] = field(default_factory=list)
-    estimated_effort: int = 1  # 1-5 scale
-    estimated_impact: int = 1  # 1-5 scale
-    risk_level: int = 1  # 1-5 scale
+    estimated_effort: int = 1  # 1 - 5 scale
+    estimated_impact: int = 1  # 1 - 5 scale
+    risk_level: int = 1  # 1 - 5 scale
 
     # Tracking
     identified_at: datetime = field(default_factory=datetime.now)
@@ -218,7 +219,7 @@ class KaizenMetricsAnalyzer:
                         category=ImprovementCategory.USER_EXPERIENCE,
                         priority=ImprovementPriority.HIGH,
                         title="Reduce user-facing errors",
-                        description=f"Error rate is {continuity_data.get('error_rate', 0)*100:.1f}%, above acceptable threshold",
+                        description=f"Error rate is {continuity_data.get('error_rate', 0) * 100:.1f}%, above acceptable threshold",
                         evidence={"error_rate": continuity_data.get("error_rate", 0)},
                         current_metrics={
                             "error_rate": continuity_data.get("error_rate", 0)
@@ -260,7 +261,7 @@ class KaizenMetricsAnalyzer:
                         target_metrics={"new_user_success_rate": 0.9},  # Target 90%
                         proposed_actions=[
                             "Add interactive tutorials",
-                            "Improve first-time user experience",
+                            "Improve first - time user experience",
                             "Add contextual help and guidance",
                             "Simplify initial setup process",
                         ],
@@ -770,7 +771,7 @@ class KaizenAutomationEngine:
                 ):
                     continue
 
-                # Check risk level for auto-execution
+                # Check risk level for auto - execution
                 if opp["risk_level"] > 2 and not auto_execute_low_risk:
                     continue
 
@@ -877,7 +878,7 @@ class KaizenAutomationEngine:
     def _execute_performance_improvement(
         self, opportunity: ImprovementOpportunity
     ) -> Dict[str, Any]:
-        """Execute performance-related improvements."""
+        """Execute performance - related improvements."""
         result = {"actions_performed": []}
 
         # Example: Clear caches, optimize configurations

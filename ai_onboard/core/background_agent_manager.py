@@ -3,28 +3,25 @@ Background Agent Manager (T23) - Core system for managing autonomous background 
 
 This module provides the foundational infrastructure for running AI agents autonomously
 in the background while maintaining safety, coordination, and alignment with project goals.
-The system extends the existing AAOL to support long-running, autonomous operations.
+The system extends the existing AAOL to support long - running, autonomous operations.
 """
 
-import asyncio
 import json
 import signal
 import sys
 import threading
 import time
-import uuid
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Set
+from typing import Any, Callable, Dict, List, Optional
 
 import psutil
 
-from . import utils
 from .ai_agent_orchestration import create_ai_agent_orchestrator
-from .unified_metrics_collector import MetricCategory, get_unified_metrics_collector
+from .unified_metrics_collector import get_unified_metrics_collector
 from .user_experience_enhancements import UXEventType, get_ux_enhancement_system
 
 
@@ -44,11 +41,11 @@ class AgentState(Enum):
 class AgentPriority(Enum):
     """Priority levels for background agents."""
 
-    CRITICAL = 1  # System-critical agents (monitoring, safety)
+    CRITICAL = 1  # System - critical agents (monitoring, safety)
     HIGH = 2  # Important agents (health monitoring, alerts)
     MEDIUM = 3  # Standard agents (optimization, learning)
     LOW = 4  # Background agents (cleanup, maintenance)
-    IDLE = 5  # Idle-time agents (analytics, reporting)
+    IDLE = 5  # Idle - time agents (analytics, reporting)
 
 
 class ScheduleType(Enum):
@@ -56,7 +53,7 @@ class ScheduleType(Enum):
 
     CONTINUOUS = "continuous"  # Always running
     INTERVAL = "interval"  # Fixed interval (e.g., every 5 minutes)
-    CRON = "cron"  # Cron-style scheduling
+    CRON = "cron"  # Cron - style scheduling
     EVENT_DRIVEN = "event_driven"  # Triggered by events
     ON_DEMAND = "on_demand"  # Manual triggering only
 
@@ -67,7 +64,7 @@ class AgentResourceLimits:
 
     max_cpu_percent: float = 10.0  # Maximum CPU usage percentage
     max_memory_mb: float = 512.0  # Maximum memory usage in MB
-    max_io_ops_per_sec: int = 100  # Maximum I/O operations per second
+    max_io_ops_per_sec: int = 100  # Maximum I / O operations per second
     max_network_requests_per_min: int = 50  # Maximum network requests per minute
     max_execution_time_sec: int = 3600  # Maximum execution time in seconds
     max_file_operations: int = 1000  # Maximum file operations
@@ -209,23 +206,20 @@ class BackgroundAgent(ABC):
         self.metrics_collector = get_unified_metrics_collector(root)
         self.ux_system = get_ux_enhancement_system(root)
 
-        # Initialize agent-specific components
+        # Initialize agent - specific components
         self._initialize_agent()
 
     @abstractmethod
     def _initialize_agent(self):
-        """Initialize agent-specific components."""
-        pass
+        """Initialize agent - specific components."""
 
     @abstractmethod
     async def execute(self, context: Dict[str, Any]) -> Dict[str, Any]:
         """Execute the agent's main functionality."""
-        pass
 
     @abstractmethod
     def get_health_status(self) -> Dict[str, Any]:
         """Get the agent's health status."""
-        pass
 
     def start(self) -> bool:
         """Start the background agent."""
@@ -240,7 +234,7 @@ class BackgroundAgent(ABC):
             self.resource_monitor.start()
             self.safety_monitor.start()
 
-            # Agent-specific startup
+            # Agent - specific startup
             if self._startup():
                 self.state = AgentState.RUNNING
                 self.last_activity = datetime.now()
@@ -262,7 +256,7 @@ class BackgroundAgent(ABC):
         try:
             self.state = AgentState.STOPPING
 
-            # Agent-specific shutdown
+            # Agent - specific shutdown
             self._shutdown()
 
             # Cleanup resources
@@ -301,7 +295,6 @@ class BackgroundAgent(ABC):
         message["sender"] = self.agent_id
         message["timestamp"] = datetime.now().isoformat()
         # Implementation would route through BackgroundAgentManager
-        pass
 
     def register_event_handler(self, event_type: str, handler: Callable):
         """Register an event handler."""
@@ -316,23 +309,19 @@ class BackgroundAgent(ABC):
             "data": data,
         }
         # Implementation would route through BackgroundAgentManager
-        pass
 
     def _startup(self) -> bool:
-        """Agent-specific startup logic."""
+        """Agent - specific startup logic."""
         return True
 
     def _shutdown(self):
-        """Agent-specific shutdown logic."""
-        pass
+        """Agent - specific shutdown logic."""
 
     def _on_pause(self):
         """Called when agent is paused."""
-        pass
 
     def _on_resume(self):
         """Called when agent is resumed."""
-        pass
 
     def _handle_error(self, error: str):
         """Handle agent errors."""
@@ -620,7 +609,6 @@ class BackgroundAgentManager:
     def register_agent_class(self, agent_class: type, agent_type: str):
         """Register a new agent class."""
         # Implementation for dynamic agent registration
-        pass
 
     def create_agent(self, config: AgentConfiguration) -> bool:
         """Create a new background agent."""

@@ -1,23 +1,22 @@
-#!/usr/bin/env python3
+#!/usr / bin / env python3
 """
-Development Environment Setup Script for ai-onboard
+Development Environment Setup Script for ai - onboard
 
 This script sets up a complete development environment including:
 - Python virtual environment
 - Development dependencies
-- Pre-commit hooks
+- Pre - commit hooks
 - Git configuration
 - IDE configuration files
 """
 
-import os
 import platform
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import List
 
-# mypy: ignore-errors
+# mypy: ignore - errors
 
 
 class DevEnvironmentSetup:
@@ -120,10 +119,10 @@ class DevEnvironmentSetup:
 
             # Install additional development tools
             dev_tools = [
-                "pre-commit>=3.0.0",
-                "isort>=5.12.0",
-                "flake8-docstrings>=1.7.0",
-                "types-PyYAML>=6.0.0",
+                "pre - commit >= 3.0.0",
+                "isort >= 5.12.0",
+                "flake8 - docstrings >= 1.7.0",
+                "types - PyYAML >= 6.0.0",
             ]
 
             for tool in dev_tools:
@@ -139,18 +138,18 @@ class DevEnvironmentSetup:
             return False
 
     def setup_pre_commit_hooks(self) -> bool:
-        """Set up pre-commit hooks."""
-        print("🪝 Setting up pre-commit hooks...")
+        """Set up pre - commit hooks."""
+        print("🪝 Setting up pre - commit hooks...")
 
         venv_python = self.get_venv_python()
 
         try:
-            # Install pre-commit hooks
+            # Install pre - commit hooks
             self.run_command([venv_python, "-m", "pre_commit", "install"])
-            print("✅ Pre-commit hooks installed")
+            print("✅ Pre - commit hooks installed")
             return True
         except subprocess.CalledProcessError:
-            print("❌ Failed to set up pre-commit hooks")
+            print("❌ Failed to set up pre - commit hooks")
             return False
 
     def setup_git_config(self) -> bool:
@@ -162,11 +161,11 @@ class DevEnvironmentSetup:
             githooks_dir = self.project_root / ".githooks"
             githooks_dir.mkdir(exist_ok=True)
 
-            # Create pre-push hook
-            pre_push_hook = githooks_dir / "pre-push"
-            pre_push_content = """#!/bin/bash
-# Pre-push hook to check protected paths
-python scripts/protected_paths_diff.py
+            # Create pre - push hook
+            pre_push_hook = githooks_dir / "pre - push"
+            pre_push_content = """#!/bin / bash
+# Pre - push hook to check protected paths
+python scripts / protected_paths_diff.py
 """
             pre_push_hook.write_text(pre_push_content)
             pre_push_hook.chmod(0o755)
@@ -191,9 +190,9 @@ python scripts/protected_paths_diff.py
 
             vscode_settings = {
                 "python.defaultInterpreterPath": (
-                    "./venv/Scripts/python.exe"
+                    "./venv / Scripts / python.exe"
                     if self.is_windows
-                    else "./venv/bin/python"
+                    else "./venv / bin / python"
                 ),
                 "python.linting.enabled": True,
                 "python.linting.flake8Enabled": True,
@@ -221,9 +220,9 @@ python scripts/protected_paths_diff.py
             if not idea_dir.exists():
                 idea_dir.mkdir(exist_ok=True)
                 (idea_dir / "misc.xml").write_text(
-                    """<?xml version="1.0" encoding="UTF-8"?>
+                    """<?xml version="1.0" encoding="UTF - 8"?>
 <project version="4">
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.8" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project - jdk - name="Python 3.8" project - jdk - type="Python SDK" />
 </project>"""
                 )
 
@@ -241,7 +240,7 @@ python scripts/protected_paths_diff.py
 
         try:
             # Run system tests
-            self.run_command([venv_python, "scripts/test_system.py"])
+            self.run_command([venv_python, "scripts / test_system.py"])
 
             # Run smoke tests
             self.run_command([venv_python, "-m", "pytest", "tests/", "-v"])
@@ -254,14 +253,14 @@ python scripts/protected_paths_diff.py
 
     def setup_development_environment(self) -> bool:
         """Set up the complete development environment."""
-        print("🚀 Setting up development environment for ai-onboard...")
+        print("🚀 Setting up development environment for ai - onboard...")
         print(f"Project root: {self.project_root}")
 
         steps = [
             ("Check prerequisites", self.check_prerequisites),
             ("Create virtual environment", self.create_virtual_environment),
             ("Install dependencies", self.install_dependencies),
-            ("Set up pre-commit hooks", self.setup_pre_commit_hooks),
+            ("Set up pre - commit hooks", self.setup_pre_commit_hooks),
             ("Set up Git configuration", self.setup_git_config),
             ("Create IDE configurations", self.create_ide_configs),
             ("Run initial tests", self.run_initial_tests),
@@ -279,9 +278,9 @@ python scripts/protected_paths_diff.py
         if self.is_windows:
             print("   venv\\Scripts\\activate")
         else:
-            print("   source venv/bin/activate")
+            print("   source venv / bin / activate")
         print("2. Run 'python -m ai_onboard --help' to test the CLI")
-        print("3. Run 'python scripts/test_system.py' to verify everything works")
+        print("3. Run 'python scripts / test_system.py' to verify everything works")
 
         return True
 

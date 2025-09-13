@@ -32,7 +32,7 @@ def validate_policy(policy: Dict[str, Any]) -> None:
         rid = r.get("id")
         action = r.get("action")
         if not _is_str(rid):
-            raise PolicyError(f"policy.rules[{idx}].id must be a non-empty string")
+            raise PolicyError(f"policy.rules[{idx}].id must be a non - empty string")
         if not _is_str(action) or action not in ALLOWED_ACTIONS:
             raise PolicyError(
                 f"policy.rules[{idx}].action must be one of {sorted(ALLOWED_ACTIONS)}"

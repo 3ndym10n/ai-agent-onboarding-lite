@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-# mypy: ignore-errors
+#!/usr / bin / env python3
+# mypy: ignore - errors
 """
 Development Environment Validation Script
 
@@ -7,7 +7,6 @@ This script validates that the development environment is properly set up
 and all tools are working correctly.
 """
 
-import os
 import platform
 import subprocess
 import sys
@@ -79,9 +78,9 @@ class DevEnvironmentValidator:
             import ai_onboard
 
             results["package_installed"] = ai_onboard.__version__
-            print(f"✅ ai-onboard package: {ai_onboard.__version__}")
+            print(f"✅ ai - onboard package: {ai_onboard.__version__}")
         except ImportError:
-            print("❌ ai-onboard package not installed")
+            print("❌ ai - onboard package not installed")
 
         return results
 
@@ -94,7 +93,7 @@ class DevEnvironmentValidator:
             "flake8": ["flake8", "--version"],
             "mypy": ["mypy", "--version"],
             "pytest": ["pytest", "--version"],
-            "pre-commit": ["pre-commit", "--version"],
+            "pre - commit": ["pre - commit", "--version"],
             "isort": ["isort", "--version"],
         }
 
@@ -136,14 +135,14 @@ class DevEnvironmentValidator:
         else:
             print("⚠️  Git hooks path not configured")
 
-        # Check if pre-commit is installed
+        # Check if pre - commit is installed
         success, stdout, stderr = self.run_command(["git", "config", "core.hooksPath"])
-        if success and "pre-commit" in stdout:
+        if success and "pre - commit" in stdout:
             results["pre_commit_installed"] = True
-            print("✅ Pre-commit hooks installed")
+            print("✅ Pre - commit hooks installed")
         else:
             results["pre_commit_installed"] = False
-            print("⚠️  Pre-commit hooks not installed")
+            print("⚠️  Pre - commit hooks not installed")
 
         return results
 
@@ -154,22 +153,22 @@ class DevEnvironmentValidator:
         required_files = [
             "pyproject.toml",
             "README.md",
-            "docs/developer/DEVELOPMENT.md",
-            ".pre-commit-config.yaml",
-            "config/dev-config.yaml",
-            "scripts/setup_dev_env.py",
-            "scripts/validate_dev_env.py",
-            "scripts/test_system.py",
-            ".github/workflows/ci.yml",
+            "docs / developer / DEVELOPMENT.md",
+            ".pre - commit - config.yaml",
+            "config / dev - config.yaml",
+            "scripts / setup_dev_env.py",
+            "scripts / validate_dev_env.py",
+            "scripts / test_system.py",
+            ".github / workflows / ci.yml",
         ]
 
         required_dirs = [
             "ai_onboard",
-            "ai_onboard/cli",
-            "ai_onboard/core",
-            "ai_onboard/plugins",
-            "ai_onboard/policies",
-            "ai_onboard/schemas",
+            "ai_onboard / cli",
+            "ai_onboard / core",
+            "ai_onboard / plugins",
+            "ai_onboard / policies",
+            "ai_onboard / schemas",
             "tests",
             "docs",
             "scripts",
@@ -218,7 +217,7 @@ class DevEnvironmentValidator:
 
         # Check system tests
         success, stdout, stderr = self.run_command(
-            [sys.executable, "scripts/test_system.py"]
+            [sys.executable, "scripts / test_system.py"]
         )
         if success:
             results["system_tests"] = True
@@ -306,13 +305,13 @@ class DevEnvironmentValidator:
 
         print("\nNext steps:")
         if percentage < 100:
-            print("1. Run 'python scripts/setup_dev_env.py' to fix issues")
+            print("1. Run 'python scripts / setup_dev_env.py' to fix issues")
             print("2. Check the error messages above for specific problems")
-            print("3. Re-run this validation script after fixes")
+            print("3. Re - run this validation script after fixes")
         else:
             print("1. You're ready to start developing!")
             print("2. Run 'python -m ai_onboard --help' to test the CLI")
-            print("3. Check out docs/developer/DEVELOPMENT.md for more information")
+            print("3. Check out docs / developer / DEVELOPMENT.md for more information")
 
 
 def main():

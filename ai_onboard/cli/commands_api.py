@@ -1,7 +1,7 @@
 """
 CLI commands for API server management.
 
-This module provides command-line interfaces for:
+This module provides command - line interfaces for:
 - Starting and stopping the API server
 - Managing API configuration
 - Testing API endpoints
@@ -10,11 +10,9 @@ This module provides command-line interfaces for:
 
 import argparse
 import json
-import time
 from pathlib import Path
-from typing import Optional
 
-from ..core.unicode_utils import print_activity, print_content, print_status, safe_print
+from ..core.unicode_utils import print_activity, print_content, print_status
 
 try:
     import requests
@@ -36,7 +34,7 @@ def add_api_commands(subparsers):
     start_parser.add_argument("--host", default="127.0.0.1", help="Host to bind to")
     start_parser.add_argument("--port", type=int, default=8080, help="Port to bind to")
     start_parser.add_argument(
-        "--reload", action="store_true", help="Enable auto-reload for development"
+        "--reload", action="store_true", help="Enable auto - reload for development"
     )
     start_parser.add_argument(
         "--background", action="store_true", help="Run in background"
@@ -112,12 +110,12 @@ def _handle_api_start(args: argparse.Namespace, root: Path) -> None:
             print("Use a process manager like PM2 or systemd for production deployment")
             return
 
-        # Server configuration (don't include host/port since they're already set in constructor)
+        # Server configuration (don't include host / port since they're already set in constructor)
         server_config = {}
 
         if args.reload:
             server_config["reload"] = True
-            print_activity("Auto-reload enabled (development mode)", "sync")
+            print_activity("Auto - reload enabled (development mode)", "sync")
 
         print_content("\nAPI Documentation will be available at:", "docs")
         print(f"   Swagger UI: http://{args.host}:{args.port}/docs")
@@ -126,12 +124,12 @@ def _handle_api_start(args: argparse.Namespace, root: Path) -> None:
         print_content("\nKey Endpoints:", "link")
         print(f"   Health Check: http://{args.host}:{args.port}/health")
         print(
-            f"   Project Status: http://{args.host}:{args.port}/api/v1/project/status"
+            f"   Project Status: http://{args.host}:{args.port}/api / v1 / project / status"
         )
-        print(f"   WebSocket: ws://{args.host}:{args.port}/api/v1/ws/{{client_id}}")
+        print(f"   WebSocket: ws://{args.host}:{args.port}/api / v1 / ws/{{client_id}}")
 
         print_content(f"\nReady for Cursor AI integration!", "target")
-        print("Press Ctrl+C to stop the server\n")
+        print("Press Ctrl + C to stop the server\n")
 
         # Run the server
         server.run(**server_config)
@@ -148,7 +146,7 @@ def _handle_api_start(args: argparse.Namespace, root: Path) -> None:
 def _handle_api_stop(args: argparse.Namespace, root: Path) -> None:
     """Handle API server stop command."""
     print("🛑 API server stop command")
-    print("💡 Use Ctrl+C to stop a running server, or kill the process")
+    print("💡 Use Ctrl + C to stop a running server, or kill the process")
     print("   For production deployments, use your process manager's stop command")
 
 
@@ -180,7 +178,7 @@ def _handle_api_status(args: argparse.Namespace, root: Path) -> None:
             # Check project status
             try:
                 status_response = requests.get(
-                    f"{url}/api/v1/project/status", timeout=5
+                    f"{url}/api / v1 / project / status", timeout=5
                 )
                 if status_response.status_code == 200:
                     project_data = status_response.json()
@@ -219,8 +217,8 @@ def _handle_api_test(args: argparse.Namespace, root: Path) -> None:
     # Test endpoints to check
     test_endpoints = [
         ("GET", "/health", "Health Check"),
-        ("GET", "/api/v1/project/status", "Project Status"),
-        ("POST", "/api/v1/translate", "Natural Language Translation"),
+        ("GET", "/api / v1 / project / status", "Project Status"),
+        ("POST", "/api / v1 / translate", "Natural Language Translation"),
     ]
 
     if args.endpoint:
@@ -238,7 +236,7 @@ def _handle_api_test(args: argparse.Namespace, root: Path) -> None:
             if method == "GET":
                 response = requests.get(url, timeout=10)
             elif method == "POST":
-                if endpoint == "/api/v1/translate":
+                if endpoint == "/api / v1 / translate":
                     # Test natural language translation
                     test_data = {"text": "analyze this project"}
                     response = requests.post(url, json=test_data, timeout=10)
@@ -250,7 +248,7 @@ def _handle_api_test(args: argparse.Namespace, root: Path) -> None:
                 print(f"   ✅ Success ({response.status_code})")
 
                 # Show response preview for key endpoints
-                if endpoint in ["/health", "/api/v1/project/status"]:
+                if endpoint in ["/health", "/api / v1 / project / status"]:
                     data = response.json()
                     if isinstance(data, dict):
                         for key, value in list(data.items())[:3]:
@@ -282,7 +280,7 @@ def _handle_api_test(args: argparse.Namespace, root: Path) -> None:
         print(f"   {status} {description}: {code}")
 
     print(
-        f"\n🎯 Success Rate: {success_count}/{total_count} ({success_count/total_count*100:.1f}%)"
+        f"\n🎯 Success Rate: {success_count}/{total_count} ({success_count / total_count * 100:.1f}%)"
     )
 
     if success_count == total_count:

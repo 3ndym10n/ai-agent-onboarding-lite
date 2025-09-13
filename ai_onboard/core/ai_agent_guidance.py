@@ -2,7 +2,7 @@
 AI Agent Guidance System - Provides guidance and onboarding for AI agents.
 
 This module provides comprehensive guidance for AI agents on how to effectively
-collaborate with the ai-onboard system, including best practices, examples,
+collaborate with the ai - onboard system, including best practices, examples,
 and automated guidance generation.
 """
 
@@ -12,7 +12,6 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from . import utils
 from .ai_agent_collaboration_protocol import get_collaboration_protocol
 
 
@@ -83,17 +82,17 @@ class AIAgentGuidanceSystem:
         self._add_guidance_item(
             GuidanceItem(
                 id="onboarding_001",
-                title="Getting Started with ai-onboard",
+                title="Getting Started with ai - onboard",
                 content="""
-# Getting Started with ai-onboard
+# Getting Started with ai - onboard
 
-Welcome to ai-onboard! This system helps you collaborate effectively with users on software projects.
+Welcome to ai - onboard! This system helps you collaborate effectively with users on software projects.
 
 ## Key Concepts
 
 1. **Vision Interrogation**: Define project vision through guided questioning
 2. **Collaboration Protocol**: Structured way to interact with the system
-3. **Safety Mechanisms**: Built-in protections for safe operation
+3. **Safety Mechanisms**: Built - in protections for safe operation
 4. **Gate System**: Points where human input is required
 
 ## First Steps
@@ -127,8 +126,8 @@ Welcome to ai-onboard! This system helps you collaborate effectively with users 
 ## Protected Files and Directories
 
 Never modify these files without explicit user permission:
-- `.ai_onboard/policies/` - System policies
-- `.ai_onboard/charter.json` - Project charter
+- `.ai_onboard / policies/` - System policies
+- `.ai_onboard / charter.json` - Project charter
 - `pyproject.toml` - Project configuration
 - `README.md` - System documentation
 - `AGENTS.md` - Agent guidelines
@@ -151,7 +150,7 @@ Avoid these command patterns:
 ## When to Ask for Permission
 
 - Modifying protected files
-- Running system-level commands
+- Running system - level commands
 - Installing packages
 - Changing project configuration
 - Accessing external resources
@@ -178,8 +177,8 @@ agent_profile = AgentProfile(
     agent_id="your_agent_id",
     name="Your Agent Name",
     capabilities=[AgentCapability.CODE_GENERATION, AgentCapability.PLANNING],
-    collaboration_mode=CollaborationMode.COLLABORATIVE,
-    safety_level=SafetyLevel.MEDIUM
+    collaboration_mode = CollaborationMode.COLLABORATIVE,
+    safety_level = SafetyLevel.MEDIUM
 )
 
 protocol = get_collaboration_protocol(project_root)
@@ -216,7 +215,7 @@ if not vision_status["context"]["vision_status"]["ready_for_agents"]:
 action = {
     "type": "file_operation",
     "operation": "read",
-    "file_path": "src/main.py"
+    "file_path": "src / main.py"
 }
 result = protocol.execute_agent_action(session_id, action)
 ```
@@ -271,7 +270,7 @@ if vision_status["context"]["active_gates"]:
 
 1. **Understand User Intent**: Focus on what the user wants to achieve
 2. **Suggest Improvements**: Offer better approaches when you see them
-3. **Explain Trade-offs**: Help users understand the implications of choices
+3. **Explain Trade - offs**: Help users understand the implications of choices
 4. **Be Proactive**: Anticipate needs and suggest next steps
 
 ## Error Handling
@@ -302,7 +301,7 @@ if vision_status["context"]["active_gates"]:
 action = {
     "type": "file_operation",
     "operation": "read",
-    "file_path": "src/main.py"
+    "file_path": "src / main.py"
 }
 result = protocol.execute_agent_action(session_id, action)
 if result["status"] == "success":
@@ -317,7 +316,7 @@ if result["status"] == "success":
 action = {
     "type": "file_operation",
     "operation": "write",
-    "file_path": "src/new_module.py",
+    "file_path": "src / new_module.py",
     "content": "# New module\\n\\ndef hello():\\n    print('Hello, World!')"
 }
 result = protocol.execute_agent_action(session_id, action)
@@ -404,8 +403,8 @@ agent_profile = AgentProfile(
         AgentCapability.DEBUGGING,
         AgentCapability.DOCUMENTATION
     ],
-    collaboration_mode=CollaborationMode.COLLABORATIVE,
-    safety_level=SafetyLevel.MEDIUM
+    collaboration_mode = CollaborationMode.COLLABORATIVE,
+    safety_level = SafetyLevel.MEDIUM
 )
 
 # Register and start session
@@ -424,8 +423,8 @@ agent_profile = AgentProfile(
         AgentCapability.CODE_GENERATION,
         AgentCapability.DOCUMENTATION
     ],
-    collaboration_mode=CollaborationMode.ASSISTIVE,
-    safety_level=SafetyLevel.HIGH
+    collaboration_mode = CollaborationMode.ASSISTIVE,
+    safety_level = SafetyLevel.HIGH
 )
 ```
 
@@ -441,9 +440,9 @@ agent_profile = AgentProfile(
         AgentCapability.PLANNING,
         AgentCapability.TESTING
     ],
-    collaboration_mode=CollaborationMode.AUTONOMOUS,
-    safety_level=SafetyLevel.CRITICAL,
-    max_autonomous_actions=5,
+    collaboration_mode = CollaborationMode.AUTONOMOUS,
+    safety_level = SafetyLevel.CRITICAL,
+    max_autonomous_actions = 5,
     requires_confirmation_for=["file_operation", "command_execution"]
 )
 ```
@@ -453,7 +452,7 @@ agent_profile = AgentProfile(
 Set these environment variables for your AI agent:
 
 ```bash
-export AI_ONBOARD_PROJECT_ROOT="/path/to/project"
+export AI_ONBOARD_PROJECT_ROOT="/path / to / project"
 export AI_ONBOARD_AGENT_ID="your_agent_id"
 export AI_ONBOARD_SAFETY_LEVEL="medium"
 export AI_ONBOARD_COLLABORATION_MODE="collaborative"

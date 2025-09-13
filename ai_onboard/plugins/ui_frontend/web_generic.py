@@ -23,7 +23,7 @@ class NodeScriptsPresent:
                 )
             ]
         try:
-            data = json.loads(open(pkg, "r", encoding="utf-8").read())
+            data = json.loads(open(pkg, "r", encoding="utf - 8").read())
         except Exception as e:
             return [
                 Issue(
@@ -42,7 +42,7 @@ class NodeScriptsPresent:
             Issue(
                 "NODE_SCRIPTS_DEFINED",
                 "warn",
-                "No build/lint/test scripts in package.json",
+                "No build / lint / test scripts in package.json",
                 pkg,
                 confidence=0.9,
             )

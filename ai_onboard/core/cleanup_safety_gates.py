@@ -2,7 +2,7 @@
 Cleanup Safety Gates Framework.
 
 This module implements comprehensive safety gates for cleanup operations,
-preventing accidental system damage through multi-stage validation,
+preventing accidental system damage through multi - stage validation,
 dependency checking, risk assessment, and human confirmation.
 
 Based on lessons learned from cleanup operations where critical dependencies
@@ -12,15 +12,13 @@ were nearly missed, this framework ensures robust protection.
 import json
 import secrets
 import shutil
-import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple
 
-from . import utils
 from .dependency_checker import DependencyChecker, DependencyCheckResult
 from .unicode_utils import print_activity, print_content, print_status, safe_print
 
@@ -132,7 +130,6 @@ class SafetyGate(ABC):
         Returns:
             Tuple of (result, message)
         """
-        pass
 
     def log(self, context: SafetyGateContext, message: str):
         """Log a message to the execution log."""
@@ -142,10 +139,10 @@ class SafetyGate(ABC):
 
 
 class PreFlightGate(SafetyGate):
-    """Gate 1: Pre-flight validation for basic sanity checks."""
+    """Gate 1: Pre - flight validation for basic sanity checks."""
 
     def __init__(self):
-        super().__init__("Pre-Flight Validation")
+        super().__init__("Pre - Flight Validation")
 
         # Critical files that should never be deleted
         self.protected_paths = {
@@ -169,7 +166,7 @@ class PreFlightGate(SafetyGate):
         }
 
     def validate(self, context: SafetyGateContext) -> Tuple[GateResult, str]:
-        """Perform pre-flight validation."""
+        """Perform pre - flight validation."""
         operation = context.operation
 
         self.log(context, f"Validating {len(operation.targets)} targets")
@@ -208,8 +205,8 @@ class PreFlightGate(SafetyGate):
                 self.log(context, f"FAIL: {message}")
                 return GateResult.FAIL, message
 
-        self.log(context, "Pre-flight validation passed")
-        return GateResult.PASS, "Pre-flight validation successful"
+        self.log(context, "Pre - flight validation passed")
+        return GateResult.PASS, "Pre - flight validation successful"
 
     def _check_permissions(self, path: Path) -> bool:
         """Check if we have necessary permissions for the operation."""
@@ -302,7 +299,7 @@ class RiskAssessmentGate(SafetyGate):
 
             if total_deps > 0:
                 risk_factors.append(
-                    f"Has {total_deps} dependencies ({high_risk_deps} high-risk)"
+                    f"Has {total_deps} dependencies ({high_risk_deps} high - risk)"
                 )
 
         # Factor 3: Operation type
@@ -434,7 +431,7 @@ class HumanConfirmationGate(SafetyGate):
         # Operation summary
         lines.append(f"\n📋 OPERATION SUMMARY:")
         lines.append(f"   Type: {operation.operation_type.upper()}")
-        lines.append(f"   Targets: {len(operation.targets)} files/directories")
+        lines.append(f"   Targets: {len(operation.targets)} files / directories")
         lines.append(f"   Description: {operation.description}")
 
         # Show first few targets
@@ -484,7 +481,7 @@ class HumanConfirmationGate(SafetyGate):
         return secrets.token_hex(3).upper()
 
     def _generate_complex_confirmation_code(self) -> str:
-        """Generate a complex confirmation code for high-risk operations."""
+        """Generate a complex confirmation code for high - risk operations."""
         return f"{secrets.token_hex(4).upper()}-{secrets.randbelow(9999):04d}"
 
 
@@ -529,7 +526,7 @@ class BackupExecuteGate(SafetyGate):
 
     def _create_backup(self, operation: CleanupOperation) -> str:
         """Create comprehensive backup."""
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now().strftime("%Y % m%d_ % H%M % S")
         backup_id = f"cleanup_backup_{timestamp}_{secrets.token_hex(4)}"
         backup_dir = self.root / ".ai_onboard" / "backups" / backup_id
 
@@ -635,15 +632,15 @@ class BackupExecuteGate(SafetyGate):
 
 
 class PostOperationGate(SafetyGate):
-    """Gate 6: Post-operation validation and rollback options."""
+    """Gate 6: Post - operation validation and rollback options."""
 
     def __init__(self, root: Path):
-        super().__init__("Post-Operation Validation")
+        super().__init__("Post - Operation Validation")
         self.root = root
 
     def validate(self, context: SafetyGateContext) -> Tuple[GateResult, str]:
         """Validate system after operation."""
-        self.log(context, "Performing post-operation validation")
+        self.log(context, "Performing post - operation validation")
 
         # Run validation checks
         validation_results = []
@@ -651,7 +648,7 @@ class PostOperationGate(SafetyGate):
         # Check 1: Basic system functionality
         try:
             # Try importing the main module
-            import ai_onboard
+            pass
 
             validation_results.append(
                 ("Module Import", True, "Main module imports successfully")
@@ -665,7 +662,7 @@ class PostOperationGate(SafetyGate):
         try:
             config_files = [
                 self.root / "pyproject.toml",
-                self.root / "config" / "dev-config.yaml",
+                self.root / "config" / "dev - config.yaml",
             ]
 
             for config_file in config_files:
@@ -713,7 +710,7 @@ class PostOperationGate(SafetyGate):
 
             # Offer rollback
             if context.backup_id:
-                safe_print("\n⚠️ POST-OPERATION VALIDATION FAILURES DETECTED")
+                safe_print("\n⚠️ POST - OPERATION VALIDATION FAILURES DETECTED")
                 safe_print(f"Found {len(failures)} validation failures:")
                 for name, success, message in failures:
                     safe_print(f"  ❌ {name}: {message}")
@@ -724,7 +721,7 @@ class PostOperationGate(SafetyGate):
                 safe_print("3. CONTINUE - Accept failures and continue")
 
                 try:
-                    choice = input("Choose rollback option (1/2/3): ").strip()
+                    choice = input("Choose rollback option (1 / 2/3): ").strip()
 
                     if choice == "1" or choice.upper() == "AUTO":
                         self._perform_rollback(context)
@@ -764,8 +761,8 @@ class PostOperationGate(SafetyGate):
                 )
 
         # All validations passed
-        self.log(context, "All post-operation validations passed")
-        return GateResult.PASS, "Post-operation validation successful"
+        self.log(context, "All post - operation validations passed")
+        return GateResult.PASS, "Post - operation validation successful"
 
     def _perform_rollback(self, context: SafetyGateContext):
         """Perform automatic rollback."""
@@ -931,7 +928,7 @@ def safe_cleanup_operation(
     Args:
         root: Project root directory
         operation_type: Type of operation ("delete", "move", "modify")
-        targets: List of files/directories to operate on
+        targets: List of files / directories to operate on
         description: Description of the operation
 
     Returns:

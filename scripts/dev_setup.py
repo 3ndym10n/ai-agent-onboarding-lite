@@ -1,12 +1,11 @@
-#!/usr/bin/env python3
+#!/usr / bin / env python3
 """
-Development setup script for ai-onboard.
+Development setup script for ai - onboard.
 Sets up development environment and runs initial checks.
 """
 
 import subprocess
 import sys
-from pathlib import Path
 
 
 def run_command(cmd, description):
@@ -28,7 +27,7 @@ def run_command(cmd, description):
 
 def main():
     """Set up development environment."""
-    print("🚀 Setting up ai-onboard development environment...")
+    print("🚀 Setting up ai - onboard development environment...")
 
     # Check Python version
     if sys.version_info < (3, 8):
@@ -60,7 +59,7 @@ def main():
         print("\n📋 Next steps:")
         print("  - Run 'python -m ai_onboard analyze' to test the system")
         print("  - Check .ai_onboard/ directory for generated files")
-        print("  - Review error logs in .ai_onboard/agent_errors.jsonl")
+        print("  - Review error logs in .ai_onboard / agent_errors.jsonl")
     else:
         print("\n❌ Some setup steps failed. Check the output above.")
         sys.exit(1)

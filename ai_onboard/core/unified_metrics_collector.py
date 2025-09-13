@@ -1,9 +1,9 @@
 """
 Unified Metrics Collection System - Central hub for all metrics collection.
 
-This module provides a comprehensive, high-performance metrics collection system that:
+This module provides a comprehensive, high - performance metrics collection system that:
 - Unifies all metrics collection into a single entry point
-- Provides real-time processing and alerting capabilities
+- Provides real - time processing and alerting capabilities
 - Generates actionable insights and recommendations
 - Ensures privacy and security of collected data
 - Scales efficiently with system growth
@@ -18,7 +18,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from . import telemetry, utils
 
@@ -91,7 +91,7 @@ class MetricResult:
 
 @dataclass
 class MetricAlert:
-    """A metric-based alert."""
+    """A metric - based alert."""
 
     alert_id: str
     metric_name: str
@@ -113,7 +113,7 @@ class UnifiedMetricsCollector:
         self.alerts_path = root / ".ai_onboard" / "metric_alerts.jsonl"
         self.config_path = root / ".ai_onboard" / "metrics_config.json"
 
-        # In-memory storage for hot data (last 7 days)
+        # In - memory storage for hot data (last 7 days)
         self.hot_metrics: deque = deque(maxlen=10000)  # Last 10k metrics
         self.metric_index: Dict[str, List[MetricEvent]] = defaultdict(list)
 
@@ -190,7 +190,7 @@ class UnifiedMetricsCollector:
             cutoff_time = datetime.now() - timedelta(days=7)
             loaded_count = 0
 
-            with open(self.metrics_path, "r", encoding="utf-8") as f:
+            with open(self.metrics_path, "r", encoding="utf - 8") as f:
                 for line in f:
                     line = line.strip()
                     if not line:
@@ -282,7 +282,7 @@ class UnifiedMetricsCollector:
             return metric.id
 
     def batch_collect(self, metrics: List[MetricEvent]) -> List[str]:
-        """High-performance batch collection of multiple metrics."""
+        """High - performance batch collection of multiple metrics."""
         if not metrics or not self.config.get("collection_enabled", True):
             return [m.id for m in metrics]
 
@@ -571,13 +571,13 @@ class UnifiedMetricsCollector:
             "metadata": metric.metadata,
         }
 
-        with open(self.metrics_path, "a", encoding="utf-8") as f:
+        with open(self.metrics_path, "a", encoding="utf - 8") as f:
             json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 
     def _persist_metrics_batch(self, metrics: List[MetricEvent]):
         """Persist a batch of metrics to storage."""
-        with open(self.metrics_path, "a", encoding="utf-8") as f:
+        with open(self.metrics_path, "a", encoding="utf - 8") as f:
             for metric in metrics:
                 data = {
                     "id": metric.id,
@@ -607,7 +607,7 @@ class UnifiedMetricsCollector:
             "suggested_actions": alert.suggested_actions,
         }
 
-        with open(self.alerts_path, "a", encoding="utf-8") as f:
+        with open(self.alerts_path, "a", encoding="utf - 8") as f:
             json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 

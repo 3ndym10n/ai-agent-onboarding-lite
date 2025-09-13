@@ -54,7 +54,7 @@ def _full(last: Dict[str, Any], changed: List[str]) -> Dict[str, Any]:
 def make_summary(root: Path, level: str = "brief") -> Dict[str, Any]:
     last = telemetry.last_run(root) or {}
     idx = cache.load(root)
-    # Convert absolute paths to repo-relative for readability
+    # Convert absolute paths to repo - relative for readability
     abs_changed = cache.changed_files(root, idx)
     prefix = str(root.resolve())
     changed = [

@@ -28,10 +28,10 @@ def auto_handle_gates(project_root: Path = None) -> bool:
         return False
 
     print("[WARNING] ACTIVE GATE DETECTED!")
-    print("[ROBOT] Auto-handling gate for AI agent...")
+    print("[ROBOT] Auto - handling gate for AI agent...")
 
     # Read the gate file
-    gate_content = current_gate_file.read_text(encoding="utf-8")
+    gate_content = current_gate_file.read_text(encoding="utf - 8")
 
     # Extract questions
     questions = _extract_questions(gate_content)
@@ -90,7 +90,7 @@ def submit_gate_response(
     if confirmation_code:
         response_data["confirmation_code"] = confirmation_code
 
-    response_file.write_text(json.dumps(response_data, indent=2), encoding="utf-8")
+    response_file.write_text(json.dumps(response_data, indent=2), encoding="utf - 8")
 
     print("[OK] Gate response submitted!")
     print(f"[FOLDER] Response saved to: {response_file}")

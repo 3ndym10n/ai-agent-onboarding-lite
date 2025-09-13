@@ -15,11 +15,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from ..core import utils
 from ..core.continuous_improvement_validator import (
     ContinuousImprovementValidator,
-    TestCategory,
-    TestResult,
     ValidationReport,
 )
 
@@ -27,7 +24,7 @@ from ..core.continuous_improvement_validator import (
 def add_enhanced_testing_commands(subparsers):
     """Add enhanced testing commands to the CLI."""
     parser = subparsers.add_parser(
-        "enhanced-testing",
+        "enhanced - testing",
         help="Run enhanced tests with continuous improvement validation",
         description="Execute comprehensive testing with validation, performance tracking, and reporting",
     )
@@ -43,7 +40,7 @@ def add_enhanced_testing_commands(subparsers):
         description="Execute pytest with continuous improvement validation integration",
     )
     run_parser.add_argument(
-        "--test-path",
+        "--test - path",
         default="tests/",
         help="Path to test directory or specific test file",
     )
@@ -54,12 +51,12 @@ def add_enhanced_testing_commands(subparsers):
         "--coverage", action="store_true", help="Generate coverage report"
     )
     run_parser.add_argument(
-        "--ci-validation",
+        "--ci - validation",
         action="store_true",
         help="Generate continuous improvement validation report",
     )
     run_parser.add_argument(
-        "--performance-baseline",
+        "--performance - baseline",
         help="Path to performance baseline file for comparison",
     )
     run_parser.add_argument(
@@ -88,7 +85,7 @@ def add_enhanced_testing_commands(subparsers):
         help="Test categories to run",
     )
     validate_parser.add_argument(
-        "--report-format",
+        "--report - format",
         choices=["json", "text", "both"],
         default="both",
         help="Validation report format",
@@ -108,7 +105,7 @@ def add_enhanced_testing_commands(subparsers):
         help="Performance degradation threshold (e.g., 1.2 = 20% slower allowed)",
     )
     perf_parser.add_argument(
-        "--save-baseline", help="Save current results as new baseline"
+        "--save - baseline", help="Save current results as new baseline"
     )
 
     # Integration testing command
@@ -120,10 +117,10 @@ def add_enhanced_testing_commands(subparsers):
     integration_parser.add_argument(
         "--systems",
         nargs="+",
-        help="Specific systems to test (e.g., metrics, user-prefs, optimizer)",
+        help="Specific systems to test (e.g., metrics, user - prefs, optimizer)",
     )
     integration_parser.add_argument(
-        "--mock-external", action="store_true", help="Mock external dependencies"
+        "--mock - external", action="store_true", help="Mock external dependencies"
     )
 
     # Test report command
@@ -140,7 +137,7 @@ def add_enhanced_testing_commands(subparsers):
     )
     report_parser.add_argument("--output", help="Output file path")
     report_parser.add_argument(
-        "--include-history", action="store_true", help="Include historical test data"
+        "--include - history", action="store_true", help="Include historical test data"
     )
     report_parser.add_argument(
         "--days", type=int, default=30, help="Number of days of history to include"
@@ -187,17 +184,17 @@ def _handle_run_enhanced_tests(args: argparse.Namespace, root: Path) -> None:
     # Add coverage if requested
     if args.coverage:
         pytest_cmd.extend(
-            ["--cov=ai_onboard", "--cov-report=html", "--cov-report=term"]
+            ["--cov = ai_onboard", "--cov - report = html", "--cov - report = term"]
         )
 
     # Add CI validation if requested
     if args.ci_validation:
-        pytest_cmd.append("--ci-validation-report")
-        pytest_cmd.extend(["--ci-validation-timeout", str(args.timeout)])
+        pytest_cmd.append("--ci - validation - report")
+        pytest_cmd.extend(["--ci - validation - timeout", str(args.timeout)])
 
     # Add performance baseline if specified
     if args.performance_baseline:
-        pytest_cmd.extend(["--performance-baseline", args.performance_baseline])
+        pytest_cmd.extend(["--performance - baseline", args.performance_baseline])
 
     # Add parallel execution if requested
     if args.parallel:
@@ -208,7 +205,7 @@ def _handle_run_enhanced_tests(args: argparse.Namespace, root: Path) -> None:
         pytest_cmd.append("-v")
 
     # Add other useful options
-    pytest_cmd.extend(["--tb=short", "--strict-markers", "--strict-config"])
+    pytest_cmd.extend(["--tb = short", "--strict - markers", "--strict - config"])
 
     print(f"📋 Executing: {' '.join(pytest_cmd)}")
     print()
@@ -309,13 +306,13 @@ def _handle_performance_testing(args: argparse.Namespace, root: Path) -> None:
         "pytest",
         "-m",
         "performance",
-        "--tb=short",
+        "--tb = short",
         "-v",
     ]
 
     # Add performance baseline if specified
     if args.baseline:
-        pytest_cmd.extend(["--performance-baseline", args.baseline])
+        pytest_cmd.extend(["--performance - baseline", args.baseline])
 
     print(f"📋 Executing: {' '.join(pytest_cmd)}")
 
@@ -350,16 +347,16 @@ def _handle_integration_testing(args: argparse.Namespace, root: Path) -> None:
         "pytest",
         "-m",
         "integration",
-        "--tb=short",
+        "--tb = short",
         "-v",
     ]
 
-    # Add system-specific tests if specified
+    # Add system - specific tests if specified
     if args.systems:
         # This would filter tests based on specific systems
         test_files = []
         for system in args.systems:
-            test_files.append(f"tests/test_*{system}*.py")
+            test_files.append(f"tests / test_*{system}*.py")
         pytest_cmd.extend(test_files)
 
     # Configure mocking if requested
@@ -553,36 +550,36 @@ def _generate_html_report(
 <!DOCTYPE html>
 <html>
 <head>
-    <title>AI Onboard Test Report</title>
+    <title > AI Onboard Test Report </ title>
     <style>
-        body {{ font-family: Arial, sans-serif; margin: 40px; }}
-        .header {{ background-color: #f0f0f0; padding: 20px; border-radius: 5px; }}
-        .metric {{ display: inline-block; margin: 10px; padding: 10px; background-color: #e0e0e0; border-radius: 3px; }}
-        .report {{ margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }}
+        body {{ font - family: Arial, sans - serif; margin: 40px; }}
+        .header {{ background - color: #f0f0f0; padding: 20px; border - radius: 5px; }}
+        .metric {{ display: inline - block; margin: 10px; padding: 10px; background - color: #e0e0e0; border - radius: 3px; }}
+        .report {{ margin: 20px 0; padding: 15px; border: 1px solid #ddd; border - radius: 5px; }}
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>AI Onboard Test Report</h1>
-        <p>Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
-        <p>Reports: {len(reports)} validation reports analyzed</p>
+        <h1 > AI Onboard Test Report </ h1>
+        <p > Generated: {datetime.now().strftime('%Y -% m-%d %H:%M:%S')}</p>
+        <p > Reports: {len(reports)} validation reports analyzed </ p>
     </div>
-    
-    <h2>Summary</h2>
+
+    <h2 > Summary </ h2>
     <div class="metric">Total Reports: {len(reports)}</div>
-    
-    <h2>Recent Validation Reports</h2>
+
+    <h2 > Recent Validation Reports </ h2>
 """
 
     for report in reports[-10:]:  # Show last 10 reports
         html_content += f"""
     <div class="report">
-        <h3>Report {report.get('report_id', 'Unknown')}</h3>
-        <p><strong>Date:</strong> {report.get('generated_at', 'Unknown')}</p>
-        <p><strong>Health Score:</strong> {report.get('system_health_score', 0):.1f}%</p>
-        <p><strong>Tests:</strong> {report.get('total_tests', 0)} total, 
-           {report.get('passed_tests', 0)} passed, {report.get('failed_tests', 0)} failed</p>
-        <p><strong>Summary:</strong> {report.get('summary', 'No summary')}</p>
+        <h3 > Report {report.get('report_id', 'Unknown')}</h3>
+        <p >< strong > Date:</strong> {report.get('generated_at', 'Unknown')}</p>
+        <p >< strong > Health Score:</strong> {report.get('system_health_score', 0):.1f}%</p>
+        <p >< strong > Tests:</strong> {report.get('total_tests', 0)} total,
+           {report.get('passed_tests', 0)} passed, {report.get('failed_tests', 0)} failed </ p>
+        <p >< strong > Summary:</strong> {report.get('summary', 'No summary')}</p>
     </div>
 """
 
@@ -623,7 +620,7 @@ def _generate_markdown_report(
 
     with open(output_file, "w") as f:
         f.write("# AI Onboard Test Report\n\n")
-        f.write(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
+        f.write(f"Generated: {datetime.now().strftime('%Y -% m-%d %H:%M:%S')}\n\n")
         f.write(f"## Summary\n\n")
         f.write(f"- **Total Reports Analyzed:** {len(reports)}\n\n")
 
