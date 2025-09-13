@@ -48,7 +48,7 @@ class EnhancedMetricsCollector:
 
     def collect_test_metrics(self, test_name: str, test_func) -> Dict[str, Any]:
         """Run test with comprehensive metrics collection."""
-        print(f"\n🔬 Enhanced testing: {test_name}")
+        print(f"\nEnhanced testing: {test_name}")
 
         # Initialize metrics
         start_time = time.time()
@@ -233,20 +233,20 @@ class EnhancedMetricsCollector:
 
     def _print_enhanced_results(self, test_metrics: Dict[str, Any]):
         """Print enhanced test results with metrics."""
-        status_icon = "✅" if test_metrics["success"] else "❌"
+        status_icon = "PASS" if test_metrics["success"] else "FAIL"
         print(f"{status_icon} {test_metrics['test_name']}: {test_metrics['status']}")
 
         if test_metrics["success"]:
             print(
-                f"      ⏱️  Execution: {test_metrics.get('execution_time_seconds', 0):.3f}s"
+                f"      Time: {test_metrics.get('execution_time_seconds', 0):.3f}s"
             )
-            print(f"      💾 Memory: {test_metrics.get('memory_usage_mb', 0):.1f}MB")
-            print(f"      🎯 Confidence: {test_metrics.get('confidence_score', 0):.1f}")
+            print(f"      Memory: {test_metrics.get('memory_usage_mb', 0):.1f}MB")
+            print(f"      Confidence: {test_metrics.get('confidence_score', 0):.1f}")
             print(
-                f"      ⚡ Performance: {test_metrics.get('performance_score', 0):.1f}/100"
+                f"      Performance: {test_metrics.get('performance_score', 0):.1f}/100"
             )
         else:
-            print(f"   ❌ Error: {test_metrics.get('error', 'Unknown')}")
+            print(f"   Error: {test_metrics.get('error', 'Unknown')}")
 
     def generate_report(self) -> Dict[str, Any]:
         """Generate comprehensive test report with SmartDebugger insights."""
@@ -871,18 +871,18 @@ def main():
 
         # Print performance monitoring results
         if performance_result["alerts"]:
-            print(f"   ⚠️  Performance alerts: {len(performance_result['alerts'])}")
+            print(f"   Performance alerts: {len(performance_result['alerts'])}")
             for alert in performance_result["alerts"]:
-                severity_icon = "🔴" if alert["severity"] == "high" else "🟡"
+                severity_icon = "HIGH" if alert["severity"] == "high" else "WARN"
                 print(f"      {severity_icon} {alert['message']}")
         else:
             print(
-                f"   ✅ Performance within baseline (age: {performance_result.get('baseline_age_days', 0)} days)"
+                f"   Performance within baseline (age: {performance_result.get('baseline_age_days', 0)} days)"
             )
 
     # Generate comprehensive report
     print("\n" + "=" * 60)
-    print("📊 ENHANCED TEST REPORT")
+    print("ENHANCED TEST REPORT")
     print("=" * 60)
 
     report = metrics_collector.generate_report()
@@ -901,71 +901,73 @@ def main():
     failed_tests = total_tests - passed_tests
 
     # Display summary
-    print("\n📈 SUMMARY:")
+    print("\nSUMMARY:")
     print(f"   Success Rate: {summary['success_rate']:.1f}%")
-    print(f"   ✅ Passed: {passed_tests}")
-    print(f"   ❌ Failed: {failed_tests}")
+    print(f"   Passed: {passed_tests}")
+    print(f"   Failed: {failed_tests}")
 
     # Display SmartDebugger analysis
     if smart_debugger_analysis and smart_debugger_analysis.get("status") != "no_data":
-        print("\n🤖 SMARTDEBUGGER ANALYSIS:")
+        print("\nSMARTDEBUGGER ANALYSIS:")
         print(
-            f"   🎯 Average confidence: {smart_debugger_analysis.get('average_confidence_score', 0):.1f}"
+            f"   Average confidence: {smart_debugger_analysis.get('average_confidence_score', 0):.1f}"
         )
         print(
-            f"   📊 High - confidence analyses: {smart_debugger_analysis.get('high_confidence_analyses', 0)}"
+            f"   High-confidence analyses: {smart_debugger_analysis.get('high_confidence_analyses', 0)}"
         )
         print(
-            f"   🔍 Total error analyses: {smart_debugger_analysis.get('total_error_analyses', 0)}"
+            f"   Total error analyses: {smart_debugger_analysis.get('total_error_analyses', 0)}"
         )
         print(
-            f"   📈 Effectiveness: {smart_debugger_analysis.get('effectiveness_score', 0):.1f}/100"
+            f"   Effectiveness: {smart_debugger_analysis.get('effectiveness_score', 0):.1f}/100"
         )
 
         smart_insights = smart_debugger_analysis.get("insights", [])
         if smart_insights:
             for insight in smart_insights[:2]:  # Show top 2 SmartDebugger insights
-                print(f"   {insight}")
+                # Remove Unicode characters for Windows compatibility
+                clean_insight = insight.encode('ascii', 'ignore').decode('ascii')
+                print(f"   {clean_insight}")
 
     # Display performance monitoring results
     perf_summary = performance_report.get("summary", {})
     if perf_summary:
-        print("\n⚡ PERFORMANCE MONITORING:")
+        print("\nPERFORMANCE MONITORING:")
         print(
-            f"   🎯 Performance health: {perf_summary.get('performance_health_score', 0):.1f}/100 ({perf_summary.get('health_status', 'unknown')})"
+            f"   Performance health: {perf_summary.get('performance_health_score', 0):.1f}/100 ({perf_summary.get('health_status', 'unknown')})"
         )
-        print(f"   📊 Baselines established: {perf_summary.get('total_baselines', 0)}")
-        print(f"   🚨 Performance alerts: {perf_summary.get('total_alerts', 0)}")
+        print(f"   Baselines established: {perf_summary.get('total_baselines', 0)}")
+        print(f"   Performance alerts: {perf_summary.get('total_alerts', 0)}")
         print(
-            f"   🔴 High severity alerts: {perf_summary.get('high_severity_alerts', 0)}"
+            f"   High severity alerts: {perf_summary.get('high_severity_alerts', 0)}"
         )
         print(
-            f"   🟡 Medium severity alerts: {perf_summary.get('medium_severity_alerts', 0)}"
+            f"   Medium severity alerts: {perf_summary.get('medium_severity_alerts', 0)}"
         )
 
         # Display performance recommendations
         perf_recommendations = performance_report.get("recommendations", [])
         if perf_recommendations:
-            print("\n   💡 Performance Recommendations:")
+            print("\n   Performance Recommendations:")
             for rec in perf_recommendations[:3]:  # Top 3
                 print(f"      • {rec}")
 
     # Display general insights
     if insights:
-        print("\n💡 SYSTEM INSIGHTS:")
+        print("\nSYSTEM INSIGHTS:")
         for insight in insights:
             print(f"   {insight}")
 
     # Display detailed metrics
-    print("\n📊 DETAILED METRICS:")
+    print("\nDETAILED METRICS:")
     for result in metrics_collector.metrics["test_results"]:
-        status_icon = "✅" if result["success"] else "❌"
+        status_icon = "PASS" if result["success"] else "FAIL"
         print(f"   {status_icon} {result['test_name']}")
         if result["success"]:
-            print(f"      ⏱️  Execution: {result.get('execution_time_seconds', 0):.3f}s")
-            print(f"      💾 Memory: {result.get('memory_usage_mb', 0):.1f}MB")
-            print(f"      🎯 Confidence: {result.get('confidence_score', 0):.1f}")
-            print(f"      ⚡ Performance: {result.get('performance_score', 0):.1f}/100")
+            print(f"      Execution: {result.get('execution_time_seconds', 0):.3f}s")
+            print(f"      Memory: {result.get('memory_usage_mb', 0):.1f}MB")
+            print(f"      Confidence: {result.get('confidence_score', 0):.1f}")
+            print(f"      Performance: {result.get('performance_score', 0):.1f}/100")
     # Save report to file
     report_path = (
         project_root
@@ -978,14 +980,14 @@ def main():
     with open(report_path, "w") as f:
         json.dump(report, f, indent=2)
 
-    print("\n📄 Detailed report saved to:")
+    print("\nDetailed report saved to:")
     print(f"   {report_path}")
 
     # Save performance baselines and monitoring state
     performance_monitor.save_report()
 
-    print("\n🎉 Enhanced testing complete!")
-    print("Phase 1 of Enhanced Testing Foundation: COMPLETED ✅")
+    print("\nEnhanced testing complete!")
+    print("Phase 1 of Enhanced Testing Foundation: COMPLETED")
     print("Performance baselines established and monitoring active")
     print("Next: Create comprehensive test reporting system (T32)")
 
