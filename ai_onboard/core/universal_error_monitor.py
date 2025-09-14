@@ -49,8 +49,24 @@ class UniversalErrorMonitor:
         # Log the error
         self._log_error(error_data)
 
-        # Analyze with smart debugger
-        debug_result = self.debugger.analyze_error(error_data)
+        # Analyze with smart debugger (with error handling)
+        debug_result = {}
+        try:
+            debug_result = self.debugger.analyze_error(error_data)
+        except Exception as debug_error:
+            # If debugger fails, log the debugging error but don't fail the error interception
+            debug_error_data = {
+                "type": type(debug_error).__name__,
+                "message": str(debug_error),
+                "traceback": traceback.format_exc(),
+                "context": {"original_error": str(error)},
+                "timestamp": utils.now_iso(),
+                "agent_type": "error_monitor",
+                "command": "debug_analysis",
+                "session_id": context.get("session_id", "unknown"),
+            }
+            self._log_error(debug_error_data)
+            debug_result = {"confidence": 0, "error": "debugger_failed"}
 
         # Record capability usage (error handling was used)
         self._record_capability_usage(
@@ -62,13 +78,27 @@ class UniversalErrorMonitor:
             },
         )
 
-        # Log telemetry event
-        telemetry.log_event(
-            "agent_error_intercepted",
-            error_type=error_data["type"],
-            agent_type=error_data["agent_type"],
-            confidence=debug_result.get("confidence", 0),
-        )
+        # Log telemetry event (with error handling)
+        try:
+            telemetry.log_event(
+                "agent_error_intercepted",
+                error_type=error_data["type"],
+                agent_type=error_data["agent_type"],
+                confidence=debug_result.get("confidence", 0),
+            )
+        except Exception as telemetry_error:
+            # Log telemetry failure but don't fail the error interception
+            telemetry_error_data = {
+                "type": type(telemetry_error).__name__,
+                "message": str(telemetry_error),
+                "traceback": traceback.format_exc(),
+                "context": {"original_error": str(error)},
+                "timestamp": utils.now_iso(),
+                "agent_type": "error_monitor",
+                "command": "telemetry_logging",
+                "session_id": context.get("session_id", "unknown"),
+            }
+            self._log_error(telemetry_error_data)
 
         return {"error_data": error_data, "debug_result": debug_result, "handled": True}
 
@@ -90,29 +120,39 @@ class UniversalErrorMonitor:
 
             def __exit__(self, exc_type, exc_val, exc_tb):
                 if exc_type is not None:
-                    # Error occurred, intercept it
-                    context = {
-                        "command": self.command,
-                        "agent_type": self.agent_type,
-                        "session_id": self.session_id,
-                        "execution_time": (
-                            datetime.now() - self.start_time
-                        ).total_seconds(),
-                    }
-                    self.monitor.intercept_error(exc_val, context)
-                else:
-                    # Success - record capability usage
-                    self.monitor._record_capability_usage(
-                        "command_execution",
-                        {
+                    # Error occurred, intercept it (with error handling)
+                    try:
+                        context = {
                             "command": self.command,
                             "agent_type": self.agent_type,
-                            "success": True,
+                            "session_id": self.session_id,
                             "execution_time": (
                                 datetime.now() - self.start_time
                             ).total_seconds(),
-                        },
-                    )
+                        }
+                        self.monitor.intercept_error(exc_val, context)
+                    except Exception as monitor_error:
+                        # If error monitoring fails, log it but don't fail the command
+                        print(f"Warning: Error monitoring failed: {monitor_error}")
+                else:
+                    # Success - record capability usage (with error handling)
+                    try:
+                        self.monitor._record_capability_usage(
+                            "command_execution",
+                            {
+                                "command": self.command,
+                                "agent_type": self.agent_type,
+                                "success": True,
+                                "execution_time": (
+                                    datetime.now() - self.start_time
+                                ).total_seconds(),
+                            },
+                        )
+                    except Exception as usage_error:
+                        # If capability usage recording fails, log it but don't fail the command
+                        print(
+                            f"Warning: Capability usage recording failed: {usage_error}"
+                        )
 
                 # Don't suppress the exception
                 return False
@@ -154,7 +194,7 @@ class UniversalErrorMonitor:
 
     def _log_error(self, error_data: Dict[str, Any]):
         """Log error to persistent storage."""
-        with open(self.error_log_path, "a", encoding="utf - 8") as f:
+        with open(self.error_log_path, "a", encoding="utf-8") as f:
             json.dump(error_data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 
@@ -192,7 +232,7 @@ class UniversalErrorMonitor:
             return []
 
         errors = []
-        with open(self.error_log_path, "r", encoding="utf - 8") as f:
+        with open(self.error_log_path, "r", encoding="utf-8") as f:
             lines = f.readlines()
             for line in lines[-limit:]:
                 try:
@@ -240,13 +280,17 @@ def setup_global_error_handler(root: Path):
             sys.__excepthook__(exc_type, exc_value, exc_traceback)
             return
 
-        # Intercept the error
-        context = {
-            "agent_type": "global",
-            "command": "uncaught_exception",
-            "session_id": "global",
-        }
-        monitor.intercept_error(exc_value, context)
+        # Intercept the error (with error handling)
+        try:
+            context = {
+                "agent_type": "global",
+                "command": "uncaught_exception",
+                "session_id": "global",
+            }
+            monitor.intercept_error(exc_value, context)
+        except Exception as monitor_error:
+            # If error monitoring fails, print to stderr but continue
+            print(f"Error monitor failed: {monitor_error}", file=sys.stderr)
 
         # Call the original exception handler
         sys.__excepthook__(exc_type, exc_value, exc_traceback)
