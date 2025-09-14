@@ -92,7 +92,7 @@ def last_run(root: Path) -> Dict[str, Any] | None:
 def log_event(event: str, **fields: Any) -> None:
     logs_dir = Path(".ai_onboard") / "logs"
     utils.ensure_dir(logs_dir)
-    rec = {"ts": time.strftime("%Y -% m -% dT % H:%M:%SZ", time.gmtime()), "event": event}
+    rec = {"ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "event": event}
     rec.update(fields or {})
     path = logs_dir / "events.jsonl"
     try:
