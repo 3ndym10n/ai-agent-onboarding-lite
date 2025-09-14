@@ -319,7 +319,7 @@ def main():
 
     parser = argparse.ArgumentParser(description="Local CI validation")
     parser.add_argument(
-        "--no - fast - fail",
+        "--no-fast-fail",
         action="store_true",
         help="Continue running all checks even if one fails",
     )

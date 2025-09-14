@@ -1,4 +1,4 @@
-#!/usr / bin / env python3
+#!/usr/bin/env python3
 # mypy: ignore - errors
 """
 Development Environment Validation Script
@@ -153,22 +153,22 @@ class DevEnvironmentValidator:
         required_files = [
             "pyproject.toml",
             "README.md",
-            "docs / developer / DEVELOPMENT.md",
-            ".pre - commit - config.yaml",
-            "config / dev - config.yaml",
-            "scripts / setup_dev_env.py",
-            "scripts / validate_dev_env.py",
-            "scripts / test_system.py",
-            ".github / workflows / ci.yml",
+            "docs/developer/DEVELOPMENT.md",
+            ".pre-commit-config.yaml",
+            "config/dev-config.yaml",
+            "scripts/setup_dev_env.py",
+            "scripts/validate_dev_env.py",
+            "scripts/test_system.py",
+            ".github/workflows/ci.yml",
         ]
 
         required_dirs = [
             "ai_onboard",
-            "ai_onboard / cli",
-            "ai_onboard / core",
-            "ai_onboard / plugins",
-            "ai_onboard / policies",
-            "ai_onboard / schemas",
+            "ai_onboard/cli",
+            "ai_onboard/core",
+            "ai_onboard/plugins",
+            "ai_onboard/policies",
+            "ai_onboard/schemas",
             "tests",
             "docs",
             "scripts",
@@ -217,7 +217,7 @@ class DevEnvironmentValidator:
 
         # Check system tests
         success, stdout, stderr = self.run_command(
-            [sys.executable, "scripts / test_system.py"]
+            [sys.executable, "scripts/test_system.py"]
         )
         if success:
             results["system_tests"] = True
@@ -305,13 +305,13 @@ class DevEnvironmentValidator:
 
         print("\nNext steps:")
         if percentage < 100:
-            print("1. Run 'python scripts / setup_dev_env.py' to fix issues")
+            print("1. Run 'python scripts/setup_dev_env.py' to fix issues")
             print("2. Check the error messages above for specific problems")
             print("3. Re - run this validation script after fixes")
         else:
             print("1. You're ready to start developing!")
             print("2. Run 'python -m ai_onboard --help' to test the CLI")
-            print("3. Check out docs / developer / DEVELOPMENT.md for more information")
+            print("3. Check out docs/developer/DEVELOPMENT.md for more information")
 
 
 def main():
