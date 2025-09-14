@@ -1274,7 +1274,10 @@ class ContinuousImprovementValidator:
         else:
             status = "Needs Improvement"
 
-        return f"Continuous Improvement System validation completed with {status} status. {passed_tests}/{total_tests} tests passed ({system_health_score:.1f}% success rate)."
+        return (
+            f"Continuous Improvement System validation completed with {status} status. "
+            f"{passed_tests}/{total_tests} tests passed ({system_health_score:.1f}% success rate)."
+        )
 
     def _print_validation_results(self, report: ValidationReport):
         """Print validation results."""
@@ -1314,6 +1317,34 @@ class ContinuousImprovementValidator:
                 print(f"  {i}. {rec}")
 
         print(f"\n📝 Summary: {report.summary}")
+
+    def _serialize_report(self, report: ValidationReport) -> Dict[str, Any]:
+        """Serialize a validation report to a dictionary for JSON export."""
+        return {
+            "report_id": report.report_id,
+            "generated_at": report.generated_at.isoformat(),
+            "total_tests": report.total_tests,
+            "passed_tests": report.passed_tests,
+            "failed_tests": report.failed_tests,
+            "warning_tests": report.warning_tests,
+            "skipped_tests": report.skipped_tests,
+            "system_health_score": report.system_health_score,
+            "recommendations": report.recommendations,
+            "summary": report.summary,
+            "test_results": [
+                {
+                    "test_id": test.test_id,
+                    "name": test.name,
+                    "description": test.description,
+                    "category": test.category.value,
+                    "result": test.result.value,
+                    "duration": test.duration,
+                    "error_message": test.error_message,
+                    "details": test.details,
+                }
+                for test in report.test_results
+            ],
+        }
 
     def _save_validation_report(self, report: ValidationReport):
         """Save validation report to storage."""
