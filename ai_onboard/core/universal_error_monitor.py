@@ -3,6 +3,9 @@ Universal Error Monitor: Intercepts and processes errors from any agent (foregro
 """
 
 import json
+import os
+import platform
+import psutil
 import sys
 import traceback
 from datetime import datetime, timedelta, timezone
@@ -34,7 +37,7 @@ class UniversalErrorMonitor:
         if context is None:
             context = {}
 
-        # Extract error information
+        # Extract basic error information
         error_data = {
             "type": type(error).__name__,
             "message": str(error),
@@ -45,6 +48,9 @@ class UniversalErrorMonitor:
             "command": context.get("command", "unknown"),
             "session_id": context.get("session_id", "unknown"),
         }
+
+        # Enrich with comprehensive context
+        error_data["enriched_context"] = self._enrich_error_context(error, context)
 
         # Log the error
         self._log_error(error_data)
@@ -472,6 +478,295 @@ class UniversalErrorMonitor:
             )
 
         return recommendations
+
+    def _enrich_error_context(
+        self, error: Exception, context: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Enrich error context with comprehensive debugging information."""
+        enriched = {}
+
+        try:
+            # System information
+            enriched["system_info"] = self._get_system_info()
+
+            # Performance metrics
+            enriched["performance_metrics"] = self._get_performance_metrics()
+
+            # Environment details
+            enriched["environment"] = self._get_environment_info()
+
+            # Stack frame analysis
+            enriched["stack_analysis"] = self._analyze_stack_frames(error)
+
+            # Recent activity context
+            enriched["recent_activity"] = self._get_recent_activity_context(context)
+
+            # Configuration state
+            enriched["configuration_snapshot"] = self._get_configuration_snapshot()
+
+            # Related errors pattern
+            enriched["related_patterns"] = self._find_related_error_patterns(
+                error, context
+            )
+
+            # Resource usage at error time
+            enriched["resource_usage"] = self._get_resource_usage_snapshot()
+
+        except Exception as enrichment_error:
+            # If enrichment fails, provide basic fallback
+            enriched["enrichment_error"] = str(enrichment_error)
+            enriched["enrichment_failed"] = True
+
+        return enriched
+
+    def _get_system_info(self) -> Dict[str, Any]:
+        """Get comprehensive system information."""
+        try:
+            return {
+                "platform": platform.platform(),
+                "python_version": platform.python_version(),
+                "architecture": platform.architecture(),
+                "processor": platform.processor(),
+                "machine": platform.machine(),
+                "system": platform.system(),
+                "node": platform.node(),
+                "cpu_count": os.cpu_count(),
+                "pid": os.getpid(),
+                "ppid": os.getppid() if hasattr(os, "getppid") else None,
+            }
+        except Exception as e:
+            return {"system_info_error": str(e)}
+
+    def _get_performance_metrics(self) -> Dict[str, Any]:
+        """Get performance metrics at the time of error."""
+        try:
+            import time
+
+            return {
+                "timestamp": time.time(),
+                "process_uptime": time.process_time(),
+                "system_uptime": time.time() - psutil.boot_time(),
+                "cpu_percent": psutil.cpu_percent(interval=0.1),
+                "memory_percent": psutil.virtual_memory().percent,
+                "disk_usage_percent": (
+                    psutil.disk_usage("/").percent if os.path.exists("/") else None
+                ),
+            }
+        except Exception as e:
+            return {"performance_metrics_error": str(e)}
+
+    def _get_environment_info(self) -> Dict[str, Any]:
+        """Get environment and configuration information."""
+        try:
+            return {
+                "working_directory": os.getcwd(),
+                "user": os.getenv("USER") or os.getenv("USERNAME"),
+                "path": (
+                    os.getenv("PATH", "")[:200] + "..."
+                    if len(os.getenv("PATH", "")) > 200
+                    else os.getenv("PATH")
+                ),
+                "pythonpath": os.getenv("PYTHONPATH"),
+                "environment_variables_count": len(dict(os.environ)),
+                "umask": oct(os.umask(os.umask(0))) if hasattr(os, "umask") else None,
+            }
+        except Exception as e:
+            return {"environment_info_error": str(e)}
+
+    def _analyze_stack_frames(self, error: Exception) -> Dict[str, Any]:
+        """Analyze stack frames for additional context."""
+        try:
+            import inspect
+
+            # Get the current stack
+            stack = inspect.stack()
+
+            # Analyze the stack frames
+            stack_info = []
+            for frame_info in stack[-5:]:  # Last 5 frames
+                frame_data = {
+                    "filename": frame_info.filename,
+                    "line_number": frame_info.lineno,
+                    "function": frame_info.function,
+                    "code_context": (
+                        frame_info.code_context[0].strip()
+                        if frame_info.code_context
+                        else None
+                    ),
+                }
+                stack_info.append(frame_data)
+
+            # Extract local variables from error frame if available
+            tb = sys.exc_info()[2]
+            if tb:
+                local_vars = {}
+                while tb:
+                    frame = tb.tb_frame
+                    local_vars.update(
+                        {
+                            k: str(v)[:100] + "..." if len(str(v)) > 100 else str(v)
+                            for k, v in frame.f_locals.items()
+                            if not k.startswith("_")  # Skip private variables
+                        }
+                    )
+                    tb = tb.tb_next
+
+                # Limit to most relevant variables
+                local_vars = dict(list(local_vars.items())[:10])
+
+                return {
+                    "stack_frames": stack_info,
+                    "local_variables": local_vars,
+                    "stack_depth": len(stack),
+                }
+
+            return {"stack_frames": stack_info}
+
+        except Exception as e:
+            return {"stack_analysis_error": str(e)}
+
+    def _get_recent_activity_context(self, context: Dict[str, Any]) -> Dict[str, Any]:
+        """Get recent activity context around the error."""
+        try:
+            # Get recent capability usage
+            usage_data = utils.read_json(self.capability_usage_path, default={})
+            recent_usage = usage_data.get("usage_history", [])[-5:]  # Last 5 activities
+
+            # Get recent errors
+            recent_errors = self._get_recent_errors(3)  # Last 3 errors
+
+            return {
+                "recent_capability_usage": [
+                    {
+                        "capability": item.get("capability"),
+                        "timestamp": item.get("timestamp"),
+                        "success": item.get("context", {}).get("success"),
+                    }
+                    for item in recent_usage
+                ],
+                "recent_errors": recent_errors,
+                "session_context": {
+                    "session_id": context.get("session_id"),
+                    "agent_type": context.get("agent_type"),
+                    "command": context.get("command"),
+                },
+            }
+        except Exception as e:
+            return {"recent_activity_error": str(e)}
+
+    def _get_configuration_snapshot(self) -> Dict[str, Any]:
+        """Get a snapshot of current configuration state."""
+        try:
+            # This would capture relevant configuration files or settings
+            config_info = {
+                "config_files_exist": {},
+                "important_paths": {},
+            }
+
+            # Check for important configuration files
+            config_paths = [
+                ".ai_onboard",
+                "pyproject.toml",
+                "requirements.txt",
+                ".env",
+                "config",
+            ]
+
+            for path_str in config_paths:
+                path = self.root / path_str
+                if path.exists():
+                    if path.is_file():
+                        config_info["config_files_exist"][path_str] = "file"
+                    else:
+                        config_info["config_files_exist"][path_str] = "directory"
+
+            # Get important environment paths
+            config_info["important_paths"] = {
+                "root_directory": str(self.root),
+                "error_log_path": str(self.error_log_path),
+                "capability_usage_path": str(self.capability_usage_path),
+            }
+
+            return config_info
+
+        except Exception as e:
+            return {"configuration_snapshot_error": str(e)}
+
+    def _find_related_error_patterns(
+        self, error: Exception, context: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Find patterns related to this specific error."""
+        try:
+            # Get recent patterns for comparison
+            patterns = self.analyze_error_patterns(days_back=1)
+
+            error_type = type(error).__name__
+            command = context.get("command", "unknown")
+
+            # Find similar errors
+            similar_errors = []
+            if "patterns" in patterns and "error_types" in patterns["patterns"]:
+                error_type_count = patterns["patterns"]["error_types"].get(
+                    error_type, 0
+                )
+                if error_type_count > 1:
+                    similar_errors.append(
+                        f"Found {error_type_count} similar {error_type} errors recently"
+                    )
+
+            # Find command-specific patterns
+            if "patterns" in patterns and "commands" in patterns["patterns"]:
+                command_count = patterns["patterns"]["commands"].get(command, 0)
+                if command_count > 1:
+                    similar_errors.append(
+                        f"Command '{command}' has failed {command_count} times recently"
+                    )
+
+            return {
+                "similar_errors": similar_errors,
+                "error_type_frequency": patterns.get("patterns", {})
+                .get("error_types", {})
+                .get(error_type, 0),
+                "command_failure_rate": patterns.get("patterns", {})
+                .get("commands", {})
+                .get(command, 0),
+                "is_recurring_error": len(similar_errors) > 0,
+            }
+
+        except Exception as e:
+            return {"related_patterns_error": str(e)}
+
+    def _get_resource_usage_snapshot(self) -> Dict[str, Any]:
+        """Get a snapshot of resource usage at error time."""
+        try:
+            process = psutil.Process()
+
+            return {
+                "process_memory_mb": process.memory_info().rss / (1024 * 1024),
+                "process_cpu_percent": process.cpu_percent(),
+                "process_threads": process.num_threads(),
+                "process_open_files": (
+                    len(process.open_files())
+                    if hasattr(process, "open_files")
+                    else None
+                ),
+                "process_connections": (
+                    len(process.connections())
+                    if hasattr(process, "connections")
+                    else None
+                ),
+                "system_memory": {
+                    "total_gb": psutil.virtual_memory().total / (1024**3),
+                    "available_gb": psutil.virtual_memory().available / (1024**3),
+                    "percent_used": psutil.virtual_memory().percent,
+                },
+                "system_cpu": {
+                    "percent": psutil.cpu_percent(interval=0.1),
+                    "cores": psutil.cpu_count(),
+                },
+            }
+        except Exception as e:
+            return {"resource_usage_error": str(e)}
 
 
 def get_error_monitor(root: Path) -> UniversalErrorMonitor:
