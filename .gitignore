@@ -29,3 +29,8 @@ build/
 .build/
 .pytest_cache/
 *.log
+
+# Coverage reports
+.coverage
+coverage.xml
+htmlcov/

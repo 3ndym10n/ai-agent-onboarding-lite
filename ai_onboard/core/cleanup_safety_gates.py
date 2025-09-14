@@ -526,7 +526,7 @@ class BackupExecuteGate(SafetyGate):
 
     def _create_backup(self, operation: CleanupOperation) -> str:
         """Create comprehensive backup."""
-        timestamp = datetime.now().strftime("%Y % m % d_ % H % M % S")
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         backup_id = f"cleanup_backup_{timestamp}_{secrets.token_hex(4)}"
         backup_dir = self.root / ".ai_onboard" / "backups" / backup_id
 
