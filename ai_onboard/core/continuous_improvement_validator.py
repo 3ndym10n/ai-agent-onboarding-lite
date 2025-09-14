@@ -318,7 +318,11 @@ class ContinuousImprovementValidator:
                 category=ValidationCategory.INTEGRATION,
                 result=ValidationResult.FAIL,
                 duration=duration,
-                error_message=str(e),
+                error_message=self._format_error_message(
+                    e,
+                    "Continuous Improvement System Integration",
+                    "system initialization",
+                ),
             )
 
     def _test_performance_optimizer_integration(self) -> "ValidationTestCase":
@@ -353,7 +357,11 @@ class ContinuousImprovementValidator:
                 category=ValidationCategory.INTEGRATION,
                 result=ValidationResult.FAIL,
                 duration=duration,
-                error_message=str(e),
+                error_message=self._format_error_message(
+                    e,
+                    "Performance Optimizer Integration",
+                    "optimizer functionality test",
+                ),
             )
 
     def _test_config_manager_integration(self) -> "ValidationTestCase":
@@ -388,7 +396,11 @@ class ContinuousImprovementValidator:
                 category=ValidationCategory.INTEGRATION,
                 result=ValidationResult.FAIL,
                 duration=duration,
-                error_message=str(e),
+                error_message=self._format_error_message(
+                    e,
+                    "Configuration Manager Integration",
+                    "configuration functionality test",
+                ),
             )
 
     def _test_user_preferences_integration(self) -> "ValidationTestCase":
@@ -427,7 +439,9 @@ class ContinuousImprovementValidator:
                 category=ValidationCategory.INTEGRATION,
                 result=ValidationResult.FAIL,
                 duration=duration,
-                error_message=str(e),
+                error_message=self._format_error_message(
+                    e, "User Preferences Integration", "preferences functionality test"
+                ),
             )
 
     def _test_health_monitor_integration(self) -> "ValidationTestCase":
@@ -462,7 +476,9 @@ class ContinuousImprovementValidator:
                 category=ValidationCategory.INTEGRATION,
                 result=ValidationResult.FAIL,
                 duration=duration,
-                error_message=str(e),
+                error_message=self._format_error_message(
+                    e, "Health Monitor Integration", "health monitoring test"
+                ),
             )
 
     def _test_knowledge_base_integration(self) -> "ValidationTestCase":
@@ -497,7 +513,9 @@ class ContinuousImprovementValidator:
                 category=ValidationCategory.INTEGRATION,
                 result=ValidationResult.FAIL,
                 duration=duration,
-                error_message=str(e),
+                error_message=self._format_error_message(
+                    e, "Knowledge Base Integration", "knowledge base functionality test"
+                ),
             )
 
     def _test_analytics_integration(self) -> "ValidationTestCase":
@@ -532,7 +550,9 @@ class ContinuousImprovementValidator:
                 category=ValidationCategory.INTEGRATION,
                 result=ValidationResult.FAIL,
                 duration=duration,
-                error_message=str(e),
+                error_message=self._format_error_message(
+                    e, "Analytics Integration", "analytics functionality test"
+                ),
             )
 
     def _test_configuration_data_integrity(self) -> "ValidationTestCase":
@@ -568,7 +588,9 @@ class ContinuousImprovementValidator:
                 category=ValidationCategory.DATA_INTEGRITY,
                 result=ValidationResult.FAIL,
                 duration=duration,
-                error_message=str(e),
+                error_message=self._format_error_message(
+                    e, "Configuration Data Integrity", "data integrity validation"
+                ),
             )
 
     def _test_user_preferences_data_integrity(self) -> "ValidationTestCase":
@@ -610,7 +632,9 @@ class ContinuousImprovementValidator:
                 category=ValidationCategory.DATA_INTEGRITY,
                 result=ValidationResult.FAIL,
                 duration=duration,
-                error_message=str(e),
+                error_message=self._format_error_message(
+                    e, "User Preferences Data Integrity", "data integrity validation"
+                ),
             )
 
     def _test_knowledge_base_data_integrity(self) -> "ValidationTestCase":
@@ -653,7 +677,9 @@ class ContinuousImprovementValidator:
                 category=ValidationCategory.DATA_INTEGRITY,
                 result=ValidationResult.FAIL,
                 duration=duration,
-                error_message=str(e),
+                error_message=self._format_error_message(
+                    e, "Knowledge Base Data Integrity", "data integrity validation"
+                ),
             )
 
     def _test_analytics_data_integrity(self) -> "ValidationTestCase":
@@ -692,7 +718,9 @@ class ContinuousImprovementValidator:
                 category=ValidationCategory.DATA_INTEGRITY,
                 result=ValidationResult.FAIL,
                 duration=duration,
-                error_message=str(e),
+                error_message=self._format_error_message(
+                    e, "Analytics Data Integrity", "data integrity validation"
+                ),
             )
 
     def _test_system_response_time(self) -> "ValidationTestCase":
@@ -779,7 +807,9 @@ class ContinuousImprovementValidator:
                 category=ValidationCategory.PERFORMANCE,
                 result=ValidationResult.FAIL,
                 duration=duration,
-                error_message=str(e),
+                error_message=self._format_error_message(
+                    e, "System Response Time", "performance measurement"
+                ),
             )
 
     def _test_memory_usage(self) -> "ValidationTestCase":
@@ -825,7 +855,9 @@ class ContinuousImprovementValidator:
                 category=ValidationCategory.PERFORMANCE,
                 result=ValidationResult.FAIL,
                 duration=duration,
-                error_message=str(e),
+                error_message=self._format_error_message(
+                    e, "Memory Usage", "memory measurement"
+                ),
             )
 
     def _test_knowledge_base_performance(self) -> "ValidationTestCase":
@@ -868,7 +900,9 @@ class ContinuousImprovementValidator:
                 category=ValidationCategory.PERFORMANCE,
                 result=ValidationResult.FAIL,
                 duration=duration,
-                error_message=str(e),
+                error_message=self._format_error_message(
+                    e, "Knowledge Base Performance", "performance measurement"
+                ),
             )
 
     def _test_analytics_performance(self) -> "ValidationTestCase":
@@ -908,7 +942,9 @@ class ContinuousImprovementValidator:
                 category=ValidationCategory.PERFORMANCE,
                 result=ValidationResult.FAIL,
                 duration=duration,
-                error_message=str(e),
+                error_message=self._format_error_message(
+                    e, "Analytics Performance", "performance measurement"
+                ),
             )
 
     def _test_complete_learning_workflow(self) -> "ValidationTestCase":
@@ -957,7 +993,9 @@ class ContinuousImprovementValidator:
                 category=ValidationCategory.END_TO_END,
                 result=ValidationResult.FAIL,
                 duration=duration,
-                error_message=str(e),
+                error_message=self._format_error_message(
+                    e, "Complete Learning Workflow", "end-to-end workflow test"
+                ),
             )
 
     def _test_complete_recommendation_workflow(self) -> "ValidationTestCase":
@@ -997,7 +1035,9 @@ class ContinuousImprovementValidator:
                 category=ValidationCategory.END_TO_END,
                 result=ValidationResult.FAIL,
                 duration=duration,
-                error_message=str(e),
+                error_message=self._format_error_message(
+                    e, "Complete Recommendation Workflow", "end-to-end workflow test"
+                ),
             )
 
     def _test_complete_health_monitoring_workflow(self) -> "ValidationTestCase":
@@ -1037,7 +1077,9 @@ class ContinuousImprovementValidator:
                 category=ValidationCategory.END_TO_END,
                 result=ValidationResult.FAIL,
                 duration=duration,
-                error_message=str(e),
+                error_message=self._format_error_message(
+                    e, "Complete Health Monitoring Workflow", "end-to-end workflow test"
+                ),
             )
 
     def _test_complete_analytics_workflow(self) -> "ValidationTestCase":
@@ -1081,7 +1123,9 @@ class ContinuousImprovementValidator:
                 category=ValidationCategory.END_TO_END,
                 result=ValidationResult.FAIL,
                 duration=duration,
-                error_message=str(e),
+                error_message=self._format_error_message(
+                    e, "Complete Analytics Workflow", "end-to-end workflow test"
+                ),
             )
 
     def _calculate_system_health_score(
@@ -1317,6 +1361,31 @@ class ContinuousImprovementValidator:
                 print(f"  {i}. {rec}")
 
         print(f"\n📝 Summary: {report.summary}")
+
+    def _format_error_message(
+        self, exception: Exception, test_name: str, context: Optional[str] = None
+    ) -> str:
+        """Format error messages in a standardized format.
+
+        Args:
+            exception: The caught exception
+            test_name: Name of the test that failed
+            context: Additional context about the failure
+
+        Returns:
+            Standardized error message string
+        """
+        error_type = type(exception).__name__
+        error_message = str(exception)
+
+        formatted_message = f"[{error_type}] {test_name} failed"
+
+        if context:
+            formatted_message += f" during {context}"
+
+        formatted_message += f": {error_message}"
+
+        return formatted_message
 
     def _serialize_report(self, report: ValidationReport) -> Dict[str, Any]:
         """Serialize a validation report to a dictionary for JSON export."""
