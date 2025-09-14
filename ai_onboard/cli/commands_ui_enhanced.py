@@ -66,7 +66,7 @@ def add_ui_enhanced_commands(subparsers):
         "--health", action="store_true", help="Show system health dashboard"
     )
     dashboard_parser.add_argument(
-        "--refresh", type = int, help="Auto - refresh interval in seconds"
+        "--refresh", type=int, help="Auto - refresh interval in seconds"
     )
 
     # Suggest command
@@ -78,7 +78,7 @@ def add_ui_enhanced_commands(subparsers):
         help="Context for suggestions (e.g., 'optimization', 'project setup')",
     )
     suggest_parser.add_argument(
-        "--limit", type = int, default = 3, help="Maximum suggestions to show"
+        "--limit", type=int, default=3, help="Maximum suggestions to show"
     )
     suggest_parser.add_argument(
         "--all",
@@ -103,7 +103,7 @@ def add_ui_enhanced_commands(subparsers):
     config_parser = subparsers.add_parser(
         "config", help="Configure UI preferences and settings"
     )
-    config_sub = config_parser.add_subparsers(dest="config_action", required = True)
+    config_sub = config_parser.add_subparsers(dest="config_action", required=True)
 
     # Show config
     config_sub.add_parser("show", help="Show current configuration")
@@ -140,7 +140,7 @@ def add_ui_enhanced_commands(subparsers):
 
     # Wizard command
     wizard_parser = subparsers.add_parser("wizard", help="Interactive workflow wizards")
-    wizard_sub = wizard_parser.add_subparsers(dest="wizard_type", required = True)
+    wizard_sub = wizard_parser.add_subparsers(dest="wizard_type", required=True)
 
     wizard_sub.add_parser("project - setup", help="Project setup wizard")
     wizard_sub.add_parser("optimization", help="Optimization workflow wizard")
@@ -199,7 +199,7 @@ def _handle_enhanced_help(args: argparse.Namespace, help_system, user_id: str) -
     elif args.category:
         output = help_system.show_category_help(args.category, user_id)
     elif args.command:
-        output = help_system.show_command_help(args.command, user_id, detailed = True)
+        output = help_system.show_command_help(args.command, user_id, detailed=True)
     else:
         output = help_system.show_main_help(user_id, args.mode)
 
@@ -292,9 +292,9 @@ def _get_project_data(root: Path) -> dict:
 
         result = subprocess.run(
             ["python", "-m", "ai_onboard", "prompt", "progress"],
-            capture_output = True,
-            text = True,
-            cwd = root,
+            capture_output=True,
+            text=True,
+            cwd=root,
         )
 
         if result.returncode == 0:
@@ -493,7 +493,7 @@ def _set_config(args: argparse.Namespace, ui_system, user_id: str) -> None:
     # Save configuration
     config_file = ui_system.data_dir / "ui_config.json"
     with open(config_file, "w") as f:
-        json.dump(ui_system.config, f, indent = 2)
+        json.dump(ui_system.config, f, indent=2)
 
     status = create_status_indicator(ui_system.root, user_id)
     print(status.success(f"Configuration updated: {key} = {value}"))
@@ -526,7 +526,7 @@ def _handle_theme_config(args: argparse.Namespace, ui_system, user_id: str) -> N
             # Save configuration
             config_file = ui_system.data_dir / "ui_config.json"
             with open(config_file, "w") as f:
-                json.dump(ui_system.config, f, indent = 2)
+                json.dump(ui_system.config, f, indent=2)
 
             status = create_status_indicator(ui_system.root, user_id)
             print(status.success(f"Theme changed to: {args.theme_name}"))
@@ -554,9 +554,9 @@ def _handle_profile_config(args: argparse.Namespace, ui_system, user_id: str) ->
         )
 
         ui_system.user_profiles[user_id] = UserProfile(
-            user_id = user_id,
-            expertise_level = UserExpertiseLevel.BEGINNER,
-            preferred_mode = InterfaceMode.SIMPLE,
+            user_id=user_id,
+            expertise_level=UserExpertiseLevel.BEGINNER,
+            preferred_mode=InterfaceMode.SIMPLE,
         )
         ui_system._save_user_profiles()
         print(status.success("Profile reset to defaults"))
@@ -662,10 +662,10 @@ def _handle_enhanced_status(args: argparse.Namespace, root: Path, user_id: str) 
     if args.json:
         # JSON output for programmatic use
         project_data = _get_project_data(root)
-        print(json.dumps(project_data, indent = 2))
+        print(json.dumps(project_data, indent=2))
     elif args.visual:
         # Visual status with progress bars
-        _show_visual_status(root, user_id, compact = args.compact)
+        _show_visual_status(root, user_id, compact=args.compact)
     else:
         # Standard enhanced status
         _show_standard_status(root, user_id)

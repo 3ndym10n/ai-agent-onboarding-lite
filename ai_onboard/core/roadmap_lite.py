@@ -9,7 +9,7 @@ from typing import Any, Dict, List
 
 def build(root: Path, goal: str = "") -> Dict[str, Any]:
     ai_dir = root / ".ai_onboard"
-    ai_dir.mkdir(parents = True, exist_ok = True)
+    ai_dir.mkdir(parents=True, exist_ok=True)
     analysis_path = ai_dir / "analysis.json"
     analysis: Dict[str, Any] = {}
     if analysis_path.exists():
@@ -48,6 +48,6 @@ def build(root: Path, goal: str = "") -> Dict[str, Any]:
     }
 
     (ai_dir / "roadmap.json").write_text(
-        json.dumps(roadmap, indent = 2), encoding="utf - 8"
+        json.dumps(roadmap, indent=2), encoding="utf - 8"
     )
     return roadmap

@@ -20,7 +20,7 @@ class PyProjectBasics:
                 "warn",
                 "No pyproject.toml or requirements.txt found",
                 root,
-                confidence = 0.8,
+                confidence=0.8,
             )
         ]
 

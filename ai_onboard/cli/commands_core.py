@@ -16,7 +16,7 @@ def add_core_commands(subparsers):
     """Add core command parsers."""
 
     # Global IAS parent parser (intentionally minimal: no bypass flags)
-    ias_parent = argparse.ArgumentParser(add_help = False)
+    ias_parent = argparse.ArgumentParser(add_help=False)
 
     # Analyze
     s_an = subparsers.add_parser(
@@ -143,7 +143,7 @@ def add_core_commands(subparsers):
     s_gate_resp.add_argument("--context", default="", help="Additional context")
     # Confirmation code removed; still accepted (ignored) for compatibility
     s_gate_resp.add_argument(
-        "--code", default = None, help="(Optional) legacy confirmation code; ignored"
+        "--code", default=None, help="(Optional) legacy confirmation code; ignored"
     )
 
 
@@ -160,7 +160,7 @@ def _ias_gate(args, root: Path) -> bool:
         telemetry.log_event(
             "gate_bypass_ci",
             reason="CI smoke run",
-            branch = os.getenv("GITHUB_REF", "unknown"),
+            branch=os.getenv("GITHUB_REF", "unknown"),
         )
         return True
 
@@ -172,7 +172,7 @@ def _ias_gate(args, root: Path) -> bool:
             note = override_file.read_text(encoding="utf - 8").strip()[:500]
         except Exception:
             note = "(unreadable)"
-        telemetry.log_event("gate_override_manual", note = note)
+        telemetry.log_event("gate_override_manual", note=note)
         return True
 
     # Compute preview (no user - bypass flags honored)
@@ -253,7 +253,7 @@ def _handle_gate_commands(args, root: Path):
         # Ignore --code for now (kept for compatibility)
 
         response_file.write_text(
-            json.dumps(response_data, indent = 2), encoding="utf - 8"
+            json.dumps(response_data, indent=2), encoding="utf - 8"
         )
         print(f"[OK] Response written to: {response_file}")
         print(f"[INFO] The system should now continue automatically")
@@ -292,14 +292,14 @@ def handle_core_commands(args, root: Path):
         # Scan repository and create manifest
         from ..core import discovery, utils
 
-        manifest = discovery.run(root, allow_exec = args.allowExec)
+        manifest = discovery.run(root, allow_exec=args.allowExec)
         utils.write_json(root / "ai_onboard.json", manifest)
         print("Wrote ai_onboard.json (draft).")
     elif args.cmd == "charter":
         # Create or update project charter
         from ..core import charter, state
 
-        charter.ensure(root, interactive = args.interactive)
+        charter.ensure(root, interactive=args.interactive)
 
         # Mark vision as confirmed if run interactively
         if args.interactive:
@@ -443,13 +443,13 @@ def handle_core_commands(args, root: Path):
         from ..core import cleanup
 
         if args.dry_run:
-            cleanup.safe_cleanup(root, dry_run = True)
+            cleanup.safe_cleanup(root, dry_run=True)
         elif args.force:
-            cleanup.safe_cleanup(root, dry_run = False, force = True)
+            cleanup.safe_cleanup(root, dry_run=False, force=True)
         elif args.backup:
             backup_path = cleanup.create_backup(root)
             print(f"Backup created at: {backup_path}")
-            cleanup.safe_cleanup(root, dry_run = False)
+            cleanup.safe_cleanup(root, dry_run=False)
         else:
-            cleanup.safe_cleanup(root, dry_run = False)
+            cleanup.safe_cleanup(root, dry_run=False)
         print("Cleanup complete.")

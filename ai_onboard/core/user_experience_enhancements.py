@@ -68,7 +68,7 @@ class UXEvent:
     timestamp: datetime
 
     # Event details
-    context: Dict[str, Any] = field(default_factory = dict)
+    context: Dict[str, Any] = field(default_factory=dict)
     command: Optional[str] = None
     success: bool = True
     error_details: Optional[str] = None
@@ -91,12 +91,12 @@ class UXIntervention:
 
     # Intervention details
     message: str
-    suggested_actions: List[str] = field(default_factory = list)
+    suggested_actions: List[str] = field(default_factory=list)
     help_content: Optional[str] = None
     priority: int = 1  # 1 - 5 scale
 
     # Timing and delivery
-    created_at: datetime = field(default_factory = datetime.now)
+    created_at: datetime = field(default_factory=datetime.now)
     delivered_at: Optional[datetime] = None
     dismissed_at: Optional[datetime] = None
 
@@ -116,8 +116,8 @@ class UserJourney:
 
     # Journey progress
     current_step: str = "started"
-    steps_completed: List[str] = field(default_factory = list)
-    steps_failed: List[str] = field(default_factory = list)
+    steps_completed: List[str] = field(default_factory=list)
+    steps_failed: List[str] = field(default_factory=list)
 
     # Journey metrics
     total_commands: int = 0
@@ -129,7 +129,7 @@ class UserJourney:
     completed_at: Optional[datetime] = None
     success: bool = False
     satisfaction_score: Optional[float] = None
-    lessons_learned: List[str] = field(default_factory = list)
+    lessons_learned: List[str] = field(default_factory=list)
 
 
 class SmartErrorHandler:
@@ -258,13 +258,13 @@ class SmartErrorHandler:
         all_actions = recovery_actions + recovery_strategy
 
         intervention = UXIntervention(
-            intervention_id = f"error_recovery_{int(time.time())}_{uuid.uuid4().hex[:8]}",
-            intervention_type = UXInterventionType.ERROR_RECOVERY,
-            user_id = user_id,
-            trigger_event = f"error_{error_type}",
+            intervention_id=f"error_recovery_{int(time.time())}_{uuid.uuid4().hex[:8]}",
+            intervention_type=UXInterventionType.ERROR_RECOVERY,
+            user_id=user_id,
+            trigger_event=f"error_{error_type}",
             message="\n".join(message_parts),
-            suggested_actions = all_actions[:5],  # Top 5 actions
-            priority = 4,  # High priority for errors
+            suggested_actions=all_actions[:5],  # Top 5 actions
+            priority=4,  # High priority for errors
         )
 
         return intervention
@@ -377,13 +377,13 @@ class OnboardingAssistant:
             return None
 
         intervention = UXIntervention(
-            intervention_id = f"onboarding_{int(time.time())}_{uuid.uuid4().hex[:8]}",
-            intervention_type = UXInterventionType.ONBOARDING_ASSISTANCE,
-            user_id = user_id,
+            intervention_id=f"onboarding_{int(time.time())}_{uuid.uuid4().hex[:8]}",
+            intervention_type=UXInterventionType.ONBOARDING_ASSISTANCE,
+            user_id=user_id,
             trigger_event="onboarding_check",
-            message = f"📚 {next_step['title']}\n\n{next_step['message']}",
-            suggested_actions = next_step.get("actions", []),
-            priority = 3,  # Medium - high priority
+            message=f"📚 {next_step['title']}\n\n{next_step['message']}",
+            suggested_actions=next_step.get("actions", []),
+            priority=3,  # Medium - high priority
         )
 
         return intervention
@@ -481,13 +481,13 @@ class WorkflowOptimizer:
         message += f"Estimated time remaining: {workflow['estimated_time']}"
 
         intervention = UXIntervention(
-            intervention_id = f"workflow_{workflow_id}_{int(time.time())}",
-            intervention_type = UXInterventionType.WORKFLOW_GUIDANCE,
-            user_id = user_id,
-            trigger_event = f"workflow_detected_{workflow_id}",
-            message = message,
+            intervention_id=f"workflow_{workflow_id}_{int(time.time())}",
+            intervention_type=UXInterventionType.WORKFLOW_GUIDANCE,
+            user_id=user_id,
+            trigger_event=f"workflow_detected_{workflow_id}",
+            message=message,
             suggested_actions=[next_step, f"help {next_step}"],
-            priority = 2,  # Medium priority
+            priority=2,  # Medium priority
         )
 
         return intervention
@@ -521,7 +521,7 @@ class SatisfactionTracker:
         if not self.satisfaction_data_file.exists():
             return {"average": 0, "trend": "no_data", "recent_scores": []}
 
-        cutoff_date = datetime.now() - timedelta(days = days)
+        cutoff_date = datetime.now() - timedelta(days=days)
         scores = []
 
         try:
@@ -585,7 +585,7 @@ class UserExperienceEnhancementSystem:
     def __init__(self, root: Path):
         self.root = root
         self.data_dir = root / ".ai_onboard" / "ux_enhancements"
-        self.data_dir.mkdir(parents = True, exist_ok = True)
+        self.data_dir.mkdir(parents=True, exist_ok=True)
 
         # Components
         self.ui_system = get_ui_enhancement_system(root)
@@ -632,7 +632,7 @@ class UserExperienceEnhancementSystem:
 
         # Save default config
         with open(config_file, "w") as f:
-            json.dump(default_config, f, indent = 2)
+            json.dump(default_config, f, indent=2)
 
         return default_config
 
@@ -641,10 +641,10 @@ class UserExperienceEnhancementSystem:
     ) -> UXEvent:
         """Record a UX event."""
         event = UXEvent(
-            event_id = f"ux_{int(time.time())}_{uuid.uuid4().hex[:8]}",
-            event_type = event_type,
-            user_id = user_id,
-            timestamp = datetime.now(),
+            event_id=f"ux_{int(time.time())}_{uuid.uuid4().hex[:8]}",
+            event_type=event_type,
+            user_id=user_id,
+            timestamp=datetime.now(),
             **kwargs,
         )
 
@@ -722,9 +722,9 @@ class UserExperienceEnhancementSystem:
     def _create_satisfaction_intervention(self, user_id: str) -> UXIntervention:
         """Create a satisfaction feedback intervention."""
         intervention = UXIntervention(
-            intervention_id = f"satisfaction_{int(time.time())}_{uuid.uuid4().hex[:8]}",
-            intervention_type = UXInterventionType.SATISFACTION_CHECK,
-            user_id = user_id,
+            intervention_id=f"satisfaction_{int(time.time())}_{uuid.uuid4().hex[:8]}",
+            intervention_type=UXInterventionType.SATISFACTION_CHECK,
+            user_id=user_id,
             trigger_event="satisfaction_milestone",
             message="📝 How is your experience with AI Onboard so far?\n\nYour feedback helps us improve the system.",
             suggested_actions=[
@@ -732,7 +732,7 @@ class UserExperienceEnhancementSystem:
                 "Share what's working well",
                 "Suggest improvements",
             ],
-            priority = 1,  # Low priority
+            priority=1,  # Low priority
         )
 
         return intervention
@@ -750,7 +750,7 @@ class UserExperienceEnhancementSystem:
                 user_interventions.append(intervention)
 
         # Sort by priority (higher first)
-        user_interventions.sort(key = lambda x: x.priority, reverse = True)
+        user_interventions.sort(key=lambda x: x.priority, reverse=True)
 
         # Limit interventions per session
         max_interventions = self.config.get("max_interventions_per_session", 3)
@@ -789,10 +789,10 @@ class UserExperienceEnhancementSystem:
 
         if journey_key not in self.user_journeys:
             self.user_journeys[journey_key] = UserJourney(
-                journey_id = journey_key,
-                user_id = user_id,
-                started_at = datetime.now(),
-                goal = goal,
+                journey_id=journey_key,
+                user_id=user_id,
+                started_at=datetime.now(),
+                goal=goal,
             )
 
         return self.user_journeys[journey_key]
@@ -849,7 +849,7 @@ class UserExperienceEnhancementSystem:
                 [
                     e
                     for e in user_events
-                    if e.timestamp >= datetime.now() - timedelta(days = 7)
+                    if e.timestamp >= datetime.now() - timedelta(days=7)
                 ]
             ),
             "active_interventions": len(self.get_pending_interventions(user_id)),

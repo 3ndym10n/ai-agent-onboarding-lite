@@ -56,7 +56,7 @@ class GateSystem:
     def __init__(self, project_root: Path):
         self.project_root = project_root
         self.gates_dir = project_root / ".ai_onboard" / "gates"
-        self.gates_dir.mkdir(parents = True, exist_ok = True)
+        self.gates_dir.mkdir(parents=True, exist_ok=True)
 
         # File paths for communication
         self.current_gate_file = self.gates_dir / "current_gate.md"
@@ -88,13 +88,13 @@ class GateSystem:
             "phase": "collect",
             "waiting_for_response": True,
         }
-        self.status_file.write_text(json.dumps(status, indent = 2), encoding="utf - 8")
+        self.status_file.write_text(json.dumps(status, indent=2), encoding="utf - 8")
 
         # Ensure files are visible and non - empty before returning control
         self._finalize_gate_files()
 
         # Best - effort: write Cursor AI rules to force chat behavior during gate handling
-        self._write_cursor_rules(self._cursor_rules_contract(code_hint = None))
+        self._write_cursor_rules(self._cursor_rules_contract(code_hint=None))
 
         # Clean up any existing response
         if self.response_file.exists():
@@ -112,7 +112,7 @@ class GateSystem:
         )
 
         # Wait for initial responses (step 1)
-        initial_response = self._wait_for_response(timeout_seconds = 2)
+        initial_response = self._wait_for_response(timeout_seconds=2)
 
         # If first step timed out or user decided to stop / modify, honor it immediately
         if initial_response.get("user_decision") != "proceed":
@@ -135,13 +135,13 @@ class GateSystem:
             "waiting_for_response": True,
             "confirmation_required": True,
         }
-        self.status_file.write_text(json.dumps(status, indent = 2), encoding="utf - 8")
+        self.status_file.write_text(json.dumps(status, indent=2), encoding="utf - 8")
 
         # Ensure files are visible and non - empty before returning control
         self._finalize_gate_files()
 
         # Update Cursor rules to include explicit confirmation flow
-        self._write_cursor_rules(self._cursor_rules_contract(code_hint = None))
+        self._write_cursor_rules(self._cursor_rules_contract(code_hint=None))
 
         # Ensure we do not read the previous response again
         if self.response_file.exists():
@@ -149,7 +149,7 @@ class GateSystem:
 
         print("[INFO] Awaiting explicit USER CONFIRMATION to proceed...")
         confirmation_response = self._wait_for_response(
-            timeout_seconds = 2, require_proceed = True
+            timeout_seconds=2, require_proceed=True
         )
 
         # Clean up gate files
@@ -608,16 +608,16 @@ def create_clarification_gate(
         )
 
     gate_request = GateRequest(
-        gate_type = GateType.CLARIFICATION_NEEDED,
+        gate_type=GateType.CLARIFICATION_NEEDED,
         title="System Needs Clarification",
         description=(
             f"The system has low confidence ({confidence:.2f}) and needs your "
             "input to proceed effectively."
         ),
-        context = context,
-        questions = questions,
-        confidence = confidence,
-        issues = issues,
+        context=context,
+        questions=questions,
+        confidence=confidence,
+        issues=issues,
     )
 
     return gate_system.create_gate(gate_request)
@@ -636,11 +636,11 @@ def create_scope_check_gate(
     ]
 
     gate_request = GateRequest(
-        gate_type = GateType.SCOPE_CHECK,
+        gate_type=GateType.SCOPE_CHECK,
         title="Scope Alignment Check",
         description="Let's make sure we're on the right track before proceeding.",
         context={**context, "current_plan": current_plan},
-        questions = questions,
+        questions=questions,
     )
 
     return gate_system.create_gate(gate_request)
@@ -658,11 +658,11 @@ def create_confirmation_gate(
     ]
 
     gate_request = GateRequest(
-        gate_type = GateType.CONFIRMATION_REQUIRED,
+        gate_type=GateType.CONFIRMATION_REQUIRED,
         title="Confirmation Required",
-        description = f"The system wants to {action}. Please confirm before proceeding.",
-        context = context,
-        questions = questions,
+        description=f"The system wants to {action}. Please confirm before proceeding.",
+        context=context,
+        questions=questions,
     )
 
     return gate_system.create_gate(gate_request)

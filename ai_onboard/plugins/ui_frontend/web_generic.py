@@ -19,7 +19,7 @@ class NodeScriptsPresent:
                     "warn",
                     "package.json missing",
                     pkg,
-                    confidence = 0.6,
+                    confidence=0.6,
                 )
             ]
         try:
@@ -31,7 +31,7 @@ class NodeScriptsPresent:
                     "error",
                     f"package.json unreadable: {e}",
                     pkg,
-                    confidence = 0.9,
+                    confidence=0.9,
                 )
             ]
         scripts = data.get("scripts") or {}
@@ -44,7 +44,7 @@ class NodeScriptsPresent:
                 "warn",
                 "No build / lint / test scripts in package.json",
                 pkg,
-                confidence = 0.9,
+                confidence=0.9,
             )
         ]
 

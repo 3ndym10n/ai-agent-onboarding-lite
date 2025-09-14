@@ -45,12 +45,12 @@ class GuidanceItem:
     content: str
     guidance_type: GuidanceType
     level: GuidanceLevel
-    tags: List[str] = field(default_factory = list)
-    examples: List[Dict[str, Any]] = field(default_factory = list)
-    prerequisites: List[str] = field(default_factory = list)
-    related_items: List[str] = field(default_factory = list)
-    created_at: datetime = field(default_factory = datetime.now)
-    updated_at: datetime = field(default_factory = datetime.now)
+    tags: List[str] = field(default_factory=list)
+    examples: List[Dict[str, Any]] = field(default_factory=list)
+    prerequisites: List[str] = field(default_factory=list)
+    related_items: List[str] = field(default_factory=list)
+    created_at: datetime = field(default_factory=datetime.now)
+    updated_at: datetime = field(default_factory=datetime.now)
 
 
 @dataclass
@@ -60,10 +60,10 @@ class AgentGuidanceProfile:
     agent_id: str
     experience_level: GuidanceLevel
     preferred_guidance_types: List[GuidanceType]
-    completed_guidance: List[str] = field(default_factory = list)
-    guidance_history: List[Dict[str, Any]] = field(default_factory = list)
+    completed_guidance: List[str] = field(default_factory=list)
+    guidance_history: List[Dict[str, Any]] = field(default_factory=list)
     last_guidance_request: Optional[datetime] = None
-    guidance_preferences: Dict[str, Any] = field(default_factory = dict)
+    guidance_preferences: Dict[str, Any] = field(default_factory=dict)
 
 
 class AIAgentGuidanceSystem:
@@ -109,8 +109,8 @@ Welcome to ai - onboard! This system helps you collaborate effectively with user
 - Ask for clarification when uncertain
 - Document your actions and decisions
             """,
-                guidance_type = GuidanceType.ONBOARDING,
-                level = GuidanceLevel.BASIC,
+                guidance_type=GuidanceType.ONBOARDING,
+                level=GuidanceLevel.BASIC,
                 tags=["getting_started", "basics", "onboarding"],
             )
         )
@@ -155,8 +155,8 @@ Avoid these command patterns:
 - Changing project configuration
 - Accessing external resources
             """,
-                guidance_type = GuidanceType.SAFETY_GUIDELINES,
-                level = GuidanceLevel.BASIC,
+                guidance_type=GuidanceType.SAFETY_GUIDELINES,
+                level=GuidanceLevel.BASIC,
                 tags=["safety", "protection", "guidelines"],
             )
         )
@@ -231,8 +231,8 @@ if vision_status["context"]["active_gates"]:
     pass
 ```
             """,
-                guidance_type = GuidanceType.WORKFLOW_GUIDANCE,
-                level = GuidanceLevel.INTERMEDIATE,
+                guidance_type=GuidanceType.WORKFLOW_GUIDANCE,
+                level=GuidanceLevel.INTERMEDIATE,
                 tags=["workflow", "process", "steps"],
             )
         )
@@ -280,8 +280,8 @@ if vision_status["context"]["active_gates"]:
 3. **Recovery Strategies**: Have fallback plans for common failures
 4. **Learn from Errors**: Update your behavior to avoid repeating mistakes
             """,
-                guidance_type = GuidanceType.BEST_PRACTICES,
-                level = GuidanceLevel.INTERMEDIATE,
+                guidance_type=GuidanceType.BEST_PRACTICES,
+                level=GuidanceLevel.INTERMEDIATE,
                 tags=["best_practices", "collaboration", "communication"],
             )
         )
@@ -367,8 +367,8 @@ if result["status"] == "safety_violation":
         # Wait for user response
 ```
             """,
-                guidance_type = GuidanceType.EXAMPLES,
-                level = GuidanceLevel.INTERMEDIATE,
+                guidance_type=GuidanceType.EXAMPLES,
+                level=GuidanceLevel.INTERMEDIATE,
                 tags=["examples", "code", "tasks"],
             )
         )
@@ -458,8 +458,8 @@ export AI_ONBOARD_SAFETY_LEVEL="medium"
 export AI_ONBOARD_COLLABORATION_MODE="collaborative"
 ```
             """,
-                guidance_type = GuidanceType.INTEGRATION_HELP,
-                level = GuidanceLevel.ADVANCED,
+                guidance_type=GuidanceType.INTEGRATION_HELP,
+                level=GuidanceLevel.ADVANCED,
                 tags=["integration", "platforms", "setup"],
             )
         )
@@ -479,8 +479,8 @@ export AI_ONBOARD_COLLABORATION_MODE="collaborative"
             # Get or create agent profile
             if agent_id not in self.agent_profiles:
                 self.agent_profiles[agent_id] = AgentGuidanceProfile(
-                    agent_id = agent_id,
-                    experience_level = GuidanceLevel.BASIC,
+                    agent_id=agent_id,
+                    experience_level=GuidanceLevel.BASIC,
                     preferred_guidance_types=[
                         GuidanceType.ONBOARDING,
                         GuidanceType.BEST_PRACTICES,
@@ -515,7 +515,7 @@ export AI_ONBOARD_COLLABORATION_MODE="collaborative"
 
             # Sort by relevance
             filtered_items.sort(
-                key = lambda x: self._calculate_relevance_score(x, agent_profile)
+                key=lambda x: self._calculate_relevance_score(x, agent_profile)
             )
 
             # Return top items

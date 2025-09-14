@@ -20,7 +20,7 @@ class ComprehensiveTestReporter:
 
     def __init__(self, reports_dir: Path):
         self.reports_dir = reports_dir
-        self.reports_dir.mkdir(parents = True, exist_ok = True)
+        self.reports_dir.mkdir(parents=True, exist_ok=True)
 
     def generate_comprehensive_report(
         self, current_report: Dict[str, Any]
@@ -68,7 +68,7 @@ class ComprehensiveTestReporter:
 
         # Find all enhanced test reports
         report_files = list(self.reports_dir.glob("enhanced_test_report_*.json"))
-        report_files.sort(key = lambda x: x.stat().st_mtime, reverse = True)
+        report_files.sort(key=lambda x: x.stat().st_mtime, reverse=True)
 
         for report_file in report_files[:limit]:
             try:
@@ -106,7 +106,7 @@ class ComprehensiveTestReporter:
             )
 
         # Sort by timestamp
-        timeline_data.sort(key = lambda x: x["timestamp"])
+        timeline_data.sort(key=lambda x: x["timestamp"])
 
         # Calculate trends
         trends = {
@@ -537,7 +537,7 @@ def generate_comprehensive_test_report(
         return {"error": "No test reports found"}
 
     # Get the most recent report
-    latest_report = max(report_files, key = lambda x: x.stat().st_mtime)
+    latest_report = max(report_files, key=lambda x: x.stat().st_mtime)
 
     with open(latest_report, "r") as f:
         current_report = json.load(f)
@@ -552,7 +552,7 @@ def generate_comprehensive_test_report(
 
     # Save JSON report
     with open(json_output, "w") as f:
-        json.dump(comprehensive_report, f, indent = 2)
+        json.dump(comprehensive_report, f, indent=2)
 
     # Generate and save HTML report
     reporter.generate_html_report(comprehensive_report, html_output)

@@ -237,10 +237,10 @@ class AIAgentIASWrapper:
         try:
             result = subprocess.run(
                 cmd_parts,
-                cwd = self.root,
-                capture_output = True,
-                text = True,
-                timeout = 300,  # 5 minute timeout
+                cwd=self.root,
+                capture_output=True,
+                text=True,
+                timeout=300,  # 5 minute timeout
             )
 
             return {

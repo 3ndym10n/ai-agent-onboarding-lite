@@ -61,24 +61,24 @@ class ConversationContext:
     state: ConversationState
 
     # Conversation history
-    conversation_rounds: List[Dict[str, Any]] = field(default_factory = list)
-    resolved_intents: List[str] = field(default_factory = list)
-    user_corrections: List[str] = field(default_factory = list)
+    conversation_rounds: List[Dict[str, Any]] = field(default_factory=list)
+    resolved_intents: List[str] = field(default_factory=list)
+    user_corrections: List[str] = field(default_factory=list)
 
     # Decision pipeline state
     current_stage: DecisionStage = DecisionStage.INTAKE
-    stage_results: Dict[str, Any] = field(default_factory = dict)
-    confidence_scores: Dict[str, float] = field(default_factory = dict)
-    risk_factors: List[str] = field(default_factory = list)
+    stage_results: Dict[str, Any] = field(default_factory=dict)
+    confidence_scores: Dict[str, float] = field(default_factory=dict)
+    risk_factors: List[str] = field(default_factory=list)
 
     # Execution context
-    planned_commands: List[Dict[str, Any]] = field(default_factory = list)
-    executed_commands: List[Dict[str, Any]] = field(default_factory = list)
+    planned_commands: List[Dict[str, Any]] = field(default_factory=list)
+    executed_commands: List[Dict[str, Any]] = field(default_factory=list)
     rollback_plan: Optional[Dict[str, Any]] = None
 
     # Safety monitoring
-    safety_violations: List[str] = field(default_factory = list)
-    intervention_triggers: List[str] = field(default_factory = list)
+    safety_violations: List[str] = field(default_factory=list)
+    intervention_triggers: List[str] = field(default_factory=list)
 
 
 class IntentResolver:
@@ -160,7 +160,7 @@ class IntentResolver:
                 intent_scores[intent] = min(score, 1.0)
 
         # Return sorted by confidence
-        return sorted(intent_scores.items(), key = lambda x: x[1], reverse = True)
+        return sorted(intent_scores.items(), key=lambda x: x[1], reverse=True)
 
 
 class SafetyMonitor:
@@ -367,10 +367,10 @@ class CommandOrchestrator:
 
             result = subprocess.run(
                 cmd_parts,
-                cwd = context.project_root,
-                capture_output = True,
-                text = True,
-                timeout = 300,
+                cwd=context.project_root,
+                capture_output=True,
+                text=True,
+                timeout=300,
             )
 
             return {
@@ -435,12 +435,12 @@ class AIAgentOrchestrationLayer:
             session_id = f"session_{int(time.time())}_{uuid.uuid4().hex[:8]}"
 
             context = ConversationContext(
-                session_id = session_id,
-                user_id = user_id,
-                project_root = self.root,
-                created_at = time.time(),
-                last_activity = time.time(),
-                state = ConversationState.ACTIVE,
+                session_id=session_id,
+                user_id=user_id,
+                project_root=self.root,
+                created_at=time.time(),
+                last_activity=time.time(),
+                state=ConversationState.ACTIVE,
             )
 
             self.sessions[session_id] = context

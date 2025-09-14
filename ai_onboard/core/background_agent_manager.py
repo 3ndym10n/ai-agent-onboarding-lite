@@ -88,16 +88,16 @@ class AgentConfiguration:
 
     # Scheduling
     schedule_type: ScheduleType
-    schedule_config: Dict[str, Any] = field(default_factory = dict)
+    schedule_config: Dict[str, Any] = field(default_factory=dict)
 
     # Priority and resources
     priority: AgentPriority = AgentPriority.MEDIUM
-    resource_limits: AgentResourceLimits = field(default_factory = AgentResourceLimits)
+    resource_limits: AgentResourceLimits = field(default_factory=AgentResourceLimits)
 
     # Safety and permissions
-    allowed_operations: List[str] = field(default_factory = list)
-    forbidden_operations: List[str] = field(default_factory = list)
-    requires_approval: List[str] = field(default_factory = list)
+    allowed_operations: List[str] = field(default_factory=list)
+    forbidden_operations: List[str] = field(default_factory=list)
+    requires_approval: List[str] = field(default_factory=list)
 
     # Configuration
     enabled: bool = True
@@ -106,9 +106,9 @@ class AgentConfiguration:
     max_restart_attempts: int = 3
 
     # Metadata
-    created_at: datetime = field(default_factory = datetime.now)
-    updated_at: datetime = field(default_factory = datetime.now)
-    tags: List[str] = field(default_factory = list)
+    created_at: datetime = field(default_factory=datetime.now)
+    updated_at: datetime = field(default_factory=datetime.now)
+    tags: List[str] = field(default_factory=list)
 
 
 @dataclass
@@ -168,13 +168,13 @@ class AgentExecution:
     network_requests: int = 0
 
     # Results and output
-    result_data: Dict[str, Any] = field(default_factory = dict)
+    result_data: Dict[str, Any] = field(default_factory=dict)
     output_summary: str = ""
     error_details: Optional[str] = None
 
     # Safety and compliance
-    safety_violations: List[str] = field(default_factory = list)
-    resource_violations: List[str] = field(default_factory = list)
+    safety_violations: List[str] = field(default_factory=list)
+    resource_violations: List[str] = field(default_factory=list)
 
 
 class BackgroundAgent(ABC):
@@ -409,7 +409,7 @@ class ResourceMonitor:
                 except Exception:
                     break
 
-        thread = threading.Thread(target = monitor, daemon = True)
+        thread = threading.Thread(target=monitor, daemon=True)
         thread.start()
 
     def get_current_usage(self) -> Dict[str, float]:
@@ -499,7 +499,7 @@ class BackgroundAgentManager:
     def __init__(self, root: Path):
         self.root = root
         self.data_dir = root / ".ai_onboard" / "background_agents"
-        self.data_dir.mkdir(parents = True, exist_ok = True)
+        self.data_dir.mkdir(parents=True, exist_ok=True)
 
         # Agent registry and status
         self.agents: Dict[str, BackgroundAgent] = {}
@@ -564,14 +564,14 @@ class BackgroundAgentManager:
 
         # Save default config
         with open(config_file, "w") as f:
-            json.dump(default_config, f, indent = 2)
+            json.dump(default_config, f, indent=2)
 
         return default_config
 
     def _load_agent_configurations(self):
         """Load agent configurations from storage."""
         config_dir = self.data_dir / "configs"
-        config_dir.mkdir(exist_ok = True)
+        config_dir.mkdir(exist_ok=True)
 
         for config_file in config_dir.glob("*.json"):
             try:
@@ -579,15 +579,15 @@ class BackgroundAgentManager:
                     config_data = json.load(f)
 
                 config = AgentConfiguration(
-                    agent_id = config_data["agent_id"],
-                    name = config_data["name"],
-                    description = config_data["description"],
-                    agent_class = config_data["agent_class"],
-                    schedule_type = ScheduleType(config_data["schedule_type"]),
-                    schedule_config = config_data.get("schedule_config", {}),
-                    priority = AgentPriority(config_data.get("priority", 3)),
-                    enabled = config_data.get("enabled", True),
-                    auto_start = config_data.get("auto_start", False),
+                    agent_id=config_data["agent_id"],
+                    name=config_data["name"],
+                    description=config_data["description"],
+                    agent_class=config_data["agent_class"],
+                    schedule_type=ScheduleType(config_data["schedule_type"]),
+                    schedule_config=config_data.get("schedule_config", {}),
+                    priority=AgentPriority(config_data.get("priority", 3)),
+                    enabled=config_data.get("enabled", True),
+                    auto_start=config_data.get("auto_start", False),
                 )
 
                 self.agent_configs[config.agent_id] = config
@@ -618,7 +618,7 @@ class BackgroundAgentManager:
             self._save_agent_config(config)
 
             # Initialize status
-            status = AgentStatus(agent_id = config.agent_id, state = AgentState.INACTIVE)
+            status = AgentStatus(agent_id=config.agent_id, state=AgentState.INACTIVE)
             self.agent_statuses[config.agent_id] = status
 
             return True
@@ -714,7 +714,7 @@ class BackgroundAgentManager:
     def _save_agent_config(self, config: AgentConfiguration):
         """Save agent configuration to storage."""
         config_file = self.data_dir / "configs" / f"{config.agent_id}.json"
-        config_file.parent.mkdir(exist_ok = True)
+        config_file.parent.mkdir(exist_ok=True)
 
         try:
             config_data = {
@@ -733,7 +733,7 @@ class BackgroundAgentManager:
             }
 
             with open(config_file, "w") as f:
-                json.dump(config_data, f, indent = 2)
+                json.dump(config_data, f, indent=2)
 
         except Exception as e:
             print(f"Failed to save agent config {config.agent_id}: {e}")

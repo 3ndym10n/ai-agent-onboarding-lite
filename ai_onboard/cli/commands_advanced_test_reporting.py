@@ -90,7 +90,7 @@ def add_advanced_test_reporting_commands(subparsers):
         help="Display format",
     )
     view_parser.add_argument(
-        "--days", type = int, default = 7, help="Show reports from last N days"
+        "--days", type=int, default=7, help="Show reports from last N days"
     )
 
     # Analytics command
@@ -126,15 +126,15 @@ def add_advanced_test_reporting_commands(subparsers):
         description="Assess and track test quality metrics",
     )
     quality_parser.add_argument(
-        "--threshold", type = float, default = 0.8, help="Quality threshold for alerts"
+        "--threshold", type=float, default=0.8, help="Quality threshold for alerts"
     )
     quality_parser.add_argument(
         "--benchmark", action="store_true", help="Compare with quality benchmarks"
     )
     quality_parser.add_argument(
         "--history",
-        type = int,
-        default = 10,
+        type=int,
+        default=10,
         help="Number of historical reports to analyze",
     )
 
@@ -163,7 +163,7 @@ def add_advanced_test_reporting_commands(subparsers):
         description="Display comprehensive test reporting dashboard",
     )
     dashboard_parser.add_argument(
-        "--refresh", type = int, help="Auto - refresh interval in seconds"
+        "--refresh", type=int, help="Auto - refresh interval in seconds"
     )
     dashboard_parser.add_argument(
         "--compact", action="store_true", help="Compact dashboard view"
@@ -183,7 +183,7 @@ def add_advanced_test_reporting_commands(subparsers):
         description="Configure test reporting settings and preferences",
     )
     config_parser.add_argument(
-        "--set", nargs = 2, metavar=("KEY", "VALUE"), help="Set configuration value"
+        "--set", nargs=2, metavar=("KEY", "VALUE"), help="Set configuration value"
     )
     config_parser.add_argument("--get", help="Get configuration value")
     config_parser.add_argument(
@@ -259,7 +259,7 @@ def _handle_generate_report(args: argparse.Namespace, root: Path) -> None:
 
         # Generate comprehensive report
         report = generator.generate_comprehensive_report(
-            test_results = test_results, report_level = level, output_formats = formats
+            test_results=test_results, report_level=level, output_formats=formats
         )
 
         # Display summary
@@ -347,7 +347,7 @@ def _handle_analytics(args: argparse.Namespace, root: Path) -> None:
 
         # Parse period
         period_days = _parse_period(args.period)
-        cutoff_date = datetime.now() - timedelta(days = period_days)
+        cutoff_date = datetime.now() - timedelta(days=period_days)
 
         # Load and filter historical data
         historical_data = []
@@ -463,7 +463,7 @@ def _handle_export_data(args: argparse.Namespace, root: Path) -> None:
 
         # Load data based on period
         period_days = _parse_period(args.period)
-        cutoff_date = datetime.now() - timedelta(days = period_days)
+        cutoff_date = datetime.now() - timedelta(days=period_days)
 
         # Export based on format and data type
         if args.format == "csv":
@@ -626,7 +626,7 @@ def _view_specific_report(report_id: str, reports_dir: Path, format_type: str):
         if json_file.exists():
             with open(json_file, "r") as f:
                 report_data = json.load(f)
-                print(json.dumps(report_data, indent = 2))
+                print(json.dumps(report_data, indent=2))
         else:
             print("❌ JSON report file not found")
     else:
@@ -646,13 +646,13 @@ def _view_latest_report(reports_dir: Path, format_type: str):
         print("❌ No reports found")
         return
 
-    latest_dir = max(report_dirs, key = lambda d: d.stat().st_mtime)
+    latest_dir = max(report_dirs, key=lambda d: d.stat().st_mtime)
     _view_specific_report(latest_dir.name, reports_dir, format_type)
 
 
 def _list_recent_reports(reports_dir: Path, days: int, format_type: str):
     """List recent reports."""
-    cutoff_date = datetime.now() - timedelta(days = days)
+    cutoff_date = datetime.now() - timedelta(days=days)
 
     # Load report history
     history_file = reports_dir / "report_history.jsonl"
@@ -674,7 +674,7 @@ def _list_recent_reports(reports_dir: Path, days: int, format_type: str):
         return
 
     # Sort by timestamp (newest first)
-    recent_reports.sort(key = lambda x: x["timestamp"], reverse = True)
+    recent_reports.sort(key=lambda x: x["timestamp"], reverse=True)
 
     print(f"📋 Recent Reports (Last {days} days)")
     print("-" * 60)
@@ -881,7 +881,7 @@ def _export_csv(root: Path, output_file: Path, data_type: str, cutoff_date: date
     # Write CSV
     with open(output_file, "w", newline="", encoding="utf - 8") as f:
         if data_type in ["results", "all"]:
-            writer = csv.DictWriter(f, fieldnames = data[0].keys())
+            writer = csv.DictWriter(f, fieldnames=data[0].keys())
             writer.writeheader()
             writer.writerows(data)
 
@@ -905,7 +905,7 @@ def _export_json(root: Path, output_file: Path, data_type: str, cutoff_date: dat
 
     # Write JSON
     with open(output_file, "w", encoding="utf - 8") as f:
-        json.dump(data, f, indent = 2)
+        json.dump(data, f, indent=2)
 
 
 def _export_xml(root: Path, output_file: Path, data_type: str, cutoff_date: datetime):

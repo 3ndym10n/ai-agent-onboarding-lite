@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any, Dict
 
 
-def load_json(path: Path, default = None):
+def load_json(path: Path, default=None):
     return json.loads(path.read_text(encoding="utf - 8")) if path.exists() else default
 
 
@@ -94,9 +94,9 @@ def check_acceptance(root: Path) -> Dict[str, Any]:
     }
 
     out_dir = ai_dir / "reports"
-    out_dir.mkdir(parents = True, exist_ok = True)
+    out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "acceptance_report.json").write_text(
-        json.dumps(report, indent = 2, ensure_ascii = False), encoding="utf - 8"
+        json.dumps(report, indent=2, ensure_ascii=False), encoding="utf - 8"
     )
 
     # Simple markdown summary
@@ -125,7 +125,7 @@ if __name__ == "__main__":
     print(
         json.dumps(
             {"overall_pass": rep.get("overall_pass"), "checks": rep.get("checks")},
-            ensure_ascii = False,
+            ensure_ascii=False,
         )
     )
     sys.exit(0 if rep.get("overall_pass") else 0)

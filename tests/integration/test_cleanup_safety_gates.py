@@ -47,7 +47,7 @@ class TestCleanupSafetyGatesIntegration(unittest.TestCase):
 
     def tearDown(self):
         """Clean up test environment."""
-        shutil.rmtree(self.test_dir, ignore_errors = True)
+        shutil.rmtree(self.test_dir, ignore_errors=True)
 
     def test_safe_file_deletion_passes_all_gates(self):
         """Test that deleting a safe file passes all gates."""
@@ -114,7 +114,7 @@ class TestCleanupSafetyGatesIntegration(unittest.TestCase):
 
         operation = CleanupOperation(
             operation_type="delete",
-            targets = risk_files,
+            targets=risk_files,
             description="Delete many files (high risk)",
         )
 
@@ -215,7 +215,7 @@ class TestCleanupSafetyGatesIntegration(unittest.TestCase):
         with patch.object(
             BackupExecuteGate,
             "_execute_operation",
-            side_effect = Exception("Test exception"),
+            side_effect=Exception("Test exception"),
         ):
             with patch("builtins.input", return_value="CONFIRM"):
                 success, message = self.framework.execute_cleanup_operation(operation)
@@ -297,7 +297,7 @@ class TestCleanupSafetyGatesIntegration(unittest.TestCase):
         # Mock human confirmation
         with patch("builtins.input", return_value="CONFIRM"):
             success, message = safe_cleanup_operation(
-                root = self.test_dir,
+                root=self.test_dir,
                 operation_type="delete",
                 targets=[safe_file],
                 description="Convenience function test",
@@ -319,7 +319,7 @@ class TestCleanupSafetyGatesIntegration(unittest.TestCase):
             operation = CleanupOperation(
                 operation_type="delete",
                 targets=[test_file],
-                description = f"Test backup {i}",
+                description=f"Test backup {i}",
             )
 
             backup_gate = BackupExecuteGate(self.test_dir)
@@ -344,7 +344,7 @@ class TestIndividualSafetyGates(unittest.TestCase):
 
     def tearDown(self):
         """Clean up test environment."""
-        shutil.rmtree(self.test_dir, ignore_errors = True)
+        shutil.rmtree(self.test_dir, ignore_errors=True)
 
     def test_preflight_gate_protected_paths(self):
         """Test that pre - flight gate correctly identifies protected paths."""

@@ -273,7 +273,7 @@ def configure_unicode_support(force_ascii: bool = False) -> None:
         force_ascii: If True, force ASCII - only output
     """
     global _formatter
-    _formatter = SafeFormatter(use_unicode = not force_ascii)
+    _formatter = SafeFormatter(use_unicode=not force_ascii)
 
 
 # Convenience functions

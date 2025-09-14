@@ -66,12 +66,12 @@ class AgentProfile:
     collaboration_mode: CollaborationMode
     safety_level: SafetyLevel
     max_autonomous_actions: int = 10
-    requires_confirmation_for: List[str] = field(default_factory = list)
-    allowed_commands: List[str] = field(default_factory = list)
-    blocked_commands: List[str] = field(default_factory = list)
+    requires_confirmation_for: List[str] = field(default_factory=list)
+    allowed_commands: List[str] = field(default_factory=list)
+    blocked_commands: List[str] = field(default_factory=list)
     session_timeout: int = 3600  # 1 hour
-    created_at: datetime = field(default_factory = datetime.now)
-    last_activity: datetime = field(default_factory = datetime.now)
+    created_at: datetime = field(default_factory=datetime.now)
+    last_activity: datetime = field(default_factory=datetime.now)
 
 
 @dataclass
@@ -83,11 +83,11 @@ class CollaborationSession:
     project_root: Path
     started_at: datetime
     last_activity: datetime
-    actions_taken: List[Dict[str, Any]] = field(default_factory = list)
-    safety_violations: List[Dict[str, Any]] = field(default_factory = list)
-    user_interactions: List[Dict[str, Any]] = field(default_factory = list)
+    actions_taken: List[Dict[str, Any]] = field(default_factory=list)
+    safety_violations: List[Dict[str, Any]] = field(default_factory=list)
+    user_interactions: List[Dict[str, Any]] = field(default_factory=list)
     status: str = "active"
-    context: Dict[str, Any] = field(default_factory = dict)
+    context: Dict[str, Any] = field(default_factory=dict)
 
 
 class AIAgentCollaborationProtocol:
@@ -216,11 +216,11 @@ class AIAgentCollaborationProtocol:
             agent_profile = self.agent_profiles[agent_id]
 
             session = CollaborationSession(
-                session_id = session_id,
-                agent_profile = agent_profile,
-                project_root = project_root or self.project_root,
-                started_at = datetime.now(),
-                last_activity = datetime.now(),
+                session_id=session_id,
+                agent_profile=agent_profile,
+                project_root=project_root or self.project_root,
+                started_at=datetime.now(),
+                last_activity=datetime.now(),
             )
 
             self.sessions[session_id] = session

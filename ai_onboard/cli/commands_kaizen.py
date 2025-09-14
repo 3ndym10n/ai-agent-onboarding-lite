@@ -24,7 +24,7 @@ def add_kaizen_commands(subparsers):
         "kaizen - auto",
         help="Automated Kaizen cycle management and continuous improvement",
     )
-    kaizen_sub = kaizen_parser.add_subparsers(dest="kaizen_cmd", required = True)
+    kaizen_sub = kaizen_parser.add_subparsers(dest="kaizen_cmd", required=True)
 
     # Start automation
     start_parser = kaizen_sub.add_parser("start", help="Start automated Kaizen cycles")
@@ -50,7 +50,7 @@ def add_kaizen_commands(subparsers):
     opportunities_parser = kaizen_sub.add_parser(
         "opportunities", help="Manage improvement opportunities"
     )
-    opp_sub = opportunities_parser.add_subparsers(dest="opp_action", required = True)
+    opp_sub = opportunities_parser.add_subparsers(dest="opp_action", required=True)
 
     # List opportunities
     list_parser = opp_sub.add_parser(
@@ -89,7 +89,7 @@ def add_kaizen_commands(subparsers):
     # History command
     history_parser = kaizen_sub.add_parser("history", help="Show cycle history")
     history_parser.add_argument(
-        "--limit", type = int, default = 10, help="Number of cycles to show"
+        "--limit", type=int, default=10, help="Number of cycles to show"
     )
     history_parser.add_argument(
         "--detailed", action="store_true", help="Show detailed cycle information"
@@ -98,7 +98,7 @@ def add_kaizen_commands(subparsers):
     # Analytics command
     analytics_parser = kaizen_sub.add_parser("analytics", help="Show Kaizen analytics")
     analytics_sub = analytics_parser.add_subparsers(
-        dest="analytics_action", required = True
+        dest="analytics_action", required=True
     )
 
     # Success metrics
@@ -112,23 +112,23 @@ def add_kaizen_commands(subparsers):
 
     # Configuration command
     config_parser = kaizen_sub.add_parser("config", help="Configure Kaizen automation")
-    config_sub = config_parser.add_subparsers(dest="config_action", required = True)
+    config_sub = config_parser.add_subparsers(dest="config_action", required=True)
 
     # Show configuration
     config_sub.add_parser("show", help="Show current configuration")
 
     # Update configuration
     update_parser = config_sub.add_parser("update", help="Update configuration")
-    update_parser.add_argument("--interval", type = int, help="Cycle interval in hours")
+    update_parser.add_argument("--interval", type=int, help="Cycle interval in hours")
     update_parser.add_argument(
-        "--max - concurrent", type = int, help="Max concurrent improvements"
+        "--max - concurrent", type=int, help="Max concurrent improvements"
     )
     update_parser.add_argument(
-        "--confidence - threshold", type = float, help="Minimum confidence threshold"
+        "--confidence - threshold", type=float, help="Minimum confidence threshold"
     )
     update_parser.add_argument(
         "--auto - execute - low - risk",
-        type = bool,
+        type=bool,
         help="Auto - execute low - risk improvements",
     )
     update_parser.add_argument(
@@ -252,7 +252,7 @@ def _handle_status(args: argparse.Namespace, kaizen_engine) -> None:
         print(f"   • {category}")
 
     # Recent activity
-    recent_cycles = kaizen_engine.get_cycle_history(limit = 3)
+    recent_cycles = kaizen_engine.get_cycle_history(limit=3)
     if recent_cycles:
         print(f"\n🔄 Recent Cycles:")
         for cycle in recent_cycles:
@@ -347,13 +347,13 @@ def _handle_opportunities_commands(args: argparse.Namespace, kaizen_engine) -> N
 
         # Sort by priority and impact
         opportunities.sort(
-            key = lambda x: (
+            key=lambda x: (
                 {"critical": 4, "high": 3, "medium": 2, "low": 1}.get(
                     x.priority.value, 1
                 ),
                 x.estimated_impact,
             ),
-            reverse = True,
+            reverse=True,
         )
 
         for opp in opportunities:
@@ -469,7 +469,7 @@ def _handle_history(args: argparse.Namespace, kaizen_engine) -> None:
     print(f"📊 Kaizen Cycle History (Last {args.limit})")
     print("=" * 50)
 
-    cycles = kaizen_engine.get_cycle_history(limit = args.limit)
+    cycles = kaizen_engine.get_cycle_history(limit=args.limit)
 
     if not cycles:
         print("No completed cycles found")
@@ -503,7 +503,7 @@ def _handle_analytics_commands(args: argparse.Namespace, kaizen_engine) -> None:
         print("📊 Kaizen Success Analytics")
         print("=" * 40)
 
-        cycles = kaizen_engine.get_cycle_history(limit = 20)
+        cycles = kaizen_engine.get_cycle_history(limit=20)
 
         if not cycles:
             print("No cycle data available for analysis")
@@ -572,7 +572,7 @@ def _handle_analytics_commands(args: argparse.Namespace, kaizen_engine) -> None:
         print("📚 Learning Insights and Patterns")
         print("=" * 40)
 
-        cycles = kaizen_engine.get_cycle_history(limit = 10)
+        cycles = kaizen_engine.get_cycle_history(limit=10)
 
         if not cycles:
             print("No learning data available")
@@ -653,7 +653,7 @@ def _handle_config_commands(args: argparse.Namespace, kaizen_engine) -> None:
             # Save configuration
             config_file = kaizen_engine.data_dir / "automation_config.json"
             with open(config_file, "w") as f:
-                json.dump(config, f, indent = 2)
+                json.dump(config, f, indent=2)
 
             print("✅ Configuration updated:")
             for update in updates_made:

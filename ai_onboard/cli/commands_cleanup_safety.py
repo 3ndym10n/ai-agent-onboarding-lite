@@ -50,7 +50,7 @@ def add_cleanup_safety_commands(subparsers):
         "list - backups", help="List available backups"
     )
     list_parser.add_argument(
-        "--limit", type = int, default = 10, help="Maximum number of backups to show"
+        "--limit", type=int, default=10, help="Maximum number of backups to show"
     )
 
     # Rollback operation
@@ -67,7 +67,7 @@ def add_cleanup_safety_commands(subparsers):
         "clean - backups", help="Clean old backup files"
     )
     clean_parser.add_argument(
-        "--days", type = int, default = 30, help="Delete backups older than N days"
+        "--days", type=int, default=30, help="Delete backups older than N days"
     )
     clean_parser.add_argument(
         "--dry - run",
@@ -148,9 +148,9 @@ def _handle_test_safety_gates(args, root: Path):
         # Create framework and show what would happen
         framework = CleanupSafetyGateFramework(root)
         operation = CleanupOperation(
-            operation_type = args.operation,
-            targets = target_files,
-            description = f"Test {args.operation} operation on {len(target_files)} files",
+            operation_type=args.operation,
+            targets=target_files,
+            description=f"Test {args.operation} operation on {len(target_files)} files",
         )
 
         safe_print(f"\n📋 OPERATION PREVIEW:")
@@ -170,10 +170,10 @@ def _handle_test_safety_gates(args, root: Path):
 
     # Run actual test
     success, message = safe_cleanup_operation(
-        root = root,
-        operation_type = args.operation,
-        targets = target_files,
-        description = f"Safety gate test: {args.operation} {len(target_files)} files",
+        root=root,
+        operation_type=args.operation,
+        targets=target_files,
+        description=f"Safety gate test: {args.operation} {len(target_files)} files",
     )
 
     if success:
@@ -297,7 +297,7 @@ def _handle_clean_backups(args, root: Path):
     # Find old backups
     import datetime
 
-    cutoff_date = datetime.datetime.now() - datetime.timedelta(days = args.days)
+    cutoff_date = datetime.datetime.now() - datetime.timedelta(days=args.days)
 
     old_backups = []
     total_size = 0
@@ -431,11 +431,11 @@ def _handle_config(args, root: Path):
 
     # Save config if changed
     if changed:
-        config_file.parent.mkdir(parents = True, exist_ok = True)
+        config_file.parent.mkdir(parents=True, exist_ok=True)
         with open(config_file, "w") as f:
             import json
 
-            json.dump(config, f, indent = 2)
+            json.dump(config, f, indent=2)
         print_status("Configuration saved", "success")
 
     # Show current configuration

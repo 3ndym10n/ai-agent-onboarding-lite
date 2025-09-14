@@ -27,7 +27,7 @@ def add_cursor_commands(subparsers):
     cursor_parser = subparsers.add_parser(
         "cursor", help="Cursor AI integration commands"
     )
-    cursor_sub = cursor_parser.add_subparsers(dest="cursor_cmd", required = True)
+    cursor_sub = cursor_parser.add_subparsers(dest="cursor_cmd", required=True)
 
     # Initialize command
     init_parser = cursor_sub.add_parser("init", help="Initialize Cursor AI integration")
@@ -50,7 +50,7 @@ def add_cursor_commands(subparsers):
     session_parser = cursor_sub.add_parser(
         "session", help="Manage collaboration sessions"
     )
-    session_sub = session_parser.add_subparsers(dest="session_action", required = True)
+    session_sub = session_parser.add_subparsers(dest="session_action", required=True)
 
     # Session create
     create_parser = session_sub.add_parser(
@@ -82,7 +82,7 @@ def add_cursor_commands(subparsers):
 
     # Config command
     config_parser = cursor_sub.add_parser("config", help="Configure Cursor integration")
-    config_sub = config_parser.add_subparsers(dest="config_action", required = True)
+    config_sub = config_parser.add_subparsers(dest="config_action", required=True)
 
     # Config show
     config_sub.add_parser("show", help="Show current configuration")
@@ -179,7 +179,7 @@ def _handle_cursor_context(args: argparse.Namespace, root: Path) -> None:
         context = get_cursor_project_context(root)
 
         if args.format == "json":
-            print(json.dumps(context, indent = 2, default = str))
+            print(json.dumps(context, indent=2, default=str))
         else:  # summary format
             print("🏗️  Project Context Summary")
             print("=" * 40)

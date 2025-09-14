@@ -8,7 +8,7 @@ from . import intent_checks, summarizer, telemetry, utils
 
 
 def dumps_json(obj: Any) -> str:
-    return json.dumps(obj, ensure_ascii = False, separators=(",", ":"))
+    return json.dumps(obj, ensure_ascii=False, separators=(",", ":"))
 
 
 def _manifest(root: Path) -> Dict[str, Any]:
@@ -43,7 +43,7 @@ def get_applicable_rules(
 
 
 def summary(root: Path, level: str = "brief") -> Dict[str, Any]:
-    return summarizer.make_summary(root, level = level)
+    return summarizer.make_summary(root, level=level)
 
 
 def propose_action(root: Path, diff_json: str = "") -> Dict[str, Any]:

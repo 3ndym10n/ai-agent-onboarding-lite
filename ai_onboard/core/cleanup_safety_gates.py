@@ -58,7 +58,7 @@ class CleanupOperation:
     operation_type: str  # "delete", "move", "modify"
     targets: List[Path]
     description: str
-    affected_files: List[Path] = field(default_factory = list)
+    affected_files: List[Path] = field(default_factory=list)
     backup_required: bool = True
     rollback_plan: Optional[str] = None
 
@@ -71,8 +71,8 @@ class SafetyGateContext:
     risk_assessment: Optional["RiskAssessment"] = None
     dependency_report: Optional[DependencyCheckResult] = None
     backup_id: Optional[str] = None
-    execution_log: List[str] = field(default_factory = list)
-    metadata: Dict[str, Any] = field(default_factory = dict)
+    execution_log: List[str] = field(default_factory=list)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -104,10 +104,10 @@ class RiskAssessment:
             confirmation = ConfirmationLevel.SIMPLE
 
         return cls(
-            level = level,
-            score = score,
-            factors = factors,
-            confirmation_required = confirmation,
+            level=level,
+            score=score,
+            factors=factors,
+            confirmation_required=confirmation,
             recommendations=[],
         )
 
@@ -531,7 +531,7 @@ class BackupExecuteGate(SafetyGate):
         backup_dir = self.root / ".ai_onboard" / "backups" / backup_id
 
         # Ensure backup directory exists
-        backup_dir.mkdir(parents = True, exist_ok = True)
+        backup_dir.mkdir(parents=True, exist_ok=True)
 
         # Create backup manifest
         manifest = {
@@ -551,7 +551,7 @@ class BackupExecuteGate(SafetyGate):
                 if target.is_file():
                     # Backup individual file
                     backup_path = backup_dir / "files" / target.name
-                    backup_path.parent.mkdir(parents = True, exist_ok = True)
+                    backup_path.parent.mkdir(parents=True, exist_ok=True)
                     shutil.copy2(target, backup_path)
 
                     manifest["files"].append(
@@ -578,7 +578,7 @@ class BackupExecuteGate(SafetyGate):
         # Save manifest
         manifest_path = backup_dir / "manifest.json"
         with open(manifest_path, "w") as f:
-            json.dump(manifest, f, indent = 2)
+            json.dump(manifest, f, indent=2)
 
         return backup_id
 
@@ -622,7 +622,7 @@ class BackupExecuteGate(SafetyGate):
 
             if file_info["type"] == "file":
                 # Restore file
-                original_path.parent.mkdir(parents = True, exist_ok = True)
+                original_path.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(backup_path, original_path)
             elif file_info["type"] == "directory":
                 # Restore directory
@@ -783,7 +783,7 @@ class PostOperationGate(SafetyGate):
             backup_path = Path(file_info["backup"])
 
             if file_info["type"] == "file":
-                original_path.parent.mkdir(parents = True, exist_ok = True)
+                original_path.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(backup_path, original_path)
             elif file_info["type"] == "directory":
                 if original_path.exists():
@@ -831,7 +831,7 @@ class CleanupSafetyGateFramework:
         print_activity("Starting cleanup operation with safety gates", "start")
 
         # Initialize context
-        context = SafetyGateContext(operation = operation)
+        context = SafetyGateContext(operation=operation)
 
         # Execute each gate in sequence
         for gate in self.gates:
@@ -888,7 +888,7 @@ class CleanupSafetyGateFramework:
                     except Exception:
                         continue
 
-        return sorted(backups, key = lambda x: x.get("timestamp", ""), reverse = True)
+        return sorted(backups, key=lambda x: x.get("timestamp", ""), reverse=True)
 
     def rollback_operation(self, backup_id: str) -> Tuple[bool, str]:
         """Manually rollback a previous operation."""
@@ -900,7 +900,7 @@ class CleanupSafetyGateFramework:
 
             # Use PostOperationGate rollback functionality
             context = SafetyGateContext(
-                operation = CleanupOperation("rollback", [], "Manual rollback")
+                operation=CleanupOperation("rollback", [], "Manual rollback")
             )
             context.backup_id = backup_id
 
@@ -936,7 +936,7 @@ def safe_cleanup_operation(
     """
     framework = create_safety_framework(root)
     operation = CleanupOperation(
-        operation_type = operation_type, targets = targets, description = description
+        operation_type=operation_type, targets=targets, description=description
     )
 
     return framework.execute_cleanup_operation(operation)
@@ -955,10 +955,10 @@ if __name__ == "__main__":
 
     print("Testing cleanup safety gates...")
     success, message = safe_cleanup_operation(
-        root = root,
+        root=root,
         operation_type="delete",
         targets=[test_file],
-        description = f"Test deletion of {test_file.name}",
+        description=f"Test deletion of {test_file.name}",
     )
 
     print(f"Result: {'SUCCESS' if success else 'FAILED'}")

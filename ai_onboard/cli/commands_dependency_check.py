@@ -174,7 +174,7 @@ def _handle_scan_project(args, root: Path):
 
     if dependency_map:
         safe_print(f"\n   Most referenced files:")
-        sorted_deps = sorted(dependency_map.items(), key = lambda x: x[1], reverse = True)
+        sorted_deps = sorted(dependency_map.items(), key=lambda x: x[1], reverse=True)
         for file_path, dep_count in sorted_deps[:10]:
             file_name = Path(file_path).name
             safe_print(f"     {file_name}: {dep_count} dependencies")
@@ -189,12 +189,12 @@ def _handle_scan_project(args, root: Path):
             "files_scanned": len(scan_files),
             "dependency_map": dependency_map,
             "top_dependencies": dict(
-                sorted(dependency_map.items(), key = lambda x: x[1], reverse = True)[:20]
+                sorted(dependency_map.items(), key=lambda x: x[1], reverse=True)[:20]
             ),
         }
 
         with open(output_path, "w") as f:
-            json.dump(output_data, f, indent = 2)
+            json.dump(output_data, f, indent=2)
 
         print_status(f"Results saved to {output_path}", "success")
 

@@ -209,7 +209,7 @@ class ContextContinuityManager:
         # Check if context is older than 1 hour
         try:
             last_update = datetime.fromisoformat(last_updated.replace("Z", "+00:00"))
-            if datetime.now(last_update.tzinfo) - last_update > timedelta(hours = 1):
+            if datetime.now(last_update.tzinfo) - last_update > timedelta(hours=1):
                 return False
         except:
             return False
@@ -223,7 +223,7 @@ class ContextContinuityManager:
         context_copy.pop("context_hash", None)  # Remove hash from calculation
         context_copy.pop("last_updated", None)  # Remove timestamp from calculation
 
-        context_str = json.dumps(context_copy, sort_keys = True)
+        context_str = json.dumps(context_copy, sort_keys=True)
         return hashlib.sha256(context_str.encode()).hexdigest()[:16]
 
     def _extract_key_decisions(
@@ -351,7 +351,7 @@ class ContextContinuityManager:
             (count - avg_activities) ** 2 for count in activity_counts
         ) / len(activity_counts)
         priority_shifts = (
-            min(variance / (avg_activities ** 2), 1.0) if avg_activities > 0 else 0.0
+            min(variance / (avg_activities**2), 1.0) if avg_activities > 0 else 0.0
         )
 
         return {

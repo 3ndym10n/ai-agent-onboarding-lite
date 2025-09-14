@@ -50,13 +50,13 @@ class VisualDesignValidator:
             DesignPrinciple(
                 name="Visual Hierarchy",
                 description="Clear information hierarchy and visual flow",
-                weight = 0.25,
+                weight=0.25,
                 criteria=["Clear headings", "Logical content flow", "Proper spacing"],
             ),
             DesignPrinciple(
                 name="Consistency",
                 description="Consistent design patterns and elements",
-                weight = 0.20,
+                weight=0.20,
                 criteria=[
                     "Color consistency",
                     "Typography consistency",
@@ -66,13 +66,13 @@ class VisualDesignValidator:
             DesignPrinciple(
                 name="Accessibility",
                 description="Design accessible to all users",
-                weight = 0.25,
+                weight=0.25,
                 criteria=["Color contrast", "Text readability", "Keyboard navigation"],
             ),
             DesignPrinciple(
                 name="User Experience",
                 description="Intuitive and user - friendly design",
-                weight = 0.30,
+                weight=0.30,
                 criteria=[
                     "Clear navigation",
                     "Intuitive interactions",
@@ -113,10 +113,10 @@ class VisualDesignValidator:
         except Exception as e:
             logger.error(f"Error analyzing screenshot: {e}")
             return VisualAnalysis(
-                design_quality_score = 0.0,
-                brand_alignment_score = 0.0,
-                accessibility_score = 0.0,
-                user_experience_score = 0.0,
+                design_quality_score=0.0,
+                brand_alignment_score=0.0,
+                accessibility_score=0.0,
+                user_experience_score=0.0,
                 issues=["Failed to analyze screenshot"],
                 suggestions=["Check file format and try again"],
                 overall_alignment="misaligned",
@@ -137,10 +137,10 @@ class VisualDesignValidator:
         # Basic file validation
         if not file_path.exists():
             return VisualAnalysis(
-                design_quality_score = 0.0,
-                brand_alignment_score = 0.0,
-                accessibility_score = 0.0,
-                user_experience_score = 0.0,
+                design_quality_score=0.0,
+                brand_alignment_score=0.0,
+                accessibility_score=0.0,
+                user_experience_score=0.0,
                 issues=["Screenshot file not found"],
                 suggestions=["Provide valid screenshot path"],
                 overall_alignment="misaligned",
@@ -176,13 +176,13 @@ class VisualDesignValidator:
             overall = "misaligned"
 
         return VisualAnalysis(
-            design_quality_score = design_quality,
-            brand_alignment_score = brand_alignment,
-            accessibility_score = accessibility,
-            user_experience_score = ux_score,
-            issues = issues,
-            suggestions = suggestions,
-            overall_alignment = overall,
+            design_quality_score=design_quality,
+            brand_alignment_score=brand_alignment,
+            accessibility_score=accessibility,
+            user_experience_score=ux_score,
+            issues=issues,
+            suggestions=suggestions,
+            overall_alignment=overall,
         )
 
     def validate_design_decision(

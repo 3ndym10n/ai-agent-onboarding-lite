@@ -58,7 +58,7 @@ class ConfigurationSetting:
     allowed_values: Optional[List[Any]] = None
     adaptive: bool = True
     sensitive: bool = False
-    last_modified: datetime = field(default_factory = datetime.now)
+    last_modified: datetime = field(default_factory=datetime.now)
     modified_by: str = "system"
 
 
@@ -70,9 +70,9 @@ class ConfigurationProfile:
     name: str
     description: str
     context: Dict[str, Any]  # Project type, user preferences, etc.
-    settings: Dict[str, ConfigurationSetting] = field(default_factory = dict)
-    created_at: datetime = field(default_factory = datetime.now)
-    last_used: datetime = field(default_factory = datetime.now)
+    settings: Dict[str, ConfigurationSetting] = field(default_factory=dict)
+    created_at: datetime = field(default_factory=datetime.now)
+    last_used: datetime = field(default_factory=datetime.now)
     usage_count: int = 0
     effectiveness_score: float = 0.0
 
@@ -89,7 +89,7 @@ class ConfigurationChange:
     trigger: AdaptationTrigger
     confidence: float
     expected_impact: float
-    timestamp: datetime = field(default_factory = datetime.now)
+    timestamp: datetime = field(default_factory=datetime.now)
     reverted: bool = False
     reversion_reason: Optional[str] = None
 
@@ -164,91 +164,91 @@ class AdaptiveConfigManager:
         default_settings = {
             "gate_timeout": ConfigurationSetting(
                 key="gate_timeout",
-                value = 2,
-                category = ConfigurationCategory.AI_AGENT_BEHAVIOR,
+                value=2,
+                category=ConfigurationCategory.AI_AGENT_BEHAVIOR,
                 description="Timeout for gate system interactions (seconds)",
-                default_value = 2,
-                min_value = 1,
-                max_value = 30,
-                adaptive = True,
+                default_value=2,
+                min_value=1,
+                max_value=30,
+                adaptive=True,
             ),
             "safety_level": ConfigurationSetting(
                 key="safety_level",
                 value="medium",
-                category = ConfigurationCategory.SAFETY_AND_SECURITY,
+                category=ConfigurationCategory.SAFETY_AND_SECURITY,
                 description="Safety level for AI agent operations",
                 default_value="medium",
                 allowed_values=["low", "medium", "high", "strict"],
-                adaptive = True,
+                adaptive=True,
             ),
             "collaboration_mode": ConfigurationSetting(
                 key="collaboration_mode",
                 value="collaborative",
-                category = ConfigurationCategory.AI_AGENT_BEHAVIOR,
+                category=ConfigurationCategory.AI_AGENT_BEHAVIOR,
                 description="Mode for AI agent collaboration",
                 default_value="collaborative",
                 allowed_values=["autonomous", "collaborative", "supervised"],
-                adaptive = True,
+                adaptive=True,
             ),
             "vision_interrogation_adaptive": ConfigurationSetting(
                 key="vision_interrogation_adaptive",
-                value = True,
-                category = ConfigurationCategory.WORKFLOW_OPTIMIZATION,
+                value=True,
+                category=ConfigurationCategory.WORKFLOW_OPTIMIZATION,
                 description="Enable adaptive vision interrogation questions",
-                default_value = True,
-                adaptive = True,
+                default_value=True,
+                adaptive=True,
             ),
             "error_handling_auto_recovery": ConfigurationSetting(
                 key="error_handling_auto_recovery",
-                value = True,
-                category = ConfigurationCategory.SYSTEM_PERFORMANCE,
+                value=True,
+                category=ConfigurationCategory.SYSTEM_PERFORMANCE,
                 description="Enable automatic error recovery",
-                default_value = True,
-                adaptive = True,
+                default_value=True,
+                adaptive=True,
             ),
             "performance_monitoring_enabled": ConfigurationSetting(
                 key="performance_monitoring_enabled",
-                value = True,
-                category = ConfigurationCategory.SYSTEM_PERFORMANCE,
+                value=True,
+                category=ConfigurationCategory.SYSTEM_PERFORMANCE,
                 description="Enable performance monitoring",
-                default_value = True,
-                adaptive = True,
+                default_value=True,
+                adaptive=True,
             ),
             "learning_enabled": ConfigurationSetting(
                 key="learning_enabled",
-                value = True,
-                category = ConfigurationCategory.SYSTEM_PERFORMANCE,
+                value=True,
+                category=ConfigurationCategory.SYSTEM_PERFORMANCE,
                 description="Enable continuous learning",
-                default_value = True,
-                adaptive = True,
+                default_value=True,
+                adaptive=True,
             ),
             "ui_theme": ConfigurationSetting(
                 key="ui_theme",
                 value="auto",
-                category = ConfigurationCategory.USER_INTERFACE,
+                category=ConfigurationCategory.USER_INTERFACE,
                 description="User interface theme",
                 default_value="auto",
                 allowed_values=["light", "dark", "auto"],
-                adaptive = True,
+                adaptive=True,
             ),
             "notification_level": ConfigurationSetting(
                 key="notification_level",
                 value="medium",
-                category = ConfigurationCategory.USER_INTERFACE,
+                category=ConfigurationCategory.USER_INTERFACE,
                 description="Level of notifications to show",
                 default_value="medium",
                 allowed_values=["low", "medium", "high"],
-                adaptive = True,
+                adaptive=True,
             ),
             "auto_save_interval": ConfigurationSetting(
                 key="auto_save_interval",
-                value = 30,
-                category = ConfigurationCategory.SYSTEM_PERFORMANCE,
+                value=30,
+                category=ConfigurationCategory.SYSTEM_PERFORMANCE,
                 description="Auto - save interval in seconds",
-                default_value = 30,
-                min_value = 5,
-                max_value = 300,
-                adaptive = True,
+                default_value=30,
+                min_value=5,
+                max_value=300,
+                adaptive=True,
             ),
         }
 
@@ -264,18 +264,18 @@ class AdaptiveConfigManager:
 
         for key, setting_data in data.items():
             self.current_config[key] = ConfigurationSetting(
-                key = key,
-                value = setting_data["value"],
-                category = ConfigurationCategory(setting_data["category"]),
-                description = setting_data["description"],
-                default_value = setting_data["default_value"],
-                min_value = setting_data.get("min_value"),
-                max_value = setting_data.get("max_value"),
-                allowed_values = setting_data.get("allowed_values"),
-                adaptive = setting_data.get("adaptive", True),
-                sensitive = setting_data.get("sensitive", False),
-                last_modified = datetime.fromisoformat(setting_data["last_modified"]),
-                modified_by = setting_data.get("modified_by", "system"),
+                key=key,
+                value=setting_data["value"],
+                category=ConfigurationCategory(setting_data["category"]),
+                description=setting_data["description"],
+                default_value=setting_data["default_value"],
+                min_value=setting_data.get("min_value"),
+                max_value=setting_data.get("max_value"),
+                allowed_values=setting_data.get("allowed_values"),
+                adaptive=setting_data.get("adaptive", True),
+                sensitive=setting_data.get("sensitive", False),
+                last_modified=datetime.fromisoformat(setting_data["last_modified"]),
+                modified_by=setting_data.get("modified_by", "system"),
             )
 
     def _load_config_profiles(self):
@@ -289,30 +289,30 @@ class AdaptiveConfigManager:
             settings = {}
             for key, setting_data in profile_data["settings"].items():
                 settings[key] = ConfigurationSetting(
-                    key = key,
-                    value = setting_data["value"],
-                    category = ConfigurationCategory(setting_data["category"]),
-                    description = setting_data["description"],
-                    default_value = setting_data["default_value"],
-                    min_value = setting_data.get("min_value"),
-                    max_value = setting_data.get("max_value"),
-                    allowed_values = setting_data.get("allowed_values"),
-                    adaptive = setting_data.get("adaptive", True),
-                    sensitive = setting_data.get("sensitive", False),
-                    last_modified = datetime.fromisoformat(setting_data["last_modified"]),
-                    modified_by = setting_data.get("modified_by", "system"),
+                    key=key,
+                    value=setting_data["value"],
+                    category=ConfigurationCategory(setting_data["category"]),
+                    description=setting_data["description"],
+                    default_value=setting_data["default_value"],
+                    min_value=setting_data.get("min_value"),
+                    max_value=setting_data.get("max_value"),
+                    allowed_values=setting_data.get("allowed_values"),
+                    adaptive=setting_data.get("adaptive", True),
+                    sensitive=setting_data.get("sensitive", False),
+                    last_modified=datetime.fromisoformat(setting_data["last_modified"]),
+                    modified_by=setting_data.get("modified_by", "system"),
                 )
 
             self.config_profiles[profile_id] = ConfigurationProfile(
-                profile_id = profile_id,
-                name = profile_data["name"],
-                description = profile_data["description"],
-                context = profile_data["context"],
-                settings = settings,
-                created_at = datetime.fromisoformat(profile_data["created_at"]),
-                last_used = datetime.fromisoformat(profile_data["last_used"]),
-                usage_count = profile_data.get("usage_count", 0),
-                effectiveness_score = profile_data.get("effectiveness_score", 0.0),
+                profile_id=profile_id,
+                name=profile_data["name"],
+                description=profile_data["description"],
+                context=profile_data["context"],
+                settings=settings,
+                created_at=datetime.fromisoformat(profile_data["created_at"]),
+                last_used=datetime.fromisoformat(profile_data["last_used"]),
+                usage_count=profile_data.get("usage_count", 0),
+                effectiveness_score=profile_data.get("effectiveness_score", 0.0),
             )
 
     def _load_adaptation_rules(self):
@@ -326,15 +326,15 @@ class AdaptiveConfigManager:
         for rule_data in data:
             self.adaptation_rules.append(
                 AdaptationRule(
-                    rule_id = rule_data["rule_id"],
-                    name = rule_data["name"],
-                    description = rule_data["description"],
-                    condition = rule_data["condition"],
-                    action = rule_data["action"],
-                    priority = rule_data["priority"],
-                    enabled = rule_data.get("enabled", True),
-                    success_rate = rule_data.get("success_rate", 0.0),
-                    usage_count = rule_data.get("usage_count", 0),
+                    rule_id=rule_data["rule_id"],
+                    name=rule_data["name"],
+                    description=rule_data["description"],
+                    condition=rule_data["condition"],
+                    action=rule_data["action"],
+                    priority=rule_data["priority"],
+                    enabled=rule_data.get("enabled", True),
+                    success_rate=rule_data.get("success_rate", 0.0),
+                    usage_count=rule_data.get("usage_count", 0),
                     last_triggered=(
                         datetime.fromisoformat(rule_data["last_triggered"])
                         if rule_data.get("last_triggered")
@@ -357,17 +357,17 @@ class AdaptiveConfigManager:
                     change_data = json.loads(line)
                     self.config_history.append(
                         ConfigurationChange(
-                            change_id = change_data["change_id"],
-                            setting_key = change_data["setting_key"],
-                            old_value = change_data["old_value"],
-                            new_value = change_data["new_value"],
-                            reason = change_data["reason"],
-                            trigger = AdaptationTrigger(change_data["trigger"]),
-                            confidence = change_data["confidence"],
-                            expected_impact = change_data["expected_impact"],
-                            timestamp = datetime.fromisoformat(change_data["timestamp"]),
-                            reverted = change_data.get("reverted", False),
-                            reversion_reason = change_data.get("reversion_reason"),
+                            change_id=change_data["change_id"],
+                            setting_key=change_data["setting_key"],
+                            old_value=change_data["old_value"],
+                            new_value=change_data["new_value"],
+                            reason=change_data["reason"],
+                            trigger=AdaptationTrigger(change_data["trigger"]),
+                            confidence=change_data["confidence"],
+                            expected_impact=change_data["expected_impact"],
+                            timestamp=datetime.fromisoformat(change_data["timestamp"]),
+                            reverted=change_data.get("reverted", False),
+                            reversion_reason=change_data.get("reversion_reason"),
                         )
                     )
                 except (json.JSONDecodeError, KeyError):
@@ -391,7 +391,7 @@ class AdaptiveConfigManager:
                         "reason": "User prefers quick interactions",
                     }
                 },
-                priority = 7,
+                priority=7,
             ),
             AdaptationRule(
                 rule_id="rule_002",
@@ -407,7 +407,7 @@ class AdaptiveConfigManager:
                         "reason": "New user needs more guidance",
                     }
                 },
-                priority = 8,
+                priority=8,
             ),
             AdaptationRule(
                 rule_id="rule_003",
@@ -424,7 +424,7 @@ class AdaptiveConfigManager:
                         "reason": "User is highly experienced",
                     }
                 },
-                priority = 6,
+                priority=6,
             ),
             AdaptationRule(
                 rule_id="rule_004",
@@ -444,7 +444,7 @@ class AdaptiveConfigManager:
                         "reason": "Reduce save interval for better performance",
                     },
                 },
-                priority = 5,
+                priority=5,
             ),
             AdaptationRule(
                 rule_id="rule_005",
@@ -461,7 +461,7 @@ class AdaptiveConfigManager:
                         "reason": "Project - specific questions needed",
                     }
                 },
-                priority = 4,
+                priority=4,
             ),
         ]
 
@@ -548,14 +548,14 @@ class AdaptiveConfigManager:
 
         # Record the change
         change = ConfigurationChange(
-            change_id = f"change_{int(time.time())}_{utils.random_string(8)}",
-            setting_key = key,
-            old_value = old_value,
-            new_value = value,
-            reason = reason,
-            trigger = trigger,
-            confidence = confidence,
-            expected_impact = expected_impact,
+            change_id=f"change_{int(time.time())}_{utils.random_string(8)}",
+            setting_key=key,
+            old_value=old_value,
+            new_value=value,
+            reason=reason,
+            trigger=trigger,
+            confidence=confidence,
+            expected_impact=expected_impact,
         )
 
         self.config_history.append(change)
@@ -566,7 +566,7 @@ class AdaptiveConfigManager:
 
         # Record learning event
         self.continuous_improvement.record_learning_event(
-            learning_type = continuous_improvement_system.LearningType.USER_PREFERENCE,
+            learning_type=continuous_improvement_system.LearningType.USER_PREFERENCE,
             context={
                 "setting_key": key,
                 "old_value": old_value,
@@ -577,8 +577,8 @@ class AdaptiveConfigManager:
                 "configuration_change": True,
                 "user_satisfaction": expected_impact,
             },
-            confidence = confidence,
-            impact_score = expected_impact,
+            confidence=confidence,
+            impact_score=expected_impact,
             source="adaptive_config_manager",
         )
 
@@ -687,18 +687,18 @@ class AdaptiveConfigManager:
         profile_settings = {}
         for key, setting in self.current_config.items():
             profile_settings[key] = ConfigurationSetting(
-                key = setting.key,
-                value = setting.value,
-                category = setting.category,
-                description = setting.description,
-                default_value = setting.default_value,
-                min_value = setting.min_value,
-                max_value = setting.max_value,
-                allowed_values = setting.allowed_values,
-                adaptive = setting.adaptive,
-                sensitive = setting.sensitive,
-                last_modified = setting.last_modified,
-                modified_by = setting.modified_by,
+                key=setting.key,
+                value=setting.value,
+                category=setting.category,
+                description=setting.description,
+                default_value=setting.default_value,
+                min_value=setting.min_value,
+                max_value=setting.max_value,
+                allowed_values=setting.allowed_values,
+                adaptive=setting.adaptive,
+                sensitive=setting.sensitive,
+                last_modified=setting.last_modified,
+                modified_by=setting.modified_by,
             )
 
         # Apply any overrides
@@ -710,11 +710,11 @@ class AdaptiveConfigManager:
                     profile_settings[key].modified_by = "profile_creation"
 
         profile = ConfigurationProfile(
-            profile_id = profile_id,
-            name = name,
-            description = description,
-            context = context,
-            settings = profile_settings,
+            profile_id=profile_id,
+            name=name,
+            description=description,
+            context=context,
+            settings=profile_settings,
         )
 
         self.config_profiles[profile_id] = profile
@@ -764,7 +764,7 @@ class AdaptiveConfigManager:
                 recommendations.append(recommendation)
 
         # Sort by expected impact
-        recommendations.sort(key = lambda x: x["expected_impact"], reverse = True)
+        recommendations.sort(key=lambda x: x["expected_impact"], reverse=True)
 
         return recommendations[:limit]
 
@@ -785,7 +785,7 @@ class AdaptiveConfigManager:
 
     def get_configuration_analytics(self, days: int = 7) -> Dict[str, Any]:
         """Get configuration analytics for the last N days."""
-        cutoff_date = datetime.now() - timedelta(days = days)
+        cutoff_date = datetime.now() - timedelta(days=days)
 
         # Filter recent changes
         recent_changes = [
@@ -827,7 +827,7 @@ class AdaptiveConfigManager:
             "changes_by_trigger": changes_by_trigger,
             "changes_by_setting": changes_by_setting,
             "most_changed_settings": sorted(
-                changes_by_setting.items(), key = lambda x: x[1], reverse = True
+                changes_by_setting.items(), key=lambda x: x[1], reverse=True
             )[:5],
         }
 
@@ -848,7 +848,7 @@ class AdaptiveConfigManager:
         }
 
         with open(self.config_history_path, "a", encoding="utf - 8") as f:
-            json.dump(change_data, f, ensure_ascii = False, separators=(",", ":"))
+            json.dump(change_data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 
     def _save_current_config(self):

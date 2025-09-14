@@ -54,7 +54,7 @@ class DesignSystemManager:
     def __init__(self, project_path: str):
         self.project_path = Path(project_path)
         self.design_system_path = self.project_path / ".ai_onboard" / "design_system"
-        self.design_system_path.mkdir(exist_ok = True)
+        self.design_system_path.mkdir(exist_ok=True)
 
         self.tokens_file = self.design_system_path / "tokens.json"
         self.components_file = self.design_system_path / "components.json"
@@ -301,7 +301,7 @@ class DesignSystemManager:
                 set(comp.category for comp in self.components.values())
             ),
             "recent_components": sorted(
-                self.components.values(), key = lambda x: x.last_used, reverse = True
+                self.components.values(), key=lambda x: x.last_used, reverse=True
             )[:5],
         }
 
@@ -312,7 +312,7 @@ class DesignSystemManager:
                 json.dump(
                     {name: asdict(token) for name, token in self.tokens.items()},
                     f,
-                    indent = 2,
+                    indent=2,
                 )
         except Exception as e:
             logger.error(f"Error saving design tokens: {e}")
@@ -327,7 +327,7 @@ class DesignSystemManager:
                         for name, component in self.components.items()
                     },
                     f,
-                    indent = 2,
+                    indent=2,
                 )
         except Exception as e:
             logger.error(f"Error saving design components: {e}")
@@ -339,7 +339,7 @@ class DesignSystemManager:
                 json.dump(
                     {name: asdict(pattern) for name, pattern in self.patterns.items()},
                     f,
-                    indent = 2,
+                    indent=2,
                 )
         except Exception as e:
             logger.error(f"Error saving design patterns: {e}")

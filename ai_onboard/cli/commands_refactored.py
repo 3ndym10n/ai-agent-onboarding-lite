@@ -67,7 +67,7 @@ from .commands_ux_enhancements import (
 from .ux_middleware import get_ux_middleware
 
 
-def main(argv = None):
+def main(argv=None):
     """Main CLI entry point with refactored command structure."""
     p = argparse.ArgumentParser(
         prog="ai_onboard",
@@ -76,7 +76,7 @@ def main(argv = None):
             "(charter + plan + align + validate + kaizen + interrogate + prompt + ai - agent + aaol)"
         ),
     )
-    sub = p.add_subparsers(dest="cmd", required = True)
+    sub = p.add_subparsers(dest="cmd", required=True)
 
     # Add core commands
     add_core_commands(sub)

@@ -26,14 +26,14 @@ def add_decision_pipeline_commands(subparsers):
         "decision - pipeline",
         help="Advanced agent decision pipeline management and testing",
     )
-    pipeline_sub = pipeline_parser.add_subparsers(dest="pipeline_cmd", required = True)
+    pipeline_sub = pipeline_parser.add_subparsers(dest="pipeline_cmd", required=True)
 
     # Test decision command
     test_parser = pipeline_sub.add_parser(
         "test", help="Test decision pipeline with sample input"
     )
     test_parser.add_argument(
-        "--user - input", required = True, help="User input to process"
+        "--user - input", required=True, help="User input to process"
     )
     test_parser.add_argument(
         "--user - id", default="test_user", help="User ID for testing"
@@ -50,13 +50,13 @@ def add_decision_pipeline_commands(subparsers):
     analyze_parser = pipeline_sub.add_parser(
         "analyze", help="Analyze decision patterns and outcomes"
     )
-    analyze_sub = analyze_parser.add_subparsers(dest="analyze_action", required = True)
+    analyze_sub = analyze_parser.add_subparsers(dest="analyze_action", required=True)
 
     # Analyze outcomes
     outcomes_parser = analyze_sub.add_parser(
         "outcomes", help="Analyze decision outcomes"
     )
-    outcomes_parser.add_argument("--days", type = int, default = 7, help="Days to analyze")
+    outcomes_parser.add_argument("--days", type=int, default=7, help="Days to analyze")
     outcomes_parser.add_argument("--user - id", help="Filter by user ID")
     outcomes_parser.add_argument("--agent - id", help="Filter by agent ID")
 
@@ -64,7 +64,7 @@ def add_decision_pipeline_commands(subparsers):
     perf_parser = analyze_sub.add_parser(
         "performance", help="Analyze pipeline performance"
     )
-    perf_parser.add_argument("--days", type = int, default = 7, help="Days to analyze")
+    perf_parser.add_argument("--days", type=int, default=7, help="Days to analyze")
     perf_parser.add_argument(
         "--complexity",
         choices=["simple", "moderate", "complex", "critical"],
@@ -76,20 +76,20 @@ def add_decision_pipeline_commands(subparsers):
         "confidence", help="Analyze confidence patterns"
     )
     confidence_parser.add_argument(
-        "--days", type = int, default = 7, help="Days to analyze"
+        "--days", type=int, default=7, help="Days to analyze"
     )
     confidence_parser.add_argument(
-        "--min - confidence", type = float, default = 0.0, help="Minimum confidence"
+        "--min - confidence", type=float, default=0.0, help="Minimum confidence"
     )
     confidence_parser.add_argument(
-        "--max - confidence", type = float, default = 1.0, help="Maximum confidence"
+        "--max - confidence", type=float, default=1.0, help="Maximum confidence"
     )
 
     # Configuration command
     config_parser = pipeline_sub.add_parser(
         "config", help="Configure decision pipeline"
     )
-    config_sub = config_parser.add_subparsers(dest="config_action", required = True)
+    config_sub = config_parser.add_subparsers(dest="config_action", required=True)
 
     # Show configuration
     config_sub.add_parser("show", help="Show current configuration")
@@ -99,16 +99,16 @@ def add_decision_pipeline_commands(subparsers):
         "thresholds", help="Configure confidence thresholds"
     )
     thresholds_parser.add_argument(
-        "--simple", type = float, help="Threshold for simple decisions"
+        "--simple", type=float, help="Threshold for simple decisions"
     )
     thresholds_parser.add_argument(
-        "--moderate", type = float, help="Threshold for moderate decisions"
+        "--moderate", type=float, help="Threshold for moderate decisions"
     )
     thresholds_parser.add_argument(
-        "--complex", type = float, help="Threshold for complex decisions"
+        "--complex", type=float, help="Threshold for complex decisions"
     )
     thresholds_parser.add_argument(
-        "--critical", type = float, help="Threshold for critical decisions"
+        "--critical", type=float, help="Threshold for critical decisions"
     )
 
     # Benchmark command
@@ -116,7 +116,7 @@ def add_decision_pipeline_commands(subparsers):
         "benchmark", help="Run decision pipeline benchmarks"
     )
     benchmark_parser.add_argument(
-        "--iterations", type = int, default = 100, help="Number of iterations"
+        "--iterations", type=int, default=100, help="Number of iterations"
     )
     benchmark_parser.add_argument(
         "--complexity",
@@ -218,12 +218,12 @@ def _handle_test_decision(args: argparse.Namespace, pipeline, root: Path) -> Non
     start_time = time.time()
 
     result = pipeline.process_decision(
-        session_id = session_id,
-        user_id = args.user_id,
-        agent_id = args.agent_id,
-        user_input = args.user_input,
-        resolved_intents = resolved_intents,
-        conversation_context = session,
+        session_id=session_id,
+        user_id=args.user_id,
+        agent_id=args.agent_id,
+        user_input=args.user_input,
+        resolved_intents=resolved_intents,
+        conversation_context=session,
     )
 
     time.time() - start_time
@@ -402,23 +402,23 @@ def _handle_benchmark(args: argparse.Namespace, pipeline, root: Path) -> None:
         from ..core.ai_agent_orchestration import ConversationContext, ConversationState
 
         mock_context = ConversationContext(
-            session_id = f"benchmark_session_{i}",
+            session_id=f"benchmark_session_{i}",
             user_id="benchmark_user",
-            project_root = root,
-            created_at = time.time(),
-            last_activity = time.time(),
-            state = ConversationState.ACTIVE,
+            project_root=root,
+            created_at=time.time(),
+            last_activity=time.time(),
+            state=ConversationState.ACTIVE,
         )
 
         start_time = time.time()
         try:
             result = pipeline.process_decision(
-                session_id = mock_context.session_id,
+                session_id=mock_context.session_id,
                 user_id="benchmark_user",
                 agent_id="benchmark_agent",
-                user_input = test_input,
-                resolved_intents = intents,
-                conversation_context = mock_context,
+                user_input=test_input,
+                resolved_intents=intents,
+                conversation_context=mock_context,
             )
 
             run_time = (time.time() - start_time) * 1000

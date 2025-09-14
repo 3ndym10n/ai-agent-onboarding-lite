@@ -23,8 +23,8 @@ def remove_unused_imports(file_path: Path) -> bool:
                 "--in - place",
                 str(file_path),
             ],
-            capture_output = True,
-            text = True,
+            capture_output=True,
+            text=True,
         )
 
         return result.returncode == 0
@@ -38,8 +38,8 @@ def fix_line_length_issues(file_path: Path) -> bool:
     try:
         result = subprocess.run(
             ["python", "-m", "black", "--line - length = 88", str(file_path)],
-            capture_output = True,
-            text = True,
+            capture_output=True,
+            text=True,
         )
 
         return result.returncode == 0
@@ -119,8 +119,8 @@ def main():
                 "tests/",
                 "scripts/",
             ],
-            capture_output = True,
-            text = True,
+            capture_output=True,
+            text=True,
         )
 
         if result.returncode == 0:
@@ -136,8 +136,8 @@ def main():
         # Install autoflake
         subprocess.run(
             ["python", "-m", "pip", "install", "autoflake"],
-            check = True,
-            capture_output = True,
+            check=True,
+            capture_output=True,
         )
 
         # Remove unused imports
@@ -154,7 +154,9 @@ def main():
             print(f"✅ Fixed whitespace: {file_path}")
 
     print("\n🎉 Linting fixes completed!")
-    print("Run 'python scripts / local_ci_validation.py --step quality' to check results")
+    print(
+        "Run 'python scripts / local_ci_validation.py --step quality' to check results"
+    )
 
 
 if __name__ == "__main__":

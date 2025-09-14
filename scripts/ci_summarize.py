@@ -53,7 +53,7 @@ def _extract_hits(lines: List[str]) -> List[str]:
 
 
 def summarize() -> Dict[str, object]:
-    LOG_DIR.mkdir(parents = True, exist_ok = True)
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
     report: Dict[str, object] = {"jobs": {}, "notes": []}
 
     for log_file in sorted(LOG_DIR.glob("ci__*.log")):
@@ -83,7 +83,7 @@ def summarize() -> Dict[str, object]:
 
 def main() -> None:
     report = summarize()
-    SUMMARY_PATH.write_text(json.dumps(report, indent = 2), encoding="utf - 8")
+    SUMMARY_PATH.write_text(json.dumps(report, indent=2), encoding="utf - 8")
     print(f"Wrote summary: {SUMMARY_PATH}")
 
 

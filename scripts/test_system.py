@@ -56,7 +56,7 @@ class EnhancedMetricsCollector:
         if HAS_PSUTIL:
             process = psutil.Process()
             start_memory = process.memory_info().rss / 1024 / 1024  # MB
-            start_cpu = process.cpu_percent(interval = None)
+            start_cpu = process.cpu_percent(interval=None)
         else:
             start_memory = 0.0
             start_cpu = 0.0
@@ -78,7 +78,7 @@ class EnhancedMetricsCollector:
 
             if HAS_PSUTIL:
                 end_memory = process.memory_info().rss / 1024 / 1024  # MB
-                end_cpu = process.cpu_percent(interval = None)
+                end_cpu = process.cpu_percent(interval=None)
             else:
                 end_memory = 0.0
                 end_cpu = 0.0
@@ -167,7 +167,7 @@ class EnhancedMetricsCollector:
         """Analyze errors using SmartDebugger with enhanced integration."""
         try:
             analysis = self.smart_debugger.analyze_error(
-                error_msg, context = f"Test: {test_name}"
+                error_msg, context=f"Test: {test_name}"
             )
 
             # Enhanced analysis with more details
@@ -629,7 +629,7 @@ class PerformanceBaselineMonitor:
         """Save performance baselines to file."""
         try:
             with open(self.baseline_file, "w") as f:
-                json.dump(self.baselines, f, indent = 2)
+                json.dump(self.baselines, f, indent=2)
         except:
             pass
 
@@ -971,10 +971,10 @@ def main():
         / "test_reports"
         / f"enhanced_test_report_{int(time.time())}.json"
     )
-    report_path.parent.mkdir(parents = True, exist_ok = True)
+    report_path.parent.mkdir(parents=True, exist_ok=True)
 
     with open(report_path, "w") as f:
-        json.dump(report, f, indent = 2)
+        json.dump(report, f, indent=2)
 
     print("\nDetailed report saved to:")
     print(f"   {report_path}")

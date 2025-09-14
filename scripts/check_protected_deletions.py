@@ -38,8 +38,8 @@ def get_staged_deletions() -> List[str]:
     # Use name - status to detect deletions (D) and renames (Rxxx)
     out = subprocess.check_output(
         ["git", "-C", str(REPO_ROOT), "diff", "--cached", "--name - status"],
-        text = True,
-        stderr = subprocess.DEVNULL,
+        text=True,
+        stderr=subprocess.DEVNULL,
     )
     deleted: List[str] = []
     for line in out.splitlines():

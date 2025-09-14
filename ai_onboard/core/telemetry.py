@@ -48,7 +48,7 @@ def record_run(root: Path, res: Dict[str, Any]) -> None:
 
     try:
         with open(metrics_path, "a", encoding="utf - 8") as f:
-            json.dump(rec, f, ensure_ascii = False, separators=(",", ":"))
+            json.dump(rec, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
     except Exception as e:
         # Best - effort: capture minimal error info without crashing the CLI.
@@ -97,7 +97,7 @@ def log_event(event: str, **fields: Any) -> None:
     path = logs_dir / "events.jsonl"
     try:
         with open(path, "a", encoding="utf - 8") as f:
-            json.dump(rec, f, ensure_ascii = False, separators=(",", ":"))
+            json.dump(rec, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
     except Exception:
         # Best - effort; do not raise from telemetry

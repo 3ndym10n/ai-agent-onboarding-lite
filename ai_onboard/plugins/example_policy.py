@@ -12,7 +12,7 @@ class ExamplePolicy:
         target = (paths or ["."])[0]
         return [
             Issue(
-                "EXAMPLE_POLICY", "info", "Example policy ran", target, confidence = 0.1
+                "EXAMPLE_POLICY", "info", "Example policy ran", target, confidence=0.1
             )
         ]
 

@@ -27,12 +27,12 @@ def add_api_commands(subparsers):
 
     # Main API command
     api_parser = subparsers.add_parser("api", help="API server management commands")
-    api_sub = api_parser.add_subparsers(dest="api_cmd", required = True)
+    api_sub = api_parser.add_subparsers(dest="api_cmd", required=True)
 
     # Start server command
     start_parser = api_sub.add_parser("start", help="Start the API server")
     start_parser.add_argument("--host", default="127.0.0.1", help="Host to bind to")
-    start_parser.add_argument("--port", type = int, default = 8080, help="Port to bind to")
+    start_parser.add_argument("--port", type=int, default=8080, help="Port to bind to")
     start_parser.add_argument(
         "--reload", action="store_true", help="Enable auto - reload for development"
     )
@@ -56,7 +56,7 @@ def add_api_commands(subparsers):
 
     # Config command
     config_parser = api_sub.add_parser("config", help="Manage API configuration")
-    config_sub = config_parser.add_subparsers(dest="config_action", required = True)
+    config_sub = config_parser.add_subparsers(dest="config_action", required=True)
 
     # Config show
     config_sub.add_parser("show", help="Show current API configuration")
@@ -164,7 +164,7 @@ def _handle_api_status(args: argparse.Namespace, root: Path) -> None:
 
     try:
         # Check health endpoint
-        response = requests.get(health_url, timeout = 5)
+        response = requests.get(health_url, timeout=5)
 
         if response.status_code == 200:
             health_data = response.json()
@@ -178,7 +178,7 @@ def _handle_api_status(args: argparse.Namespace, root: Path) -> None:
             # Check project status
             try:
                 status_response = requests.get(
-                    f"{url}/api / v1 / project / status", timeout = 5
+                    f"{url}/api / v1 / project / status", timeout=5
                 )
                 if status_response.status_code == 200:
                     project_data = status_response.json()
@@ -234,14 +234,14 @@ def _handle_api_test(args: argparse.Namespace, root: Path) -> None:
 
         try:
             if method == "GET":
-                response = requests.get(url, timeout = 10)
+                response = requests.get(url, timeout=10)
             elif method == "POST":
                 if endpoint == "/api / v1 / translate":
                     # Test natural language translation
                     test_data = {"text": "analyze this project"}
-                    response = requests.post(url, json = test_data, timeout = 10)
+                    response = requests.post(url, json=test_data, timeout=10)
                 else:
-                    response = requests.post(url, json={}, timeout = 10)
+                    response = requests.post(url, json={}, timeout=10)
 
             # Check response
             if response.status_code == 200:
@@ -332,11 +332,11 @@ def _handle_api_config(args: argparse.Namespace, root: Path) -> None:
             config[args.key] = value
 
             # Ensure directory exists
-            config_path.parent.mkdir(parents = True, exist_ok = True)
+            config_path.parent.mkdir(parents=True, exist_ok=True)
 
             # Save configuration
             with open(config_path, "w") as f:
-                json.dump(config, f, indent = 2)
+                json.dump(config, f, indent=2)
 
             print(f"✅ Configuration updated: {args.key} = {value}")
 

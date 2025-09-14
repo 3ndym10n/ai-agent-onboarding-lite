@@ -15,7 +15,7 @@ from typing import Dict, List
 def run_git_command(command: List[str]) -> str:
     """Run a git command and return the output."""
     try:
-        result = subprocess.run(command, capture_output = True, text = True, check = True)
+        result = subprocess.run(command, capture_output=True, text=True, check=True)
         return result.stdout.strip()
     except subprocess.CalledProcessError as e:
         print(f"Error running git command: {e}")

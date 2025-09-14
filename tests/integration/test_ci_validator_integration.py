@@ -145,14 +145,14 @@ version = "0.1.0"
 
         report = ValidationReport(
             report_id="test_integration_report",
-            generated_at = datetime.now(),
-            total_tests = 2,
-            passed_tests = 1,
-            failed_tests = 0,
-            warning_tests = 1,
-            skipped_tests = 0,
-            test_results = test_results,
-            system_health_score = 85.0,
+            generated_at=datetime.now(),
+            total_tests=2,
+            passed_tests=1,
+            failed_tests=0,
+            warning_tests=1,
+            skipped_tests=0,
+            test_results=test_results,
+            system_health_score=85.0,
             recommendations=["Address performance warning"],
             summary="Integration test report",
         )
@@ -313,18 +313,18 @@ version = "0.1.0"
                     test_id="mock_failing_integration",
                     name="mock_failing_integration",
                     description="Mock failing integration test",
-                    category = ValidationCategory.INTEGRATION,
-                    result = ValidationResult.FAIL,
-                    duration = 150.0,
+                    category=ValidationCategory.INTEGRATION,
+                    result=ValidationResult.FAIL,
+                    duration=150.0,
                     error_message="Mock system failure for testing",
                 ),
                 ValidationTestCase(
                     test_id="mock_warning_performance",
                     name="mock_warning_performance",
                     description="Mock warning performance test",
-                    category = ValidationCategory.PERFORMANCE,
-                    result = ValidationResult.WARNING,
-                    duration = 800.0,
+                    category=ValidationCategory.PERFORMANCE,
+                    result=ValidationResult.WARNING,
+                    duration=800.0,
                     error_message="Performance threshold exceeded",
                 ),
             ]
@@ -367,19 +367,19 @@ version = "0.1.0"
                 errors.append(str(e))
 
         # Run multiple validations concurrently
-        with concurrent.futures.ThreadPoolExecutor(max_workers = 3) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
             futures = []
             for i in range(3):
                 # Create separate temp directories for each thread
                 thread_root = temp_project_root.parent / f"thread_{i}"
-                thread_root.mkdir(exist_ok = True)
-                (thread_root / ".ai_onboard").mkdir(exist_ok = True)
+                thread_root.mkdir(exist_ok=True)
+                (thread_root / ".ai_onboard").mkdir(exist_ok=True)
 
                 future = executor.submit(run_validation, thread_root)
                 futures.append(future)
 
             # Wait for all to complete
-            concurrent.futures.wait(futures, timeout = 60)
+            concurrent.futures.wait(futures, timeout=60)
 
         # Check results
         if errors:
@@ -487,11 +487,11 @@ class TestValidationSystemIntegration:
 def create_mock_project_structure(root: Path):
     """Create a mock AI Onboard project structure for testing."""
     # Create main directories
-    (root / "ai_onboard").mkdir(exist_ok = True)
-    (root / "ai_onboard" / "core").mkdir(exist_ok = True)
-    (root / "ai_onboard" / "cli").mkdir(exist_ok = True)
-    (root / "tests").mkdir(exist_ok = True)
-    (root / "docs").mkdir(exist_ok = True)
+    (root / "ai_onboard").mkdir(exist_ok=True)
+    (root / "ai_onboard" / "core").mkdir(exist_ok=True)
+    (root / "ai_onboard" / "cli").mkdir(exist_ok=True)
+    (root / "tests").mkdir(exist_ok=True)
+    (root / "docs").mkdir(exist_ok=True)
 
     # Create __init__.py files
     (root / "ai_onboard" / "__init__.py").touch()
@@ -512,9 +512,9 @@ description = "Test project for AI Onboard validation"
     )
 
     # Create AI Onboard data directory
-    (root / ".ai_onboard").mkdir(exist_ok = True)
-    (root / ".ai_onboard" / "logs").mkdir(exist_ok = True)
-    (root / ".ai_onboard" / "cache").mkdir(exist_ok = True)
+    (root / ".ai_onboard").mkdir(exist_ok=True)
+    (root / ".ai_onboard" / "logs").mkdir(exist_ok=True)
+    (root / ".ai_onboard" / "cache").mkdir(exist_ok=True)
 
 
 @pytest.fixture

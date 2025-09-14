@@ -68,7 +68,7 @@ class AIOnboardAPIServer:
             if FASTAPI_AVAILABLE:
                 from fastapi.security import HTTPBearer
 
-                self.security = HTTPBearer(auto_error = False)
+                self.security = HTTPBearer(auto_error=False)
             else:
                 self.security = None
         except Exception as e:
@@ -98,7 +98,7 @@ class AIOnboardAPIServer:
         app.add_middleware(
             CORSMiddleware,
             allow_origins=["*"],  # Configure appropriately for production
-            allow_credentials = True,
+            allow_credentials=True,
             allow_methods=["*"],
             allow_headers=["*"],
         )
@@ -112,21 +112,21 @@ class AIOnboardAPIServer:
         """Add API routes to the FastAPI app."""
 
         # Health check
-        @app.get("/health", response_model = SystemStatus)
+        @app.get("/health", response_model=SystemStatus)
         async def health_check():
             """Health check endpoint."""
             return SystemStatus(
                 status="healthy",
-                uptime_seconds = int(time.time()),
-                active_sessions = len(self.websocket_connections),
-                active_operations = len(self.active_operations),
+                uptime_seconds=int(time.time()),
+                active_sessions=len(self.websocket_connections),
+                active_operations=len(self.active_operations),
                 system_load={"cpu": 0.0, "memory": 0.0},  # Can be enhanced
-                last_health_check = datetime.now(),
+                last_health_check=datetime.now(),
                 components={"api": "healthy", "core": "healthy"},
             )
 
         # Project operations
-        @app.post("/api / v1 / project / analyze", response_model = APIResponse)
+        @app.post("/api / v1 / project / analyze", response_model=APIResponse)
         async def analyze_project(
             request: ProjectAnalysisRequest,
             background_tasks: BackgroundTasks,
@@ -145,15 +145,15 @@ class AIOnboardAPIServer:
                 )
 
                 return APIResponse(
-                    success = True,
+                    success=True,
                     message="Project analysis started",
                     data={"operation_id": operation_id, "status": "running"},
                 )
 
             except Exception as e:
-                return APIResponse(success = False, error = str(e))
+                return APIResponse(success=False, error=str(e))
 
-        @app.post("/api / v1 / project / charter", response_model = APIResponse)
+        @app.post("/api / v1 / project / charter", response_model=APIResponse)
         async def create_charter(
             request: CharterRequest,
             background_tasks: BackgroundTasks,
@@ -168,15 +168,15 @@ class AIOnboardAPIServer:
                 )
 
                 return APIResponse(
-                    success = True,
+                    success=True,
                     message="Charter creation started",
                     data={"operation_id": operation_id, "status": "running"},
                 )
 
             except Exception as e:
-                return APIResponse(success = False, error = str(e))
+                return APIResponse(success=False, error=str(e))
 
-        @app.post("/api / v1 / project / plan", response_model = APIResponse)
+        @app.post("/api / v1 / project / plan", response_model=APIResponse)
         async def create_plan(
             request: PlanRequest,
             background_tasks: BackgroundTasks,
@@ -191,15 +191,15 @@ class AIOnboardAPIServer:
                 )
 
                 return APIResponse(
-                    success = True,
+                    success=True,
                     message="Plan generation started",
                     data={"operation_id": operation_id, "status": "running"},
                 )
 
             except Exception as e:
-                return APIResponse(success = False, error = str(e))
+                return APIResponse(success=False, error=str(e))
 
-        @app.post("/api / v1 / project / validate", response_model = APIResponse)
+        @app.post("/api / v1 / project / validate", response_model=APIResponse)
         async def validate_project(
             request: ValidationRequest,
             background_tasks: BackgroundTasks,
@@ -212,15 +212,15 @@ class AIOnboardAPIServer:
                 background_tasks.add_task(self._run_validation, operation_id, request)
 
                 return APIResponse(
-                    success = True,
+                    success=True,
                     message="Validation started",
                     data={"operation_id": operation_id, "status": "running"},
                 )
 
             except Exception as e:
-                return APIResponse(success = False, error = str(e))
+                return APIResponse(success=False, error=str(e))
 
-        @app.get("/api / v1 / project / status", response_model = ProjectStatus)
+        @app.get("/api / v1 / project / status", response_model=ProjectStatus)
         async def get_project_status():
             """Get current project status and progress."""
             try:
@@ -230,23 +230,23 @@ class AIOnboardAPIServer:
                 progress = context.get("progress", {})
 
                 return ProjectStatus(
-                    project_root = str(self.root),
-                    current_phase = progress.get("current_phase", "unknown"),
-                    overall_progress = progress.get("overall_progress", 0),
-                    completed_tasks = progress.get("completed_tasks", 0),
-                    total_tasks = progress.get("total_tasks", 0),
+                    project_root=str(self.root),
+                    current_phase=progress.get("current_phase", "unknown"),
+                    overall_progress=progress.get("overall_progress", 0),
+                    completed_tasks=progress.get("completed_tasks", 0),
+                    total_tasks=progress.get("total_tasks", 0),
                     active_milestones=[],  # Can be enhanced
                     recent_activity=[],  # Can be enhanced
                     health_status="healthy",
-                    last_updated = datetime.now(),
+                    last_updated=datetime.now(),
                 )
 
             except Exception as e:
-                raise HTTPException(status_code = 500, detail = str(e))
+                raise HTTPException(status_code=500, detail=str(e))
 
         # Agent collaboration endpoints
         @app.post(
-            "/api / v1 / agents / register", response_model = AgentRegistrationResponse
+            "/api / v1 / agents / register", response_model=AgentRegistrationResponse
         )
         async def register_agent(request: AgentRegistrationRequest):
             """Register an AI agent for collaboration."""
@@ -293,18 +293,18 @@ class AIOnboardAPIServer:
                 ]
 
                 agent_profile = AgentProfile(
-                    agent_id = request.agent_id,
-                    name = request.name,
-                    version = request.version,
-                    capabilities = capabilities,
-                    collaboration_mode = mode_map.get(
+                    agent_id=request.agent_id,
+                    name=request.name,
+                    version=request.version,
+                    capabilities=capabilities,
+                    collaboration_mode=mode_map.get(
                         request.collaboration_mode, CollaborationMode.COLLABORATIVE
                     ),
-                    safety_level = safety_map.get(
+                    safety_level=safety_map.get(
                         request.safety_level, SafetyLevel.MEDIUM
                     ),
-                    max_autonomous_actions = request.max_autonomous_actions,
-                    requires_confirmation_for = request.requires_confirmation_for,
+                    max_autonomous_actions=request.max_autonomous_actions,
+                    requires_confirmation_for=request.requires_confirmation_for,
                 )
 
                 # Register with collaboration protocol
@@ -312,55 +312,55 @@ class AIOnboardAPIServer:
 
                 if result.get("success"):
                     return AgentRegistrationResponse(
-                        agent_id = request.agent_id,
-                        registration_token = str(uuid.uuid4()),  # Generate token
-                        session_timeout = agent_profile.session_timeout,
+                        agent_id=request.agent_id,
+                        registration_token=str(uuid.uuid4()),  # Generate token
+                        session_timeout=agent_profile.session_timeout,
                         allowed_commands=["analyze", "charter", "plan", "validate"],
                         safety_constraints={
                             "max_autonomous_actions": agent_profile.max_autonomous_actions,
                             "requires_confirmation": agent_profile.requires_confirmation_for,
                         },
-                        registered_at = datetime.now(),
+                        registered_at=datetime.now(),
                     )
                 else:
-                    raise HTTPException(status_code = 400, detail = result.get("error"))
+                    raise HTTPException(status_code=400, detail=result.get("error"))
 
             except Exception as e:
-                raise HTTPException(status_code = 500, detail = str(e))
+                raise HTTPException(status_code=500, detail=str(e))
 
         @app.post(
             "/api / v1 / agents / session / create",
-            response_model = SessionCreateResponse,
+            response_model=SessionCreateResponse,
         )
         async def create_session(request: SessionCreateRequest):
             """Create a collaboration session."""
             try:
                 result = self.collaboration_protocol.start_session(
-                    agent_id = request.agent_id,
-                    user_id = request.user_id,
-                    session_context = request.session_context or {},
+                    agent_id=request.agent_id,
+                    user_id=request.user_id,
+                    session_context=request.session_context or {},
                 )
 
                 if result.get("success"):
                     session = result["session"]
                     return SessionCreateResponse(
-                        session_id = result["session_id"],
-                        agent_id = request.agent_id,
-                        user_id = request.user_id,
-                        expires_at = datetime.now(),  # Can be calculated properly
-                        collaboration_mode = session.collaboration_mode.value,
-                        safety_level = session.safety_level.value,
-                        created_at = datetime.now(),
+                        session_id=result["session_id"],
+                        agent_id=request.agent_id,
+                        user_id=request.user_id,
+                        expires_at=datetime.now(),  # Can be calculated properly
+                        collaboration_mode=session.collaboration_mode.value,
+                        safety_level=session.safety_level.value,
+                        created_at=datetime.now(),
                     )
                 else:
-                    raise HTTPException(status_code = 400, detail = result.get("error"))
+                    raise HTTPException(status_code=400, detail=result.get("error"))
 
             except Exception as e:
-                raise HTTPException(status_code = 500, detail = str(e))
+                raise HTTPException(status_code=500, detail=str(e))
 
         @app.post(
             "/api / v1 / agents / session/{session_id}/command",
-            response_model = CommandExecutionResponse,
+            response_model=CommandExecutionResponse,
         )
         async def execute_command(
             session_id: str,
@@ -377,17 +377,17 @@ class AIOnboardAPIServer:
                 )
 
                 return CommandExecutionResponse(
-                    execution_id = execution_id,
-                    command = request.command,
-                    status = CommandStatus.PENDING,
-                    started_at = datetime.now(),
+                    execution_id=execution_id,
+                    command=request.command,
+                    status=CommandStatus.PENDING,
+                    started_at=datetime.now(),
                 )
 
             except Exception as e:
-                raise HTTPException(status_code = 500, detail = str(e))
+                raise HTTPException(status_code=500, detail=str(e))
 
         # Natural language processing
-        @app.post("/api / v1 / translate", response_model = NaturalLanguageResponse)
+        @app.post("/api / v1 / translate", response_model=NaturalLanguageResponse)
         async def translate_natural_language(request: NaturalLanguageRequest):
             """Translate natural language to AI Onboard commands."""
             try:
@@ -396,19 +396,19 @@ class AIOnboardAPIServer:
                 )
 
                 return NaturalLanguageResponse(
-                    original_text = request.text,
-                    translated_command = result.get("command"),
-                    suggested_args = result.get("suggested_args", []),
-                    confidence = result.get("confidence", 0.0),
+                    original_text=request.text,
+                    translated_command=result.get("command"),
+                    suggested_args=result.get("suggested_args", []),
+                    confidence=result.get("confidence", 0.0),
                     alternatives=[],
-                    requires_clarification = not result.get("success", False),
+                    requires_clarification=not result.get("success", False),
                 )
 
             except Exception as e:
-                raise HTTPException(status_code = 500, detail = str(e))
+                raise HTTPException(status_code=500, detail=str(e))
 
         # Metrics endpoints
-        @app.post("/api / v1 / metrics / query", response_model = MetricsResponse)
+        @app.post("/api / v1 / metrics / query", response_model=MetricsResponse)
         async def query_metrics(request: MetricsQuery):
             """Query collected metrics."""
             try:
@@ -420,11 +420,11 @@ class AIOnboardAPIServer:
 
                 # Build metric query
                 query = MetricQuery(
-                    name_pattern = request.metric_name,
-                    start_time = request.start_time,
-                    end_time = request.end_time,
-                    limit = request.limit,
-                    aggregation = request.aggregation,
+                    name_pattern=request.metric_name,
+                    start_time=request.start_time,
+                    end_time=request.end_time,
+                    limit=request.limit,
+                    aggregation=request.aggregation,
                 )
 
                 if request.source:
@@ -452,14 +452,14 @@ class AIOnboardAPIServer:
                     )
 
                 return MetricsResponse(
-                    total_count = result.total_count,
-                    metrics = metrics_data,
-                    aggregated_value = result.aggregated_value,
-                    query_time_ms = result.query_time_ms,
+                    total_count=result.total_count,
+                    metrics=metrics_data,
+                    aggregated_value=result.aggregated_value,
+                    query_time_ms=result.query_time_ms,
                 )
 
             except Exception as e:
-                raise HTTPException(status_code = 500, detail = str(e))
+                raise HTTPException(status_code=500, detail=str(e))
 
         # WebSocket endpoint
         @app.websocket("/api / v1 / ws/{client_id}")
@@ -530,7 +530,7 @@ class AIOnboardAPIServer:
             )
 
             # Run analysis
-            result = analysis_lite.analyze_project(self.root, allow_exec = allow_exec)
+            result = analysis_lite.analyze_project(self.root, allow_exec=allow_exec)
 
             await self._broadcast_progress_update(
                 operation_id, "analysis", 100, "Analysis completed", 5, 5
@@ -574,7 +574,7 @@ class AIOnboardAPIServer:
 
             # Run charter creation
             result = charter.create_charter(
-                self.root, charter_data, interactive = request.interactive
+                self.root, charter_data, interactive=request.interactive
             )
 
             await self._broadcast_progress_update(
@@ -642,7 +642,7 @@ class AIOnboardAPIServer:
 
             # Run validation
             result = validation_runtime.validate_project(
-                self.root, generate_report = request.generate_report
+                self.root, generate_report=request.generate_report
             )
 
             await self._broadcast_progress_update(
@@ -690,7 +690,7 @@ class AIOnboardAPIServer:
         if client_id in self.websocket_connections:
             websocket = self.websocket_connections[client_id]
             try:
-                await websocket.send_text(json.dumps(message, default = str))
+                await websocket.send_text(json.dumps(message, default=str))
             except:
                 # Connection closed, remove from active connections
                 if client_id in self.websocket_connections:
@@ -702,7 +702,7 @@ class AIOnboardAPIServer:
 
         for client_id, websocket in self.websocket_connections.items():
             try:
-                await websocket.send_text(json.dumps(message, default = str))
+                await websocket.send_text(json.dumps(message, default=str))
             except:
                 disconnected_clients.append(client_id)
 
@@ -761,7 +761,7 @@ class AIOnboardAPIServer:
             # Remove host / port from kwargs if they exist to avoid duplicates
             kwargs.pop("host", None)
             kwargs.pop("port", None)
-            uvicorn.run(self.app, host = self.host, port = self.port, **kwargs)
+            uvicorn.run(self.app, host=self.host, port=self.port, **kwargs)
         except ImportError:
             raise ImportError(
                 "uvicorn is required to run the API server. Install with: pip install uvicorn"

@@ -144,7 +144,7 @@ class GateVisionIntegrator:
     def _save_vision_data(self, vision_data: Dict[str, Any]):
         """Save vision data to file."""
         self.vision_file.write_text(
-            json.dumps(vision_data, indent = 2), encoding="utf - 8"
+            json.dumps(vision_data, indent=2), encoding="utf - 8"
         )
 
 

@@ -60,7 +60,7 @@ def add_enhanced_testing_commands(subparsers):
         help="Path to performance baseline file for comparison",
     )
     run_parser.add_argument(
-        "--timeout", type = int, default = 300, help="Test timeout in seconds"
+        "--timeout", type=int, default=300, help="Test timeout in seconds"
     )
     run_parser.add_argument(
         "--parallel", action="store_true", help="Run tests in parallel"
@@ -100,8 +100,8 @@ def add_enhanced_testing_commands(subparsers):
     perf_parser.add_argument("--baseline", help="Performance baseline file path")
     perf_parser.add_argument(
         "--threshold",
-        type = float,
-        default = 1.2,
+        type=float,
+        default=1.2,
         help="Performance degradation threshold (e.g., 1.2 = 20% slower allowed)",
     )
     perf_parser.add_argument(
@@ -140,7 +140,7 @@ def add_enhanced_testing_commands(subparsers):
         "--include - history", action="store_true", help="Include historical test data"
     )
     report_parser.add_argument(
-        "--days", type = int, default = 30, help="Number of days of history to include"
+        "--days", type=int, default=30, help="Number of days of history to include"
     )
 
 
@@ -213,7 +213,7 @@ def _handle_run_enhanced_tests(args: argparse.Namespace, root: Path) -> None:
     # Run pytest
     start_time = time.time()
     try:
-        result = subprocess.run(pytest_cmd, cwd = root, check = False)
+        result = subprocess.run(pytest_cmd, cwd=root, check=False)
         execution_time = time.time() - start_time
 
         print(f"\n⏱️ Test execution completed in {execution_time:.2f} seconds")
@@ -317,7 +317,7 @@ def _handle_performance_testing(args: argparse.Namespace, root: Path) -> None:
     print(f"📋 Executing: {' '.join(pytest_cmd)}")
 
     try:
-        result = subprocess.run(pytest_cmd, cwd = root, check = False)
+        result = subprocess.run(pytest_cmd, cwd=root, check=False)
 
         if result.returncode == 0:
             print("✅ Performance tests passed!")
@@ -369,7 +369,7 @@ def _handle_integration_testing(args: argparse.Namespace, root: Path) -> None:
     print(f"📋 Executing: {' '.join(pytest_cmd)}")
 
     try:
-        result = subprocess.run(pytest_cmd, cwd = root, check = False)
+        result = subprocess.run(pytest_cmd, cwd=root, check=False)
 
         if result.returncode == 0:
             print("✅ Integration tests passed!")
@@ -462,7 +462,7 @@ def _save_validation_report_json(report: ValidationReport, root: Path) -> None:
     }
 
     with open(report_file, "w") as f:
-        json.dump(report_data, f, indent = 2)
+        json.dump(report_data, f, indent=2)
 
     print(f"📄 JSON report saved: {report_file}")
 
@@ -507,7 +507,7 @@ def _save_performance_baseline(root: Path, baseline_file: str) -> None:
 
     baseline_path = Path(baseline_file)
     with open(baseline_path, "w") as f:
-        json.dump(baseline_data, f, indent = 2)
+        json.dump(baseline_data, f, indent=2)
 
     print(f"📊 Performance baseline saved: {baseline_path}")
 
@@ -520,7 +520,7 @@ def _load_validation_history(root: Path, days: int) -> List[Dict[str, Any]]:
     if not validation_file.exists():
         return reports
 
-    cutoff_date = datetime.now() - timedelta(days = days)
+    cutoff_date = datetime.now() - timedelta(days=days)
 
     try:
         with open(validation_file, "r") as f:
@@ -607,7 +607,7 @@ def _generate_json_report(
     }
 
     with open(output_file, "w") as f:
-        json.dump(report_data, f, indent = 2)
+        json.dump(report_data, f, indent=2)
 
     return output_file
 

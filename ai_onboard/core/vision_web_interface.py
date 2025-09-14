@@ -38,7 +38,7 @@ class VisionWebInterface:
 
             # Start server in a separate thread
             self.server = HTTPServer(("localhost", self.port), handler)
-            self.server_thread = threading.Thread(target = self.server.serve_forever)
+            self.server_thread = threading.Thread(target=self.server.serve_forever)
             self.server_thread.daemon = True
             self.server_thread.start()
 

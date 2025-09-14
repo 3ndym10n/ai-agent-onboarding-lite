@@ -27,7 +27,7 @@ class DevEnvironmentValidator:
 
         try:
             result = subprocess.run(
-                cmd, cwd = cwd, capture_output = True, text = True, check = True
+                cmd, cwd=cwd, capture_output=True, text=True, check=True
             )
             return True, result.stdout.strip(), result.stderr.strip()
         except subprocess.CalledProcessError as e:
@@ -327,8 +327,8 @@ def main():
         import json
 
         report_file = project_root / ".ai_onboard" / "dev_env_report.json"
-        report_file.parent.mkdir(exist_ok = True)
-        report_file.write_text(json.dumps(report, indent = 2))
+        report_file.parent.mkdir(exist_ok=True)
+        report_file.write_text(json.dumps(report, indent=2))
         print(f"\n📄 Detailed report saved to: {report_file}")
 
         # Exit with appropriate code

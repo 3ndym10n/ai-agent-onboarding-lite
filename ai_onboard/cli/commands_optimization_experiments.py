@@ -28,15 +28,15 @@ def add_optimization_experiment_commands(subparsers):
         "opt - experiments",
         help="Optimization experiment framework for systematic testing",
     )
-    exp_sub = exp_parser.add_subparsers(dest="exp_cmd", required = True)
+    exp_sub = exp_parser.add_subparsers(dest="exp_cmd", required=True)
 
     # Design experiment command
     design_parser = exp_sub.add_parser(
         "design", help="Design a new optimization experiment"
     )
-    design_parser.add_argument("--name", required = True, help="Experiment name")
+    design_parser.add_argument("--name", required=True, help="Experiment name")
     design_parser.add_argument(
-        "--description", required = True, help="Experiment description"
+        "--description", required=True, help="Experiment description"
     )
     design_parser.add_argument(
         "--type",
@@ -45,22 +45,22 @@ def add_optimization_experiment_commands(subparsers):
         help="Experiment type",
     )
     design_parser.add_argument(
-        "--primary - metric", required = True, help="Primary metric to optimize"
+        "--primary - metric", required=True, help="Primary metric to optimize"
     )
     design_parser.add_argument(
-        "--sample - size", type = int, default = 100, help="Sample size per condition"
+        "--sample - size", type=int, default=100, help="Sample size per condition"
     )
     design_parser.add_argument(
-        "--min - runtime", type = int, default = 1, help="Minimum runtime in hours"
+        "--min - runtime", type=int, default=1, help="Minimum runtime in hours"
     )
     design_parser.add_argument(
-        "--max - runtime", type = int, default = 24, help="Maximum runtime in hours"
+        "--max - runtime", type=int, default=24, help="Maximum runtime in hours"
     )
     design_parser.add_argument(
-        "--confidence", type = float, default = 0.95, help="Confidence level"
+        "--confidence", type=float, default=0.95, help="Confidence level"
     )
     design_parser.add_argument(
-        "--min - effect", type = float, default = 0.05, help="Minimum detectable effect"
+        "--min - effect", type=float, default=0.05, help="Minimum detectable effect"
     )
 
     # Start experiment command
@@ -90,7 +90,7 @@ def add_optimization_experiment_commands(subparsers):
     record_parser.add_argument("experiment_id", help="Experiment ID")
     record_parser.add_argument("condition_id", help="Condition ID")
     record_parser.add_argument("metric_name", help="Metric name")
-    record_parser.add_argument("value", type = float, help="Measurement value")
+    record_parser.add_argument("value", type=float, help="Measurement value")
     record_parser.add_argument("--context", help="Additional context (JSON)")
 
     # Results command
@@ -109,13 +109,13 @@ def add_optimization_experiment_commands(subparsers):
         help="Filter by status",
     )
     list_parser.add_argument(
-        "--limit", type = int, default = 20, help="Limit number of results"
+        "--limit", type=int, default=20, help="Limit number of results"
     )
 
     # Analytics command
     analytics_parser = exp_sub.add_parser("analytics", help="Show experiment analytics")
     analytics_sub = analytics_parser.add_subparsers(
-        dest="analytics_action", required = True
+        dest="analytics_action", required=True
     )
 
     # Success metrics
@@ -132,7 +132,7 @@ def add_optimization_experiment_commands(subparsers):
         "templates", help="Experiment design templates"
     )
     templates_sub = templates_parser.add_subparsers(
-        dest="template_action", required = True
+        dest="template_action", required=True
     )
 
     # List templates
@@ -143,7 +143,7 @@ def add_optimization_experiment_commands(subparsers):
         "create", help="Create experiment from template"
     )
     create_template_parser.add_argument("template_name", help="Template name")
-    create_template_parser.add_argument("--name", required = True, help="Experiment name")
+    create_template_parser.add_argument("--name", required=True, help="Experiment name")
     create_template_parser.add_argument("--params", help="Template parameters (JSON)")
 
 
@@ -192,16 +192,16 @@ def _handle_design_experiment(args: argparse.Namespace, framework) -> None:
                 name="Control (Baseline)",
                 description="Current implementation without optimization",
                 configuration={"optimization_enabled": False},
-                risk_level = 1,
-                expected_impact = 0.0,
+                risk_level=1,
+                expected_impact=0.0,
             ),
             ExperimentCondition(
                 condition_id="treatment",
                 name="Treatment (Optimized)",
                 description="Implementation with optimization applied",
                 configuration={"optimization_enabled": True},
-                risk_level = 3,
-                expected_impact = 10.0,
+                risk_level=3,
+                expected_impact=10.0,
             ),
         ]
     else:
@@ -212,32 +212,32 @@ def _handle_design_experiment(args: argparse.Namespace, framework) -> None:
                 name="Baseline",
                 description="Current implementation",
                 configuration={"optimization_level": 0},
-                risk_level = 1,
-                expected_impact = 0.0,
+                risk_level=1,
+                expected_impact=0.0,
             ),
             ExperimentCondition(
                 condition_id="moderate",
                 name="Moderate Optimization",
                 description="Moderate optimization level",
                 configuration={"optimization_level": 1},
-                risk_level = 2,
-                expected_impact = 5.0,
+                risk_level=2,
+                expected_impact=5.0,
             ),
             ExperimentCondition(
                 condition_id="aggressive",
                 name="Aggressive Optimization",
                 description="Aggressive optimization level",
                 configuration={"optimization_level": 2},
-                risk_level = 4,
-                expected_impact = 15.0,
+                risk_level=4,
+                expected_impact=15.0,
             ),
         ]
 
     # Create default metrics
     metrics = [
         ExperimentMetric(
-            name = args.primary_metric,
-            description = f"Primary metric: {args.primary_metric}",
+            name=args.primary_metric,
+            description=f"Primary metric: {args.primary_metric}",
             unit="ms" if "time" in args.primary_metric.lower() else "count",
             higher_is_better=(
                 False
@@ -250,29 +250,29 @@ def _handle_design_experiment(args: argparse.Namespace, framework) -> None:
             name="throughput",
             description="Operations per second",
             unit="ops / sec",
-            higher_is_better = True,
+            higher_is_better=True,
         ),
         ExperimentMetric(
             name="error_rate",
             description="Error rate percentage",
             unit="percentage",
-            higher_is_better = False,
+            higher_is_better=False,
         ),
     ]
 
     # Create experiment design
     design = framework.create_experiment_design(
-        name = args.name,
-        description = args.description,
-        experiment_type = exp_type,
-        conditions = conditions,
-        metrics = metrics,
-        primary_metric = args.primary_metric,
-        sample_size_per_condition = args.sample_size,
-        minimum_runtime_hours = args.min_runtime,
-        maximum_runtime_hours = args.max_runtime,
-        confidence_level = args.confidence,
-        minimum_detectable_effect = args.min_effect,
+        name=args.name,
+        description=args.description,
+        experiment_type=exp_type,
+        conditions=conditions,
+        metrics=metrics,
+        primary_metric=args.primary_metric,
+        sample_size_per_condition=args.sample_size,
+        minimum_runtime_hours=args.min_runtime,
+        maximum_runtime_hours=args.max_runtime,
+        confidence_level=args.confidence,
+        minimum_detectable_effect=args.min_effect,
     )
 
     print(f"✅ Experiment designed successfully!")

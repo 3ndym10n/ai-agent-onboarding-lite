@@ -10,10 +10,10 @@ from pathlib import Path
 from unittest.mock import patch
 
 from ai_onboard.core.user_preference_learning import (
-    UserPreferenceLearningSystem,
-    UserPreference,
     InteractionType,
     PreferenceCategory,
+    UserPreference,
+    UserPreferenceLearningSystem,
 )
 
 
@@ -43,12 +43,12 @@ def test_system_initialization():
     """Test UserPreferenceLearningSystem initialization."""
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
-        with patch('ai_onboard.core.user_preference_learning.telemetry'):
+        with patch("ai_onboard.core.user_preference_learning.telemetry"):
             system = UserPreferenceLearningSystem(temp_path)
 
-            assert hasattr(system, 'root')
-            assert hasattr(system, 'user_profiles')
-            assert hasattr(system, 'continuous_improvement')
+            assert hasattr(system, "root")
+            assert hasattr(system, "user_profiles")
+            assert hasattr(system, "continuous_improvement")
             assert system.root == temp_path
 
 
@@ -56,7 +56,7 @@ def test_record_user_interaction():
     """Test recording user interactions."""
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
-        with patch('ai_onboard.core.user_preference_learning.telemetry'):
+        with patch("ai_onboard.core.user_preference_learning.telemetry"):
             system = UserPreferenceLearningSystem(temp_path)
 
             # Record an interaction
@@ -64,7 +64,7 @@ def test_record_user_interaction():
                 user_id="test_user",
                 interaction_type=InteractionType.COMMAND_EXECUTION,
                 context={"command": "test", "args": []},
-                outcome={"success": True, "duration": 0.5}
+                outcome={"success": True, "duration": 0.5},
             )
 
             # Check that interaction was recorded by getting user profile
@@ -77,7 +77,7 @@ def test_get_user_preferences():
     """Test retrieving user preferences."""
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
-        with patch('ai_onboard.core.user_preference_learning.telemetry'):
+        with patch("ai_onboard.core.user_preference_learning.telemetry"):
             system = UserPreferenceLearningSystem(temp_path)
 
             # Record some interactions to generate preferences
@@ -86,7 +86,7 @@ def test_get_user_preferences():
                     user_id="test_user",
                     interaction_type=InteractionType.COMMAND_EXECUTION,
                     context={"command": "format", "format": "detailed"},
-                    outcome={"success": True}
+                    outcome={"success": True},
                 )
 
             # Retrieve preferences
@@ -101,7 +101,7 @@ def test_user_profile_summary():
     """Test getting user profile summary."""
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
-        with patch('ai_onboard.core.user_preference_learning.telemetry'):
+        with patch("ai_onboard.core.user_preference_learning.telemetry"):
             system = UserPreferenceLearningSystem(temp_path)
 
             # Record multiple interactions
@@ -110,7 +110,7 @@ def test_user_profile_summary():
                     user_id="test_user",
                     interaction_type=InteractionType.COMMAND_EXECUTION,
                     context={"command": "test", "format": "detailed"},
-                    outcome={"success": True}
+                    outcome={"success": True},
                 )
 
             # Get profile summary

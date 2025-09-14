@@ -15,7 +15,7 @@ def add_interrogate_commands(subparsers):
     s_interrogate = subparsers.add_parser(
         "interrogate", help="Vision interrogation system"
     )
-    si_sub = s_interrogate.add_subparsers(dest="interrogate_cmd", required = True)
+    si_sub = s_interrogate.add_subparsers(dest="interrogate_cmd", required=True)
 
     si_sub.add_parser("check", help="Check if vision is ready for AI agents")
     si_sub.add_parser("start", help="Start vision interrogation process")
@@ -76,8 +76,8 @@ def handle_interrogate_commands(args, root: Path):
             resp = request_approval(
                 title="Vision Interrogation - Provide Your Answers",
                 description="Answer the questions below, then click Approve to submit.",
-                questions = questions,
-                timeout_seconds = 600,
+                questions=questions,
+                timeout_seconds=600,
             )
             if resp.get("user_decision") == "proceed":
                 try:
@@ -139,9 +139,9 @@ def handle_interrogate_commands(args, root: Path):
 
         gate = GateSystem(root)
         gate_request = GateRequest(
-            gate_type = GateType.CLARIFICATION_NEEDED,
+            gate_type=GateType.CLARIFICATION_NEEDED,
             title="Vision Interrogation",
-            description = f"Phase: {phase} | Question ID: {question_id}",
+            description=f"Phase: {phase} | Question ID: {question_id}",
             context={"phase": phase, "question_id": question_id},
             questions=[question_text],
         )
@@ -175,8 +175,8 @@ def handle_interrogate_commands(args, root: Path):
                 request_approval(
                     title="Vision Interrogation - Provide Your Answers",
                     description="Answer the questions below, then click Approve to submit.",
-                    questions = questions,
-                    timeout_seconds = 600,
+                    questions=questions,
+                    timeout_seconds=600,
                 )
         except Exception:
             pass
