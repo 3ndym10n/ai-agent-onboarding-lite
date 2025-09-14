@@ -84,24 +84,24 @@ class ImprovementOpportunity:
     description: str
 
     # Evidence and metrics
-    evidence: Dict[str, Any] = field(default_factory = dict)
-    current_metrics: Dict[str, float] = field(default_factory = dict)
-    target_metrics: Dict[str, float] = field(default_factory = dict)
+    evidence: Dict[str, Any] = field(default_factory=dict)
+    current_metrics: Dict[str, float] = field(default_factory=dict)
+    target_metrics: Dict[str, float] = field(default_factory=dict)
 
     # Implementation details
-    proposed_actions: List[str] = field(default_factory = list)
+    proposed_actions: List[str] = field(default_factory=list)
     estimated_effort: int = 1  # 1 - 5 scale
     estimated_impact: int = 1  # 1 - 5 scale
     risk_level: int = 1  # 1 - 5 scale
 
     # Tracking
-    identified_at: datetime = field(default_factory = datetime.now)
+    identified_at: datetime = field(default_factory=datetime.now)
     status: ImprovementStatus = ImprovementStatus.IDENTIFIED
 
     # Results
     experiment_results: Optional[Dict[str, Any]] = None
-    success_metrics: Dict[str, float] = field(default_factory = dict)
-    lessons_learned: List[str] = field(default_factory = list)
+    success_metrics: Dict[str, float] = field(default_factory=dict)
+    lessons_learned: List[str] = field(default_factory=list)
 
 
 @dataclass
@@ -113,16 +113,16 @@ class KaizenCycle:
     stage: KaizenCycleStage
 
     # Cycle data
-    observations: Dict[str, Any] = field(default_factory = dict)
-    analysis_results: Dict[str, Any] = field(default_factory = dict)
-    improvement_decisions: List[str] = field(default_factory = list)
-    actions_taken: List[Dict[str, Any]] = field(default_factory = list)
-    learning_outcomes: Dict[str, Any] = field(default_factory = dict)
+    observations: Dict[str, Any] = field(default_factory=dict)
+    analysis_results: Dict[str, Any] = field(default_factory=dict)
+    improvement_decisions: List[str] = field(default_factory=list)
+    actions_taken: List[Dict[str, Any]] = field(default_factory=list)
+    learning_outcomes: Dict[str, Any] = field(default_factory=dict)
 
     # Metrics
-    baseline_metrics: Dict[str, float] = field(default_factory = dict)
-    target_metrics: Dict[str, float] = field(default_factory = dict)
-    achieved_metrics: Dict[str, float] = field(default_factory = dict)
+    baseline_metrics: Dict[str, float] = field(default_factory=dict)
+    target_metrics: Dict[str, float] = field(default_factory=dict)
+    achieved_metrics: Dict[str, float] = field(default_factory=dict)
 
     # Status
     completed_at: Optional[datetime] = None
@@ -147,9 +147,9 @@ class KaizenMetricsAnalyzer:
             from ..core.unified_metrics_collector import MetricQuery
 
             query = MetricQuery(
-                category = MetricCategory.TIMING,
-                start_time = datetime.now() - timedelta(days = 7),
-                limit = 1000,
+                category=MetricCategory.TIMING,
+                start_time=datetime.now() - timedelta(days=7),
+                limit=1000,
             )
 
             result = self.metrics_collector.query_metrics(query)
@@ -163,18 +163,18 @@ class KaizenMetricsAnalyzer:
 
                 if slow_operations:
                     # Sort by slowest
-                    slow_operations.sort(key = lambda x: x[1], reverse = True)
+                    slow_operations.sort(key=lambda x: x[1], reverse=True)
 
                     opportunity = ImprovementOpportunity(
-                        opportunity_id = f"perf_{int(time.time())}",
-                        category = ImprovementCategory.PERFORMANCE,
+                        opportunity_id=f"perf_{int(time.time())}",
+                        category=ImprovementCategory.PERFORMANCE,
                         priority=(
                             ImprovementPriority.HIGH
                             if slow_operations[0][1] > 5000
                             else ImprovementPriority.MEDIUM
                         ),
                         title="Optimize slow operations",
-                        description = f"Found {len(slow_operations)} operations taking >1s to complete",
+                        description=f"Found {len(slow_operations)} operations taking >1s to complete",
                         evidence={
                             "slow_operations": slow_operations[:5],
                             "slowest_operation": slow_operations[0][0],
@@ -191,9 +191,9 @@ class KaizenMetricsAnalyzer:
                             "Optimize database queries",
                             "Add async processing for long operations",
                         ],
-                        estimated_effort = 3,
-                        estimated_impact = 4,
-                        risk_level = 2,
+                        estimated_effort=3,
+                        estimated_impact=4,
+                        risk_level=2,
                     )
 
                     opportunities.append(opportunity)
@@ -215,11 +215,11 @@ class KaizenMetricsAnalyzer:
                 # Check for common user frustrations
                 if continuity_data.get("error_rate", 0) > 0.05:  # >5% error rate
                     opportunity = ImprovementOpportunity(
-                        opportunity_id = f"ux_errors_{int(time.time())}",
-                        category = ImprovementCategory.USER_EXPERIENCE,
-                        priority = ImprovementPriority.HIGH,
+                        opportunity_id=f"ux_errors_{int(time.time())}",
+                        category=ImprovementCategory.USER_EXPERIENCE,
+                        priority=ImprovementPriority.HIGH,
                         title="Reduce user - facing errors",
-                        description = f"Error rate is {continuity_data.get('error_rate', 0) * 100:.1f}%, above acceptable threshold",
+                        description=f"Error rate is {continuity_data.get('error_rate', 0) * 100:.1f}%, above acceptable threshold",
                         evidence={"error_rate": continuity_data.get("error_rate", 0)},
                         current_metrics={
                             "error_rate": continuity_data.get("error_rate", 0)
@@ -231,9 +231,9 @@ class KaizenMetricsAnalyzer:
                             "Implement graceful error handling",
                             "Add user education and help content",
                         ],
-                        estimated_effort = 4,
-                        estimated_impact = 5,
-                        risk_level = 2,
+                        estimated_effort=4,
+                        estimated_impact=5,
+                        risk_level=2,
                     )
 
                     opportunities.append(opportunity)
@@ -243,9 +243,9 @@ class KaizenMetricsAnalyzer:
                     continuity_data.get("new_user_success_rate", 1.0) < 0.8
                 ):  # <80% success
                     opportunity = ImprovementOpportunity(
-                        opportunity_id = f"ux_onboarding_{int(time.time())}",
-                        category = ImprovementCategory.USER_EXPERIENCE,
-                        priority = ImprovementPriority.HIGH,
+                        opportunity_id=f"ux_onboarding_{int(time.time())}",
+                        category=ImprovementCategory.USER_EXPERIENCE,
+                        priority=ImprovementPriority.HIGH,
                         title="Improve new user onboarding",
                         description="New user success rate is below 80%",
                         evidence={
@@ -265,9 +265,9 @@ class KaizenMetricsAnalyzer:
                             "Add contextual help and guidance",
                             "Simplify initial setup process",
                         ],
-                        estimated_effort = 5,
-                        estimated_impact = 4,
-                        risk_level = 2,
+                        estimated_effort=5,
+                        estimated_impact=4,
+                        risk_level=2,
                     )
 
                     opportunities.append(opportunity)
@@ -284,9 +284,9 @@ class KaizenMetricsAnalyzer:
         try:
             # Check error rates and failure patterns
             query = MetricQuery(
-                category = MetricCategory.ERROR,
-                start_time = datetime.now() - timedelta(days = 7),
-                limit = 1000,
+                category=MetricCategory.ERROR,
+                start_time=datetime.now() - timedelta(days=7),
+                limit=1000,
             )
 
             result = self.metrics_collector.query_metrics(query)
@@ -297,15 +297,15 @@ class KaizenMetricsAnalyzer:
                 # If we have significant errors, create improvement opportunity
                 if error_count > 10:  # More than 10 errors in a week
                     opportunity = ImprovementOpportunity(
-                        opportunity_id = f"reliability_{int(time.time())}",
-                        category = ImprovementCategory.RELIABILITY,
+                        opportunity_id=f"reliability_{int(time.time())}",
+                        category=ImprovementCategory.RELIABILITY,
                         priority=(
                             ImprovementPriority.HIGH
                             if error_count > 50
                             else ImprovementPriority.MEDIUM
                         ),
                         title="Improve system reliability",
-                        description = f"System has experienced {error_count} errors in the past week",
+                        description=f"System has experienced {error_count} errors in the past week",
                         evidence={
                             "error_count": error_count,
                             "error_rate": error_count / 168,
@@ -320,9 +320,9 @@ class KaizenMetricsAnalyzer:
                             "Improve input validation and edge case handling",
                             "Add system health checks and alerts",
                         ],
-                        estimated_effort = 4,
-                        estimated_impact = 5,
-                        risk_level = 1,
+                        estimated_effort=4,
+                        estimated_impact=5,
+                        risk_level=1,
                     )
 
                     opportunities.append(opportunity)
@@ -339,7 +339,7 @@ class KaizenAutomationEngine:
     def __init__(self, root: Path):
         self.root = root
         self.data_dir = root / ".ai_onboard" / "kaizen_automation"
-        self.data_dir.mkdir(parents = True, exist_ok = True)
+        self.data_dir.mkdir(parents=True, exist_ok=True)
 
         # Components
         self.metrics_analyzer = KaizenMetricsAnalyzer(root)
@@ -354,7 +354,7 @@ class KaizenAutomationEngine:
         # Threading
         self._running = False
         self._automation_thread: Optional[threading.Thread] = None
-        self._executor = ThreadPoolExecutor(max_workers = 2, thread_name_prefix="kaizen")
+        self._executor = ThreadPoolExecutor(max_workers=2, thread_name_prefix="kaizen")
 
         # Load existing data
         self._load_persistent_data()
@@ -396,7 +396,7 @@ class KaizenAutomationEngine:
 
         # Save default config
         with open(config_file, "w") as f:
-            json.dump(default_config, f, indent = 2)
+            json.dump(default_config, f, indent=2)
 
         return default_config
 
@@ -470,7 +470,7 @@ class KaizenAutomationEngine:
                 opportunities_data[opp_id] = opp_dict
 
             with open(self.data_dir / "opportunities.json", "w") as f:
-                json.dump(opportunities_data, f, indent = 2)
+                json.dump(opportunities_data, f, indent=2)
 
             # Save active cycles
             cycles_data = {}
@@ -496,7 +496,7 @@ class KaizenAutomationEngine:
                 cycles_data[cycle_id] = cycle_dict
 
             with open(self.data_dir / "active_cycles.json", "w") as f:
-                json.dump(cycles_data, f, indent = 2)
+                json.dump(cycles_data, f, indent=2)
 
         except Exception as e:
             print(f"Warning: Failed to save persistent Kaizen data: {e}")
@@ -512,7 +512,7 @@ class KaizenAutomationEngine:
 
         self._running = True
         self._automation_thread = threading.Thread(
-            target = self._automation_loop, name="kaizen_automation", daemon = True
+            target=self._automation_loop, name="kaizen_automation", daemon=True
         )
         self._automation_thread.start()
 
@@ -522,7 +522,7 @@ class KaizenAutomationEngine:
         """Stop the automated Kaizen cycle process."""
         self._running = False
         if self._automation_thread and self._automation_thread.is_alive():
-            self._automation_thread.join(timeout = 5)
+            self._automation_thread.join(timeout=5)
 
         print("⏹️ Kaizen automation stopped")
 
@@ -547,7 +547,7 @@ class KaizenAutomationEngine:
         cycle_id = f"kaizen_{int(time.time())}_{utils.random_string(8)}"
 
         cycle = KaizenCycle(
-            cycle_id = cycle_id, started_at = datetime.now(), stage = KaizenCycleStage.OBSERVE
+            cycle_id=cycle_id, started_at=datetime.now(), stage=KaizenCycleStage.OBSERVE
         )
 
         self.active_cycles[cycle_id] = cycle
@@ -625,9 +625,9 @@ class KaizenAutomationEngine:
 
             # Get recent performance metrics
             perf_query = MetricQuery(
-                category = MetricCategory.TIMING,
-                start_time = datetime.now() - timedelta(hours = 24),
-                limit = 100,
+                category=MetricCategory.TIMING,
+                start_time=datetime.now() - timedelta(hours=24),
+                limit=100,
             )
             perf_result = self.metrics_collector.query_metrics(perf_query)
 
@@ -642,9 +642,9 @@ class KaizenAutomationEngine:
 
             # Get error metrics
             error_query = MetricQuery(
-                category = MetricCategory.ERROR,
-                start_time = datetime.now() - timedelta(hours = 24),
-                limit = 100,
+                category=MetricCategory.ERROR,
+                start_time=datetime.now() - timedelta(hours=24),
+                limit=100,
             )
             error_result = self.metrics_collector.query_metrics(error_query)
 
@@ -719,7 +719,7 @@ class KaizenAutomationEngine:
                 )
 
             analysis["priority_areas"] = sorted(
-                category_scores.items(), key = lambda x: x[1], reverse = True
+                category_scores.items(), key=lambda x: x[1], reverse=True
             )[
                 :3
             ]  # Top 3 areas
@@ -748,14 +748,14 @@ class KaizenAutomationEngine:
             # Sort by priority and impact
             sorted_opportunities = sorted(
                 opportunities,
-                key = lambda x: (
+                key=lambda x: (
                     {"critical": 4, "high": 3, "medium": 2, "low": 1}.get(
                         x["priority"], 1
                     ),
                     x["estimated_impact"],
                     -x["risk_level"],  # Lower risk is better
                 ),
-                reverse = True,
+                reverse=True,
             )
 
             # Select improvements to implement
@@ -1049,9 +1049,9 @@ class KaizenAutomationEngine:
             # Record cycle completion
             cycle_event = MetricEvent(
                 name="kaizen_cycle_completed",
-                value = 1.0,
-                source = MetricSource.SYSTEM,
-                category = MetricCategory.HEALTH,
+                value=1.0,
+                source=MetricSource.SYSTEM,
+                category=MetricCategory.HEALTH,
                 dimensions={
                     "cycle_id": cycle.cycle_id,
                     "success_score": cycle.success_score,
@@ -1065,9 +1065,9 @@ class KaizenAutomationEngine:
             # Record success score
             success_event = MetricEvent(
                 name="kaizen_cycle_success_score",
-                value = cycle.success_score,
-                source = MetricSource.SYSTEM,
-                category = MetricCategory.HEALTH,
+                value=cycle.success_score,
+                source=MetricSource.SYSTEM,
+                category=MetricCategory.HEALTH,
                 dimensions={
                     "cycle_id": cycle.cycle_id,
                     "overall_impact": cycle.overall_impact,
@@ -1106,7 +1106,7 @@ class KaizenAutomationEngine:
 
         # Sort by completion date
         completed_cycles.sort(
-            key = lambda c: c.completed_at or datetime.min, reverse = True
+            key=lambda c: c.completed_at or datetime.min, reverse=True
         )
 
         return [
