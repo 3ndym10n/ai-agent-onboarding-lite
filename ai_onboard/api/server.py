@@ -35,7 +35,27 @@ from ..core import (
 from ..core.ai_agent_collaboration_protocol import get_collaboration_protocol
 from ..core.cursor_ai_integration import get_cursor_integration
 from ..core.unified_metrics_collector import get_unified_metrics_collector
-from .models import *
+from .models import (
+    APIResponse,
+    ProjectAnalysisRequest,
+    CharterRequest,
+    PlanRequest,
+    ValidationRequest,
+    ProjectStatus,
+    AgentRegistrationRequest,
+    AgentRegistrationResponse,
+    SessionCreateRequest,
+    SessionCreateResponse,
+    CommandExecutionRequest,
+    CommandExecutionResponse,
+    CommandStatus,
+    NaturalLanguageRequest,
+    NaturalLanguageResponse,
+    MetricsQuery,
+    MetricsResponse,
+    SystemStatus,
+    WebSocketMessageType,
+)
 
 
 class AIOnboardAPIServer:
@@ -464,7 +484,7 @@ class AIOnboardAPIServer:
         # WebSocket endpoint
         @app.websocket("/api / v1 / ws/{client_id}")
         async def websocket_endpoint(websocket: WebSocket, client_id: str):
-            """WebSocket endpoint for real - time updates."""
+            """WebSocket endpoint for real-time updates."""
             await websocket.accept()
             self.websocket_connections[client_id] = websocket
 
