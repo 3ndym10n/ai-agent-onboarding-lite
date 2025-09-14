@@ -20,6 +20,11 @@ class SmartDebugger:
         self.patterns_path = root / ".ai_onboard" / "debug_patterns.json"
         self.solutions_path = root / ".ai_onboard" / "debug_solutions.json"
         self.learning_path = root / ".ai_onboard" / "debug_learning.json"
+        self.pattern_database_path = root / ".ai_onboard" / "pattern_database.json"
+        self.confidence_model_path = root / ".ai_onboard" / "confidence_model.json"
+
+        # Initialize enhanced debugging components
+        self._initialize_enhanced_debugging()
 
     def analyze_error(self, error_data: Dict[str, Any]) -> Dict[str, Any]:
         """Analyze an error and provide smart debugging insights."""
@@ -56,6 +61,11 @@ class SmartDebugger:
             "pattern_id": pattern_match["pattern_id"] if pattern_match else None,
             "debugging_steps": self._generate_debugging_steps(error_data, solution),
             "prevention_tips": self._generate_prevention_tips(error_data),
+            "enhanced_analysis": self._perform_enhanced_analysis(error_data),
+            "alternative_solutions": self._generate_alternative_solutions(
+                error_data, solution
+            ),
+            "contextual_insights": self._extract_contextual_insights(error_data),
         }
 
     def improve_patterns(self) -> Dict[str, Any]:
@@ -490,6 +500,661 @@ class SmartDebugger:
     def _save_learning_data(self, learning_data: Dict[str, Any]) -> None:
         """Save learning data."""
         utils.write_json(self.learning_path, learning_data)
+
+    def _initialize_enhanced_debugging(self) -> None:
+        """Initialize enhanced debugging components."""
+        # Ensure directories exist
+        for path in [
+            self.pattern_database_path.parent,
+            self.confidence_model_path.parent,
+        ]:
+            utils.ensure_dir(path)
+
+        # Initialize pattern database if it doesn't exist
+        if not self.pattern_database_path.exists():
+            initial_patterns = self._create_initial_pattern_database()
+            utils.write_json(self.pattern_database_path, initial_patterns)
+
+        # Initialize confidence model if it doesn't exist
+        if not self.confidence_model_path.exists():
+            initial_model = self._create_initial_confidence_model()
+            utils.write_json(self.confidence_model_path, initial_model)
+
+    def _create_initial_pattern_database(self) -> Dict[str, Any]:
+        """Create initial pattern database with common error patterns."""
+        return {
+            "version": "2.0",
+            "last_updated": utils.now_iso(),
+            "patterns": {
+                "import_errors": {
+                    "patterns": [
+                        r"ImportError.*No module named",
+                        r"ModuleNotFoundError.*No module named",
+                    ],
+                    "solutions": [
+                        "Install missing package: pip install <package_name>",
+                        "Check if package is in requirements.txt",
+                        "Verify virtual environment is activated",
+                        "Check Python path configuration",
+                    ],
+                    "confidence_base": 0.85,
+                    "category": "import",
+                },
+                "attribute_errors": {
+                    "patterns": [
+                        r"AttributeError.*has no attribute",
+                        r"AttributeError.*object has no attribute",
+                    ],
+                    "solutions": [
+                        "Check object type and available attributes",
+                        "Verify method/variable name spelling",
+                        "Check if object is properly initialized",
+                        "Use hasattr() to check attribute existence",
+                    ],
+                    "confidence_base": 0.8,
+                    "category": "attribute",
+                },
+                "type_errors": {
+                    "patterns": [
+                        r"TypeError.*unsupported operand type",
+                        r"TypeError.*expected.*got",
+                    ],
+                    "solutions": [
+                        "Check data types of operands",
+                        "Use type() or isinstance() for type checking",
+                        "Convert types explicitly when needed",
+                        "Review function signatures and parameter types",
+                    ],
+                    "confidence_base": 0.75,
+                    "category": "type",
+                },
+                "file_errors": {
+                    "patterns": [
+                        r"FileNotFoundError",
+                        r"IsADirectoryError",
+                        r"PermissionError",
+                    ],
+                    "solutions": [
+                        "Check if file/directory exists: os.path.exists()",
+                        "Verify file permissions: os.access()",
+                        "Check if file is locked by another process",
+                        "Use absolute paths when possible",
+                        "Handle file operations in try-except blocks",
+                    ],
+                    "confidence_base": 0.9,
+                    "category": "file",
+                },
+                "network_errors": {
+                    "patterns": [
+                        r"ConnectionError",
+                        r"TimeoutError",
+                        r"URLError",
+                        r"requests\.exceptions",
+                    ],
+                    "solutions": [
+                        "Check network connectivity",
+                        "Verify URL/host is accessible",
+                        "Implement retry logic with exponential backoff",
+                        "Add timeout handling",
+                        "Check proxy/firewall settings",
+                    ],
+                    "confidence_base": 0.7,
+                    "category": "network",
+                },
+                "syntax_errors": {
+                    "patterns": [
+                        r"SyntaxError",
+                        r"IndentationError",
+                        r"TabError",
+                    ],
+                    "solutions": [
+                        "Check for missing parentheses, brackets, or quotes",
+                        "Verify consistent indentation (spaces vs tabs)",
+                        "Look for typos in keywords and variable names",
+                        "Use a linter to catch syntax errors early",
+                        "Review code around the error line",
+                    ],
+                    "confidence_base": 0.95,
+                    "category": "syntax",
+                },
+            },
+            "learning_stats": {
+                "total_patterns_used": 0,
+                "successful_solutions": 0,
+                "failed_solutions": 0,
+                "pattern_effectiveness": {},
+            },
+        }
+
+    def _create_initial_confidence_model(self) -> Dict[str, Any]:
+        """Create initial confidence scoring model."""
+        return {
+            "version": "2.0",
+            "last_updated": utils.now_iso(),
+            "confidence_factors": {
+                "pattern_match_quality": {
+                    "exact_match": 1.0,
+                    "partial_match": 0.7,
+                    "weak_match": 0.4,
+                    "no_match": 0.1,
+                },
+                "error_type_frequency": {
+                    "very_common": 1.0,  # > 50 occurrences
+                    "common": 0.8,  # 20-50 occurrences
+                    "uncommon": 0.6,  # 5-20 occurrences
+                    "rare": 0.3,  # 1-5 occurrences
+                    "unknown": 0.1,  # 0 occurrences
+                },
+                "context_relevance": {
+                    "high": 1.0,  # Strong context match
+                    "medium": 0.7,  # Partial context match
+                    "low": 0.4,  # Weak context match
+                    "none": 0.1,  # No context match
+                },
+                "solution_success_history": {
+                    "excellent": 1.0,  # > 90% success rate
+                    "good": 0.8,  # 70-90% success rate
+                    "fair": 0.6,  # 50-70% success rate
+                    "poor": 0.3,  # 30-50% success rate
+                    "unknown": 0.5,  # No history
+                },
+            },
+            "learning_weights": {
+                "pattern_match": 0.4,
+                "error_frequency": 0.2,
+                "context_relevance": 0.2,
+                "success_history": 0.2,
+            },
+            "adaptation_stats": {
+                "total_predictions": 0,
+                "correct_predictions": 0,
+                "weight_adjustments": 0,
+                "last_adaptation": None,
+            },
+        }
+
+    def _perform_enhanced_analysis(self, error_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Perform enhanced analysis with advanced debugging techniques."""
+        error_type = error_data.get("type", "")
+        error_message = error_data.get("message", "")
+        context = error_data.get("context", {})
+
+        enhanced_analysis = {
+            "code_analysis": self._analyze_error_code(error_data),
+            "stack_trace_insights": self._analyze_stack_trace(error_data),
+            "context_patterns": self._analyze_error_context(context),
+            "severity_assessment": self._assess_error_severity(error_data),
+            "likely_root_causes": self._identify_root_causes(error_data),
+        }
+
+        return enhanced_analysis
+
+    def _analyze_error_code(self, error_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze the error in the context of the code where it occurred."""
+        context = error_data.get("context", {})
+        enriched_context = error_data.get("enriched_context", {})
+
+        analysis = {
+            "code_location": {},
+            "variable_analysis": {},
+            "logic_flow": {},
+            "potential_fixes": [],
+        }
+
+        # Extract code location information
+        if enriched_context.get("stack_analysis", {}).get("stack_frames"):
+            stack_frames = enriched_context["stack_analysis"]["stack_frames"]
+            if stack_frames:
+                latest_frame = stack_frames[0]  # Most recent frame
+                analysis["code_location"] = {
+                    "file": latest_frame.get("filename", "unknown"),
+                    "line": latest_frame.get("line_number", "unknown"),
+                    "function": latest_frame.get("function", "unknown"),
+                    "code_context": latest_frame.get("code_context", ""),
+                }
+
+        # Analyze variables if available
+        if enriched_context.get("stack_analysis", {}).get("local_variables"):
+            local_vars = enriched_context["stack_analysis"]["local_variables"]
+            analysis["variable_analysis"] = {
+                "variable_count": len(local_vars),
+                "variable_types": {k: type(v).__name__ for k, v in local_vars.items()},
+                "potential_null_values": [
+                    k for k, v in local_vars.items() if v is None
+                ],
+            }
+
+        # Analyze logic flow patterns
+        error_type = error_data.get("type", "")
+        if "AttributeError" in error_type:
+            analysis["logic_flow"]["issue_type"] = "attribute_access"
+            analysis["logic_flow"]["suggestions"] = [
+                "Check if object is properly initialized",
+                "Verify attribute name spelling",
+                "Consider using getattr() with default",
+            ]
+        elif "TypeError" in error_type:
+            analysis["logic_flow"]["issue_type"] = "type_mismatch"
+            analysis["logic_flow"]["suggestions"] = [
+                "Verify operand types",
+                "Check function parameter types",
+                "Consider type conversion or validation",
+            ]
+
+        return analysis
+
+    def _analyze_stack_trace(self, error_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze stack trace for debugging insights."""
+        enriched_context = error_data.get("enriched_context", {})
+        stack_analysis = enriched_context.get("stack_analysis", {})
+
+        insights = {
+            "call_depth": 0,
+            "error_origin": {},
+            "call_chain_analysis": {},
+            "suspicious_patterns": [],
+        }
+
+        if stack_analysis.get("stack_frames"):
+            stack_frames = stack_analysis["stack_frames"]
+            insights["call_depth"] = len(stack_frames)
+
+            # Analyze error origin
+            if stack_frames:
+                origin_frame = stack_frames[-1]  # Original call
+                insights["error_origin"] = {
+                    "file": origin_frame.get("filename", "unknown"),
+                    "function": origin_frame.get("function", "unknown"),
+                    "line": origin_frame.get("line_number", "unknown"),
+                }
+
+            # Analyze call chain
+            insights["call_chain_analysis"] = {
+                "unique_files": len(set(f.get("filename", "") for f in stack_frames)),
+                "unique_functions": len(
+                    set(f.get("function", "") for f in stack_frames)
+                ),
+                "framework_calls": sum(
+                    1
+                    for f in stack_frames
+                    if "framework" in f.get("filename", "").lower()
+                ),
+            }
+
+        # Look for suspicious patterns
+        error_message = error_data.get("message", "").lower()
+        if "recursion" in error_message:
+            insights["suspicious_patterns"].append("potential_infinite_recursion")
+        if "memory" in error_message:
+            insights["suspicious_patterns"].append("memory_issue")
+        if "timeout" in error_message:
+            insights["suspicious_patterns"].append("timeout_issue")
+
+        return insights
+
+    def _analyze_error_context(self, context: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze error context for patterns and insights."""
+        if not isinstance(context, dict):
+            return {"analysis": "invalid_context", "insights": []}
+
+        analysis = {
+            "context_completeness": {},
+            "pattern_matches": [],
+            "risk_factors": [],
+        }
+
+        # Analyze context completeness
+        important_keys = ["agent_type", "command", "session_id", "user_id"]
+        analysis["context_completeness"] = {
+            "total_keys": len(context),
+            "important_keys_present": sum(
+                1 for key in important_keys if key in context
+            ),
+            "completeness_score": len([k for k in important_keys if k in context])
+            / len(important_keys),
+        }
+
+        # Look for context patterns
+        if context.get("agent_type") == "background" and context.get("command"):
+            analysis["pattern_matches"].append("background_processing_error")
+
+        if "timeout" in str(context.get("command", "")).lower():
+            analysis["pattern_matches"].append("timeout_related_operation")
+
+        if context.get("session_id") and len(str(context["session_id"])) < 5:
+            analysis["risk_factors"].append("short_session_id_may_indicate_test")
+
+        return analysis
+
+    def _assess_error_severity(self, error_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Assess the severity of the error."""
+        error_type = error_data.get("type", "")
+        error_message = error_data.get("message", "")
+        context = error_data.get("context", {})
+
+        severity_score = 0.5  # Default medium severity
+        severity_factors = []
+
+        # Error type severity
+        if any(term in error_type for term in ["SystemExit", "KeyboardInterrupt"]):
+            severity_score = 0.2
+            severity_factors.append("system_level_interruption")
+        elif any(term in error_type for term in ["ImportError", "ModuleNotFoundError"]):
+            severity_score = 0.8
+            severity_factors.append("dependency_issue")
+        elif any(term in error_type for term in ["MemoryError", "RecursionError"]):
+            severity_score = 0.9
+            severity_factors.append("resource_exhaustion")
+        elif any(term in error_type for term in ["SyntaxError", "IndentationError"]):
+            severity_score = 0.3
+            severity_factors.append("code_quality_issue")
+
+        # Context-based severity adjustments
+        if context.get("agent_type") == "background":
+            severity_score *= 0.8  # Background errors are less critical
+            severity_factors.append("background_operation")
+
+        if "test" in str(context.get("command", "")).lower():
+            severity_score *= 0.6  # Test errors are less critical
+            severity_factors.append("test_environment")
+
+        return {
+            "severity_score": severity_score,
+            "severity_level": (
+                "low"
+                if severity_score < 0.4
+                else "medium" if severity_score < 0.7 else "high"
+            ),
+            "severity_factors": severity_factors,
+            "requires_immediate_attention": severity_score > 0.8,
+        }
+
+    def _identify_root_causes(self, error_data: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """Identify potential root causes of the error."""
+        error_type = error_data.get("type", "")
+        error_message = error_data.get("message", "")
+        context = error_data.get("context", {})
+
+        root_causes = []
+
+        # Type-based root cause analysis
+        if "AttributeError" in error_type:
+            root_causes.extend(
+                [
+                    {
+                        "cause": "Object not properly initialized",
+                        "confidence": 0.6,
+                        "evidence": "AttributeError suggests object state issue",
+                    },
+                    {
+                        "cause": "Method/attribute name misspelled",
+                        "confidence": 0.7,
+                        "evidence": "AttributeError with 'has no attribute' message",
+                    },
+                    {
+                        "cause": "Wrong object type used",
+                        "confidence": 0.5,
+                        "evidence": "Type mismatch in attribute access",
+                    },
+                ]
+            )
+
+        elif "ImportError" in error_type:
+            root_causes.extend(
+                [
+                    {
+                        "cause": "Package not installed",
+                        "confidence": 0.9,
+                        "evidence": "ImportError indicates missing dependency",
+                    },
+                    {
+                        "cause": "Incorrect module path",
+                        "confidence": 0.7,
+                        "evidence": "ImportError with module name in message",
+                    },
+                ]
+            )
+
+        elif "TypeError" in error_type:
+            root_causes.extend(
+                [
+                    {
+                        "cause": "Incompatible operand types",
+                        "confidence": 0.8,
+                        "evidence": "TypeError with operand type message",
+                    },
+                    {
+                        "cause": "Incorrect function call signature",
+                        "confidence": 0.6,
+                        "evidence": "TypeError with argument-related message",
+                    },
+                ]
+            )
+
+        # Context-based root causes
+        if context.get("command"):
+            command = str(context["command"]).lower()
+            if "network" in command or "http" in command:
+                root_causes.append(
+                    {
+                        "cause": "Network connectivity issue",
+                        "confidence": 0.7,
+                        "evidence": "Command suggests network operation",
+                    }
+                )
+
+        # Return top 3 most likely root causes
+        return sorted(root_causes, key=lambda x: x["confidence"], reverse=True)[:3]
+
+    def _generate_alternative_solutions(
+        self, error_data: Dict[str, Any], primary_solution: Dict[str, Any]
+    ) -> List[Dict[str, Any]]:
+        """Generate alternative solutions for the error."""
+        error_type = error_data.get("type", "")
+        error_message = error_data.get("message", "")
+
+        alternatives = []
+
+        # Generate alternatives based on error type
+        if "AttributeError" in error_type:
+            alternatives.extend(
+                [
+                    {
+                        "description": "Use hasattr() to check attribute existence",
+                        "code_example": "if hasattr(obj, 'attribute'): value = obj.attribute",
+                        "confidence": 0.8,
+                    },
+                    {
+                        "description": "Use getattr() with default value",
+                        "code_example": "value = getattr(obj, 'attribute', default_value)",
+                        "confidence": 0.9,
+                    },
+                    {
+                        "description": "Check object type before attribute access",
+                        "code_example": "if isinstance(obj, ExpectedClass): value = obj.attribute",
+                        "confidence": 0.7,
+                    },
+                ]
+            )
+
+        elif "ImportError" in error_type:
+            alternatives.extend(
+                [
+                    {
+                        "description": "Use try-except import pattern",
+                        "code_example": (
+                            "try:\n    import optional_module\n"
+                            "except ImportError:\n    optional_module = None"
+                        ),
+                        "confidence": 0.8,
+                    },
+                    {
+                        "description": "Use importlib for dynamic imports",
+                        "code_example": "import importlib\nmodule = importlib.import_module('module_name')",
+                        "confidence": 0.6,
+                    },
+                ]
+            )
+
+        elif "KeyError" in error_type:
+            alternatives.extend(
+                [
+                    {
+                        "description": "Use dict.get() method",
+                        "code_example": "value = my_dict.get('key', default_value)",
+                        "confidence": 0.9,
+                    },
+                    {
+                        "description": "Check key existence first",
+                        "code_example": "if 'key' in my_dict: value = my_dict['key']",
+                        "confidence": 0.8,
+                    },
+                    {
+                        "description": "Use try-except block",
+                        "code_example": "try:\n    value = my_dict['key']\nexcept KeyError:\n    value = default_value",
+                        "confidence": 0.7,
+                    },
+                ]
+            )
+
+        # Return top 2 alternatives
+        return sorted(alternatives, key=lambda x: x["confidence"], reverse=True)[:2]
+
+    def _extract_contextual_insights(
+        self, error_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Extract contextual insights from error data."""
+        context = error_data.get("context", {})
+        enriched_context = error_data.get("enriched_context", {})
+
+        insights = {
+            "temporal_patterns": {},
+            "environmental_factors": {},
+            "usage_patterns": {},
+            "system_health_indicators": {},
+        }
+
+        # Temporal patterns
+        if enriched_context.get("recent_activity", {}).get("recent_capability_usage"):
+            recent_usage = enriched_context["recent_activity"][
+                "recent_capability_usage"
+            ]
+            if recent_usage:
+                # Analyze usage patterns
+                capability_counts = {}
+                for usage in recent_usage:
+                    cap = usage.get("capability", "unknown")
+                    capability_counts[cap] = capability_counts.get(cap, 0) + 1
+
+                insights["temporal_patterns"] = {
+                    "most_recent_capability": recent_usage[0].get(
+                        "capability", "unknown"
+                    ),
+                    "capability_frequency": capability_counts,
+                    "usage_trend": "increasing" if len(recent_usage) > 2 else "stable",
+                }
+
+        # Environmental factors
+        if enriched_context.get("environment"):
+            env = enriched_context["environment"]
+            insights["environmental_factors"] = {
+                "working_directory_stability": (
+                    "stable" if env.get("working_directory") else "unknown"
+                ),
+                "path_complexity": (
+                    "complex" if len(env.get("path", "")) > 100 else "simple"
+                ),
+            }
+
+        # System health indicators
+        if enriched_context.get("resource_usage"):
+            resources = enriched_context["resource_usage"]
+            memory_percent = resources.get("system_memory", {}).get("percent_used", 0)
+            insights["system_health_indicators"] = {
+                "memory_pressure": "high" if memory_percent > 80 else "normal",
+                "process_health": (
+                    "good"
+                    if resources.get("process_cpu_percent", 0) < 50
+                    else "stressed"
+                ),
+            }
+
+        return insights
+
+    def update_confidence_model(
+        self, error_data: Dict[str, Any], was_successful: bool
+    ) -> None:
+        """Update the confidence model based on debugging outcome."""
+        model = utils.read_json(self.confidence_model_path, default={})
+
+        # Update adaptation statistics
+        if "adaptation_stats" not in model:
+            model["adaptation_stats"] = {
+                "total_predictions": 0,
+                "correct_predictions": 0,
+                "weight_adjustments": 0,
+                "last_adaptation": None,
+            }
+
+        stats = model["adaptation_stats"]
+        stats["total_predictions"] += 1
+
+        if was_successful:
+            stats["correct_predictions"] += 1
+
+        # Update learning weights based on performance
+        accuracy = stats["correct_predictions"] / stats["total_predictions"]
+        weights = model.get("learning_weights", {})
+
+        # Adjust weights based on accuracy trends
+        if accuracy > 0.8:
+            # High accuracy - maintain current weights
+            pass
+        elif accuracy > 0.6:
+            # Moderate accuracy - slight adjustments
+            weights["pattern_match"] = min(
+                0.5, weights.get("pattern_match", 0.4) + 0.05
+            )
+        else:
+            # Low accuracy - significant adjustments needed
+            weights["success_history"] = min(
+                0.4, weights.get("success_history", 0.2) + 0.1
+            )
+            stats["weight_adjustments"] += 1
+
+        stats["last_adaptation"] = utils.now_iso()
+        utils.write_json(self.confidence_model_path, model)
+
+    def get_enhanced_debugging_stats(self) -> Dict[str, Any]:
+        """Get enhanced debugging statistics including new metrics."""
+        base_stats = self.get_debugging_stats()
+
+        # Add enhanced metrics
+        pattern_db = utils.read_json(self.pattern_database_path, default={})
+        confidence_model = utils.read_json(self.confidence_model_path, default={})
+
+        enhanced_stats = {
+            "pattern_database_metrics": {
+                "total_stored_patterns": len(pattern_db.get("patterns", {})),
+                "pattern_categories": list(pattern_db.get("patterns", {}).keys()),
+                "learning_stats": pattern_db.get("learning_stats", {}),
+            },
+            "confidence_model_metrics": {
+                "model_version": confidence_model.get("version", "unknown"),
+                "last_updated": confidence_model.get("last_updated", "unknown"),
+                "adaptation_stats": confidence_model.get("adaptation_stats", {}),
+                "learning_weights": confidence_model.get("learning_weights", {}),
+            },
+            "enhanced_features_usage": {
+                "alternative_solutions_generated": 0,  # Would track in real usage
+                "contextual_insights_extracted": 0,
+                "root_cause_analysis_performed": 0,
+            },
+        }
+
+        # Merge with base stats
+        base_stats.update(enhanced_stats)
+        return base_stats
 
 
 def get_smart_debugger(root: Path) -> SmartDebugger:
