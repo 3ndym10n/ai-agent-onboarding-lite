@@ -22,6 +22,7 @@ from ai_onboard.core.continuous_improvement_validator import (
     ValidationResult,
     ValidationTestCase,
 )
+from ai_onboard.core.universal_error_monitor import get_error_monitor
 
 
 class TestContinuousImprovementValidator:
@@ -463,6 +464,124 @@ class TestContinuousImprovementValidator:
         assert test_case.result == ValidationResult.FAIL
         assert test_case.error_message is not None
         assert "Test error" in test_case.error_message
+
+    @pytest.mark.integration
+    def test_error_monitoring_integration(self, validator, root_path):
+        """Test integration with Universal Error Monitor."""
+        error_monitor = get_error_monitor(root_path)
+
+        # Create some validator errors to test monitoring
+        test_errors = [
+            ("AttributeError", "test_attribute_access", "validator_agent"),
+            ("ValueError", "test_value_validation", "validator_agent"),
+            ("TypeError", "test_type_checking", "validator_agent"),
+        ]
+
+        for error_type, command, agent in test_errors:
+            try:
+                if error_type == "AttributeError":
+                    raise AttributeError(f"Test {error_type} during {command}")
+                elif error_type == "ValueError":
+                    raise ValueError(f"Test {error_type} during {command}")
+                elif error_type == "TypeError":
+                    raise TypeError(f"Test {error_type} during {command}")
+            except Exception as e:
+                # This should be intercepted by the error monitor
+                error_monitor.intercept_error(
+                    e,
+                    {
+                        "command": command,
+                        "agent_type": agent,
+                        "session_id": "validator_integration_test",
+                        "validator_phase": "testing",
+                    },
+                )
+
+        # Verify errors were captured and analyzed
+        patterns = error_monitor.analyze_error_patterns(days_back=1)
+        assert patterns["total_errors_analyzed"] == 3
+
+        # Verify error types were captured
+        error_types = patterns["patterns"]["error_types"]
+        assert "AttributeError" in error_types
+        assert "ValueError" in error_types
+        assert "TypeError" in error_types
+
+        # Verify insights were generated
+        assert len(patterns["insights"]) > 0
+
+        # Verify enriched context is available in the intercepted results
+        # Note: enriched_context is available in the intercept_error result,
+        # but _get_recent_errors returns simplified data from the log file
+        assert patterns["total_errors_analyzed"] == 3
+
+        # Test enriched context directly with intercept_error
+        try:
+            raise ValueError("Test enriched context")
+        except Exception as e:
+            result = error_monitor.intercept_error(e, {"command": "test"})
+            assert "enriched_context" in result["error_data"]
+            enriched = result["error_data"]["enriched_context"]
+            # Should have at least some enrichment categories
+            assert len(enriched) > 0
+
+    @pytest.mark.integration
+    def test_validator_error_context_enrichment(self, validator, root_path):
+        """Test that validator errors include comprehensive context enrichment."""
+        error_monitor = get_error_monitor(root_path)
+
+        # Create a complex validator error scenario
+        try:
+            # Simulate a complex validation error
+            raise RuntimeError(
+                "Complex validation failure in continuous improvement system"
+            )
+        except Exception as e:
+            result = error_monitor.intercept_error(
+                e,
+                {
+                    "command": "validate_system",
+                    "agent_type": "continuous_improvement_validator",
+                    "session_id": "context_enrichment_test",
+                    "operation": "system_validation",
+                    "component": "ContinuousImprovementValidator",
+                    "phase": "integration_testing",
+                },
+            )
+
+        # Verify comprehensive context enrichment
+        error_data = result["error_data"]
+        enriched = error_data["enriched_context"]
+
+        # Check for expected enrichment categories
+        expected_categories = [
+            "system_info",
+            "performance_metrics",
+            "environment",
+            "stack_analysis",
+            "recent_activity",
+            "configuration_snapshot",
+            "related_patterns",
+            "resource_usage",
+        ]
+
+        enriched_keys = set(enriched.keys())
+        found_categories = enriched_keys.intersection(set(expected_categories))
+
+        # Should have multiple enrichment categories
+        assert len(found_categories) >= 4
+
+        # Verify error data includes validator-specific information
+        assert error_data["agent_type"] == "continuous_improvement_validator"
+        assert error_data["command"] == "validate_system"
+
+        # Verify enriched context includes validator-specific metadata
+        assert "recent_activity" in enriched
+        recent_activity = enriched["recent_activity"]
+        assert "session_context" in recent_activity
+        session_context = recent_activity["session_context"]
+        assert session_context["agent_type"] == "continuous_improvement_validator"
+        assert session_context["command"] == "validate_system"
 
     @pytest.mark.integration
     def test_cli_integration(self, validator, root_path):
