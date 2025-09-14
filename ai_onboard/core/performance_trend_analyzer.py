@@ -69,8 +69,8 @@ class TrendAnalysis:
     change_percent: float
     volatility: float
     trend_strength: float
-    analysis_timestamp: datetime = field(default_factory = datetime.now)
-    context: Dict[str, Any] = field(default_factory = dict)
+    analysis_timestamp: datetime = field(default_factory=datetime.now)
+    context: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -86,8 +86,8 @@ class PerformanceForecast:
     assumptions: List[str]
     risk_factors: List[str]
     recommendations: List[str]
-    created_at: datetime = field(default_factory = datetime.now)
-    metadata: Dict[str, Any] = field(default_factory = dict)
+    created_at: datetime = field(default_factory=datetime.now)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -120,7 +120,7 @@ class PerformanceInsight:
     recommendations: List[str]
     estimated_impact: str
     implementation_effort: str
-    created_at: datetime = field(default_factory = datetime.now)
+    created_at: datetime = field(default_factory=datetime.now)
 
 
 class PerformanceTrendAnalyzer:
@@ -192,14 +192,14 @@ class PerformanceTrendAnalyzer:
             },
         }
 
-        return utils.read_json(self.config_path, default = default_config)
+        return utils.read_json(self.config_path, default=default_config)
 
     def _initialize_baselines(self):
         """Initialize performance baselines from historical data."""
         try:
             # Load recent performance data to establish baselines
             cutoff_date = datetime.now() - timedelta(
-                days = self.config["trend_analysis"]["lookback_days"]
+                days=self.config["trend_analysis"]["lookback_days"]
             )
 
             # This would load historical metrics for baseline calculation
@@ -212,11 +212,11 @@ class PerformanceTrendAnalyzer:
             }
 
             telemetry.log_event(
-                "trend_analyzer_initialized", baselines_count = len(self.baselines)
+                "trend_analyzer_initialized", baselines_count=len(self.baselines)
             )
 
         except Exception as e:
-            telemetry.log_event("trend_analyzer_init_error", error = str(e))
+            telemetry.log_event("trend_analyzer_init_error", error=str(e))
             self.baselines = {}
 
     def analyze_performance_trends(
@@ -243,15 +243,15 @@ class PerformanceTrendAnalyzer:
 
             telemetry.log_event(
                 "performance_trends_analyzed",
-                metrics_count = len(metric_names),
-                trends_found = len(trends),
-                time_period = time_period,
+                metrics_count=len(metric_names),
+                trends_found=len(trends),
+                time_period=time_period,
             )
 
             return trends
 
         except Exception as e:
-            telemetry.log_event("trend_analysis_error", error = str(e))
+            telemetry.log_event("trend_analysis_error", error=str(e))
             return []
 
     def _analyze_metric_trend(
@@ -282,23 +282,23 @@ class PerformanceTrendAnalyzer:
             trend_strength = self._calculate_trend_strength(trend_stats, volatility)
 
             return TrendAnalysis(
-                metric_name = metric_name,
-                time_period = time_period,
-                direction = direction,
-                severity = severity,
-                confidence = trend_stats["confidence"],
-                slope = trend_stats["slope"],
-                correlation = correlation,
-                data_points = len(values),
-                start_value = values[0],
-                end_value = values[-1],
+                metric_name=metric_name,
+                time_period=time_period,
+                direction=direction,
+                severity=severity,
+                confidence=trend_stats["confidence"],
+                slope=trend_stats["slope"],
+                correlation=correlation,
+                data_points=len(values),
+                start_value=values[0],
+                end_value=values[-1],
                 change_percent=(
                     ((values[-1] - values[0]) / values[0]) * 100
                     if values[0] != 0
                     else 0
                 ),
-                volatility = volatility,
-                trend_strength = trend_strength,
+                volatility=volatility,
+                trend_strength=trend_strength,
                 context={
                     "time_range": f"{timestamps[0]} to {timestamps[-1]}",
                     "baseline": self.baselines.get(metric_name, {}),
@@ -308,7 +308,7 @@ class PerformanceTrendAnalyzer:
 
         except Exception as e:
             telemetry.log_event(
-                "metric_trend_analysis_error", metric = metric_name, error = str(e)
+                "metric_trend_analysis_error", metric=metric_name, error=str(e)
             )
             return None
 
@@ -324,11 +324,11 @@ class PerformanceTrendAnalyzer:
         sum_y = sum(values)
         sum_xy = sum(x[i] * values[i] for i in range(n))
         sum_x2 = sum(x[i] ** 2 for i in range(n))
-        sum(y ** 2 for y in values)
+        sum(y**2 for y in values)
 
         # Avoid division by zero
-        denominator = n * sum_x2 - sum_x ** 2
-        if abs(denominator) < 1e - 10:
+        denominator = n * sum_x2 - sum_x**2
+        if abs(denominator) < 1e-10:
             return {"slope": 0, "intercept": sum_y / n, "r_squared": 0, "confidence": 0}
 
         slope = (n * sum_xy - sum_x * sum_y) / denominator
@@ -471,14 +471,14 @@ class PerformanceTrendAnalyzer:
 
             telemetry.log_event(
                 "anomaly_detection_completed",
-                metrics_analyzed = len(metric_names),
-                anomalies_found = len(anomalies),
+                metrics_analyzed=len(metric_names),
+                anomalies_found=len(anomalies),
             )
 
             return anomalies
 
         except Exception as e:
-            telemetry.log_event("anomaly_detection_error", error = str(e))
+            telemetry.log_event("anomaly_detection_error", error=str(e))
             return []
 
     def _detect_metric_anomalies(
@@ -518,7 +518,7 @@ class PerformanceTrendAnalyzer:
 
         except Exception as e:
             telemetry.log_event(
-                "metric_anomaly_detection_error", metric = metric_name, error = str(e)
+                "metric_anomaly_detection_error", metric=metric_name, error=str(e)
             )
             return []
 
@@ -547,15 +547,15 @@ class PerformanceTrendAnalyzer:
 
                 anomalies.append(
                     AnomalyDetection(
-                        metric_name = metric_name,
-                        anomaly_timestamp = datetime.fromisoformat(
+                        metric_name=metric_name,
+                        anomaly_timestamp=datetime.fromisoformat(
                             timestamp.replace("Z", "+00:00")
                         ),
-                        anomaly_value = value,
-                        expected_value = mean_val,
-                        deviation_score = z_score,
-                        anomaly_type = anomaly_type,
-                        severity = severity,
+                        anomaly_value=value,
+                        expected_value=mean_val,
+                        deviation_score=z_score,
+                        anomaly_type=anomaly_type,
+                        severity=severity,
                         context={
                             "method": "z_score",
                             "threshold": threshold,
@@ -563,7 +563,7 @@ class PerformanceTrendAnalyzer:
                             "std": std_val,
                         },
                         detection_method="z_score",
-                        confidence = min(z_score / threshold, 1.0),
+                        confidence=min(z_score / threshold, 1.0),
                     )
                 )
 
@@ -604,15 +604,15 @@ class PerformanceTrendAnalyzer:
 
                 anomalies.append(
                     AnomalyDetection(
-                        metric_name = metric_name,
-                        anomaly_timestamp = datetime.fromisoformat(
+                        metric_name=metric_name,
+                        anomaly_timestamp=datetime.fromisoformat(
                             timestamp.replace("Z", "+00:00")
                         ),
-                        anomaly_value = value,
-                        expected_value = median_val,
-                        deviation_score = deviation_score,
-                        anomaly_type = anomaly_type,
-                        severity = severity,
+                        anomaly_value=value,
+                        expected_value=median_val,
+                        deviation_score=deviation_score,
+                        anomaly_type=anomaly_type,
+                        severity=severity,
                         context={
                             "method": "iqr",
                             "q1": q1,
@@ -621,7 +621,7 @@ class PerformanceTrendAnalyzer:
                             "bounds": [lower_bound, upper_bound],
                         },
                         detection_method="iqr",
-                        confidence = min(deviation_score / 2.0, 1.0),
+                        confidence=min(deviation_score / 2.0, 1.0),
                     )
                 )
 
@@ -654,15 +654,15 @@ class PerformanceTrendAnalyzer:
 
                 anomalies.append(
                     AnomalyDetection(
-                        metric_name = metric_name,
-                        anomaly_timestamp = datetime.fromisoformat(
+                        metric_name=metric_name,
+                        anomaly_timestamp=datetime.fromisoformat(
                             timestamps[i].replace("Z", "+00:00")
                         ),
-                        anomaly_value = current_value,
-                        expected_value = window_mean,
-                        deviation_score = deviation,
-                        anomaly_type = anomaly_type,
-                        severity = severity,
+                        anomaly_value=current_value,
+                        expected_value=window_mean,
+                        deviation_score=deviation,
+                        anomaly_type=anomaly_type,
+                        severity=severity,
                         context={
                             "method": "moving_average",
                             "window_size": window_size,
@@ -670,7 +670,7 @@ class PerformanceTrendAnalyzer:
                             "window_std": window_std,
                         },
                         detection_method="moving_average",
-                        confidence = min(deviation / self.anomaly_threshold, 1.0),
+                        confidence=min(deviation / self.anomaly_threshold, 1.0),
                     )
                 )
 
@@ -734,19 +734,19 @@ class PerformanceTrendAnalyzer:
             )
 
             forecast = PerformanceForecast(
-                metric_name = metric_name,
-                forecast_horizon = f"{horizon_days}d",
-                predicted_values = combined_forecast,
-                confidence_intervals = confidence_intervals,
-                forecast_confidence = forecast_confidence,
+                metric_name=metric_name,
+                forecast_horizon=f"{horizon_days}d",
+                predicted_values=combined_forecast,
+                confidence_intervals=confidence_intervals,
+                forecast_confidence=forecast_confidence,
                 methodology="combined_linear_exponential",
                 assumptions=[
                     "Historical patterns continue",
                     "No major system changes",
                     "Current usage patterns persist",
                 ],
-                risk_factors = self._identify_forecast_risks(metric_name, values),
-                recommendations = recommendations,
+                risk_factors=self._identify_forecast_risks(metric_name, values),
+                recommendations=recommendations,
                 metadata={
                     "data_points_used": len(values),
                     "forecast_methods": ["linear", "exponential"],
@@ -766,7 +766,7 @@ class PerformanceTrendAnalyzer:
 
         except Exception as e:
             telemetry.log_event(
-                "forecast_generation_error", metric = metric_name, error = str(e)
+                "forecast_generation_error", metric=metric_name, error=str(e)
             )
             return None
 
@@ -978,7 +978,7 @@ class PerformanceTrendAnalyzer:
 
         try:
             # Simple autocorrelation at lag 7 (weekly)
-            weekly_correlation = self._calculate_autocorrelation(values, lag = 7)
+            weekly_correlation = self._calculate_autocorrelation(values, lag=7)
             return weekly_correlation > 0.3
         except Exception:
             return False
@@ -994,11 +994,11 @@ class PerformanceTrendAnalyzer:
             insights = []
 
             # Analyze recent trends
-            trends = self.analyze_performance_trends(time_period = f"{lookback_days}d")
+            trends = self.analyze_performance_trends(time_period=f"{lookback_days}d")
 
             # Detect anomalies
             anomalies = self.detect_performance_anomalies(
-                lookback_hours = lookback_days * 24
+                lookback_hours=lookback_days * 24
             )
 
             # Generate insights from trends
@@ -1021,15 +1021,15 @@ class PerformanceTrendAnalyzer:
 
             telemetry.log_event(
                 "performance_insights_generated",
-                insights_count = len(prioritized_insights),
-                trends_analyzed = len(trends),
-                anomalies_found = len(anomalies),
+                insights_count=len(prioritized_insights),
+                trends_analyzed=len(trends),
+                anomalies_found=len(anomalies),
             )
 
             return prioritized_insights
 
         except Exception as e:
-            telemetry.log_event("insight_generation_error", error = str(e))
+            telemetry.log_event("insight_generation_error", error=str(e))
             return []
 
     def _generate_trend_insights(
@@ -1042,11 +1042,11 @@ class PerformanceTrendAnalyzer:
             if trend.severity in [TrendSeverity.HIGH, TrendSeverity.CRITICAL]:
                 if trend.direction == TrendDirection.DEGRADING:
                     insight = PerformanceInsight(
-                        insight_id = f"trend_degrading_{trend.metric_name}_{int(time.time())}",
-                        title = f"Performance Degradation Detected: {trend.metric_name}",
-                        description = f"{trend.metric_name} has shown a {trend.severity.value} degrading trend over {trend.time_period} with {trend.change_percent:.1f}% increase",
+                        insight_id=f"trend_degrading_{trend.metric_name}_{int(time.time())}",
+                        title=f"Performance Degradation Detected: {trend.metric_name}",
+                        description=f"{trend.metric_name} has shown a {trend.severity.value} degrading trend over {trend.time_period} with {trend.change_percent:.1f}% increase",
                         category="optimization",
-                        priority = trend.severity.value,
+                        priority=trend.severity.value,
                         affected_metrics=[trend.metric_name],
                         evidence={
                             "trend_direction": trend.direction.value,
@@ -1055,7 +1055,7 @@ class PerformanceTrendAnalyzer:
                             "change_percent": trend.change_percent,
                             "data_points": trend.data_points,
                         },
-                        recommendations = self._generate_degradation_recommendations(
+                        recommendations=self._generate_degradation_recommendations(
                             trend
                         ),
                         estimated_impact=(
@@ -1072,9 +1072,9 @@ class PerformanceTrendAnalyzer:
                     and trend.confidence > 0.7
                 ):
                     insight = PerformanceInsight(
-                        insight_id = f"trend_improving_{trend.metric_name}_{int(time.time())}",
-                        title = f"Performance Improvement Detected: {trend.metric_name}",
-                        description = f"{trend.metric_name} has shown consistent improvement over {trend.time_period} with {abs(trend.change_percent):.1f}% decrease",
+                        insight_id=f"trend_improving_{trend.metric_name}_{int(time.time())}",
+                        title=f"Performance Improvement Detected: {trend.metric_name}",
+                        description=f"{trend.metric_name} has shown consistent improvement over {trend.time_period} with {abs(trend.change_percent):.1f}% decrease",
                         category="efficiency",
                         priority="low",
                         affected_metrics=[trend.metric_name],
@@ -1158,9 +1158,9 @@ class PerformanceTrendAnalyzer:
                 anomaly_type = group_anomalies[0].anomaly_type
 
                 insight = PerformanceInsight(
-                    insight_id = f"anomaly_pattern_{group_key}_{int(time.time())}",
-                    title = f"Recurring Performance Anomalies: {metric_name}",
-                    description = f"Detected {len(group_anomalies)} {anomaly_type} anomalies in {metric_name} indicating potential systemic issues",
+                    insight_id=f"anomaly_pattern_{group_key}_{int(time.time())}",
+                    title=f"Recurring Performance Anomalies: {metric_name}",
+                    description=f"Detected {len(group_anomalies)} {anomaly_type} anomalies in {metric_name} indicating potential systemic issues",
                     category="reliability",
                     priority=(
                         "high"
@@ -1204,7 +1204,7 @@ class PerformanceTrendAnalyzer:
             if trend.direction == TrendDirection.DEGRADING and trend.confidence > 0.6:
                 # Generate forecast for capacity planning
                 forecast = self.generate_performance_forecast(
-                    trend.metric_name, horizon_days = 90
+                    trend.metric_name, horizon_days=90
                 )
 
                 if forecast and forecast.forecast_confidence in [
@@ -1226,9 +1226,9 @@ class PerformanceTrendAnalyzer:
 
                     if threshold_exceeded:
                         insight = PerformanceInsight(
-                            insight_id = f"capacity_planning_{trend.metric_name}_{int(time.time())}",
-                            title = f"Capacity Planning Alert: {trend.metric_name}",
-                            description = f"{trend.metric_name} forecast indicates potential capacity issues within 90 days, with predicted peak of {max_forecast:.1f}% (threshold: {threshold_value}%)",
+                            insight_id=f"capacity_planning_{trend.metric_name}_{int(time.time())}",
+                            title=f"Capacity Planning Alert: {trend.metric_name}",
+                            description=f"{trend.metric_name} forecast indicates potential capacity issues within 90 days, with predicted peak of {max_forecast:.1f}% (threshold: {threshold_value}%)",
                             category="capacity",
                             priority="high",
                             affected_metrics=[trend.metric_name],
@@ -1286,7 +1286,7 @@ class PerformanceTrendAnalyzer:
             category_val = category_order.get(insight.category, 0)
             return (priority_val, category_val)
 
-        return sorted(insights, key = priority_score, reverse = True)
+        return sorted(insights, key=priority_score, reverse=True)
 
     def _get_available_performance_metrics(self) -> List[str]:
         """Get list of available performance metrics."""
@@ -1323,7 +1323,7 @@ class PerformanceTrendAnalyzer:
         data_points = []
 
         for i in range(int(days * 24)):  # Hourly data points
-            timestamp = now - timedelta(hours = i)
+            timestamp = now - timedelta(hours=i)
 
             # Generate realistic mock data based on metric type
             if "cpu" in metric_name.lower():
@@ -1379,7 +1379,7 @@ class PerformanceTrendAnalyzer:
                 utils.append_jsonl(self.trends_path, trend_data)
 
         except Exception as e:
-            telemetry.log_event("trend_save_error", error = str(e))
+            telemetry.log_event("trend_save_error", error=str(e))
 
     def _save_anomalies(self, anomalies: List[AnomalyDetection]):
         """Save anomaly detection results to persistent storage."""
@@ -1403,7 +1403,7 @@ class PerformanceTrendAnalyzer:
                 utils.append_jsonl(self.anomalies_path, anomaly_data)
 
         except Exception as e:
-            telemetry.log_event("anomaly_save_error", error = str(e))
+            telemetry.log_event("anomaly_save_error", error=str(e))
 
     def _save_forecast(self, forecast: PerformanceForecast):
         """Save performance forecast to persistent storage."""
@@ -1426,7 +1426,7 @@ class PerformanceTrendAnalyzer:
             utils.append_jsonl(self.forecasts_path, forecast_data)
 
         except Exception as e:
-            telemetry.log_event("forecast_save_error", error = str(e))
+            telemetry.log_event("forecast_save_error", error=str(e))
 
     def _save_insights(self, insights: List[PerformanceInsight]):
         """Save performance insights to persistent storage."""
@@ -1449,7 +1449,7 @@ class PerformanceTrendAnalyzer:
                 utils.append_jsonl(self.insights_path, insight_data)
 
         except Exception as e:
-            telemetry.log_event("insight_save_error", error = str(e))
+            telemetry.log_event("insight_save_error", error=str(e))
 
 
 # Factory function

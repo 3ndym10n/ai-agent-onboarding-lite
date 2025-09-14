@@ -843,7 +843,7 @@ class KaizenAutomationEngine:
         self, opportunity: ImprovementOpportunity
     ) -> Dict[str, Any]:
         """Execute a specific improvement opportunity."""
-        result = {
+        result: Dict[str, Any] = {
             "started_at": datetime.now().isoformat(),
             "status": "executing",
             "actions_performed": [],
@@ -879,7 +879,7 @@ class KaizenAutomationEngine:
         self, opportunity: ImprovementOpportunity
     ) -> Dict[str, Any]:
         """Execute performance - related improvements."""
-        result = {"actions_performed": []}
+        result: Dict[str, Any] = {"actions_performed": []}
 
         # Example: Clear caches, optimize configurations
         if "slow_operations" in opportunity.evidence:
@@ -900,7 +900,7 @@ class KaizenAutomationEngine:
         self, opportunity: ImprovementOpportunity
     ) -> Dict[str, Any]:
         """Execute user experience improvements."""
-        result = {"actions_performed": []}
+        result: Dict[str, Any] = {"actions_performed": []}
 
         if "error_rate" in opportunity.evidence:
             result["actions_performed"].append("Improved error messages")
@@ -918,7 +918,7 @@ class KaizenAutomationEngine:
         self, opportunity: ImprovementOpportunity
     ) -> Dict[str, Any]:
         """Execute reliability improvements."""
-        result = {"actions_performed": []}
+        result: Dict[str, Any] = {"actions_performed": []}
 
         if "error_count" in opportunity.evidence:
             result["actions_performed"].append("Enhanced error monitoring")
@@ -931,7 +931,7 @@ class KaizenAutomationEngine:
         self, opportunity: ImprovementOpportunity
     ) -> Dict[str, Any]:
         """Execute general improvements."""
-        result = {
+        result: Dict[str, Any] = {
             "actions_performed": ["Applied general optimization"],
             "improvement_type": "general",
         }

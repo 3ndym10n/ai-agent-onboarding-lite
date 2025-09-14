@@ -86,11 +86,11 @@ class KnowledgeItem:
     access_count: int = 0
     confidence_score: float = 0.0
     relevance_score: float = 0.0
-    tags: List[str] = field(default_factory = list)
-    metadata: Dict[str, Any] = field(default_factory = dict)
-    related_knowledge: List[str] = field(default_factory = list)
-    validation_evidence: List[Dict[str, Any]] = field(default_factory = list)
-    usage_statistics: Dict[str, Any] = field(default_factory = dict)
+    tags: List[str] = field(default_factory=list)
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    related_knowledge: List[str] = field(default_factory=list)
+    validation_evidence: List[Dict[str, Any]] = field(default_factory=list)
+    usage_statistics: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -224,28 +224,28 @@ class KnowledgeBaseEvolution:
                 try:
                     data = json.loads(line)
                     knowledge_item = KnowledgeItem(
-                        knowledge_id = data["knowledge_id"],
-                        knowledge_type = KnowledgeType(data["knowledge_type"]),
-                        title = data["title"],
-                        content = data["content"],
-                        source = KnowledgeSource(data["source"]),
-                        quality = KnowledgeQuality(data["quality"]),
-                        status = KnowledgeStatus(data["status"]),
-                        created_at = datetime.fromisoformat(data["created_at"]),
-                        updated_at = datetime.fromisoformat(data["updated_at"]),
+                        knowledge_id=data["knowledge_id"],
+                        knowledge_type=KnowledgeType(data["knowledge_type"]),
+                        title=data["title"],
+                        content=data["content"],
+                        source=KnowledgeSource(data["source"]),
+                        quality=KnowledgeQuality(data["quality"]),
+                        status=KnowledgeStatus(data["status"]),
+                        created_at=datetime.fromisoformat(data["created_at"]),
+                        updated_at=datetime.fromisoformat(data["updated_at"]),
                         last_accessed=(
                             datetime.fromisoformat(data["last_accessed"])
                             if data.get("last_accessed")
                             else None
                         ),
-                        access_count = data.get("access_count", 0),
-                        confidence_score = data.get("confidence_score", 0.0),
-                        relevance_score = data.get("relevance_score", 0.0),
-                        tags = data.get("tags", []),
-                        metadata = data.get("metadata", {}),
-                        related_knowledge = data.get("related_knowledge", []),
-                        validation_evidence = data.get("validation_evidence", []),
-                        usage_statistics = data.get("usage_statistics", {}),
+                        access_count=data.get("access_count", 0),
+                        confidence_score=data.get("confidence_score", 0.0),
+                        relevance_score=data.get("relevance_score", 0.0),
+                        tags=data.get("tags", []),
+                        metadata=data.get("metadata", {}),
+                        related_knowledge=data.get("related_knowledge", []),
+                        validation_evidence=data.get("validation_evidence", []),
+                        usage_statistics=data.get("usage_statistics", {}),
                     )
                     self.knowledge_items[knowledge_item.knowledge_id] = knowledge_item
 
@@ -271,18 +271,18 @@ class KnowledgeBaseEvolution:
 
         for pattern_data in data:
             pattern = KnowledgePattern(
-                pattern_id = pattern_data["pattern_id"],
-                pattern_type = pattern_data["pattern_type"],
-                description = pattern_data["description"],
-                frequency = pattern_data["frequency"],
-                confidence = pattern_data["confidence"],
-                examples = pattern_data["examples"],
-                conditions = pattern_data["conditions"],
-                outcomes = pattern_data["outcomes"],
-                discovered_at = datetime.fromisoformat(pattern_data["discovered_at"]),
-                last_updated = datetime.fromisoformat(pattern_data["last_updated"]),
-                validation_count = pattern_data.get("validation_count", 0),
-                success_rate = pattern_data.get("success_rate", 0.0),
+                pattern_id=pattern_data["pattern_id"],
+                pattern_type=pattern_data["pattern_type"],
+                description=pattern_data["description"],
+                frequency=pattern_data["frequency"],
+                confidence=pattern_data["confidence"],
+                examples=pattern_data["examples"],
+                conditions=pattern_data["conditions"],
+                outcomes=pattern_data["outcomes"],
+                discovered_at=datetime.fromisoformat(pattern_data["discovered_at"]),
+                last_updated=datetime.fromisoformat(pattern_data["last_updated"]),
+                validation_count=pattern_data.get("validation_count", 0),
+                success_rate=pattern_data.get("success_rate", 0.0),
             )
             self.knowledge_patterns[pattern.pattern_id] = pattern
 
@@ -299,22 +299,22 @@ class KnowledgeBaseEvolution:
                 try:
                     data = json.loads(line)
                     recommendation = KnowledgeRecommendation(
-                        recommendation_id = data["recommendation_id"],
-                        knowledge_item_id = data["knowledge_item_id"],
-                        recommendation_type = data["recommendation_type"],
-                        title = data["title"],
-                        description = data["description"],
-                        confidence = data["confidence"],
-                        relevance_score = data["relevance_score"],
-                        context = data["context"],
-                        created_at = datetime.fromisoformat(data["created_at"]),
+                        recommendation_id=data["recommendation_id"],
+                        knowledge_item_id=data["knowledge_item_id"],
+                        recommendation_type=data["recommendation_type"],
+                        title=data["title"],
+                        description=data["description"],
+                        confidence=data["confidence"],
+                        relevance_score=data["relevance_score"],
+                        context=data["context"],
+                        created_at=datetime.fromisoformat(data["created_at"]),
                         expires_at=(
                             datetime.fromisoformat(data["expires_at"])
                             if data.get("expires_at")
                             else None
                         ),
-                        usage_count = data.get("usage_count", 0),
-                        feedback_score = data.get("feedback_score", 0.0),
+                        usage_count=data.get("usage_count", 0),
+                        feedback_score=data.get("feedback_score", 0.0),
                     )
                     self.knowledge_recommendations.append(recommendation)
                 except (json.JSONDecodeError, KeyError, ValueError):
@@ -338,19 +338,19 @@ class KnowledgeBaseEvolution:
         similar_knowledge = self._find_similar_knowledge(title, content, knowledge_type)
 
         knowledge_item = KnowledgeItem(
-            knowledge_id = knowledge_id,
-            knowledge_type = knowledge_type,
-            title = title,
-            content = content,
-            source = source,
-            quality = quality,
-            status = KnowledgeStatus.DRAFT,
-            created_at = datetime.now(),
-            updated_at = datetime.now(),
-            confidence_score = confidence_score,
-            relevance_score = self._calculate_relevance_score(content, tags or []),
-            tags = tags or [],
-            metadata = metadata or {},
+            knowledge_id=knowledge_id,
+            knowledge_type=knowledge_type,
+            title=title,
+            content=content,
+            source=source,
+            quality=quality,
+            status=KnowledgeStatus.DRAFT,
+            created_at=datetime.now(),
+            updated_at=datetime.now(),
+            confidence_score=confidence_score,
+            relevance_score=self._calculate_relevance_score(content, tags or []),
+            tags=tags or [],
+            metadata=metadata or {},
             related_knowledge=[k.knowledge_id for k in similar_knowledge],
         )
 
@@ -373,7 +373,7 @@ class KnowledgeBaseEvolution:
 
         # Record learning event
         self.continuous_improvement.record_learning_event(
-            learning_type = continuous_improvement_system.LearningType.KNOWLEDGE_ACQUISITION,
+            learning_type=continuous_improvement_system.LearningType.KNOWLEDGE_ACQUISITION,
             context={
                 "knowledge_type": knowledge_type.value,
                 "source": source.value,
@@ -387,18 +387,18 @@ class KnowledgeBaseEvolution:
                     "status": knowledge_item.status.value,
                 }
             },
-            confidence = confidence_score,
-            impact_score = 0.7,
+            confidence=confidence_score,
+            impact_score=0.7,
             source="knowledge_base_evolution",
         )
 
         telemetry.log_event(
             "knowledge_added",
-            knowledge_id = knowledge_id,
-            knowledge_type = knowledge_type.value,
-            source = source.value,
-            quality = quality.value,
-            status = knowledge_item.status.value,
+            knowledge_id=knowledge_id,
+            knowledge_type=knowledge_type.value,
+            source=source.value,
+            quality=quality.value,
+            status=knowledge_item.status.value,
         )
 
         return knowledge_id
@@ -508,7 +508,7 @@ class KnowledgeBaseEvolution:
                 results.append((item, relevance))
 
         # Sort by relevance and return top results
-        results.sort(key = lambda x: x[1], reverse = True)
+        results.sort(key=lambda x: x[1], reverse=True)
         return [item for item, _ in results[:limit]]
 
     def _calculate_query_relevance(
@@ -554,21 +554,21 @@ class KnowledgeBaseEvolution:
         for knowledge_item in relevant_knowledge:
             # Create recommendation
             recommendation = KnowledgeRecommendation(
-                recommendation_id = f"rec_{int(time.time())}_{utils.random_string(8)}",
-                knowledge_item_id = knowledge_item.knowledge_id,
+                recommendation_id=f"rec_{int(time.time())}_{utils.random_string(8)}",
+                knowledge_item_id=knowledge_item.knowledge_id,
                 recommendation_type="knowledge_application",
-                title = f"Apply: {knowledge_item.title}",
-                description = f"Consider applying this knowledge: {knowledge_item.content[:200]}...",
-                confidence = knowledge_item.confidence_score,
-                relevance_score = knowledge_item.relevance_score,
-                context = context,
-                created_at = datetime.now(),
+                title=f"Apply: {knowledge_item.title}",
+                description=f"Consider applying this knowledge: {knowledge_item.content[:200]}...",
+                confidence=knowledge_item.confidence_score,
+                relevance_score=knowledge_item.relevance_score,
+                context=context,
+                created_at=datetime.now(),
             )
             recommendations.append(recommendation)
 
         # Sort by relevance and confidence
         recommendations.sort(
-            key = lambda r: r.relevance_score * r.confidence, reverse = True
+            key=lambda r: r.relevance_score * r.confidence, reverse=True
         )
 
         return recommendations[:limit]
@@ -594,7 +594,7 @@ class KnowledgeBaseEvolution:
                 relevant_items.append((item, relevance))
 
         # Sort by relevance
-        relevant_items.sort(key = lambda x: x[1], reverse = True)
+        relevant_items.sort(key=lambda x: x[1], reverse=True)
         return [item for item, _ in relevant_items[:10]]
 
     def _calculate_context_relevance(
@@ -672,16 +672,16 @@ class KnowledgeBaseEvolution:
         for tag, items in workflow_groups.items():
             if len(items) >= self.evolution_config["pattern_min_frequency"]:
                 pattern = KnowledgePattern(
-                    pattern_id = f"pattern_{int(time.time())}_{utils.random_string(8)}",
+                    pattern_id=f"pattern_{int(time.time())}_{utils.random_string(8)}",
                     pattern_type="workflow",
-                    description = f"Common workflow pattern: {tag}",
-                    frequency = len(items),
-                    confidence = min(len(items) / 10, 1.0),
+                    description=f"Common workflow pattern: {tag}",
+                    frequency=len(items),
+                    confidence=min(len(items) / 10, 1.0),
                     examples=[item.knowledge_id for item in items[:5]],
                     conditions={"tag": tag, "knowledge_type": "workflow_pattern"},
                     outcomes={"efficiency": "improved", "consistency": "increased"},
-                    discovered_at = datetime.now(),
-                    last_updated = datetime.now(),
+                    discovered_at=datetime.now(),
+                    last_updated=datetime.now(),
                 )
                 patterns.append(pattern)
 
@@ -705,19 +705,19 @@ class KnowledgeBaseEvolution:
         for error_type, items in error_groups.items():
             if len(items) >= self.evolution_config["pattern_min_frequency"]:
                 pattern = KnowledgePattern(
-                    pattern_id = f"pattern_{int(time.time())}_{utils.random_string(8)}",
+                    pattern_id=f"pattern_{int(time.time())}_{utils.random_string(8)}",
                     pattern_type="error_solution",
-                    description = f"Common solution for {error_type} errors",
-                    frequency = len(items),
-                    confidence = min(len(items) / 5, 1.0),
+                    description=f"Common solution for {error_type} errors",
+                    frequency=len(items),
+                    confidence=min(len(items) / 5, 1.0),
                     examples=[item.knowledge_id for item in items[:3]],
                     conditions={"error_type": error_type},
                     outcomes={
                         "resolution_time": "reduced",
                         "success_rate": "increased",
                     },
-                    discovered_at = datetime.now(),
-                    last_updated = datetime.now(),
+                    discovered_at=datetime.now(),
+                    last_updated=datetime.now(),
                 )
                 patterns.append(pattern)
 
@@ -741,16 +741,16 @@ class KnowledgeBaseEvolution:
         for opt_type, items in perf_groups.items():
             if len(items) >= self.evolution_config["pattern_min_frequency"]:
                 pattern = KnowledgePattern(
-                    pattern_id = f"pattern_{int(time.time())}_{utils.random_string(8)}",
+                    pattern_id=f"pattern_{int(time.time())}_{utils.random_string(8)}",
                     pattern_type="performance_optimization",
-                    description = f"Common {opt_type} optimization pattern",
-                    frequency = len(items),
-                    confidence = min(len(items) / 5, 1.0),
+                    description=f"Common {opt_type} optimization pattern",
+                    frequency=len(items),
+                    confidence=min(len(items) / 5, 1.0),
                     examples=[item.knowledge_id for item in items[:3]],
                     conditions={"optimization_type": opt_type},
                     outcomes={"performance": "improved", "efficiency": "increased"},
-                    discovered_at = datetime.now(),
-                    last_updated = datetime.now(),
+                    discovered_at=datetime.now(),
+                    last_updated=datetime.now(),
                 )
                 patterns.append(pattern)
 
@@ -799,7 +799,7 @@ class KnowledgeBaseEvolution:
 
         # Record evolution event
         self.continuous_improvement.record_learning_event(
-            learning_type = continuous_improvement_system.LearningType.KNOWLEDGE_EVOLUTION,
+            learning_type=continuous_improvement_system.LearningType.KNOWLEDGE_EVOLUTION,
             context={
                 "trigger": trigger,
                 "context_type": type(context).__name__ if context else None,
@@ -810,8 +810,8 @@ class KnowledgeBaseEvolution:
                     "timestamp": datetime.now().isoformat(),
                 }
             },
-            confidence = 0.8,
-            impact_score = 0.6,
+            confidence=0.8,
+            impact_score=0.6,
             source="knowledge_base_evolution",
         )
 
@@ -905,7 +905,7 @@ class KnowledgeBaseEvolution:
 
         for conflict_group in conflicts:
             # Resolve conflict by keeping highest quality item
-            best_item = max(conflict_group, key = lambda x: x.confidence_score)
+            best_item = max(conflict_group, key=lambda x: x.confidence_score)
 
             for item in conflict_group:
                 if item.knowledge_id != best_item.knowledge_id:
@@ -915,7 +915,7 @@ class KnowledgeBaseEvolution:
     def _find_knowledge_conflicts(self) -> List[List[KnowledgeItem]]:
         """Find conflicting knowledge items."""
         conflicts = []
-        processed = set()
+        processed: set[str] = set()
 
         for item1 in self.knowledge_items.values():
             if item1.knowledge_id in processed:
@@ -1108,7 +1108,7 @@ class KnowledgeBaseEvolution:
         }
 
         with open(self.knowledge_path, "a", encoding="utf - 8") as f:
-            json.dump(data, f, ensure_ascii = False, separators=(",", ":"))
+            json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 
     def _save_knowledge_patterns(self):
@@ -1156,7 +1156,7 @@ class KnowledgeBaseEvolution:
                     "usage_count": recommendation.usage_count,
                     "feedback_score": recommendation.feedback_score,
                 }
-                json.dump(data, f, ensure_ascii = False, separators=(",", ":"))
+                json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
                 f.write("\n")
 
 

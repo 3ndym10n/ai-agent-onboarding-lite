@@ -64,7 +64,7 @@ class DependencyChecker:
             root: Root directory of the project
         """
         self.root = Path(root)
-        self.dependency_cache = {}
+        self.dependency_cache: dict[str, Any] = {}
 
         # File patterns to scan for dependencies
         self.scannable_patterns = [
@@ -158,12 +158,12 @@ class DependencyChecker:
             recommendations.append("Consider refactoring to remove dependencies")
 
         return DependencyCheckResult(
-            target_file = target_file,
-            dependencies = dependencies,
-            is_safe_to_delete = is_safe,
-            risk_level = risk_level,
-            warnings = warnings,
-            recommendations = recommendations,
+            target_file=target_file,
+            dependencies=dependencies,
+            is_safe_to_delete=is_safe,
+            risk_level=risk_level,
+            warnings=warnings,
+            recommendations=recommendations,
         )
 
     def _scan_file_for_references(
@@ -234,11 +234,11 @@ class DependencyChecker:
 
                     dependencies.append(
                         Dependency(
-                            source_file = source_file,
-                            target_file = target_file,
-                            dependency_type = dep_type,
-                            line_number = line_num,
-                            context = line.strip(),
+                            source_file=source_file,
+                            target_file=target_file,
+                            dependency_type=dep_type,
+                            line_number=line_num,
+                            context=line.strip(),
                             severity=(
                                 "high"
                                 if dep_type == DependencyType.PYTHON_IMPORT
@@ -256,11 +256,11 @@ class DependencyChecker:
                         if self._matches_target(alias.name, target_file):
                             dependencies.append(
                                 Dependency(
-                                    source_file = source_file,
-                                    target_file = target_file,
-                                    dependency_type = DependencyType.PYTHON_IMPORT,
-                                    line_number = node.lineno,
-                                    context = f"import {alias.name}",
+                                    source_file=source_file,
+                                    target_file=target_file,
+                                    dependency_type=DependencyType.PYTHON_IMPORT,
+                                    line_number=node.lineno,
+                                    context=f"import {alias.name}",
                                     severity="high",
                                 )
                             )
@@ -268,11 +268,11 @@ class DependencyChecker:
                     if node.module and self._matches_target(node.module, target_file):
                         dependencies.append(
                             Dependency(
-                                source_file = source_file,
-                                target_file = target_file,
-                                dependency_type = DependencyType.PYTHON_IMPORT,
-                                line_number = node.lineno,
-                                context = f"from {node.module} import ...",
+                                source_file=source_file,
+                                target_file=target_file,
+                                dependency_type=DependencyType.PYTHON_IMPORT,
+                                line_number=node.lineno,
+                                context=f"from {node.module} import ...",
                                 severity="high",
                             )
                         )
@@ -304,11 +304,11 @@ class DependencyChecker:
                 if pattern and pattern in line:
                     dependencies.append(
                         Dependency(
-                            source_file = source_file,
-                            target_file = target_file,
-                            dependency_type = DependencyType.CONFIG_REFERENCE,
-                            line_number = line_num,
-                            context = line.strip(),
+                            source_file=source_file,
+                            target_file=target_file,
+                            dependency_type=DependencyType.CONFIG_REFERENCE,
+                            line_number=line_num,
+                            context=line.strip(),
                             severity="high",
                         )
                     )
@@ -345,12 +345,12 @@ class DependencyChecker:
 
                     dependencies.append(
                         Dependency(
-                            source_file = source_file,
-                            target_file = target_file,
-                            dependency_type = dep_type,
-                            line_number = line_num,
-                            context = line.strip(),
-                            severity = severity,
+                            source_file=source_file,
+                            target_file=target_file,
+                            dependency_type=dep_type,
+                            line_number=line_num,
+                            context=line.strip(),
+                            severity=severity,
                         )
                     )
 
@@ -372,11 +372,11 @@ class DependencyChecker:
                     if target_name in line:
                         dependencies.append(
                             Dependency(
-                                source_file = source_file,
-                                target_file = target_file,
-                                dependency_type = DependencyType.FILE_REFERENCE,
-                                line_number = line_num,
-                                context = line.strip(),
+                                source_file=source_file,
+                                target_file=target_file,
+                                dependency_type=DependencyType.FILE_REFERENCE,
+                                line_number=line_num,
+                                context=line.strip(),
                                 severity="low",
                             )
                         )
@@ -478,7 +478,7 @@ class DependencyChecker:
         self, results: List[DependencyCheckResult]
     ) -> Dict[str, Any]:
         """Create a plan for fixing dependencies before deletion."""
-        plan = {
+        plan: Dict[str, Any] = {
             "files_to_update": {},
             "files_to_delete": [],
             "manual_review_needed": [],
