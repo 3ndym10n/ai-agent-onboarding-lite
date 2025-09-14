@@ -1208,7 +1208,7 @@ class ContinuousImprovementValidator:
         import uuid
         from datetime import datetime
 
-        timestamp = datetime.now().strftime("%Y % m % d_ % H % M % S")
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         unique_id = str(uuid.uuid4())[:8]
         return f"validation_report_{timestamp}_{unique_id}"
 

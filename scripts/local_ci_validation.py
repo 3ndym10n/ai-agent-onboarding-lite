@@ -1,4 +1,4 @@
-#!/usr / bin / env python3
+#!/usr/bin/env python3
 """
 Local CI validation script that runs the same checks as GitHub Actions.
 This helps catch issues before pushing to remote.
@@ -31,10 +31,10 @@ class LocalCIValidator:
             start_time = time.time()
             result = subprocess.run(
                 cmd,
-                capture_output = True,
-                text = True,
-                timeout = timeout,
-                cwd = Path.cwd(),
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+                cwd=Path.cwd(),
                 encoding="utf - 8",
                 errors="replace",
             )
@@ -86,13 +86,13 @@ class LocalCIValidator:
         checks = [
             (["python", "--version"], "Python Version"),
             (["pip", "--version"], "Pip Version"),
-            (["python", "scripts / validate_dev_env.py"], "Dev Environment"),
+            (["python", "scripts/validate_dev_env.py"], "Dev Environment"),
             (
-                ["python", "scripts / validate_project_structure.py"],
+                ["python", "scripts/validate_project_structure.py"],
                 "Project Structure",
             ),
             (
-                ["python", "scripts / check_requirements_consistency.py"],
+                ["python", "scripts/check_requirements_consistency.py"],
                 "Requirements Consistency",
             ),
         ]
@@ -131,7 +131,7 @@ class LocalCIValidator:
                     "python",
                     "-m",
                     "isort",
-                    "--check - only",
+                    "--check-only",
                     "--diff",
                     "ai_onboard/",
                     "tests/",
@@ -148,7 +148,7 @@ class LocalCIValidator:
                     "python",
                     "-m",
                     "mypy",
-                    "--config - file = config / mypy.ini",
+                    "--config-file=config/mypy.ini",
                     "ai_onboard/",
                 ],
                 "Type Checking",
@@ -198,7 +198,7 @@ class LocalCIValidator:
 
         checks = [
             (
-                ["python", "-m", "pytest", "tests / smoke/", "-v", "--tb = short"],
+                ["python", "-m", "pytest", "tests/smoke/", "-v", "--tb=short"],
                 "Smoke Tests",
             ),
             (
@@ -206,11 +206,11 @@ class LocalCIValidator:
                     "python",
                     "-m",
                     "pytest",
-                    "tests / unit/",
+                    "tests/unit/",
                     "-v",
-                    "--tb = short",
-                    "--cov = ai_onboard",
-                    "--cov - report = term - missing",
+                    "--tb=short",
+                    "--cov=ai_onboard",
+                    "--cov-report=term-missing",
                 ],
                 "Unit Tests",
             ),
@@ -219,9 +219,9 @@ class LocalCIValidator:
                     "python",
                     "-m",
                     "pytest",
-                    "tests / integration/",
+                    "tests/integration/",
                     "-v",
-                    "--tb = short",
+                    "--tb=short",
                 ],
                 "Integration Tests",
             ),
@@ -230,7 +230,7 @@ class LocalCIValidator:
         all_passed = True
         for cmd, name in checks:
             success, _ = self.run_command(
-                cmd, name, timeout = 600
+                cmd, name, timeout=600
             )  # Longer timeout for tests
             if not success:
                 all_passed = False
@@ -245,7 +245,7 @@ class LocalCIValidator:
         print("=" * 50)
 
         success, _ = self.run_command(
-            ["python", "scripts / protected_paths.py"], "Protected Paths Check"
+            ["python", "scripts/protected_paths.py"], "Protected Paths Check"
         )
 
         return success
@@ -332,7 +332,7 @@ def main():
 
     args = parser.parse_args()
 
-    validator = LocalCIValidator(fast_fail = not args.no_fast_fail, verbose = args.verbose)
+    validator = LocalCIValidator(fast_fail=not args.no_fast_fail, verbose=args.verbose)
 
     if args.step:
         step_map = {
