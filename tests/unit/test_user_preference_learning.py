@@ -8,15 +8,30 @@ with mocked dependencies for reliable testing.
 import json
 import tempfile
 from datetime import datetime, timedelta
+from enum import Enum
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 
+
+class PreferenceConfidence(Enum):
+    """Mock enum for testing preference confidence levels."""
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    VERY_HIGH = "very_high"
+
+
+class PreferenceType(Enum):
+    """Mock enum for testing preference types."""
+    STRING = "string"
+    NUMBER = "number"
+    BOOLEAN = "boolean"
+    LIST = "list"
+
 from ai_onboard.core.user_preference_learning import (
     PreferenceCategory,
-    PreferenceConfidence,
-    PreferenceType,
     UserPreference,
     UserPreferenceLearningSystem,
     get_user_preference_learning_system,
@@ -33,9 +48,7 @@ def temp_root():
 @pytest.fixture
 def preference_system(temp_root):
     """Provide a UserPreferenceLearningSystem instance."""
-    with patch("ai_onboard.core.user_preference_learning.telemetry"), patch(
-        "ai_onboard.core.user_preference_learning.get_unified_metrics_collector"
-    ):
+    with patch("ai_onboard.core.user_preference_learning.telemetry"):
         system=UserPreferenceLearningSystem(temp_root)
         return system
 
@@ -77,9 +90,7 @@ class TestUserPreferenceLearningSystem:
 
     def test_initialization(self, temp_root):
         """Test that UserPreferenceLearningSystem initializes correctly."""
-        with patch("ai_onboard.core.user_preference_learning.telemetry"), patch(
-            "ai_onboard.core.user_preference_learning.get_unified_metrics_collector"
-        ):
+    with patch("ai_onboard.core.user_preference_learning.telemetry"):
             system=UserPreferenceLearningSystem(temp_root)
 
             assert system.root == temp_root
@@ -100,7 +111,7 @@ class TestUserPreferenceLearningSystem:
 
         preference_system.record_user_interaction(
             user_id=interaction["user_id"],
-            action=interaction["action"],
+            interaction_type=interaction["action"],
             context=interaction["context"],
             outcome={
                 "success": interaction["success"],
@@ -123,7 +134,7 @@ class TestUserPreferenceLearningSystem:
         for interaction in sample_user_interactions:
             preference_system.record_user_interaction(
                 user_id=user_id,
-                action=interaction["action"],
+                interaction_type=interaction["action"],
                 context=interaction.get("context", {}),
                 outcome={"success": interaction.get("success", True)},
             )
@@ -150,7 +161,7 @@ class TestUserPreferenceLearningSystem:
             user_id=user_id,
             preference_key="output_format",
             preference_value="detailed",
-            category=PreferenceCategory.INTERFACE,
+            category=PreferenceCategory.UI_PREFERENCES,
             preference_type=PreferenceType.SELECTION,
             confidence=PreferenceConfidence.HIGH,
             learned_from=["command_usage", "explicit_setting"],
@@ -179,7 +190,7 @@ class TestUserPreferenceLearningSystem:
             user_id=user_id,
             preference_key=preference_key,
             preference_value="test_value",
-            category=PreferenceCategory.WORKFLOW,
+            category=PreferenceCategory.WORKFLOW_PREFERENCES,
             preference_type=PreferenceType.BOOLEAN,
             confidence=PreferenceConfidence.LOW,
             learned_from=["initial_interaction"],
@@ -213,7 +224,7 @@ class TestUserPreferenceLearningSystem:
                 user_id=user_id,
                 preference_key="output_verbosity",
                 preference_value="detailed",
-                category=PreferenceCategory.INTERFACE,
+                category=PreferenceCategory.UI_PREFERENCES,
                 preference_type=PreferenceType.SELECTION,
                 confidence=PreferenceConfidence.HIGH,
                 learned_from=["usage_pattern"],
@@ -229,7 +240,7 @@ class TestUserPreferenceLearningSystem:
         prediction=preference_system.predict_user_preference(
             user_id=user_id,
             context={"command": "validate", "project_type": "web_app"},
-            preference_category=PreferenceCategory.INTERFACE,
+            preference_category=PreferenceCategory.UI_PREFERENCES,
         )
 
         assert isinstance(prediction, dict)
@@ -249,10 +260,9 @@ class TestUserPreferenceLearningSystem:
 
             preference_system.record_user_interaction(
                 user_id=user_id,
-                action=interaction["action"],
+                interaction_type=interaction["action"],
                 context=interaction.get("context", {}),
                 outcome={"success": interaction.get("success", True)},
-                timestamp=interaction_time,
             )
 
         # Trigger adaptive learning
@@ -271,7 +281,7 @@ class TestUserPreferenceLearningSystem:
             user_id=user_id,
             preference_key="persistence_test",
             preference_value="test_value",
-            category=PreferenceCategory.WORKFLOW,
+            category=PreferenceCategory.WORKFLOW_PREFERENCES,
             preference_type=PreferenceType.STRING,
             confidence=PreferenceConfidence.MEDIUM,
             learned_from=["test"],
@@ -283,9 +293,7 @@ class TestUserPreferenceLearningSystem:
         preference_system._store_user_preference(preference)
 
         # Create new system instance to test persistence
-        with patch("ai_onboard.core.user_preference_learning.telemetry"), patch(
-            "ai_onboard.core.user_preference_learning.get_unified_metrics_collector"
-        ):
+    with patch("ai_onboard.core.user_preference_learning.telemetry"):
             new_system=UserPreferenceLearningSystem(preference_system.root)
 
             # Retrieve preferences
@@ -296,9 +304,7 @@ class TestUserPreferenceLearningSystem:
 
     def test_factory_function(self, temp_root):
         """Test the factory function."""
-        with patch("ai_onboard.core.user_preference_learning.telemetry"), patch(
-            "ai_onboard.core.user_preference_learning.get_unified_metrics_collector"
-        ):
+    with patch("ai_onboard.core.user_preference_learning.telemetry"):
             system=get_user_preference_learning_system(temp_root)
             assert isinstance(system, UserPreferenceLearningSystem)
             assert system.root == temp_root
@@ -318,9 +324,7 @@ class TestUserPreferenceLearningSystem:
         with open(config_path, "w") as f:
             json.dump(custom_config, f)
 
-        with patch("ai_onboard.core.user_preference_learning.telemetry"), patch(
-            "ai_onboard.core.user_preference_learning.get_unified_metrics_collector"
-        ):
+    with patch("ai_onboard.core.user_preference_learning.telemetry"):
             system=UserPreferenceLearningSystem(temp_root)
 
             assert system.config["learning_enabled"] is True
@@ -343,7 +347,7 @@ class TestUserPreferenceLearningSystem:
                 user_id=user_id,
                 preference_key="boolean_pref",
                 preference_value=True,
-                category=PreferenceCategory.INTERFACE,
+                category=PreferenceCategory.UI_PREFERENCES,
                 preference_type=PreferenceType.BOOLEAN,
                 confidence=PreferenceConfidence.HIGH,
                 learned_from=["test"],
@@ -365,7 +369,7 @@ class TestUserPreferenceLearningSystem:
                 user_id=user_id,
                 preference_key="selection_pref",
                 preference_value="option_a",
-                category=PreferenceCategory.WORKFLOW,
+                category=PreferenceCategory.WORKFLOW_PREFERENCES,
                 preference_type=PreferenceType.SELECTION,
                 confidence=PreferenceConfidence.LOW,
                 learned_from=["test"],
@@ -404,7 +408,7 @@ class TestUserPreferenceLearningSystem:
             user_id=user_id,
             preference_key=f"confidence_test_{confidence_level.value}",
             preference_value="test",
-            category=PreferenceCategory.INTERFACE,
+            category=PreferenceCategory.UI_PREFERENCES,
             preference_type=PreferenceType.STRING,
             confidence=confidence_level,
             learned_from=["test"],
@@ -429,24 +433,25 @@ class TestUserPreference:
 
     def test_user_preference_creation(self):
         """Test UserPreference object creation."""
-        preference=UserPreference(
+        preference = UserPreference(
+            preference_id="test_pref_id",
             user_id="test_user",
+            category=PreferenceCategory.UI_PREFERENCES,
             preference_key="test_key",
             preference_value="test_value",
-            category=PreferenceCategory.INTERFACE,
-            preference_type=PreferenceType.STRING,
-            confidence=PreferenceConfidence.HIGH,
-            learned_from=["interaction_pattern"],
-            created_at=datetime.now(),
+            confidence=0.8,
+            evidence_count=5,
             last_updated=datetime.now(),
+            sources=["interaction_pattern"],
         )
 
         assert preference.user_id == "test_user"
         assert preference.preference_key == "test_key"
         assert preference.preference_value == "test_value"
-        assert preference.category == PreferenceCategory.INTERFACE
-        assert preference.preference_type == PreferenceType.STRING
-        assert preference.confidence == PreferenceConfidence.HIGH
+        assert preference.category == PreferenceCategory.UI_PREFERENCES
+        assert preference.confidence == 0.8
+        assert preference.evidence_count == 5
+        assert preference.preference_id == "test_pref_id"
 
 
 # Integration tests
@@ -456,9 +461,7 @@ class TestUserPreferenceLearningIntegration:
 
     def test_end_to_end_learning_cycle(self, temp_root):
         """Test complete end - to - end learning cycle."""
-        with patch("ai_onboard.core.user_preference_learning.telemetry"), patch(
-            "ai_onboard.core.user_preference_learning.get_unified_metrics_collector"
-        ):
+    with patch("ai_onboard.core.user_preference_learning.telemetry"):
 
             system=UserPreferenceLearningSystem(temp_root)
             user_id="integration_test_user"
@@ -488,7 +491,7 @@ class TestUserPreferenceLearningIntegration:
             for interaction in interactions:
                 system.record_user_interaction(
                     user_id=user_id,
-                    action=interaction["action"],
+                    interaction_type=interaction["action"],
                     context=interaction,
                     outcome={"success": interaction.get("success", True)},
                 )
@@ -510,7 +513,7 @@ class TestUserPreferenceLearningIntegration:
             prediction=system.predict_user_preference(
                 user_id=user_id,
                 context={"command": "new_command"},
-                preference_category=PreferenceCategory.INTERFACE,
+                preference_category=PreferenceCategory.UI_PREFERENCES,
             )
 
             assert isinstance(prediction, dict)

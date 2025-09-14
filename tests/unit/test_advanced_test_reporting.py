@@ -133,7 +133,7 @@ class TestAdvancedTestReportGenerator:
         assert metrics.failed_tests == 1
         assert metrics.warning_tests == 1
         assert metrics.skipped_tests == 0
-        assert metrics.success_rate == pytest.approx(33.33, rel = 1e - 2)
+        assert metrics.success_rate == pytest.approx(33.33, rel=1e-2)
         assert metrics.average_duration > 0
         assert metrics.total_duration > 0
 

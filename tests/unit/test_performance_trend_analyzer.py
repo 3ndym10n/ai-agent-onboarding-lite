@@ -14,7 +14,6 @@ import pytest
 
 from ai_onboard.core.performance_trend_analyzer import (
     AnomalyDetection,
-    AnomalyType,
     PerformanceInsight,
     PerformanceTrendAnalyzer,
     TrendAnalysis,
