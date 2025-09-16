@@ -7,15 +7,16 @@ Smart Debugger, Error Pattern Recognition, Context Enrichment, and Test Suite.
 import json
 import tempfile
 import time
-import pytest
 from pathlib import Path
 
-from ai_onboard.core.universal_error_monitor import get_error_monitor
-from ai_onboard.core.smart_debugger import get_smart_debugger
+import pytest
+
 from ai_onboard.core.continuous_improvement_validator import (
     ContinuousImprovementValidator,
     ValidationCategory,
 )
+from ai_onboard.core.smart_debugger import get_smart_debugger
+from ai_onboard.core.universal_error_monitor import get_error_monitor
 
 
 class TestSystemIntegration:

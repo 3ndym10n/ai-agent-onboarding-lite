@@ -5,14 +5,16 @@ Universal Error Monitor: Intercepts and processes errors from any agent (foregro
 import json
 import os
 import platform
-import psutil
 import sys
 import traceback
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, List
 
+import psutil
+
 from . import smart_debugger, telemetry, utils
+from .pattern_recognition_system import PatternRecognitionSystem
 
 
 class UniversalErrorMonitor:
@@ -21,6 +23,7 @@ class UniversalErrorMonitor:
     def __init__(self, root: Path):
         self.root = root
         self.debugger = smart_debugger.SmartDebugger(root)
+        self.pattern_recognition = PatternRecognitionSystem(root)
         self.error_log_path = root / ".ai_onboard" / "agent_errors.jsonl"
         self.capability_usage_path = root / ".ai_onboard" / "capability_usage.json"
         self.ensure_directories()
@@ -55,6 +58,9 @@ class UniversalErrorMonitor:
         # Log the error
         self._log_error(error_data)
 
+        # Analyze with pattern recognition system
+        pattern_match = self.pattern_recognition.analyze_error(error_data)
+
         # Analyze with smart debugger (with error handling)
         debug_result = {}
         try:
@@ -73,6 +79,10 @@ class UniversalErrorMonitor:
             }
             self._log_error(debug_error_data)
             debug_result = {"confidence": 0, "error": "debugger_failed"}
+
+        # Update pattern with this occurrence
+        if pattern_match.pattern_id != "unknown_error":
+            self.pattern_recognition.update_pattern(pattern_match.pattern_id, error_data)
 
         # Record capability usage (error handling was used)
         self._record_capability_usage(
@@ -106,7 +116,16 @@ class UniversalErrorMonitor:
             }
             self._log_error(telemetry_error_data)
 
-        return {"error_data": error_data, "debug_result": debug_result, "handled": True}
+        return {
+            "error_data": error_data,
+            "debug_result": debug_result,
+            "pattern_match": {
+                "pattern_id": pattern_match.pattern_id,
+                "confidence": pattern_match.confidence,
+                "prevention_suggestions": pattern_match.prevention_suggestions
+            },
+            "handled": True
+        }
 
     def monitor_command_execution(
         self, command: str, agent_type: str = "foreground", session_id: str = None

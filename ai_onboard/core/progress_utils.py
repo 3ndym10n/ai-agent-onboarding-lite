@@ -13,11 +13,90 @@ from typing import Any, Dict, List
 from . import utils
 
 
+def _convert_project_plan_to_legacy_format(
+    project_plan: Dict[str, Any],
+) -> Dict[str, Any]:
+    """Convert project_plan.json format to legacy plan format for compatibility."""
+    try:
+        wbs = project_plan.get("work_breakdown_structure", {})
+        milestones = project_plan.get("milestones", [])
+
+        # Convert WBS to tasks format
+        tasks = []
+        task_counter = 1
+
+        for phase_id, phase_data in wbs.items():
+            # Add main phase as a task
+            phase_task = {
+                "id": f"phase_{phase_id}",
+                "name": phase_data.get("name", f"Phase {phase_id}"),
+                "status": phase_data.get("status", "pending"),
+                "completion_percentage": phase_data.get("completion_percentage", 0),
+                "priority": (
+                    "high" if phase_data.get("status") == "in_progress" else "medium"
+                ),
+            }
+            if phase_data.get("completion_date"):
+                phase_task["completion_date"] = phase_data.get("completion_date")
+            tasks.append(phase_task)
+
+            # Add subtasks
+            subtasks = phase_data.get("subtasks", {})
+            for subtask_id, subtask_data in subtasks.items():
+                subtask = {
+                    "id": f"{phase_id}_{subtask_id}",
+                    "name": subtask_data.get("name", f"Subtask {subtask_id}"),
+                    "status": subtask_data.get("status", "pending"),
+                    "completion_percentage": subtask_data.get("completion", 0),
+                    "priority": "medium",
+                }
+                if subtask_data.get("completion_date"):
+                    subtask["completion_date"] = subtask_data.get("completion_date")
+                tasks.append(subtask)
+
+        # Convert milestones to legacy format
+        legacy_milestones: List[Dict[str, Any]] = []
+        for milestone in milestones:
+            legacy_milestone = {
+                "id": milestone.get("id", f"milestone_{len(legacy_milestones) + 1}"),
+                "name": milestone.get("name", ""),
+                "status": milestone.get("status", "pending"),
+                "target_date": milestone.get("date"),
+                "priority": (
+                    "high" if milestone.get("status") == "in_progress" else "medium"
+                ),
+            }
+            legacy_milestones.append(legacy_milestone)
+
+        return {
+            "tasks": tasks,
+            "milestones": legacy_milestones,
+            "project_name": project_plan.get("project_name", ""),
+            "completion_percentage": project_plan.get("executive_summary", {}).get(
+                "completion_percentage", 0
+            ),
+        }
+    except Exception as e:
+        # Fallback to empty structure if conversion fails
+        return {"tasks": [], "milestones": []}
+
+
 def load_plan(root: Path) -> Dict[str, Any]:
-    """Load the plan JSON from .ai_onboard / plan.json, or an empty stub."""
-    return utils.read_json(
-        root / ".ai_onboard" / "plan.json", default={"tasks": [], "milestones": []}
-    )
+    """Load the plan JSON from .ai_onboard / project_plan.json, or an empty stub."""
+    # Try project_plan.json first (new format), then fallback to plan.json (legacy)
+    project_plan_path = root / ".ai_onboard" / "project_plan.json"
+    legacy_plan_path = root / ".ai_onboard" / "plan.json"
+
+    if project_plan_path.exists():
+        plan_data = utils.read_json(project_plan_path, default={})
+        # Convert project_plan.json format to expected format
+        return _convert_project_plan_to_legacy_format(plan_data)
+    elif legacy_plan_path.exists():
+        return utils.read_json(
+            legacy_plan_path, default={"tasks": [], "milestones": []}
+        )
+    else:
+        return {"tasks": [], "milestones": []}
 
 
 def create_progress_bar(percentage: float, width: int = 20) -> str:

@@ -1,8 +1,8 @@
-SYSTEM CONTRACT: AI-Onboard Gate Handler
+SYSTEM CONTRACT: AI - Onboard Gate Handler
 
-You MUST handle gates as a two-step, human-confirmed process. Never self-answer or self-confirm.
+You MUST handle gates as a two - step, human - confirmed process. Never self - answer or self - confirm.
 
-When a gate is active (.ai_onboard/gates/current_gate.md exists):
+When a gate is active (.ai_onboard / gates / current_gate.md exists):
 1) Read the gate and extract the 'Questions for User'.
 2) Ask the user those questions in chat. Do NOT answer yourself.
 3) Wait for the user's replies. Summarize them back to the user.

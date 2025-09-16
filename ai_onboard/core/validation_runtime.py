@@ -2,9 +2,11 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 from . import (
+    automatic_error_prevention,
     cache,
     error_resolver,
     optimizer_state,
+    pattern_recognition_system,
     policy_engine,
     profiler,
     registry,
@@ -20,6 +22,11 @@ def run(root: Path) -> Dict[str, Any]:
     manifest = utils.read_json(root / "ai_onboard.json", default=None)
     if not manifest:
         raise SystemExit("Missing ai_onboard.json. Run: python -m ai_onboard analyze")
+
+    # Initialize error prevention system
+    pattern_system = pattern_recognition_system.PatternRecognitionSystem(root)
+    prevention_system = automatic_error_prevention.AutomaticErrorPrevention(root, pattern_system)
+
     policy = policy_engine.load(root)
     # Validate effective policy against minimal schema (non - invasive)
     try:
@@ -58,6 +65,34 @@ def run(root: Path) -> Dict[str, Any]:
             }
             prof[rid] = {"p50_time": optimizer_state.avg_time(opt_state, rid)}
         ordered = scheduler.order_rules(rules, hist, prof)
+
+        # Run automatic error prevention analysis
+        prevention_results = {}
+        for comp_file in comp_files:
+            file_path = Path(root) / comp_file
+            if file_path.exists() and file_path.is_file():
+                try:
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        content = f.read()
+
+                    # Analyze for potential errors
+                    prevention = prevention_system.prevent_code_errors(content, file_path)
+                    if prevention["prevention_applied"] or prevention["recommendations"]:
+                        prevention_results[str(file_path)] = prevention
+
+                        # Log prevention telemetry
+                        telemetry.log_event(
+                            "prevention_analysis",
+                            component=comp.get("name", "unknown"),
+                            file=str(file_path),
+                            preventions=len(prevention["prevention_applied"]),
+                            recommendations=len(prevention["recommendations"]),
+                            risk_level=prevention["risk_level"]
+                        )
+
+                except Exception as e:
+                    # Log prevention failure but don't stop validation
+                    telemetry.log_event("prevention_error", file=str(file_path), error=str(e))
 
         issues: List[Issue] = []
         for r in ordered:
@@ -108,6 +143,7 @@ def run(root: Path) -> Dict[str, Any]:
                 "component": comp["name"],
                 "issues": [i.__dict__ for i in issues],
                 "score": score,
+                "prevention_analysis": prevention_results,
             }
         )
 

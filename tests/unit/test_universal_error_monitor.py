@@ -4,10 +4,11 @@ Tests error interception, pattern recognition, and context enrichment.
 """
 
 import json
-import pytest
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
+
+import pytest
 
 from ai_onboard.core.universal_error_monitor import (
     UniversalErrorMonitor,

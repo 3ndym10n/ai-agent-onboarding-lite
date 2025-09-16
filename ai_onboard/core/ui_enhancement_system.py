@@ -230,7 +230,7 @@ class UIEnhancementSystem:
                 description="Get project insights and progress",
                 usage_example="ai_onboard prompt progress",
                 expertise_level=UserExpertiseLevel.BEGINNER,
-                tags=["project", "status", "insights"],
+                tags=["project", "task-completion", "status"],
             ),
             # Optimization
             CommandInfo(

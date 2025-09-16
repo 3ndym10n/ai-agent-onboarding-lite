@@ -353,7 +353,7 @@ class Dashboard:
             self.ui_system.format_output("⚡ Quick Actions", "secondary", self.user_id)
         )
         quick_actions = [
-            "ai_onboard prompt progress - Check detailed progress",
+            "ai_onboard prompt progress - Check task completion progress",
             "ai_onboard validate - Run quality checks",
             "ai_onboard suggest - Get recommendations",
         ]

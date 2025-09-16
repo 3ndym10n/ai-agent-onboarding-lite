@@ -171,7 +171,8 @@ class HelpSystem:
             tips.extend(
                 [
                     "Start with 'charter' to define your project vision",
-                    "Use 'prompt progress' to see your current status",
+                    "Use 'prompt progress' to see task completion status",
+                    "Use 'prompt wbs' to view Work Breakdown Structure",
                     "Try 'help <command>' for detailed command information",
                 ]
             )
@@ -431,7 +432,7 @@ class HelpSystem:
             (
                 "Step 4: Monitor Progress",
                 "ai_onboard prompt progress",
-                "Check your current project status",
+                "Check task completion progress",
             ),
             (
                 "Step 5: Validate Quality",

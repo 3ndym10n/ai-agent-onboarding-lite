@@ -17,6 +17,10 @@ from .commands_ai_agent_collaboration import (
     handle_ai_agent_collaboration_commands,
 )
 from .commands_api import add_api_commands, handle_api_commands
+from .commands_automatic_prevention import (
+    add_automatic_prevention_commands,
+    handle_automatic_prevention_commands,
+)
 from .commands_background_agents import (
     add_background_agent_commands,
     handle_background_agent_commands,
@@ -143,6 +147,9 @@ def main(argv=None):
 
     # Add advanced test reporting commands
     add_advanced_test_reporting_commands(sub)
+
+    # Add automatic prevention commands
+    add_automatic_prevention_commands(sub)
 
     # TODO: Add other domain commands as they're refactored
     # from .commands_vision import add_vision_commands, handle_vision_commands
@@ -371,6 +378,14 @@ def main(argv=None):
             "test - reports", "foreground", "cli_session"
         ):
             handle_advanced_test_reporting_commands(args, root)
+            return
+
+    # Handle automatic prevention commands with error monitoring
+    if args.cmd == "prevention":
+        with error_monitor.monitor_command_execution(
+            "prevention", "foreground", "cli_session"
+        ):
+            handle_automatic_prevention_commands(args, root)
             return
 
     # Handle background agent commands with error monitoring

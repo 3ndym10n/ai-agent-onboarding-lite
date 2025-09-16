@@ -3,11 +3,12 @@ Integration tests for enhanced error monitoring system.
 Tests complete error monitoring workflow from interception to analysis.
 """
 
-import pytest
 import tempfile
 import time
 from pathlib import Path
 from unittest.mock import Mock, patch
+
+import pytest
 
 from ai_onboard.core.universal_error_monitor import UniversalErrorMonitor
 
