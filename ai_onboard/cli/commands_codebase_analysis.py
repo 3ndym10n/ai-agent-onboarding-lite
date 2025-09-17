@@ -209,6 +209,37 @@ def add_codebase_analysis_commands(subparsers):
         help="Risk score threshold for flagging high-risk changes (default: 5.0)",
     )
 
+    # Implementation planning command
+    implement_parser = subparsers_codebase.add_parser(
+        "implement",
+        help="Manage phased implementation of organization changes",
+    )
+    implement_parser.add_argument(
+        "action",
+        choices=["plan", "execute", "status", "rollback", "advance"],
+        help="Implementation action to perform",
+    )
+    implement_parser.add_argument(
+        "--phase",
+        choices=["pilot", "low_risk", "medium_risk", "high_risk", "validation"],
+        help="Specific phase to operate on",
+    )
+    implement_parser.add_argument(
+        "--step-id",
+        help="Specific step ID to execute or rollback",
+    )
+    implement_parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show what would be done without making changes",
+    )
+    implement_parser.add_argument(
+        "--timeline-days",
+        type=int,
+        default=30,
+        help="Timeline in days for implementation plan (default: 30)",
+    )
+
     # Structural recommendations command
     recommend_parser = subparsers_codebase.add_parser(
         "recommend",
@@ -732,6 +763,73 @@ def handle_codebase_analysis_commands(args, root: Path):
                     print_status(f"📄 Risk assessment saved to: {args.save_report}")
 
                 print("="*80)
+
+        elif args.codebase_cmd == "implement":
+            import json
+            from ..core.phased_implementation_strategy import PhasedImplementationStrategy
+            from ..core.risk_assessment_framework import RiskAssessmentFramework
+            from ..core.structural_recommendation_engine import StructuralRecommendationEngine
+
+            strategy = PhasedImplementationStrategy(root)
+
+            if args.action == "plan":
+                # Create implementation plan
+                print_status("📋 Creating phased implementation plan...")
+
+                # Get risk assessments
+                from ..core.file_organization_analyzer import FileOrganizationAnalyzer
+                org_analyzer = FileOrganizationAnalyzer(root)
+                org_result = org_analyzer.analyze_organization()
+                engine = StructuralRecommendationEngine(root)
+                recommendations = engine.generate_recommendations(org_result)
+                framework = RiskAssessmentFramework(root)
+
+                changes = []
+                for move in recommendations.file_moves:
+                    change = framework.create_change_from_recommendation(move, "file_move")
+                    changes.append(change)
+                for merge in recommendations.file_merges:
+                    change = framework.create_change_from_recommendation(merge, "file_merge")
+                    changes.append(change)
+
+                risk_results = framework.assess_change_risks(changes)
+                plan = strategy.create_implementation_plan(risk_results, getattr(args, 'timeline_days', 30))
+
+                print_status(f"✅ Implementation plan created: {plan.plan_id}")
+                print(f"📅 Timeline: {getattr(args, 'timeline_days', 30)} days")
+                print(f"🎯 Phases: {len(plan.phases)}")
+                print(f"📋 Total steps: {sum(len(steps) for steps in plan.phases.values())}")
+
+            elif args.action == "status":
+                # Show implementation status
+                plan_file = root / ".ai_onboard" / "implementation_plan.json"
+                if plan_file.exists():
+                    # Load and display plan status
+                    with open(plan_file, 'r') as f:
+                        plan_data = json.load(f)
+
+                    print("\n🏗️  IMPLEMENTATION PLAN STATUS")
+                    print("=" * 50)
+                    print(f"Plan ID: {plan_data['plan_id']}")
+                    print(f"Current Phase: {plan_data['current_phase']}")
+                    print(f"Status: {plan_data['overall_status']}")
+
+                    for phase_name, steps in plan_data['phases'].items():
+                        completed = len([s for s in steps if s['status'] == 'completed'])
+                        total = len(steps)
+                        phase_indicator = " ← CURRENT" if phase_name == plan_data['current_phase'] else ""
+                        print(f"📊 {phase_name.upper()}: {completed}/{total}{phase_indicator}")
+                else:
+                    print_status("❌ No implementation plan found. Run 'ai_onboard codebase implement plan' first.")
+
+            elif args.action == "execute":
+                print_status("⚠️ Step execution not yet fully implemented")
+
+            elif args.action == "advance":
+                print_status("⚠️ Phase advancement not yet fully implemented")
+
+            elif args.action == "rollback":
+                print_status("⚠️ Rollback not yet fully implemented")
 
     except Exception as e:
         print_status(f"❌ Error during codebase analysis: {e}")
