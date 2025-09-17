@@ -184,6 +184,31 @@ def add_codebase_analysis_commands(subparsers):
         help="Maximum Python files to analyze for relationships (default: 2000)",
     )
 
+    # Risk assessment command
+    risk_parser = subparsers_codebase.add_parser(
+        "assess-risks",
+        help="Assess risks of organization changes before implementation",
+    )
+    risk_parser.add_argument(
+        "--change-type",
+        choices=["all", "file_move", "file_merge", "directory_create"],
+        default="all",
+        help="Type of changes to assess (default: all)",
+    )
+    risk_parser.add_argument(
+        "--output",
+        type=str,
+        choices=["text", "json"],
+        default="text",
+        help="Output format (default: text)",
+    )
+    risk_parser.add_argument(
+        "--threshold",
+        type=float,
+        default=5.0,
+        help="Risk score threshold for flagging high-risk changes (default: 5.0)",
+    )
+
     # Structural recommendations command
     recommend_parser = subparsers_codebase.add_parser(
         "recommend",
@@ -536,6 +561,177 @@ def handle_codebase_analysis_commands(args, root: Path):
                     print_status(f"📄 Recommendations saved to: {args.save_report}")
 
                 print("=" * 80)
+
+        elif args.codebase_cmd == "assess-risks":
+            from ..core.risk_assessment_framework import RiskAssessmentFramework
+            from ..core.structural_recommendation_engine import StructuralRecommendationEngine
+
+            # First run organization analysis
+            exclude_patterns = getattr(args, "exclude", None)
+            max_files = getattr(args, "max_files", 10000)
+
+            from ..core.file_organization_analyzer import FileOrganizationAnalyzer
+            org_analyzer = FileOrganizationAnalyzer(root, exclude_patterns, max_files)
+            print_status("📁 Analyzing file organization for risk assessment...")
+            org_result = org_analyzer.analyze_organization()
+
+            # Generate structural recommendations
+            engine = StructuralRecommendationEngine(root)
+            recommendations = engine.generate_recommendations(org_result)
+
+            # Convert recommendations to organization changes for risk assessment
+            framework = RiskAssessmentFramework(root)
+            changes = []
+
+            # Convert file moves
+            for move in recommendations.file_moves:
+                change = framework.create_change_from_recommendation(move, "file_move")
+                changes.append(change)
+
+            # Convert file merges
+            for merge in recommendations.file_merges:
+                change = framework.create_change_from_recommendation(merge, "file_merge")
+                changes.append(change)
+
+            # Filter by change type if specified
+            if hasattr(args, 'change_type') and args.change_type != "all":
+                changes = [c for c in changes if c.change_type == args.change_type]
+
+            if not changes:
+                print_status("ℹ️ No changes to assess")
+                return True
+
+            # Assess risks
+            print_status(f"🔍 Assessing risks for {len(changes)} changes...")
+            risk_results = framework.assess_change_risks(changes)
+
+            if args.output == "json":
+                import json
+                output_data = {
+                    "assessed_changes": len(risk_results),
+                    "high_risk_changes": len([r for r in risk_results if r.risk_level.value in ["critical", "high"]]),
+                    "threshold": args.threshold,
+                    "results": [
+                        {
+                            "change_id": r.change.change_id,
+                            "change_type": r.change.change_type,
+                            "description": r.change.description,
+                            "risk_score": r.overall_risk_score,
+                            "risk_level": r.risk_level.value,
+                            "confidence": r.confidence_score,
+                            "safety_rating": r.safety_rating,
+                            "recommended_actions": r.recommended_actions,
+                            "impact_analysis": r.impact_analysis,
+                            "dependency_analysis": {
+                                "import_dependencies": len(r.dependency_analysis.get("import_dependencies", [])),
+                                "reverse_dependencies": len(r.dependency_analysis.get("reverse_dependencies", [])),
+                                "critical_paths": len(r.dependency_analysis.get("critical_paths", []))
+                            }
+                        } for r in risk_results
+                    ]
+                }
+
+                if hasattr(args, 'save_report') and args.save_report:
+                    with open(args.save_report, "w") as f:
+                        json.dump(output_data, f, indent=2)
+                    print_status(f"📄 Risk assessment saved to: {args.save_report}")
+                else:
+                    print(json.dumps(output_data, indent=2))
+
+            else:  # text output
+                print("\n" + "="*80)
+                print("⚠️  CODEBASE ORGANIZATION RISK ASSESSMENT")
+                print("="*80)
+
+                # Summary
+                high_risk = len([r for r in risk_results if r.risk_level.value in ["critical", "high"]])
+                total_score = sum(r.overall_risk_score for r in risk_results)
+                avg_score = total_score / len(risk_results) if risk_results else 0
+
+                print("\n📊 SUMMARY:")
+                print(f"   Changes Assessed: {len(risk_results)}")
+                print(f"   High Risk Changes: {high_risk}")
+                print(f"   Average Risk Score: {avg_score:.1f}")
+                print(f"   Risk Threshold: {args.threshold}")
+
+                # Risk level breakdown
+                risk_counts = {}
+                for result in risk_results:
+                    level = result.risk_level.value
+                    risk_counts[level] = risk_counts.get(level, 0) + 1
+
+                print("\n📈 RISK LEVEL BREAKDOWN:")
+                for level in ["critical", "high", "medium", "low"]:
+                    count = risk_counts.get(level, 0)
+                    if count > 0:
+                        print(f"   {level.upper()}: {count} changes")
+
+                # High risk changes first
+                high_risk_results = [r for r in risk_results if r.overall_risk_score >= args.threshold]
+
+                if high_risk_results:
+                    print(f"\n🚨 HIGH RISK CHANGES (Score ≥ {args.threshold}):")
+                    for i, result in enumerate(high_risk_results[:10], 1):  # Show top 10
+                        print(f"\n   {i}. {result.change.change_id}")
+                        print(f"      Type: {result.change.change_type}")
+                        print(f"      Risk Score: {result.overall_risk_score:.1f}")
+                        print(f"      Risk Level: {result.risk_level.value.upper()}")
+                        print(f"      Safety: {result.safety_rating}")
+                        print(f"      Affected Files: {len(result.change.affected_files)}")
+
+                        if result.recommended_actions:
+                            print("      Recommended Actions:")
+                            for action in result.recommended_actions[:3]:  # Show top 3
+                                print(f"        • {action}")
+
+                # All changes summary
+                print("\n📋 ALL CHANGES SUMMARY:")
+                for i, result in enumerate(risk_results[:20], 1):  # Show top 20
+                    risk_icon = {
+                        "critical": "🚨",
+                        "high": "🔴",
+                        "medium": "🟡",
+                        "low": "🟢"
+                    }.get(result.risk_level.value, "⚪")
+
+                    safety_icon = {
+                        "safe": "✅",
+                        "caution": "⚠️",
+                        "dangerous": "🚫"
+                    }.get(result.safety_rating, "❓")
+
+                    print(f"   {i}. {risk_icon} {safety_icon} {result.change.change_id}")
+                    print(f"      Score: {result.overall_risk_score:.1f} | {result.change.change_type}")
+                    print(f"      {result.change.description}")
+
+                if len(risk_results) > 20:
+                    print(f"   ... and {len(risk_results) - 20} more changes")
+
+                if hasattr(args, 'save_report') and args.save_report:
+                    # Save text report
+                    import datetime
+                    report_content = []
+                    report_content.append("CODEBASE ORGANIZATION RISK ASSESSMENT")
+                    report_content.append("="*50)
+                    report_content.append(f"Generated: {datetime.datetime.now().isoformat()}")
+                    report_content.append("")
+                    report_content.append(f"Changes Assessed: {len(risk_results)}")
+                    report_content.append(f"High Risk Changes: {high_risk}")
+                    report_content.append(f"Average Risk Score: {avg_score:.1f}")
+                    report_content.append("")
+
+                    for result in risk_results:
+                        report_content.append(f"Change: {result.change.change_id}")
+                        report_content.append(f"Risk Score: {result.overall_risk_score:.1f}")
+                        report_content.append(f"Risk Level: {result.risk_level.value}")
+                        report_content.append(f"Safety Rating: {result.safety_rating}")
+                        report_content.append("")
+
+                    with open(args.save_report, "w") as f:
+                        f.write("\n".join(report_content))
+                    print_status(f"📄 Risk assessment saved to: {args.save_report}")
+
+                print("="*80)
 
     except Exception as e:
         print_status(f"❌ Error during codebase analysis: {e}")
