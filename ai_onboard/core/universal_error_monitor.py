@@ -15,6 +15,7 @@ import psutil
 
 from . import smart_debugger, telemetry, utils
 from .pattern_recognition_system import PatternRecognitionSystem
+from .tool_usage_tracker import track_tool_usage
 
 
 class UniversalErrorMonitor:
@@ -24,6 +25,12 @@ class UniversalErrorMonitor:
         self.root = root
         self.debugger = smart_debugger.SmartDebugger(root)
         self.pattern_recognition = PatternRecognitionSystem(root)
+        track_tool_usage(
+            "pattern_recognition_system",
+            "ai_system",
+            {"action": "initialize_monitor"},
+            "success",
+        )
         self.error_log_path = root / ".ai_onboard" / "agent_errors.jsonl"
         self.capability_usage_path = root / ".ai_onboard" / "capability_usage.json"
         self.ensure_directories()
@@ -60,6 +67,12 @@ class UniversalErrorMonitor:
 
         # Analyze with pattern recognition system
         pattern_match = self.pattern_recognition.analyze_error(error_data)
+        track_tool_usage(
+            "pattern_recognition_system",
+            "ai_system",
+            {"action": "analyze_error", "error_type": error_data["type"]},
+            "success",
+        )
 
         # Analyze with smart debugger (with error handling)
         debug_result = {}
@@ -82,7 +95,15 @@ class UniversalErrorMonitor:
 
         # Update pattern with this occurrence
         if pattern_match.pattern_id != "unknown_error":
-            self.pattern_recognition.update_pattern(pattern_match.pattern_id, error_data)
+            self.pattern_recognition.update_pattern(
+                pattern_match.pattern_id, error_data
+            )
+            track_tool_usage(
+                "pattern_recognition_system",
+                "ai_system",
+                {"action": "update_pattern", "pattern_id": pattern_match.pattern_id},
+                "success",
+            )
 
         # Record capability usage (error handling was used)
         self._record_capability_usage(
@@ -122,9 +143,9 @@ class UniversalErrorMonitor:
             "pattern_match": {
                 "pattern_id": pattern_match.pattern_id,
                 "confidence": pattern_match.confidence,
-                "prevention_suggestions": pattern_match.prevention_suggestions
+                "prevention_suggestions": pattern_match.prevention_suggestions,
             },
-            "handled": True
+            "handled": True,
         }
 
     def monitor_command_execution(

@@ -35,6 +35,15 @@ class InteractionType(Enum):
     FEEDBACK_PROVIDED = "feedback_provided"
     WORKFLOW_NAVIGATION = "workflow_navigation"
 
+    # NEW: Conversational interaction types
+    CONVERSATIONAL_REQUEST = (
+        "conversational_request"  # Questions, requests for information
+    )
+    REPEATED_PATTERN = "repeated_pattern"  # When user repeats same request
+    PREFERENCE_EXPRESSION = "preference_expression"  # Explicit preference statements
+    CLARITY_REQUEST = "clarity_request"  # Requests for simpler explanations
+    ORGANIZATION_FOCUS = "organization_focus"  # Cleanup and organization requests
+
 
 class PreferenceCategory(Enum):
     """Categories of user preferences."""
@@ -48,6 +57,12 @@ class PreferenceCategory(Enum):
     UI_PREFERENCES = "ui_preferences"
     COLLABORATION_STYLE = "collaboration_style"
     PROJECT_PREFERENCES = "project_preferences"
+
+    # NEW: Conversational preference categories
+    COMMUNICATION_STYLE = "communication_style"  # How user wants information presented
+    TRANSPARENCY_LEVEL = "transparency_level"  # How much detail about system operations
+    ORGANIZATION_PREFERENCE = "organization_preference"  # How tidy user wants system
+    LEARNING_STYLE = "learning_style"  # How user wants to learn about features
 
 
 class UserExperienceLevel(Enum):
@@ -495,6 +510,57 @@ class UserPreferenceLearningSystem:
                 "preference_category": "notification_preferences",
                 "preference_key": "preferred_notification_level",
             },
+            # NEW: Conversational learning rules
+            {
+                "rule_id": "rule_006",
+                "name": "Transparency preference learning",
+                "description": "Learn user preference for system transparency based on repeated tool usage requests",
+                "trigger_conditions": {
+                    "interaction_type": "repeated_pattern",
+                    "min_interactions": 3,
+                    "pattern_context": "tool_usage_request",
+                },
+                "analysis_method": "transparency_preference_analysis",
+                "preference_category": "transparency_level",
+                "preference_key": "preferred_transparency_level",
+            },
+            {
+                "rule_id": "rule_007",
+                "name": "Communication style learning",
+                "description": "Learn user preference for simple explanations based on clarity requests",
+                "trigger_conditions": {
+                    "interaction_type": "clarity_request",
+                    "min_interactions": 2,
+                },
+                "analysis_method": "communication_style_analysis",
+                "preference_category": "communication_style",
+                "preference_key": "preferred_explanation_complexity",
+            },
+            {
+                "rule_id": "rule_008",
+                "name": "Organization preference learning",
+                "description": "Learn user preference for system organization based on cleanup requests",
+                "trigger_conditions": {
+                    "interaction_type": "organization_focus",
+                    "min_interactions": 2,
+                },
+                "analysis_method": "organization_preference_analysis",
+                "preference_category": "organization_preference",
+                "preference_key": "preferred_organization_level",
+            },
+            {
+                "rule_id": "rule_009",
+                "name": "Learning style preference",
+                "description": "Learn how user wants to learn about system features",
+                "trigger_conditions": {
+                    "interaction_type": "conversational_request",
+                    "min_interactions": 3,
+                    "context_contains": "how.*work|explain",
+                },
+                "analysis_method": "learning_style_analysis",
+                "preference_category": "learning_style",
+                "preference_key": "preferred_feature_learning_method",
+            },
         ]
 
     def _load_user_profiles(self):
@@ -748,6 +814,23 @@ class UserPreferenceLearningSystem:
             self._analyze_feedback_preference(
                 profile, interaction, preference_category, preference_key
             )
+        # NEW: Conversational analysis methods
+        elif analysis_method == "transparency_preference_analysis":
+            self._analyze_transparency_preference(
+                profile, interaction, preference_category, preference_key
+            )
+        elif analysis_method == "communication_style_analysis":
+            self._analyze_communication_style_preference(
+                profile, interaction, preference_category, preference_key
+            )
+        elif analysis_method == "organization_preference_analysis":
+            self._analyze_organization_preference(
+                profile, interaction, preference_category, preference_key
+            )
+        elif analysis_method == "learning_style_analysis":
+            self._analyze_learning_style_preference(
+                profile, interaction, preference_category, preference_key
+            )
 
     def _analyze_response_time_preference(
         self,
@@ -996,6 +1079,179 @@ class UserPreferenceLearningSystem:
             confidence,
             f"Based on feedback: {interaction.feedback[:50]}...",
             ["feedback_analysis"],
+        )
+
+    # NEW: Conversational analysis methods
+    def _analyze_transparency_preference(
+        self,
+        profile: UserProfile,
+        interaction: UserInteraction,
+        category: PreferenceCategory,
+        key: str,
+    ):
+        """Analyze user preference for system transparency."""
+        # Count repeated requests for tool usage information
+        tool_usage_requests = sum(
+            1
+            for i in profile.interaction_history
+            if i.interaction_type == InteractionType.REPEATED_PATTERN
+            and "tool_usage" in str(i.context)
+        )
+
+        # Determine transparency preference based on frequency
+        if tool_usage_requests >= 5:
+            transparency_level = "high"
+            confidence = 0.9
+        elif tool_usage_requests >= 3:
+            transparency_level = "medium"
+            confidence = 0.7
+        else:
+            transparency_level = "standard"
+            confidence = 0.5
+
+        self._update_user_preference(
+            profile.user_id,
+            category,
+            key,
+            transparency_level,
+            confidence,
+            f"User requested tool usage information {tool_usage_requests} times",
+            ["transparency_preference_analysis"],
+        )
+
+    def _analyze_communication_style_preference(
+        self,
+        profile: UserProfile,
+        interaction: UserInteraction,
+        category: PreferenceCategory,
+        key: str,
+    ):
+        """Analyze user preference for communication style."""
+        # Count requests for simpler explanations
+        clarity_requests = sum(
+            1
+            for i in profile.interaction_history
+            if i.interaction_type == InteractionType.CLARITY_REQUEST
+        )
+
+        # Look for explicit preference expressions in context
+        simple_requests = sum(
+            1
+            for i in profile.interaction_history
+            if "simple" in str(i.context).lower() or "explain" in str(i.context).lower()
+        )
+
+        # Determine communication preference
+        if clarity_requests >= 3 or simple_requests >= 3:
+            communication_style = "simple_explanations"
+            confidence = 0.8
+        elif clarity_requests >= 1:
+            communication_style = "clear_step_by_step"
+            confidence = 0.6
+        else:
+            communication_style = "standard_technical"
+            confidence = 0.4
+
+        self._update_user_preference(
+            profile.user_id,
+            category,
+            key,
+            communication_style,
+            confidence,
+            f"User requested clarity {clarity_requests} times, simple explanations {simple_requests} times",
+            ["communication_style_analysis"],
+        )
+
+    def _analyze_organization_preference(
+        self,
+        profile: UserProfile,
+        interaction: UserInteraction,
+        category: PreferenceCategory,
+        key: str,
+    ):
+        """Analyze user preference for system organization."""
+        # Count organization/cleanup focused interactions
+        organization_requests = sum(
+            1
+            for i in profile.interaction_history
+            if i.interaction_type == InteractionType.ORGANIZATION_FOCUS
+        )
+
+        # Look for cleanup/organization keywords in context
+        cleanup_keywords = ["clean", "tidy", "organize", "cleanup", "remove"]
+        cleanup_mentions = sum(
+            1
+            for i in profile.interaction_history
+            if any(keyword in str(i.context).lower() for keyword in cleanup_keywords)
+        )
+
+        # Determine organization preference
+        if organization_requests >= 3 or cleanup_mentions >= 5:
+            organization_level = "very_tidy"
+            confidence = 0.9
+        elif organization_requests >= 1 or cleanup_mentions >= 2:
+            organization_level = "tidy"
+            confidence = 0.7
+        else:
+            organization_level = "standard"
+            confidence = 0.4
+
+        self._update_user_preference(
+            profile.user_id,
+            category,
+            key,
+            organization_level,
+            confidence,
+            f"User focused on organization {organization_requests} times, mentioned cleanup {cleanup_mentions} times",
+            ["organization_preference_analysis"],
+        )
+
+    def _analyze_learning_style_preference(
+        self,
+        profile: UserProfile,
+        interaction: UserInteraction,
+        category: PreferenceCategory,
+        key: str,
+    ):
+        """Analyze user learning style preference."""
+        # Count requests for feature explanations
+        explanation_requests = sum(
+            1
+            for i in profile.interaction_history
+            if i.interaction_type == InteractionType.CONVERSATIONAL_REQUEST
+            and ("how" in str(i.context).lower() or "explain" in str(i.context).lower())
+        )
+
+        # Look for patterns in learning requests
+        simple_explanation_requests = sum(
+            1
+            for i in profile.interaction_history
+            if "simple" in str(i.context).lower()
+            and "explain" in str(i.context).lower()
+        )
+
+        # Determine learning style preference
+        if simple_explanation_requests >= 3:
+            learning_style = "simple_examples"
+            confidence = 0.8
+        elif explanation_requests >= 5:
+            learning_style = "detailed_explanations"
+            confidence = 0.7
+        elif explanation_requests >= 2:
+            learning_style = "practical_examples"
+            confidence = 0.6
+        else:
+            learning_style = "standard_documentation"
+            confidence = 0.3
+
+        self._update_user_preference(
+            profile.user_id,
+            category,
+            key,
+            learning_style,
+            confidence,
+            f"User requested feature explanations {explanation_requests} times, simple explanations {simple_explanation_requests} times",
+            ["learning_style_analysis"],
         )
 
     def _update_user_preference(

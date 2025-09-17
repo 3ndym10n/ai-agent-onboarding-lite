@@ -216,6 +216,196 @@ class AutomaticErrorPrevention:
             )
         )
 
+        # Syntax Error Prevention
+        def check_syntax_issues(code_content: str) -> bool:
+            """Check for Python syntax issues."""
+            try:
+                compile(code_content, "<string>", "exec")
+                return False  # No syntax errors
+            except SyntaxError:
+                return True  # Syntax error detected
+            except Exception:
+                return False  # Other errors don't count as syntax issues
+
+        def fix_syntax_issues(code_content: str) -> Dict[str, Any]:
+            """Suggest syntax fixes."""
+            try:
+                compile(code_content, "<string>", "exec")
+            except SyntaxError as e:
+                return {
+                    "action": "syntax_fix",
+                    "suggestions": [
+                        f"Fix syntax error: {e.msg}",
+                        f"Check line {e.lineno}: {e.text.strip() if e.text else 'N/A'}",
+                        "Run python -m py_compile to check syntax",
+                        "Use a Python linter like flake8 or pylint",
+                    ],
+                    "confidence": 0.95,
+                }
+
+            return {
+                "action": "syntax_check",
+                "suggestions": ["Run python -m py_compile to validate syntax"],
+                "confidence": 0.8,
+            }
+
+        rules.append(
+            PreventionRule(
+                "syntax_validation",
+                "syntax_error",
+                check_syntax_issues,
+                fix_syntax_issues,
+                priority=10,  # High priority - syntax errors prevent execution
+            )
+        )
+
+        # Runtime Error Prevention (basic)
+        def check_runtime_issues(code_content: str) -> bool:
+            """Check for potential runtime issues."""
+            issues = []
+
+            # Check for common runtime error patterns
+            if "int(" in code_content and (
+                "str(" not in code_content or "input(" not in code_content
+            ):
+                # Basic check - int() without input handling
+                pass
+
+            # Check for division by zero patterns
+            if "/" in code_content or "//" in code_content:
+                lines = code_content.split("\n")
+                for line in lines:
+                    if "/" in line and ("0" in line or "zero" in line.lower()):
+                        issues.append("Potential division by zero")
+
+            # Check for None access patterns
+            if ".append(" in code_content or ".extend(" in code_content:
+                if "None" in code_content and "if " not in code_content:
+                    issues.append("Potential None access before list operations")
+
+            return len(issues) > 0
+
+        def fix_runtime_issues(code_content: str) -> Dict[str, Any]:
+            """Suggest runtime error fixes."""
+            suggestions = [
+                "Add error handling with try/except blocks",
+                "Validate inputs before operations",
+                "Use assertions for critical assumptions",
+                "Add logging for debugging runtime issues",
+            ]
+
+            return {
+                "action": "runtime_safety",
+                "suggestions": suggestions,
+                "confidence": 0.6,
+            }
+
+        rules.append(
+            PreventionRule(
+                "runtime_safety",
+                "runtime_error",
+                check_runtime_issues,
+                fix_runtime_issues,
+                priority=3,
+            )
+        )
+
+        # File Operation Safety
+        def check_file_operation_issues(code_content: str) -> bool:
+            """Check for unsafe file operations."""
+            issues = []
+
+            # Check for file operations without proper error handling
+            file_ops = ["open(", "read(", "write(", ".close("]
+            has_file_ops = any(op in code_content for op in file_ops)
+
+            if has_file_ops:
+                # Check if there's proper error handling
+                has_try = "try:" in code_content
+                has_with = "with " in code_content and "open(" in code_content
+
+                if not (has_try or has_with):
+                    issues.append("File operations without proper error handling")
+
+            # Check for path traversal vulnerabilities
+            if ".." in code_content and (
+                "path" in code_content.lower() or "file" in code_content.lower()
+            ):
+                issues.append("Potential path traversal vulnerability")
+
+            return len(issues) > 0
+
+        def fix_file_operation_issues(code_content: str) -> Dict[str, Any]:
+            """Suggest file operation safety fixes."""
+            suggestions = [
+                "Use 'with' statements for file operations",
+                "Add try/except blocks around file operations",
+                "Validate file paths before opening",
+                "Check file permissions before operations",
+                "Use pathlib for path operations",
+            ]
+
+            return {
+                "action": "file_safety",
+                "suggestions": suggestions,
+                "confidence": 0.8,
+            }
+
+        rules.append(
+            PreventionRule(
+                "file_safety",
+                "file_error",
+                check_file_operation_issues,
+                fix_file_operation_issues,
+                priority=6,
+            )
+        )
+
+        # Memory/Resource Leak Prevention
+        def check_resource_leak_issues(code_content: str) -> bool:
+            """Check for potential resource leaks."""
+            issues = []
+
+            # Check for opened resources that might not be closed
+            opens = code_content.count("open(")
+            closes = code_content.count(".close()") + code_content.count("with ")
+
+            if opens > closes + 2:  # Allow some margin
+                issues.append("Potential file handle leaks")
+
+            # Check for database connections, sockets, etc.
+            resource_indicators = ["connect(", "socket(", "cursor("]
+            for indicator in resource_indicators:
+                if indicator in code_content and ".close()" not in code_content:
+                    issues.append(f"Potential resource leak: {indicator[:-1]}")
+
+            return len(issues) > 0
+
+        def fix_resource_leak_issues(code_content: str) -> Dict[str, Any]:
+            """Suggest resource leak fixes."""
+            suggestions = [
+                "Use context managers (with statements) for resources",
+                "Ensure all opened resources are properly closed",
+                "Use try/finally blocks for cleanup",
+                "Consider using resource management libraries",
+            ]
+
+            return {
+                "action": "resource_management",
+                "suggestions": suggestions,
+                "confidence": 0.7,
+            }
+
+        rules.append(
+            PreventionRule(
+                "resource_management",
+                "resource_error",
+                check_resource_leak_issues,
+                fix_resource_leak_issues,
+                priority=4,
+            )
+        )
+
         return rules
 
     def _check_import_exists(self, import_name: str) -> bool:
@@ -273,6 +463,29 @@ class AutomaticErrorPrevention:
                     result["confidence"] = max(
                         result["confidence"], prevention_result.get("confidence", 0)
                     )
+
+                    # Record that an error was prevented by this rule
+                    try:
+                        from pathlib import Path
+
+                        from .learning_persistence import LearningPersistenceManager
+
+                        # Use the pattern system to record error prevention
+                        # Since we don't have direct access to pattern system here,
+                        # we'll record it directly in the persistence system
+                        persistence = LearningPersistenceManager(Path("."))
+                        persistence.record_error_prevented(
+                            rule.rule_id,
+                            rule.pattern_type,
+                            {
+                                "content_type": content_type,
+                                "rule_id": rule.rule_id,
+                                "confidence": prevention_result.get("confidence", 0),
+                            },
+                        )
+                    except Exception as e:
+                        # Don't fail if recording fails
+                        pass
 
             except Exception as e:
                 # Log rule failure but continue
@@ -376,6 +589,18 @@ class AutomaticErrorPrevention:
         Returns:
             Prevention analysis for code
         """
+        from .tool_usage_tracker import track_tool_usage
+
+        track_tool_usage(
+            "automatic_error_prevention",
+            "ai_system",
+            {
+                "action": "analyze_code",
+                "file": str(file_path) if file_path else "unknown",
+            },
+            "success",
+        )
+
         context = {}
         if file_path:
             context["file_path"] = str(file_path)
@@ -384,6 +609,182 @@ class AutomaticErrorPrevention:
         return self.analyze_and_prevent(
             code_content, content_type="code", context=context
         )
+
+    def prevent_command_execution(
+        self, command: str, args: Optional[List[str]] = None, cwd: Optional[Path] = None
+    ) -> Dict[str, Any]:
+        """
+        Analyze a command before execution and provide prevention recommendations.
+
+        Args:
+            command: The command to be executed
+            args: Command arguments
+            cwd: Current working directory for execution
+
+        Returns:
+            Prevention analysis with execution recommendations
+        """
+        from .tool_usage_tracker import track_tool_usage
+
+        track_tool_usage(
+            "automatic_error_prevention",
+            "ai_system",
+            {
+                "action": "prevent_command",
+                "command": command[:50],
+            },
+            "success",
+        )
+
+        context = {
+            "command_type": "execution",
+            "working_directory": str(cwd) if cwd else None,
+        }
+
+        if args:
+            context["args"] = args
+
+        # Analyze the command for potential issues
+        analysis = self.analyze_and_prevent(
+            command, content_type="command", context=context
+        )
+
+        # Add command-specific checks
+        command_checks = self._check_command_safety(command, args, cwd)
+        analysis["command_checks"] = command_checks
+
+        # Add full command string for analysis
+        full_command = command
+        if args:
+            full_command += " " + " ".join(args)
+        analysis["command_checks"]["full_command"] = full_command
+
+        # Determine if command should be blocked
+        should_block = self._should_block_command(analysis, command_checks)
+
+        analysis["should_block"] = should_block
+        analysis["block_reason"] = (
+            self._get_block_reason(analysis, command_checks) if should_block else None
+        )
+
+        return analysis
+
+    def _check_command_safety(
+        self, command: str, args: Optional[List[str]], cwd: Optional[Path]
+    ) -> Dict[str, Any]:
+        """Perform safety checks on a command before execution."""
+        checks = {
+            "path_safety": True,
+            "permission_safety": True,
+            "destructive_operations": False,
+            "network_operations": False,
+            "warnings": [],
+        }
+
+        # Check for potentially destructive operations
+        destructive_commands = ["rm", "del", "format", "fdisk", "mkfs"]
+        if any(cmd in command.lower() for cmd in destructive_commands):
+            checks["destructive_operations"] = True
+            checks["warnings"].append(
+                "Command contains potentially destructive operations"
+            )
+
+        # Check for network operations
+        network_commands = ["curl", "wget", "ssh", "scp", "ftp"]
+        if any(cmd in command.lower() for cmd in network_commands):
+            checks["network_operations"] = True
+
+        # Check for path safety (basic check)
+        if cwd:
+            from pathlib import Path
+
+            cwd_path = Path(cwd)
+            if not cwd_path.exists():
+                checks["path_safety"] = False
+                checks["warnings"].append(f"Working directory does not exist: {cwd}")
+
+        # Check command arguments for suspicious patterns
+        full_command = command
+        if args:
+            full_command += " " + " ".join(args)
+
+        suspicious_patterns = [
+            "&&",
+            "||",
+            "|",
+            ">",
+            ">>",
+            "<",  # Shell operators
+            "..",  # Directory traversal
+            "*",
+            "?",
+            "[",
+            "]",  # Wildcards
+        ]
+
+        for pattern in suspicious_patterns:
+            if pattern in full_command and pattern not in [
+                "&&",
+                "||",
+                "|",
+            ]:  # Allow basic operators
+                checks["warnings"].append(
+                    f"Command contains potentially unsafe pattern: {pattern}"
+                )
+
+        return checks
+
+    def _should_block_command(
+        self, analysis: Dict[str, Any], command_checks: Dict[str, Any]
+    ) -> bool:
+        """Determine if a command should be blocked based on analysis."""
+        # Always block destructive operations with root/system paths
+        if command_checks.get("destructive_operations"):
+            command_str = analysis.get("command_checks", {}).get("full_command", "")
+            # Block rm/del operations on root or system paths
+            dangerous_paths = ["/", "C:", "C:\\", "/root", "/etc", "/usr"]
+            if any(path in command_str for path in dangerous_paths):
+                return True
+            # Block if combined with high prevention confidence
+            if analysis.get("confidence", 0) > 0.6:
+                return True
+
+        # Block if path safety issues
+        if not command_checks.get("path_safety", True):
+            return True
+
+        # Block if very high prevention confidence (>85%)
+        if analysis.get("confidence", 0) > 0.85:
+            return True
+
+        # Block commands with many suspicious patterns
+        suspicious_count = len(command_checks.get("warnings", []))
+        if suspicious_count >= 3:  # 3 or more warnings
+            return True
+
+        return False
+
+    def _get_block_reason(
+        self, analysis: Dict[str, Any], command_checks: Dict[str, Any]
+    ) -> str:
+        """Get the reason why a command should be blocked."""
+        reasons = []
+
+        if command_checks.get("destructive_operations"):
+            reasons.append("Command contains destructive operations")
+
+        if not command_checks.get("path_safety", True):
+            reasons.append("Unsafe working directory")
+
+        if analysis.get("confidence", 0) > 0.9:
+            reasons.append("High confidence of command failure")
+
+        if analysis.get("prevention_applied"):
+            reasons.append(
+                f"Prevention rules triggered: {len(analysis['prevention_applied'])}"
+            )
+
+        return "; ".join(reasons) if reasons else "Command blocked by safety analysis"
 
     def apply_automatic_fixes(
         self, content: str, prevention_result: Dict[str, Any]

@@ -16,6 +16,7 @@ from . import (
     utils,
 )
 from .issue import Issue
+from .tool_usage_tracker import track_tool_usage
 
 
 def run(root: Path) -> Dict[str, Any]:
@@ -25,7 +26,16 @@ def run(root: Path) -> Dict[str, Any]:
 
     # Initialize error prevention system
     pattern_system = pattern_recognition_system.PatternRecognitionSystem(root)
-    prevention_system = automatic_error_prevention.AutomaticErrorPrevention(root, pattern_system)
+    track_tool_usage(
+        "pattern_recognition_system", "ai_system", {"action": "initialize"}, "success"
+    )
+
+    prevention_system = automatic_error_prevention.AutomaticErrorPrevention(
+        root, pattern_system
+    )
+    track_tool_usage(
+        "automatic_error_prevention", "ai_system", {"action": "initialize"}, "success"
+    )
 
     policy = policy_engine.load(root)
     # Validate effective policy against minimal schema (non - invasive)
@@ -72,12 +82,23 @@ def run(root: Path) -> Dict[str, Any]:
             file_path = Path(root) / comp_file
             if file_path.exists() and file_path.is_file():
                 try:
-                    with open(file_path, 'r', encoding='utf-8') as f:
+                    with open(file_path, "r", encoding="utf-8") as f:
                         content = f.read()
 
                     # Analyze for potential errors
-                    prevention = prevention_system.prevent_code_errors(content, file_path)
-                    if prevention["prevention_applied"] or prevention["recommendations"]:
+                    prevention = prevention_system.prevent_code_errors(
+                        content, file_path
+                    )
+                    track_tool_usage(
+                        "automatic_error_prevention",
+                        "ai_system",
+                        {"action": "analyze_file", "file": str(file_path)},
+                        "success",
+                    )
+                    if (
+                        prevention["prevention_applied"]
+                        or prevention["recommendations"]
+                    ):
                         prevention_results[str(file_path)] = prevention
 
                         # Log prevention telemetry
@@ -87,12 +108,35 @@ def run(root: Path) -> Dict[str, Any]:
                             file=str(file_path),
                             preventions=len(prevention["prevention_applied"]),
                             recommendations=len(prevention["recommendations"]),
-                            risk_level=prevention["risk_level"]
+                            risk_level=prevention["risk_level"],
+                        )
+                        track_tool_usage(
+                            "automatic_error_prevention",
+                            "ai_system",
+                            {
+                                "action": "prevention_applied",
+                                "file": str(file_path),
+                                "preventions": len(prevention["prevention_applied"]),
+                                "recommendations": len(prevention["recommendations"]),
+                            },
+                            "success",
                         )
 
                 except Exception as e:
                     # Log prevention failure but don't stop validation
-                    telemetry.log_event("prevention_error", file=str(file_path), error=str(e))
+                    telemetry.log_event(
+                        "prevention_error", file=str(file_path), error=str(e)
+                    )
+                    track_tool_usage(
+                        "automatic_error_prevention",
+                        "ai_system",
+                        {
+                            "action": "analyze_file",
+                            "file": str(file_path),
+                            "error": str(e),
+                        },
+                        "failed",
+                    )
 
         issues: List[Issue] = []
         for r in ordered:

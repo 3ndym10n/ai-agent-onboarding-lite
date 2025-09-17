@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List
 
 from . import utils
+from .tool_usage_tracker import track_tool_usage
 
 if TYPE_CHECKING:
     from .pattern_recognition_system import PatternRecognitionSystem  # noqa: F401
@@ -92,10 +93,45 @@ class LearningPersistenceManager:
                     "related_patterns": list(pattern.related_patterns),
                 }
 
+            # Get CLI patterns
+            cli_patterns_data = {}
+            for pattern_id, pattern in pattern_system.cli_patterns.items():
+                cli_patterns_data[pattern_id] = {
+                    "pattern_id": pattern.pattern_id,
+                    "command_sequence": pattern.command_sequence,
+                    "success_rate": pattern.success_rate,
+                    "frequency": pattern.frequency,
+                    "context": pattern.context,
+                    "first_seen": pattern.first_seen,
+                    "last_seen": pattern.last_seen,
+                    "recommendations": pattern.recommendations,
+                }
+
+            # Get behavior patterns
+            behavior_patterns_data = {}
+            for pattern_id, pattern in pattern_system.behavior_patterns.items():
+                behavior_patterns_data[pattern_id] = {
+                    "pattern_id": pattern.pattern_id,
+                    "pattern_type": pattern.pattern_type,
+                    "description": pattern.description,
+                    "frequency": pattern.frequency,
+                    "confidence": pattern.confidence,
+                    "triggers": pattern.triggers,
+                    "outcomes": pattern.outcomes,
+                    "recommendations": pattern.recommendations,
+                    "first_seen": pattern.first_seen,
+                    "last_seen": pattern.last_seen,
+                }
+
             backup_data = {
                 "timestamp": time.time(),
                 "pattern_count": len(patterns_data),
+                "cli_pattern_count": len(cli_patterns_data),
+                "behavior_pattern_count": len(behavior_patterns_data),
                 "patterns": patterns_data,
+                "cli_patterns": cli_patterns_data,
+                "behavior_patterns": behavior_patterns_data,
+                "command_history": pattern_system.command_history,
                 "stats": self.stats.copy(),
             }
 
@@ -104,6 +140,18 @@ class LearningPersistenceManager:
             # Update stats
             self.stats["last_learning_update"] = time.time()
             self._save_stats()
+
+            track_tool_usage(
+                "learning_persistence",
+                "ai_system",
+                {
+                    "action": "save_pattern_backup",
+                    "error_patterns": len(patterns_data),
+                    "cli_patterns": len(cli_patterns_data),
+                    "behavior_patterns": len(behavior_patterns_data),
+                },
+                "success",
+            )
 
             return True
 
@@ -132,19 +180,70 @@ class LearningPersistenceManager:
 
             # Restore patterns
             patterns_restored = 0
-            for pattern_id, pattern_data in backup_data["patterns"].items():
-                from .pattern_recognition_system import ErrorPattern
+            cli_patterns_restored = 0
+            behavior_patterns_restored = 0
 
-                pattern = ErrorPattern(**pattern_data)
-                pattern_system.patterns[pattern_id] = pattern
-                patterns_restored += 1
+            # Restore error patterns
+            if "patterns" in backup_data:
+                for pattern_id, pattern_data in backup_data["patterns"].items():
+                    from .pattern_recognition_system import ErrorPattern
 
-            # Restore stats if available
+                    pattern = ErrorPattern(**pattern_data)
+                    pattern_system.patterns[pattern_id] = pattern
+                    patterns_restored += 1
+
+            # Restore CLI patterns
+            if "cli_patterns" in backup_data:
+                for pattern_id, pattern_data in backup_data["cli_patterns"].items():
+                    from .pattern_recognition_system import CLIPattern
+
+                    pattern = CLIPattern(**pattern_data)
+                    pattern_system.cli_patterns[pattern_id] = pattern
+                    cli_patterns_restored += 1
+
+            # Restore behavior patterns
+            if "behavior_patterns" in backup_data:
+                for pattern_id, pattern_data in backup_data[
+                    "behavior_patterns"
+                ].items():
+                    from .pattern_recognition_system import BehaviorPattern
+
+                    pattern = BehaviorPattern(**pattern_data)
+                    pattern_system.behavior_patterns[pattern_id] = pattern
+                    behavior_patterns_restored += 1
+
+            # Restore command history
+            if "command_history" in backup_data:
+                pattern_system.command_history = backup_data["command_history"]
+                command_history_restored = len(pattern_system.command_history)
+            else:
+                command_history_restored = 0
+
+            # Restore stats if available and more recent than file stats
             if "stats" in backup_data:
-                self.stats.update(backup_data["stats"])
-                self._save_stats()
+                backup_last_update = backup_data["stats"].get("last_learning_update", 0)
+                current_last_update = self.stats.get("last_learning_update", 0)
 
-            print(f"Restored {patterns_restored} patterns from backup")
+                # Only update stats if backup is more recent
+                if backup_last_update > current_last_update:
+                    self.stats.update(backup_data["stats"])
+                    self._save_stats()
+
+            print(
+                f"Restored {patterns_restored} error patterns, {cli_patterns_restored} CLI patterns, {behavior_patterns_restored} behavior patterns, {command_history_restored} command history entries from backup"
+            )
+            track_tool_usage(
+                "learning_persistence",
+                "ai_system",
+                {
+                    "action": "load_pattern_backup",
+                    "error_patterns_restored": patterns_restored,
+                    "cli_patterns_restored": cli_patterns_restored,
+                    "behavior_patterns_restored": behavior_patterns_restored,
+                    "command_history_restored": command_history_restored,
+                },
+                "success",
+            )
             return True
 
         except Exception as e:
@@ -174,6 +273,13 @@ class LearningPersistenceManager:
 
             # Update stats
             self.stats["total_learning_events"] += 1
+
+            track_tool_usage(
+                "learning_persistence",
+                "ai_system",
+                {"action": "record_learning_event", "event_type": event_type},
+                "success",
+            )
             if event_type == "pattern_learned":
                 self.stats["patterns_learned"] += 1
             elif event_type == "pattern_applied":
@@ -211,6 +317,60 @@ class LearningPersistenceManager:
         except Exception as e:
             print(f"Warning: Failed to load learning history: {e}")
             return []
+
+    def record_pattern_applied(
+        self, pattern_id: str, context: Dict[str, Any] = None
+    ) -> None:
+        """
+        Record when a learned pattern is successfully applied.
+
+        Args:
+            pattern_id: ID of the pattern that was applied
+            context: Additional context about the application
+        """
+        self.record_learning_event(
+            "pattern_applied",
+            {
+                "pattern_id": pattern_id,
+                "context": context or {},
+            },
+        )
+
+        self.stats["patterns_applied"] += 1
+        self.stats["total_learning_events"] += 1
+        self._save_stats()
+
+    def record_error_prevented(
+        self, pattern_id: str, error_type: str, context: Dict[str, Any] = None
+    ) -> None:
+        """
+        Record when an error was prevented by a learned pattern.
+
+        Args:
+            pattern_id: ID of the pattern that prevented the error
+            error_type: Type of error that was prevented
+            context: Additional context about the prevention
+        """
+        self.record_learning_event(
+            "error_prevented",
+            {
+                "pattern_id": pattern_id,
+                "error_type": error_type,
+                "context": context or {},
+            },
+        )
+
+        self.stats["errors_prevented"] += 1
+        self.stats["total_learning_events"] += 1
+        self._save_stats()
+
+    def increment_learning_sessions(self) -> None:
+        """
+        Increment the learning sessions counter.
+        Call this when a new AI agent session starts.
+        """
+        self.stats["learning_sessions"] += 1
+        self._save_stats()
 
     def get_learning_stats(self) -> Dict[str, Any]:
         """

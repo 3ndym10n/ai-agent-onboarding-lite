@@ -7,10 +7,56 @@ from .dependency_checker import check_cleanup_dependencies
 from .unicode_utils import print_content, print_status
 
 # CRITICAL: Never delete these files / directories
+# Based on AGENTS.md protected paths - ZERO TOLERANCE FOR DELETION
 CRITICAL_PATTERNS = {
-    # Core ai_onboard system (NEVER DELETE)
+    # Core ai_onboard system (NEVER DELETE - SYSTEM BREAKS WITHOUT THESE)
     "ai_onboard/",
     ".ai_onboard/",
+    "ai_onboard/__init__.py",
+    "ai_onboard/__main__.py",
+    "ai_onboard/VERSION",
+    "ai_onboard/cli/commands.py",
+    "ai_onboard/core/utils.py",
+    "ai_onboard/core/state.py",
+    "ai_onboard/core/telemetry.py",
+    "ai_onboard/core/validation_runtime.py",
+    "ai_onboard/core/policy_engine.py",
+    "ai_onboard/core/registry.py",
+    "ai_onboard/policies/base.json",
+    # Protected directories from AGENTS.md
+    ".github/",
+    ".github/workflows/",
+    "ai_onboard/cli/",
+    "ai_onboard/core/",
+    "ai_onboard/plugins/",
+    "ai_onboard/plugins/conventions",
+    "ai_onboard/plugins/library_module",
+    "ai_onboard/plugins/ui_frontend",
+    "ai_onboard/policies/",
+    "ai_onboard/policies/overlays/",
+    "ai_onboard/schemas/",
+    # Project state files (CRITICAL - SYSTEM CANNOT FUNCTION WITHOUT THESE)
+    ".ai_onboard/charter.json",
+    ".ai_onboard/project_plan.json",
+    ".ai_onboard/state.json",
+    ".ai_onboard/analysis.json",
+    ".ai_onboard/roadmap.json",
+    ".ai_onboard/pattern_database.json",
+    ".ai_onboard/adaptive_config.json",
+    ".ai_onboard/agent_profiles.json",
+    # Learning and telemetry data (CRITICAL FOR SYSTEM IMPROVEMENT)
+    ".ai_onboard/learning/",
+    ".ai_onboard/metrics.jsonl",
+    ".ai_onboard/telemetry/",
+    ".ai_onboard/debug_log.jsonl",
+    ".ai_onboard/decision_log.jsonl",
+    ".ai_onboard/agent_errors.jsonl",
+    ".ai_onboard/task_execution_log.jsonl",
+    ".ai_onboard/tool_usage.jsonl",
+    # Configuration files (CRITICAL FOR SYSTEM OPERATION)
+    ".ai_onboard/collaboration_config.json",
+    ".ai_onboard/confidence_model.json",
+    ".ai_onboard/cursor_config.json",
     # Version control (NEVER DELETE)
     ".git/",
     ".gitignore",
@@ -20,7 +66,7 @@ CRITICAL_PATTERNS = {
     "setup.py",
     "setup.cfg",
     "package.json",
-    "package - lock.json",
+    "package-lock.json",
     "yarn.lock",
     # Documentation (NEVER DELETE)
     "README*",
@@ -30,9 +76,9 @@ CRITICAL_PATTERNS = {
     "CHANGELOG*",
     # CI / CD (NEVER DELETE)
     ".github/",
-    ".gitlab - ci.yml",
+    ".gitlab-ci.yml",
     ".travis.yml",
-    "azure - pipelines.yml",
+    "azure-pipelines.yml",
     # Environment files (NEVER DELETE)
     ".env*",
     "venv/",

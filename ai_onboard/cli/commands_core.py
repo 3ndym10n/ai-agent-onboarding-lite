@@ -2,14 +2,13 @@
 
 import argparse
 import os
+import time
 from pathlib import Path
+from typing import Any, Dict, List
 
-from ..core import (
-    alignment,
-    telemetry,
-    versioning,
-)
+from ..core import alignment, telemetry, versioning
 from ..core.gate_system import create_clarification_gate, create_confirmation_gate
+from ..core.pattern_recognition_system import PatternRecognitionSystem
 
 
 def add_core_commands(subparsers):
@@ -90,6 +89,161 @@ def add_core_commands(subparsers):
         help="Show last validation run summary from telemetry",
     )
 
+    # Tools
+    s_tools = subparsers.add_parser(
+        "tools", parents=[ias_parent], help="Show system tools usage information"
+    )
+    s_tools.add_argument(
+        "--history",
+        action="store_true",
+        help="Show recent tool usage history",
+    )
+    s_tools.add_argument(
+        "--session",
+        help="Show tools used in a specific session",
+    )
+    s_tools.add_argument(
+        "--limit",
+        type=int,
+        default=20,
+        help="Limit number of history items to show (default: 20)",
+    )
+
+    # WBS Management subcommand
+    s_wbs = subparsers.add_parser(
+        "wbs", parents=[ias_parent], help="Work Breakdown Structure management"
+    )
+    wbs_subparsers = s_wbs.add_subparsers(dest="wbs_cmd", help="WBS subcommands")
+
+    # WBS status
+    wbs_subparsers.add_parser("status", help="Show WBS and pending task status")
+
+    # WBS update
+    wbs_subparsers.add_parser("update", help="Force WBS updates for pending tasks")
+
+    # WBS pending
+    wbs_subparsers.add_parser(
+        "pending", help="Show pending tasks requiring WBS updates"
+    )
+
+    # WBS force
+    s_wbs_force = wbs_subparsers.add_parser(
+        "force", help="Force WBS update for specific task"
+    )
+    s_wbs_force.add_argument("task_id", help="Task ID to force update for")
+
+    # WBS cleanup
+    s_wbs_cleanup = wbs_subparsers.add_parser(
+        "cleanup", help="Clean up old completed tasks"
+    )
+    s_wbs_cleanup.add_argument(
+        "--max-age",
+        type=int,
+        default=30,
+        help="Maximum age in days for completed tasks to keep (default: 30)",
+    )
+
+    # WBS prioritize
+    s_wbs_prioritize = wbs_subparsers.add_parser(
+        "prioritize", help="Analyze and prioritize tasks automatically"
+    )
+    s_wbs_prioritize.add_argument(
+        "--apply",
+        action="store_true",
+        help="Actually apply the priority changes to the project plan",
+    )
+    s_wbs_prioritize.add_argument(
+        "--top",
+        type=int,
+        default=10,
+        help="Show top N priority tasks (default: 10)",
+    )
+
+    # WBS critical-path
+    s_wbs_critical = wbs_subparsers.add_parser(
+        "critical-path", help="Analyze and update project critical path"
+    )
+    s_wbs_critical.add_argument(
+        "--update",
+        action="store_true",
+        help="Update the project plan with critical path designations",
+    )
+    s_wbs_critical.add_argument(
+        "--report",
+        action="store_true",
+        help="Generate detailed critical path report",
+    )
+
+    # WBS auto-update
+    s_wbs_auto = wbs_subparsers.add_parser(
+        "auto-update", help="Automatically update WBS based on task completion evidence"
+    )
+    s_wbs_auto.add_argument(
+        "--force", action="store_true", help="Force update all tasks, ignore cooldown"
+    )
+    s_wbs_auto.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show what would be updated without making changes",
+    )
+
+    # WBS sync
+    s_wbs_sync = wbs_subparsers.add_parser(
+        "sync", help="Synchronize all WBS views and caches"
+    )
+    s_wbs_sync.add_argument(
+        "--force",
+        action="store_true",
+        help="Force full synchronization ignoring caches",
+    )
+    s_wbs_sync.add_argument(
+        "--validate", action="store_true", help="Run data consistency validation"
+    )
+
+    # Task execution gates
+    s_gate = subparsers.add_parser("task-gate", help="Manage task execution gates")
+    gate_subparsers = s_gate.add_subparsers(dest="gate_action", required=True)
+
+    # Gate status
+    gate_status = gate_subparsers.add_parser(
+        "status", help="Show gate status and pending tasks"
+    )
+    gate_status.add_argument("--task-id", help="Check specific task ID")
+    gate_status.add_argument(
+        "--verbose", action="store_true", help="Show detailed information"
+    )
+
+    # Create emergency bypass
+    gate_bypass = gate_subparsers.add_parser(
+        "bypass", help="Create emergency gate bypass"
+    )
+    gate_bypass.add_argument("command", help="Command to bypass gates for")
+    gate_bypass.add_argument("--reason", required=True, help="Reason for bypass")
+    gate_bypass.add_argument(
+        "--hours", type=int, default=1, help="Hours bypass is valid (default: 1)"
+    )
+    gate_bypass.add_argument(
+        "--authorized-by", default="user", help="Who authorized the bypass"
+    )
+
+    # Gate violations log
+    gate_violations = gate_subparsers.add_parser(
+        "violations", help="Show recent gate violations"
+    )
+    gate_violations.add_argument(
+        "--limit", type=int, default=10, help="Number of violations to show"
+    )
+    gate_violations.add_argument("--command", help="Filter by command")
+
+    # Force gate update
+    gate_update = gate_subparsers.add_parser(
+        "update", help="Force update WBS for pending tasks"
+    )
+    gate_update.add_argument("--task-id", help="Update specific task ID")
+    gate_update.add_argument(
+        "--all", action="store_true", help="Update all pending tasks"
+    )
+
     # Lite: analysis and roadmap
     subparsers.add_parser("roadmap", help="Generate simple roadmap from analysis.json")
     s_work = subparsers.add_parser(
@@ -147,6 +301,60 @@ def add_core_commands(subparsers):
     )
 
 
+def _check_command_prevention(
+    root: Path, command: str, args: List[str] = None
+) -> Dict[str, Any]:
+    """
+    Check if a command should be prevented from execution.
+
+    Args:
+        root: Project root path
+        command: The command to check
+        args: Command arguments
+
+    Returns:
+        Prevention analysis result
+    """
+    try:
+        from ..core.automatic_error_prevention import AutomaticErrorPrevention
+        from ..core.pattern_recognition_system import PatternRecognitionSystem
+
+        pattern_system = PatternRecognitionSystem(root)
+        prevention_system = AutomaticErrorPrevention(root, pattern_system)
+
+        # Check command safety before execution
+        prevention_result = prevention_system.prevent_command_execution(
+            command, args, cwd=root
+        )
+
+        return prevention_result
+
+    except Exception as e:
+        # If prevention check fails, allow command to proceed
+        print(f"Warning: Command prevention check failed: {e}")
+        return {"should_block": False, "confidence": 0.0}
+
+
+def _learn_from_command_execution(
+    root: Path, command: str, success: bool, context: Dict[str, Any] = None
+) -> None:
+    """
+    Learn from CLI command execution for pattern recognition.
+
+    Args:
+        root: Project root path
+        command: The command that was executed
+        success: Whether the command succeeded
+        context: Additional execution context
+    """
+    try:
+        pattern_system = PatternRecognitionSystem(root)
+        pattern_system.learn_from_cli_usage(command, success, context)
+    except Exception as e:
+        # Don't let pattern learning failures break command execution
+        telemetry.log_event("pattern_learning_error", error=str(e), command=command)
+
+
 def _ias_gate(args, root: Path) -> bool:
     """Run IAS alignment preview and enforce collaborative gates.
 
@@ -174,6 +382,49 @@ def _ias_gate(args, root: Path) -> bool:
             note = "(unreadable)"
         telemetry.log_event("gate_override_manual", note=note)
         return True
+
+    # Check for active gates first - prevent gate loops
+    import time
+
+    from ..core.gate_system import GateSystem
+
+    gate_system = GateSystem(root)
+    if gate_system.is_gate_active():
+        # Check if the gate has been waiting too long (timed out)
+        status_file = gate_system.gates_dir / "gate_status.json"
+        if status_file.exists():
+            try:
+                import json
+
+                status = json.loads(status_file.read_text(encoding="utf-8"))
+                created_at = status.get("created_at", 0)
+                # If gate has been waiting for more than 10 seconds, consider it timed out
+                if time.time() - created_at > 10:
+                    telemetry.log_event(
+                        "gate_timed_out_cleanup",
+                        command=getattr(args, "cmd", "unknown"),
+                        gate_age_seconds=int(time.time() - created_at),
+                    )
+                    print(
+                        "[INFO] Previous gate timed out - cleaning up and proceeding..."
+                    )
+                    gate_system._cleanup_gate()
+                else:
+                    telemetry.log_event(
+                        "gate_already_active",
+                        command=getattr(args, "cmd", "unknown"),
+                        reason="Preventing gate loop",
+                    )
+                    print("[INFO] Gate already active - waiting for resolution...")
+                    return False
+            except Exception as e:
+                # If we can't read status, assume gate is stale and clean it up
+                print(f"[WARNING] Could not read gate status: {e} - cleaning up...")
+                gate_system._cleanup_gate()
+        else:
+            # No status file, clean up and proceed
+            print("[WARNING] Gate files exist but no status - cleaning up...")
+            gate_system._cleanup_gate()
 
     # Compute preview (no user - bypass flags honored)
     report = alignment.preview(root)
@@ -262,6 +513,194 @@ def _handle_gate_commands(args, root: Path):
 def handle_core_commands(args, root: Path):
     """Handle core command execution."""
 
+    # Handle task-gate commands (top level)
+    if args.cmd == "task-gate":
+        # Task execution gate management
+        try:
+            from ..core.task_execution_gate import TaskExecutionGate
+
+            gate = TaskExecutionGate(root)
+            gate_action = getattr(args, "gate_action", None)
+
+            if gate_action == "status":
+                # Show gate status
+                task_id = getattr(args, "task_id", None)
+                verbose = getattr(args, "verbose", False)
+
+                if task_id:
+                    # Check specific task
+                    result = gate.check_execution_allowed(task_id)
+                    print(f"🔍 Task Gate Status for {task_id}")
+                    print("=" * 40)
+                    print(f"Allowed: {'✅ Yes' if result['allowed'] else '❌ No'}")
+                    print(
+                        f"WBS Updated: {'✅ Yes' if result['wbs_updated'] else '❌ No'}"
+                    )
+                    print(f"Status: {result['status']}")
+                    if result.get("last_error"):
+                        print(f"Last Error: {result['last_error']}")
+                    if verbose and result.get("task_info"):
+                        print(f"Task Name: {result['task_info']['task_name']}")
+                        print(f"Registered: {result['task_info']['registered_at']}")
+                else:
+                    # Show overall status
+                    summary = gate.get_pending_tasks_summary()
+                    print("🚪 Task Execution Gate Status")
+                    print("=" * 40)
+                    print(f"Total Pending Tasks: {summary['total_pending']}")
+                    print(f"WBS Updated: {summary['wbs_updated']}")
+                    print(f"Execution Allowed: {summary['execution_allowed']}")
+                    print(f"Failed Updates: {summary['failed_updates']}")
+                    print(f"Last Updated: {summary['last_updated']}")
+
+                    if verbose and summary["total_pending"] > 0:
+                        print("\n📋 Pending Tasks:")
+                        pending_data = utils.read_json(
+                            gate.pending_tasks_path, default={"pending_tasks": []}
+                        )
+                        for task in pending_data.get("pending_tasks", [])[
+                            :5
+                        ]:  # Show first 5
+                            status = (
+                                "✅"
+                                if task.get("execution_allowed")
+                                else "⏳" if task.get("wbs_updated") else "❌"
+                            )
+                            print(
+                                f"  {status} {task['task_id']}: {task['task_data'].get('name', 'Unknown')}"
+                            )
+
+            elif gate_action == "bypass":
+                # Create emergency bypass
+                command = getattr(args, "command", "")
+                reason = getattr(args, "reason", "")
+                hours = getattr(args, "hours", 1)
+                authorized_by = getattr(args, "authorized_by", "user")
+
+                result = gate.create_emergency_bypass(
+                    command=command,
+                    reason=reason,
+                    authorized_by=authorized_by,
+                    validity_hours=hours,
+                )
+
+                if result["success"]:
+                    print("🚨 Emergency Bypass Created")
+                    print("=" * 40)
+                    print(f"Command: {command}")
+                    print(f"Reason: {reason}")
+                    print(f"Bypass Token: {result['bypass_token']}")
+                    print(
+                        f"Valid Until: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(result['expires_at']))}"
+                    )
+                    print(f"Authorized By: {authorized_by}")
+                    print(
+                        f"\n⚠️  WARNING: This bypass allows the command to run without gate checks!"
+                    )
+                    print(f"Use: {command} (will be allowed for {hours} hour(s))")
+                else:
+                    print(
+                        f"❌ Failed to create bypass: {result.get('error', 'Unknown error')}"
+                    )
+
+            elif gate_action == "violations":
+                # Show gate violations
+                limit = getattr(args, "limit", 10)
+                filter_command = getattr(args, "command", None)
+
+                try:
+                    import json
+
+                    violations = []
+                    if gate.execution_log_path.exists():
+                        with open(gate.execution_log_path, "r", encoding="utf-8") as f:
+                            for line in f:
+                                try:
+                                    entry = json.loads(line.strip())
+                                    if entry.get("event_type") == "gate_violation":
+                                        if (
+                                            not filter_command
+                                            or entry.get("command") == filter_command
+                                        ):
+                                            violations.append(entry)
+                                except json.JSONDecodeError:
+                                    continue
+
+                    violations = violations[-limit:]  # Get most recent
+
+                    print("🚫 Recent Gate Violations")
+                    print("=" * 40)
+
+                    if violations:
+                        for i, violation in enumerate(violations, 1):
+                            timestamp = time.strftime(
+                                "%H:%M:%S", time.localtime(violation["timestamp"])
+                            )
+                            print(f"{i}. [{timestamp}] {violation['command']}")
+                            print(f"   Reason: {violation['message']}")
+                            if violation.get("violations"):
+                                print(
+                                    f"   Tasks: {', '.join(v['task_id'] for v in violation['violations'])}"
+                                )
+                            print()
+                    else:
+                        print("✅ No gate violations found")
+                        if filter_command:
+                            print(f"Filter: {filter_command}")
+
+                except Exception as e:
+                    print(f"❌ Error reading violations: {e}")
+
+            elif gate_action == "update":
+                # Force WBS update for pending tasks
+                task_id = getattr(args, "task_id", None)
+                update_all = getattr(args, "all", False)
+
+                if task_id:
+                    # Update specific task
+                    print(f"🔄 Updating WBS for task {task_id}...")
+                    update_result = gate.update_wbs_for_pending_tasks()
+
+                    # Check if our specific task was updated
+                    updated = any(
+                        r.get("task_id") == task_id
+                        for r in update_result.get("results", [])
+                    )
+                    if updated:
+                        print(f"✅ Task {task_id} WBS updated successfully")
+                    else:
+                        print(f"❌ Task {task_id} update failed or not found")
+
+                elif update_all:
+                    # Update all pending tasks
+                    print("🔄 Updating WBS for all pending tasks...")
+                    update_result = gate.update_wbs_for_pending_tasks()
+
+                    print(f"📊 Update Results:")
+                    print(f"   Total Processed: {update_result['total_processed']}")
+                    print(f"   Successfully Updated: {update_result['updated']}")
+                    print(f"   Failed: {update_result['failed']}")
+
+                    if update_result.get("results"):
+                        print("\n📋 Task Update Details:")
+                        for result in update_result["results"][:5]:  # Show first 5
+                            status = "✅" if result["status"] == "success" else "❌"
+                            print(
+                                f"   {status} {result['task_id']}: {result.get('update_type', 'unknown')}"
+                            )
+                else:
+                    print("❌ Specify --task-id <id> or --all to update tasks")
+
+            else:
+                print("❌ Unknown gate action. Use --help for available actions.")
+
+        except Exception as e:
+            print(f"❌ Error in task-gate handler: {e}")
+            import traceback
+
+            traceback.print_exc()
+        return
+
     # Allow a safe, read - only preview to bypass the IAS gate so users can
     # inspect the recommendation before deciding to proceed.
     if args.cmd == "align" and getattr(args, "preview", False):
@@ -276,7 +715,6 @@ def handle_core_commands(args, root: Path):
         "charter",
         "plan",
         "align",
-        "validate",
         "kaizen",
         "optimize",
         "metrics",
@@ -295,6 +733,9 @@ def handle_core_commands(args, root: Path):
         manifest = discovery.run(root, allow_exec=args.allowExec)
         utils.write_json(root / "ai_onboard.json", manifest)
         print("Wrote ai_onboard.json (draft).")
+
+        # Learn from successful analysis
+        _learn_from_command_execution(root, "analyze", True, {"command": "analyze"})
     elif args.cmd == "charter":
         # Create or update project charter
         from ..core import charter, state
@@ -305,7 +746,9 @@ def handle_core_commands(args, root: Path):
         if args.interactive:
             charter_data = charter.load_charter(root)
             charter_data["vision_confirmed"] = True
-            charter.save_charter(root, charter_data)
+            from ..core import utils
+
+            utils.write_json(root / ".ai_onboard" / "charter.json", charter_data)
             print("✅ Vision confirmed in charter")
 
         state.advance(root, state.load(root), "chartered")
@@ -388,6 +831,9 @@ def handle_core_commands(args, root: Path):
             print("Wrote .ai_onboard / report.md (+ versioned copy).")
         telemetry.record_run(root, res)
         print("Validation complete.")
+
+        # Learn from successful validation
+        _learn_from_command_execution(root, "validate", True, {"command": "validate"})
     elif args.cmd == "kaizen":
         # Run a kaizen cycle (metrics - driven nudges)
         from ..core import optimizer
@@ -404,25 +850,74 @@ def handle_core_commands(args, root: Path):
         # Show the actual package version, not project version
         import ai_onboard
 
-        if args.set:
-            versioning.set_version(root, args.set)
-            print(f"Version set to {args.set}")
-            return
-        if args.bump:
-            current = versioning.get_version(root)
-            newv = versioning.bump(current, args.bump)
-            versioning.set_version(root, newv)
-            print(f"Bumped {args.bump}: {current} -> {newv}")
-            return
-        # Show package version, not project version
-        print(f"ai - onboard package version: {ai_onboard.__version__}")
-        # Also show project version if it exists
+        from ..core.tool_usage_tracker import get_tool_tracker
+
+        tool_tracker = get_tool_tracker(root)
+        session_id = tool_tracker.start_task_session("version", "core_command")
+
         try:
-            project_version = versioning.get_version(root)
-            if project_version != "0.1.0":  # Only show if it's not the fallback
-                print(f"Project version: {project_version}")
-        except Exception:
-            pass  # Ignore project version errors
+            if args.set:
+                versioning.set_version(root, args.set)
+                print(f"Version set to {args.set}")
+                tool_tracker.track_tool_usage(
+                    "version_set",
+                    "version_management",
+                    parameters={"new_version": args.set},
+                    result="success",
+                )
+                session_summary = tool_tracker.end_task_session("completed")
+                tool_tracker.display_tools_summary(session_summary)
+                return
+            if args.bump:
+                current = versioning.get_version(root)
+                newv = versioning.bump(current, args.bump)
+                versioning.set_version(root, newv)
+                print(f"Bumped {args.bump}: {current} -> {newv}")
+                tool_tracker.track_tool_usage(
+                    "version_bump",
+                    "version_management",
+                    parameters={"bump_type": args.bump, "from": current, "to": newv},
+                    result="success",
+                )
+                session_summary = tool_tracker.end_task_session("completed")
+                tool_tracker.display_tools_summary(session_summary)
+                return
+            # Show package version, not project version
+            print(f"ai - onboard package version: {ai_onboard.__version__}")
+            # Also show project version if it exists
+            try:
+                project_version = versioning.get_version(root)
+                if project_version != "0.1.0":  # Only show if it's not the fallback
+                    print(f"Project version: {project_version}")
+                tool_tracker.track_tool_usage(
+                    "version_display",
+                    "version_management",
+                    parameters={
+                        "package_version": ai_onboard.__version__,
+                        "project_version": project_version,
+                    },
+                    result="success",
+                )
+            except Exception as e:
+                tool_tracker.track_tool_usage(
+                    "version_display",
+                    "version_management",
+                    parameters={"package_version": ai_onboard.__version__},
+                    result=f"partial: {str(e)}",
+                )
+
+            session_summary = tool_tracker.end_task_session("completed")
+            tool_tracker.display_tools_summary(session_summary)
+        except Exception as e:
+            tool_tracker.track_tool_usage(
+                "version_command",
+                "version_management",
+                parameters={"args": vars(args)},
+                result=f"failed: {str(e)}",
+            )
+            session_summary = tool_tracker.end_task_session("failed", str(e))
+            tool_tracker.display_tools_summary(session_summary)
+            raise  # Ignore project version errors
         return
     elif args.cmd == "metrics":
         # Show project metrics
@@ -453,3 +948,532 @@ def handle_core_commands(args, root: Path):
         else:
             cleanup.safe_cleanup(root, dry_run=False)
         print("Cleanup complete.")
+    elif args.cmd == "tools":
+        # System tools usage information
+        from ..core import utils
+        from ..core.tool_usage_tracker import get_tool_tracker
+
+        tool_tracker = get_tool_tracker(root)
+
+        if getattr(args, "history", False):
+            # Show recent tool usage history
+            recent_tools = tool_tracker.get_recent_tool_usage(args.limit)
+
+            if not recent_tools:
+                print("ℹ️  No tool usage history found.")
+                return
+
+            print(f"\n🔧 RECENT TOOL USAGE HISTORY (last {len(recent_tools)} tools)")
+            print("=" * 80)
+
+            for i, tool in enumerate(reversed(recent_tools), 1):
+                session_id = tool.get("session_id", "unknown")
+                tool_name = tool.get("tool_name", "unknown")
+                tool_type = tool.get("tool_type", "unknown")
+                timestamp = tool.get("timestamp", "unknown")
+                result = tool.get("result", "completed")
+                duration = tool.get("duration")
+
+                print(f"{i:2d}. [{timestamp}] {tool_name} ({tool_type})")
+                print(f"    Session: {session_id}")
+                print(f"    Result: {result}")
+                if duration:
+                    print(".2f")
+                if tool.get("parameters"):
+                    params = tool["parameters"]
+                    if len(str(params)) < 100:
+                        print(f"    Parameters: {params}")
+                    else:
+                        print(f"    Parameters: {str(params)[:97]}...")
+                print()
+
+        elif getattr(args, "session", None):
+            # Show tools used in a specific session
+            session_file = root / ".ai_onboard" / "session_tools.json"
+            if session_file.exists():
+                session_data = utils.read_json(session_file, default={})
+                if session_data.get("session_id") == args.session:
+                    print(f"\n🔧 TOOLS USED IN SESSION: {args.session}")
+                    print("=" * 60)
+                    print(f"Task: {session_data.get('task_name', 'unknown')}")
+                    print(f"Type: {session_data.get('task_type', 'unknown')}")
+                    print(f"Status: {session_data.get('final_status', 'unknown')}")
+                    print(f"Total Tools: {session_data.get('total_tools_used', 0)}")
+                    print()
+
+                    tools_summary = session_data.get("tools_summary", {})
+                    if tools_summary.get("tool_usage_counts"):
+                        print("TOOL USAGE COUNTS:")
+                        for tool, count in tools_summary["tool_usage_counts"].items():
+                            print(f"  • {tool}: {count}")
+                        print()
+
+                    if session_data.get("tools_used"):
+                        print("DETAILED TOOL LIST:")
+                        for i, tool in enumerate(session_data["tools_used"], 1):
+                            print(
+                                f"  {i}. {tool['tool_name']} ({tool['tool_type']}) - {tool.get('result', 'completed')}"
+                            )
+                else:
+                    print(
+                        f"❌ Session {args.session} not found in current session data."
+                    )
+            else:
+                print("❌ No current session data available.")
+        else:
+            # Show current session summary if available
+            session_file = root / ".ai_onboard" / "session_tools.json"
+            if session_file.exists():
+                session_data = utils.read_json(session_file, default={})
+                if session_data:
+                    print(
+                        f"\n🔧 CURRENT SESSION: {session_data.get('session_id', 'unknown')}"
+                    )
+                    print("=" * 60)
+                    print(f"Task: {session_data.get('task_name', 'unknown')}")
+                    print(f"Type: {session_data.get('task_type', 'unknown')}")
+                    print(f"Started: {session_data.get('start_time', 'unknown')}")
+                    if session_data.get("end_time"):
+                        print(f"Ended: {session_data.get('end_time')}")
+                        print(f"Status: {session_data.get('final_status', 'unknown')}")
+                        print(
+                            f"Total Tools Used: {session_data.get('total_tools_used', 0)}"
+                        )
+                    else:
+                        print("Status: In progress")
+                        print(
+                            f"Tools Used So Far: {len(session_data.get('tools_used', []))}"
+                        )
+                    print()
+                    print("💡 Use --history to see recent tool usage")
+                    print("💡 Use --session <id> to see tools for a specific session")
+                else:
+                    print("ℹ️  No active session data available.")
+                    print("💡 Use --history to see recent tool usage history")
+            else:
+                print("ℹ️  No tool usage data available.")
+                print("💡 Run some commands to start tracking tool usage")
+                print("💡 Use --history to see recent tool usage history")
+    elif args.cmd == "wbs":
+        # WBS management commands
+        from ..core.task_execution_gate import TaskExecutionGate
+        from ..core.wbs_update_engine import WBSUpdateEngine
+
+        gate = TaskExecutionGate(root)
+        wbs_engine = WBSUpdateEngine(root)
+
+        wbs_cmd = getattr(args, "wbs_cmd", None)
+
+        if wbs_cmd == "status":
+            # Show overall WBS and execution gate status
+            print("🏗️  WBS & Task Execution Status")
+            print("=" * 50)
+
+            # WBS integrity check
+            integrity = wbs_engine.validate_wbs_integrity()
+            print("📊 WBS Integrity:")
+            print(f"   • Valid: {'✅' if integrity['valid'] else '❌'}")
+            print(f"   • Phases: {integrity['phase_count']}")
+            print(f"   • Total Subtasks: {integrity['total_subtasks']}")
+            if integrity["issues"]:
+                print(f"   • Issues: {len(integrity['issues'])}")
+                for issue in integrity["issues"][:3]:  # Show first 3
+                    print(f"     - {issue}")
+
+            print()
+
+            # Pending tasks summary
+            pending_summary = gate.get_pending_tasks_summary()
+            print("⏳ Pending Tasks:")
+            print(f"   • Total Pending: {pending_summary['total_pending']}")
+            print(f"   • WBS Updated: {pending_summary['wbs_updated']}")
+            print(f"   • Execution Allowed: {pending_summary['execution_allowed']}")
+            print(f"   • Failed Updates: {pending_summary['failed_updates']}")
+            print(f"   • Last Updated: {pending_summary['last_updated']}")
+
+            if pending_summary["by_source"]:
+                print("   • By Source:")
+                for source, count in pending_summary["by_source"].items():
+                    print(f"     - {source}: {count}")
+
+        elif wbs_cmd == "update":
+            # Force update all pending tasks
+            print("🔄 Updating WBS for all pending tasks...")
+            result = gate.update_wbs_for_pending_tasks()
+
+            print(f"📋 Update Results:")
+            print(f"   • Total Processed: {result['total_processed']}")
+            print(f"   • Successfully Updated: {result['updated']}")
+            print(f"   • Failed: {result['failed']}")
+
+            if result["results"]:
+                print("\n📝 Details:")
+                for r in result["results"][:10]:  # Show first 10
+                    status_icon = (
+                        "✅"
+                        if r["status"] == "success"
+                        else "❌" if r["status"] == "failed" else "⚠️"
+                    )
+                    print(f"   {status_icon} {r['task_id']}: {r['status']}")
+                    if r["status"] == "success":
+                        print(
+                            f"      → Phase: {r.get('phase_updated', 'unknown')}, Type: {r.get('update_type', 'unknown')}"
+                        )
+
+        elif wbs_cmd == "pending":
+            # Show detailed pending tasks
+            from ..core import utils
+
+            pending_data = utils.read_json(
+                gate.pending_tasks_path, default={"pending_tasks": []}
+            )
+            pending_tasks = pending_data.get("pending_tasks", [])
+
+            if not pending_tasks:
+                print("✅ No pending tasks requiring WBS updates.")
+                return
+
+            print(f"📋 Pending Tasks ({len(pending_tasks)} total)")
+            print("=" * 60)
+
+            for i, task in enumerate(pending_tasks, 1):
+                print(f"{i}. {task['task_id']}")
+                print(f"   Task: {task['task_data'].get('name', 'Unknown')}")
+                print(
+                    f"   Status: {'✅ WBS Updated' if task.get('wbs_updated') else '⏳ Pending WBS Update'}"
+                )
+                print(f"   Source: {task.get('source', 'unknown')}")
+                print(f"   Registered: {task.get('registered_at', 'unknown')}")
+
+                if task.get("last_error"):
+                    print(f"   ❌ Last Error: {task['last_error']}")
+
+                if task.get("execution_allowed"):
+                    print("   🚀 Execution Allowed: Yes")
+                else:
+                    print("   🚫 Execution Allowed: No")
+
+                integration = task.get("integration_recommendation", {})
+                if integration.get("placement_recommendation"):
+                    placement = integration["placement_recommendation"]
+                    print(
+                        f"   📍 Recommended Phase: {placement.get('recommended_phase', 'unknown')}"
+                    )
+                    print(
+                        f"   🔧 Placement Type: {placement.get('placement_type', 'unknown')}"
+                    )
+
+                print()
+
+        elif wbs_cmd == "force":
+            # Force update specific task
+            task_id = getattr(args, "task_id", None)
+            if not task_id:
+                print("❌ Error: task_id is required for force command")
+                return
+
+            print(f"🔄 Forcing WBS update for task: {task_id}")
+            result = gate.force_wbs_update(task_id)
+
+            if result["success"]:
+                print("✅ WBS update forced successfully!")
+                print(
+                    f"   📍 Phase Updated: {result.get('update_result', {}).get('phase_updated', 'unknown')}"
+                )
+                print(
+                    f"   🔧 Update Type: {result.get('update_result', {}).get('update_type', 'unknown')}"
+                )
+            else:
+                print(
+                    f"❌ Failed to force WBS update: {result.get('message', 'Unknown error')}"
+                )
+
+        elif wbs_cmd == "cleanup":
+            # Clean up old tasks
+            max_age = getattr(args, "max_age", 30)
+            print(f"🧹 Cleaning up completed tasks older than {max_age} days...")
+            removed_count = gate.cleanup_completed_tasks(max_age)
+            print(f"✅ Removed {removed_count} old completed tasks.")
+
+        elif wbs_cmd == "prioritize":
+            # Prioritize tasks
+            from ..core.task_prioritization_engine import prioritize_tasks
+
+            apply_changes = getattr(args, "apply", False)
+            top_n = getattr(args, "top", 10)
+
+            if apply_changes:
+                print("⚠️  Applying priority changes to project plan...")
+            else:
+                print("🔍 Analyzing task priorities (preview mode)...")
+
+            result = prioritize_tasks(root, apply_changes)
+
+            if result["success"]:
+                if result["mode"] == "applied":
+                    print(f"✅ Applied {result['changes_applied']} priority changes")
+                    if result["changes_failed"] > 0:
+                        print(f"❌ Failed to apply {result['changes_failed']} changes")
+
+                # Show top priority tasks
+                priorities = result["results"]["task_priorities"]
+                sorted_tasks = sorted(
+                    priorities.items(),
+                    key=lambda x: x[1]["priority_score"],
+                    reverse=True,
+                )
+
+                print(f"\n🎯 TOP {top_n} PRIORITY TASKS:")
+                print("=" * 80)
+
+                for i, (task_id, data) in enumerate(sorted_tasks[:top_n], 1):
+                    priority_icon = {
+                        "critical": "🚨",
+                        "high": "🔴",
+                        "medium": "🟡",
+                        "low": "🟢",
+                        "lowest": "⚪",
+                    }.get(data["calculated_priority"], "⚪")
+
+                    current = data["current_priority"]
+                    calculated = data["calculated_priority"]
+                    change_indicator = " ⬆️" if calculated != current else ""
+
+                    print(
+                        f"{i}. {priority_icon} {task_id}: {data['priority_score']} pts"
+                    )
+                    print(f"   Task: {data.get('task_name', 'Unknown')}")
+                    print(f"   Priority: {current} → {calculated}{change_indicator}")
+
+                    # Show key factors
+                    factors = data["priority_factors"]
+                    critical_path = factors["critical_path_impact"]["assessment"]
+                    dependencies = factors["dependency_impact"]["assessment"]
+                    effort_value = factors["effort_value_ratio"]["assessment"]
+
+                    print(
+                        f"   Key Factors: Critical Path: {critical_path}, Dependencies: {dependencies}, Value: {effort_value}"
+                    )
+
+                    # Show recommendations
+                    if data["recommendations"]:
+                        print(f"   💡 {data['recommendations'][0]}")
+
+                    print()
+
+                # Show summary recommendations
+                recommendations = result["results"]["recommendations"]
+                if recommendations["priority_changes"]:
+                    print(
+                        f"📋 PRIORITY CHANGES NEEDED: {len(recommendations['priority_changes'])}"
+                    )
+                    for change in recommendations["priority_changes"][:5]:
+                        print(
+                            f"   • {change['task_id']}: {change['current']} → {change['recommended']}"
+                        )
+
+                if recommendations["immediate_actions"]:
+                    print("\n🚀 IMMEDIATE ACTIONS:")
+                    for action in recommendations["immediate_actions"]:
+                        print(f"   • {action}")
+
+            else:
+                print(
+                    f"❌ Failed to prioritize tasks: {result.get('error', 'Unknown error')}"
+                )
+
+        elif wbs_cmd == "critical-path":
+            # Critical path analysis
+            from ..core.critical_path_engine import (
+                CriticalPathEngine,
+                analyze_critical_path,
+                update_critical_path,
+            )
+
+            update_plan = getattr(args, "update", False)
+            show_report = getattr(args, "report", False)
+
+            if update_plan:
+                print("🔄 Updating critical path designations in project plan...")
+                result = update_critical_path(root)
+
+                if result["success"]:
+                    print(f"✅ Updated {result['critical_tasks_updated']} tasks")
+                    print(f"🎯 Critical path: {result['critical_path_length']} tasks")
+                    print(f"📅 Project duration: {result['project_duration']} days")
+                else:
+                    print(
+                        f"❌ Failed to update critical path: {result.get('error', 'Unknown error')}"
+                    )
+
+            elif show_report:
+                print("📊 Generating critical path analysis report...")
+                engine = CriticalPathEngine(root)
+                report = engine.get_critical_path_report()
+
+                print("\n🎯 CRITICAL PATH ANALYSIS REPORT")
+                print("=" * 50)
+
+                # Summary
+                summary = report["summary"]
+                print("\n📈 SUMMARY:")
+                print(f"   • Total Tasks: {summary['total_tasks']}")
+                print(f"   • Critical Tasks: {summary['critical_tasks']}")
+                print(f"   • Project Duration: {summary['project_duration_days']} days")
+                print(f"   • Critical Path %: {summary['critical_percentage']}%")
+
+                # Critical path details
+                if report["critical_path"]:
+                    print("\n🎯 CRITICAL PATH TASKS:")
+                    for i, task in enumerate(report["critical_path"], 1):
+                        print(
+                            f"   {i}. {task['task_id']} (Days {task['start_day']}-{task['finish_day']})"
+                        )
+                else:
+                    print("\n🎯 CRITICAL PATH TASKS: None found")
+
+                # Bottlenecks
+                if report["bottlenecks"]:
+                    print("\n⚠️  BOTTLENECKS:")
+                    for bottleneck in report["bottlenecks"]:
+                        print(
+                            f"   • {bottleneck['task_id']}: {bottleneck['duration']} days"
+                        )
+
+                # Recommendations
+                if report["recommendations"]:
+                    print("\n💡 RECOMMENDATIONS:")
+                    for rec in report["recommendations"]:
+                        print(f"   • {rec}")
+
+            else:
+                # Basic critical path analysis
+                print("🔍 Analyzing project critical path...")
+                result = analyze_critical_path(root)
+
+                print("\n🎯 CRITICAL PATH ANALYSIS")
+                print("=" * 40)
+
+                print(f"📊 Tasks Analyzed: {result['total_tasks_analyzed']}")
+                print(f"🎯 Critical Tasks: {result['critical_tasks_count']}")
+                print(f"📅 Project Duration: {result['total_project_duration']} days")
+
+                if result["critical_path"]:
+                    print("\n🎯 CRITICAL PATH:")
+                    for i, task_id in enumerate(result["critical_path"], 1):
+                        timing = result["timing_data"][task_id]
+                        slack = result["slack_data"][task_id]
+                        duration = timing["earliest_finish"] - timing["earliest_start"]
+                        print(
+                            f"   {i}. {task_id} ({int(duration)} days, slack: {slack['total_slack']:.1f})"
+                        )
+                else:
+                    print(
+                        "\n🎯 CRITICAL PATH: No critical path found (all tasks have slack)"
+                    )
+
+                # Show some tasks with slack
+                print("\n📋 SAMPLE TASK SLACK:")
+                slack_items = list(result["slack_data"].items())[:5]
+                for task_id, slack_info in slack_items:
+                    status = (
+                        "🎯 CRITICAL" if slack_info["is_critical"] else "⏰ FLEXIBLE"
+                    )
+                    print(
+                        f"   • {task_id}: {slack_info['total_slack']:.1f} days slack {status}"
+                    )
+
+        elif wbs_cmd == "auto-update":
+            # WBS auto-update
+            from ..core.wbs_auto_update_engine import WBSAutoUpdateEngine
+
+            force_update = getattr(args, "force", False)
+            dry_run = getattr(args, "dry_run", False)
+
+            if dry_run:
+                print("🔍 DRY RUN: Analyzing WBS auto-update opportunities...")
+                print("This would check for completed tasks and suggest updates.")
+                print("Use without --dry-run to apply changes.")
+                return
+
+            print("🔄 Running WBS auto-update...")
+            engine = WBSAutoUpdateEngine(root)
+            result = engine.auto_update_wbs(force=force_update)
+
+            if result["success"]:
+                print(f"✅ Auto-update completed successfully!")
+                print(f"📊 Tasks checked: {result['checked_tasks']}")
+                print(f"🔄 Tasks updated: {result['updated_tasks']}")
+                print(f"⏱️  Duration: {result['duration']:.2f} seconds")
+
+                if result["results"]:
+                    print("\n📋 Updated Tasks:")
+                    for update in result["results"]:
+                        if update["status"] == "updated":
+                            print(f"   ✅ {update['task_id']} - {update['evidence']}")
+                        elif update["status"] == "update_failed":
+                            print(
+                                f"   ❌ {update['task_id']} - {update.get('error', 'Unknown error')}"
+                            )
+            else:
+                print(f"❌ Auto-update failed: {result.get('error', 'Unknown error')}")
+
+        elif wbs_cmd == "sync":
+            # WBS sync
+            from ..core.wbs_synchronization_engine import get_wbs_sync_engine
+
+            force_sync = getattr(args, "force", False)
+            run_validation = getattr(args, "validate", False)
+
+            engine = get_wbs_sync_engine(root)
+
+            if run_validation:
+                print("🔍 Running WBS data consistency validation...")
+                validation_result = engine.get_data_consistency_report()
+
+                if validation_result["valid"]:
+                    print("✅ WBS data is consistent")
+                else:
+                    print("❌ WBS data has consistency issues:")
+                    for error in validation_result.get("errors", []):
+                        print(f"   • {error}")
+
+                if validation_result.get("warnings"):
+                    print("\n⚠️  Warnings:")
+                    for warning in validation_result.get("warnings", []):
+                        print(f"   • {warning}")
+
+                cache_status = validation_result.get("cache_status", {})
+                if cache_status:
+                    print(f"\n📊 Cache Status: {len(cache_status)} views cached")
+                    for view_name, status in cache_status.items():
+                        expired = "❌ EXPIRED" if status["expired"] else "✅ FRESH"
+                        print(f"   • {view_name}: {expired} ({status['age']:.0f}s old)")
+
+            if force_sync:
+                print("\n🔄 Forcing full WBS synchronization...")
+                sync_result = engine.sync_all_views()
+
+                if sync_result["success"]:
+                    print("✅ All WBS views synchronized successfully")
+                    print(
+                        f"⏱️  Sync completed at {time.strftime('%H:%M:%S', time.localtime(sync_result['timestamp']))}"
+                    )
+                else:
+                    print(
+                        f"❌ Sync failed: {sync_result.get('error', 'Unknown error')}"
+                    )
+            elif not run_validation:
+                # Default sync behavior
+                print("🔄 Synchronizing WBS views...")
+                sync_result = engine.sync_all_views()
+
+                if sync_result["success"]:
+                    print("✅ WBS synchronization completed")
+                else:
+                    print(
+                        f"❌ Sync failed: {sync_result.get('error', 'Unknown error')}"
+                    )
+
+    else:
+        print("❌ Unknown WBS command. Use --help for available commands.")

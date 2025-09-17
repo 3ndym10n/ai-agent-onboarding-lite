@@ -5,12 +5,22 @@ This module provides commands to manage cleanup safety gates,
 view backups, perform rollbacks, and configure safety settings.
 """
 
+import json
 from pathlib import Path
 
 from ..core.cleanup_safety_gates import (
     CleanupOperation,
     CleanupSafetyGateFramework,
     safe_cleanup_operation,
+)
+from ..core.ultra_safe_cleanup import CleanupOperation as UltraCleanupOperation
+from ..core.ultra_safe_cleanup import (
+    CleanupTarget,
+    UltraSafeCleanupEngine,
+    execute_ultra_safe_cleanup,
+    present_cleanup_proposal,
+    propose_cleanup_operation,
+    scan_cleanup_targets,
 )
 from ..core.unicode_utils import print_activity, print_content, print_status, safe_print
 
@@ -98,6 +108,53 @@ def add_cleanup_safety_commands(subparsers):
         "status", help="Show safety gate status"
     )
 
+    # Ultra-safe cleanup commands
+    ultra_parser = safety_subparsers.add_parser(
+        "ultra-cleanup",
+        help="Ultra-safe incremental cleanup with zero-tolerance safety",
+        description="Perform cleanup operations with maximum safety and human oversight",
+    )
+    ultra_subparsers = ultra_parser.add_subparsers(
+        dest="ultra_action", help="Ultra-safe cleanup actions"
+    )
+
+    # Scan for cleanup targets
+    scan_parser = ultra_subparsers.add_parser(
+        "scan", help="Scan project for potential cleanup targets"
+    )
+    scan_parser.add_argument(
+        "--max-files",
+        type=int,
+        default=50,
+        help="Maximum number of files to show (default: 50)",
+    )
+
+    # Propose cleanup operation
+    propose_parser = ultra_subparsers.add_parser(
+        "propose", help="Create and present cleanup proposal"
+    )
+    propose_parser.add_argument(
+        "--risk-level",
+        choices=["safe", "low", "medium"],
+        default="safe",
+        help="Maximum risk level to include (default: safe)",
+    )
+    propose_parser.add_argument(
+        "--max-size-mb",
+        type=float,
+        default=100.0,
+        help="Maximum total size in MB (default: 100)",
+    )
+
+    # Execute cleanup operation
+    execute_parser = ultra_subparsers.add_parser(
+        "execute", help="Execute approved cleanup operation"
+    )
+    execute_parser.add_argument("operation_id", help="Operation ID from proposal")
+    execute_parser.add_argument(
+        "--confirmed-by", help="Name/email of person confirming operation"
+    )
+
 
 def handle_cleanup_safety_commands(args, root: Path):
     """Handle cleanup safety commands."""
@@ -117,6 +174,8 @@ def handle_cleanup_safety_commands(args, root: Path):
         _handle_config(args, root)
     elif args.safety_action == "status":
         _handle_status(args, root)
+    elif args.safety_action == "ultra-cleanup":
+        _handle_ultra_cleanup(args, root)
     else:
         print_status(f"Unknown safety action: {args.safety_action}", "error")
 
@@ -495,7 +554,252 @@ def _handle_status(args, root: Path):
     else:
         safe_print(f"  Configuration: ⚠️ Using defaults")
 
-    print_status("Safety gate status check completed", "success")
+
+def _handle_ultra_cleanup(args, root: Path):
+    """Handle ultra-safe cleanup commands."""
+    if not hasattr(args, "ultra_action") or not args.ultra_action:
+        print_status(
+            "No ultra-cleanup action specified. Use --help for options.", "error"
+        )
+        return
+
+    if args.ultra_action == "scan":
+        _handle_ultra_scan(args, root)
+    elif args.ultra_action == "propose":
+        _handle_ultra_propose(args, root)
+    elif args.ultra_action == "execute":
+        _handle_ultra_execute(args, root)
+    else:
+        print_status(f"Unknown ultra-cleanup action: {args.ultra_action}", "error")
+
+
+def _handle_ultra_scan(args, root: Path):
+    """Handle ultra-safe cleanup scanning."""
+    print_content("🔍 Scanning for ultra-safe cleanup targets...", "search")
+
+    try:
+        targets = scan_cleanup_targets(root)
+
+        if not targets:
+            print_status("No cleanup targets found that meet safety criteria.", "info")
+            return
+
+        safe_print(f"\n🧹 CLEANUP TARGETS FOUND: {len(targets)} files")
+        safe_print("=" * 60)
+
+        # Group by risk level
+        risk_groups = {}
+        total_size = 0
+
+        for target in targets:
+            level = target.risk_level.value
+            if level not in risk_groups:
+                risk_groups[level] = []
+            risk_groups[level].append(target)
+            total_size += target.size_bytes
+
+        # Show summary
+        safe_print(f"\n📊 SUMMARY:")
+        safe_print(f"   Total files: {len(targets)}")
+        safe_print(f"   Total size: {total_size / (1024*1024):.1f} MB")
+
+        for level in ["safe", "low", "medium"]:
+            if level in risk_groups:
+                count = len(risk_groups[level])
+                size_mb = sum(t.size_bytes for t in risk_groups[level]) / (1024 * 1024)
+                safe_print(f"   {level.upper()}: {count} files ({size_mb:.1f} MB)")
+
+        # Show sample files
+        safe_print(f"\n📄 SAMPLE FILES (first {min(args.max_files, len(targets))}):")
+        for i, target in enumerate(targets[: args.max_files]):
+            rel_path = target.path.relative_to(root)
+            size_kb = target.size_bytes / 1024
+            safe_print(f"   {i+1}. {rel_path}")
+            safe_print(f"      Risk: {target.risk_level.value.upper()}")
+            safe_print(f"      Size: {size_kb:.1f} KB")
+            safe_print(f"      Reason: {target.reason}")
+
+        if len(targets) > args.max_files:
+            safe_print(f"   ... and {len(targets) - args.max_files} more files")
+
+        safe_print(f"\n💡 Next steps:")
+        safe_print(
+            f"   • Propose cleanup: ai_onboard cleanup-safety ultra-cleanup propose"
+        )
+        safe_print(
+            f"   • Safe only: ai_onboard cleanup-safety ultra-cleanup propose --risk-level safe"
+        )
+
+    except Exception as e:
+        print_status(f"Scan failed: {str(e)}", "error")
+
+
+def _handle_ultra_propose(args, root: Path):
+    """Handle ultra-safe cleanup proposal creation."""
+    print_content("📋 Creating ultra-safe cleanup proposal...", "search")
+
+    try:
+        # Scan for targets
+        all_targets = scan_cleanup_targets(root)
+
+        if not all_targets:
+            print_status("No cleanup targets found that meet safety criteria.", "info")
+            return
+
+        # Filter by risk level and size
+        filtered_targets = []
+        for target in all_targets:
+            # Risk level filter
+            if target.risk_level.value not in ["safe", "low", "medium"]:
+                continue
+            if ["safe", "low", "medium"].index(target.risk_level.value) > [
+                "safe",
+                "low",
+                "medium",
+            ].index(args.risk_level):
+                continue
+
+            filtered_targets.append(target)
+
+        if not filtered_targets:
+            print_status(
+                f"No targets found for risk level '{args.risk_level}' or lower.", "info"
+            )
+            return
+
+        # Size limit filter
+        total_size_mb = sum(t.size_bytes for t in filtered_targets) / (1024 * 1024)
+        if total_size_mb > args.max_size_mb:
+            # Sort by size descending and keep largest files until limit
+            filtered_targets.sort(key=lambda t: t.size_bytes, reverse=True)
+            cumulative_size = 0
+            size_limited_targets = []
+
+            for target in filtered_targets:
+                if (
+                    cumulative_size + (target.size_bytes / (1024 * 1024))
+                    <= args.max_size_mb
+                ):
+                    size_limited_targets.append(target)
+                    cumulative_size += target.size_bytes / (1024 * 1024)
+                else:
+                    break
+
+            filtered_targets = size_limited_targets
+            total_size_mb = cumulative_size
+
+        if not filtered_targets:
+            print_status(
+                f"No targets fit within size limit of {args.max_size_mb} MB.", "info"
+            )
+            return
+
+        # Create operation proposal
+        operation = propose_cleanup_operation(root, filtered_targets)
+
+        safe_print(f"\n✅ CLEANUP PROPOSAL CREATED")
+        safe_print(f"   Operation ID: {operation.operation_id}")
+        safe_print(f"   Risk Level: {args.risk_level.upper()}")
+        safe_print(f"   Files: {len(filtered_targets)}")
+        safe_print(f"   Total Size: {total_size_mb:.1f} MB")
+
+        # Present proposal and get confirmation
+        user_approved = present_cleanup_proposal(root, operation)
+
+        if user_approved:
+            # Save operation for later execution
+            operation.status = "approved"
+            operation.confirmed_by = getattr(args, "confirmed_by", "user")
+
+            engine = UltraSafeCleanupEngine(root)
+            engine._log_operation(operation, "user_approved")
+
+            safe_print(f"\n🎯 OPERATION APPROVED AND SAVED")
+            safe_print(f"   Operation ID: {operation.operation_id}")
+            safe_print(
+                f"   To execute: ai_onboard cleanup-safety ultra-cleanup execute {operation.operation_id}"
+            )
+        else:
+            safe_print(f"\n❌ OPERATION NOT APPROVED")
+            operation.status = "rejected"
+            engine = UltraSafeCleanupEngine(root)
+            engine._log_operation(operation, "user_rejected")
+
+    except Exception as e:
+        print_status(f"Proposal creation failed: {str(e)}", "error")
+
+
+def _handle_ultra_execute(args, root: Path):
+    """Handle ultra-safe cleanup execution."""
+    print_content(
+        f"⚡ Executing ultra-safe cleanup operation: {args.operation_id}", "search"
+    )
+
+    try:
+        # For now, create a new operation (in future, load from saved operations)
+        # This is a simplified version - production would load from operation log
+        safe_print(f"\n⚠️ EXECUTION REQUIRES RECENT APPROVAL")
+        safe_print("For safety, you must run 'propose' first to get approval.")
+        safe_print("This ensures human confirmation before any deletions.")
+
+        # Check if operation exists in log (simplified check)
+        engine = UltraSafeCleanupEngine(root)
+        operation_log = root / ".ai_onboard" / "cleanup_operations.jsonl"
+
+        if operation_log.exists():
+            recent_operations = []
+            with open(operation_log, "r") as f:
+                for line in f:
+                    try:
+                        op = json.loads(line.strip())
+                        if op.get("operation_id") == args.operation_id:
+                            recent_operations.append(op)
+                    except:
+                        continue
+
+            approved_ops = [
+                op for op in recent_operations if op.get("event") == "user_approved"
+            ]
+
+            if approved_ops:
+                latest_approval = max(
+                    approved_ops, key=lambda x: x.get("timestamp", "")
+                )
+
+                safe_print(f"\n✅ OPERATION FOUND AND APPROVED")
+                safe_print(
+                    f"   Approved at: {latest_approval.get('timestamp', 'unknown')}"
+                )
+                safe_print(
+                    f"   Risk assessment: {latest_approval.get('risk_assessment', {}).get('max_risk_level', 'unknown')}"
+                )
+
+                # Create minimal operation for execution
+                # In production, this would reconstruct the full operation from logs
+                operation = UltraCleanupOperation(
+                    operation_id=args.operation_id,
+                    targets=[],  # Would load from approval log
+                    risk_assessment={"confirmation_required": "approved"},
+                )
+
+                success, message = execute_ultra_safe_cleanup(root, operation)
+
+                if success:
+                    print_status(
+                        f"✅ Cleanup executed successfully: {message}", "success"
+                    )
+                else:
+                    print_status(f"❌ Cleanup execution failed: {message}", "error")
+            else:
+                print_status(
+                    f"No approved operation found with ID: {args.operation_id}", "error"
+                )
+                safe_print("   Run 'propose' first to create and approve an operation.")
+        else:
+            print_status("No operation log found. Run 'propose' first.", "error")
+
+    except Exception as e:
+        print_status(f"Execution failed: {str(e)}", "error")
 
 
 # Convenience function for other modules
