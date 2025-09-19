@@ -11,6 +11,7 @@ from typing import Any, Dict, Optional
 
 from ..core import utils
 from ..core.codebase_analysis import CodebaseAnalyzer
+from ..core.tool_usage_tracker import get_tool_tracker
 from ..core.unicode_utils import print_activity, print_content, print_status, safe_print
 
 
@@ -397,6 +398,20 @@ def handle_codebase_analysis_commands(args, root: Path):
         elif args.codebase_cmd == "organization":
             from ..core.file_organization_analyzer import FileOrganizationAnalyzer
 
+            # Track tool usage
+            tracker = get_tool_tracker(root)
+            tracker.track_tool_usage(
+                tool_name="file_organization_command",
+                tool_type="analysis",
+                parameters={
+                    "max_files": getattr(args, "max_files", 10000),
+                    "max_relationship_files": getattr(
+                        args, "max_relationship_files", 2000
+                    ),
+                },
+                result="started",
+            )
+
             # Create analyzer with custom excludes and limits if provided
             exclude_patterns = getattr(args, "exclude", None)
             max_files = getattr(args, "max_files", 10000)
@@ -407,6 +422,24 @@ def handle_codebase_analysis_commands(args, root: Path):
 
             print_status("📁 Analyzing file organization...")
             results = analyzer.analyze_organization()
+
+            # Track successful completion
+            tracker.track_tool_usage(
+                tool_name="file_organization_analyzer",
+                tool_type="analysis",
+                parameters={
+                    "max_files": max_files,
+                    "max_relationship_files": max_relationship_files,
+                    "files_analyzed": results.files_analyzed if results else 0,
+                    "directories_analyzed": (
+                        results.directories_analyzed if results else 0
+                    ),
+                    "organization_issues": (
+                        len(results.organization_issues) if results else 0
+                    ),
+                },
+                result="completed",
+            )
 
             if args.output == "json":
                 print(json.dumps(_serialize_organization_results(results), indent=2))
@@ -424,6 +457,15 @@ def handle_codebase_analysis_commands(args, root: Path):
                 StructuralRecommendationEngine,
             )
 
+            # Track tool usage
+            tracker = get_tool_tracker(root)
+            tracker.track_tool_usage(
+                tool_name="structural_recommendations_command",
+                tool_type="analysis",
+                parameters={"max_files": getattr(args, "max_files", 10000)},
+                result="started",
+            )
+
             # First run organization analysis
             exclude_patterns = getattr(args, "exclude", None)
             max_files = getattr(args, "max_files", 10000)
@@ -435,6 +477,34 @@ def handle_codebase_analysis_commands(args, root: Path):
             # Generate structural recommendations
             engine = StructuralRecommendationEngine(root)
             recommendations = engine.generate_recommendations(org_result)
+
+            # Track successful completion
+            tracker.track_tool_usage(
+                tool_name="file_organization_analyzer",
+                tool_type="analysis",
+                parameters={
+                    "max_files": max_files,
+                    "files_analyzed": org_result.files_analyzed if org_result else 0,
+                },
+                result="completed",
+            )
+
+            tracker.track_tool_usage(
+                tool_name="structural_recommendation_engine",
+                tool_type="planning",
+                parameters={
+                    "file_moves": (
+                        len(recommendations.file_moves) if recommendations else 0
+                    ),
+                    "file_merges": (
+                        len(recommendations.file_merges) if recommendations else 0
+                    ),
+                    "directory_plans": (
+                        len(recommendations.directory_plans) if recommendations else 0
+                    ),
+                },
+                result="completed",
+            )
 
             if args.output == "json":
                 import json
@@ -595,13 +665,28 @@ def handle_codebase_analysis_commands(args, root: Path):
 
         elif args.codebase_cmd == "assess-risks":
             from ..core.risk_assessment_framework import RiskAssessmentFramework
-            from ..core.structural_recommendation_engine import StructuralRecommendationEngine
+            from ..core.structural_recommendation_engine import (
+                StructuralRecommendationEngine,
+            )
+
+            # Track tool usage
+            tracker = get_tool_tracker(root)
+            tracker.track_tool_usage(
+                tool_name="risk_assessment_command",
+                tool_type="analysis",
+                parameters={
+                    "change_type": getattr(args, "change_type", "all"),
+                    "threshold": getattr(args, "threshold", 5.0),
+                },
+                result="started",
+            )
 
             # First run organization analysis
             exclude_patterns = getattr(args, "exclude", None)
             max_files = getattr(args, "max_files", 10000)
 
             from ..core.file_organization_analyzer import FileOrganizationAnalyzer
+
             org_analyzer = FileOrganizationAnalyzer(root, exclude_patterns, max_files)
             print_status("📁 Analyzing file organization for risk assessment...")
             org_result = org_analyzer.analyze_organization()
@@ -609,6 +694,33 @@ def handle_codebase_analysis_commands(args, root: Path):
             # Generate structural recommendations
             engine = StructuralRecommendationEngine(root)
             recommendations = engine.generate_recommendations(org_result)
+
+            # Track analysis tools
+            tracker.track_tool_usage(
+                tool_name="file_organization_analyzer",
+                tool_type="analysis",
+                parameters={
+                    "files_analyzed": org_result.files_analyzed if org_result else 0
+                },
+                result="completed",
+            )
+
+            tracker.track_tool_usage(
+                tool_name="structural_recommendation_engine",
+                tool_type="planning",
+                parameters={
+                    "file_moves": (
+                        len(recommendations.file_moves) if recommendations else 0
+                    ),
+                    "file_merges": (
+                        len(recommendations.file_merges) if recommendations else 0
+                    ),
+                    "directory_plans": (
+                        len(recommendations.directory_plans) if recommendations else 0
+                    ),
+                },
+                result="completed",
+            )
 
             # Convert recommendations to organization changes for risk assessment
             framework = RiskAssessmentFramework(root)
@@ -621,11 +733,13 @@ def handle_codebase_analysis_commands(args, root: Path):
 
             # Convert file merges
             for merge in recommendations.file_merges:
-                change = framework.create_change_from_recommendation(merge, "file_merge")
+                change = framework.create_change_from_recommendation(
+                    merge, "file_merge"
+                )
                 changes.append(change)
 
             # Filter by change type if specified
-            if hasattr(args, 'change_type') and args.change_type != "all":
+            if hasattr(args, "change_type") and args.change_type != "all":
                 changes = [c for c in changes if c.change_type == args.change_type]
 
             if not changes:
@@ -638,9 +752,16 @@ def handle_codebase_analysis_commands(args, root: Path):
 
             if args.output == "json":
                 import json
+
                 output_data = {
                     "assessed_changes": len(risk_results),
-                    "high_risk_changes": len([r for r in risk_results if r.risk_level.value in ["critical", "high"]]),
+                    "high_risk_changes": len(
+                        [
+                            r
+                            for r in risk_results
+                            if r.risk_level.value in ["critical", "high"]
+                        ]
+                    ),
                     "threshold": args.threshold,
                     "results": [
                         {
@@ -654,15 +775,24 @@ def handle_codebase_analysis_commands(args, root: Path):
                             "recommended_actions": r.recommended_actions,
                             "impact_analysis": r.impact_analysis,
                             "dependency_analysis": {
-                                "import_dependencies": len(r.dependency_analysis.get("import_dependencies", [])),
-                                "reverse_dependencies": len(r.dependency_analysis.get("reverse_dependencies", [])),
-                                "critical_paths": len(r.dependency_analysis.get("critical_paths", []))
-                            }
-                        } for r in risk_results
-                    ]
+                                "import_dependencies": len(
+                                    r.dependency_analysis.get("import_dependencies", [])
+                                ),
+                                "reverse_dependencies": len(
+                                    r.dependency_analysis.get(
+                                        "reverse_dependencies", []
+                                    )
+                                ),
+                                "critical_paths": len(
+                                    r.dependency_analysis.get("critical_paths", [])
+                                ),
+                            },
+                        }
+                        for r in risk_results
+                    ],
                 }
 
-                if hasattr(args, 'save_report') and args.save_report:
+                if hasattr(args, "save_report") and args.save_report:
                     with open(args.save_report, "w") as f:
                         json.dump(output_data, f, indent=2)
                     print_status(f"📄 Risk assessment saved to: {args.save_report}")
@@ -670,12 +800,18 @@ def handle_codebase_analysis_commands(args, root: Path):
                     print(json.dumps(output_data, indent=2))
 
             else:  # text output
-                print("\n" + "="*80)
+                print("\n" + "=" * 80)
                 print("⚠️  CODEBASE ORGANIZATION RISK ASSESSMENT")
-                print("="*80)
+                print("=" * 80)
 
                 # Summary
-                high_risk = len([r for r in risk_results if r.risk_level.value in ["critical", "high"]])
+                high_risk = len(
+                    [
+                        r
+                        for r in risk_results
+                        if r.risk_level.value in ["critical", "high"]
+                    ]
+                )
                 total_score = sum(r.overall_risk_score for r in risk_results)
                 avg_score = total_score / len(risk_results) if risk_results else 0
 
@@ -698,17 +834,23 @@ def handle_codebase_analysis_commands(args, root: Path):
                         print(f"   {level.upper()}: {count} changes")
 
                 # High risk changes first
-                high_risk_results = [r for r in risk_results if r.overall_risk_score >= args.threshold]
+                high_risk_results = [
+                    r for r in risk_results if r.overall_risk_score >= args.threshold
+                ]
 
                 if high_risk_results:
                     print(f"\n🚨 HIGH RISK CHANGES (Score ≥ {args.threshold}):")
-                    for i, result in enumerate(high_risk_results[:10], 1):  # Show top 10
+                    for i, result in enumerate(
+                        high_risk_results[:10], 1
+                    ):  # Show top 10
                         print(f"\n   {i}. {result.change.change_id}")
                         print(f"      Type: {result.change.change_type}")
                         print(f"      Risk Score: {result.overall_risk_score:.1f}")
                         print(f"      Risk Level: {result.risk_level.value.upper()}")
                         print(f"      Safety: {result.safety_rating}")
-                        print(f"      Affected Files: {len(result.change.affected_files)}")
+                        print(
+                            f"      Affected Files: {len(result.change.affected_files)}"
+                        )
 
                         if result.recommended_actions:
                             print("      Recommended Actions:")
@@ -722,29 +864,34 @@ def handle_codebase_analysis_commands(args, root: Path):
                         "critical": "🚨",
                         "high": "🔴",
                         "medium": "🟡",
-                        "low": "🟢"
+                        "low": "🟢",
                     }.get(result.risk_level.value, "⚪")
 
-                    safety_icon = {
-                        "safe": "✅",
-                        "caution": "⚠️",
-                        "dangerous": "🚫"
-                    }.get(result.safety_rating, "❓")
+                    safety_icon = {"safe": "✅", "caution": "⚠️", "dangerous": "🚫"}.get(
+                        result.safety_rating, "❓"
+                    )
 
-                    print(f"   {i}. {risk_icon} {safety_icon} {result.change.change_id}")
-                    print(f"      Score: {result.overall_risk_score:.1f} | {result.change.change_type}")
+                    print(
+                        f"   {i}. {risk_icon} {safety_icon} {result.change.change_id}"
+                    )
+                    print(
+                        f"      Score: {result.overall_risk_score:.1f} | {result.change.change_type}"
+                    )
                     print(f"      {result.change.description}")
 
                 if len(risk_results) > 20:
                     print(f"   ... and {len(risk_results) - 20} more changes")
 
-                if hasattr(args, 'save_report') and args.save_report:
+                if hasattr(args, "save_report") and args.save_report:
                     # Save text report
                     import datetime
+
                     report_content = []
                     report_content.append("CODEBASE ORGANIZATION RISK ASSESSMENT")
-                    report_content.append("="*50)
-                    report_content.append(f"Generated: {datetime.datetime.now().isoformat()}")
+                    report_content.append("=" * 50)
+                    report_content.append(
+                        f"Generated: {datetime.datetime.now().isoformat()}"
+                    )
                     report_content.append("")
                     report_content.append(f"Changes Assessed: {len(risk_results)}")
                     report_content.append(f"High Risk Changes: {high_risk}")
@@ -753,7 +900,9 @@ def handle_codebase_analysis_commands(args, root: Path):
 
                     for result in risk_results:
                         report_content.append(f"Change: {result.change.change_id}")
-                        report_content.append(f"Risk Score: {result.overall_risk_score:.1f}")
+                        report_content.append(
+                            f"Risk Score: {result.overall_risk_score:.1f}"
+                        )
                         report_content.append(f"Risk Level: {result.risk_level.value}")
                         report_content.append(f"Safety Rating: {result.safety_rating}")
                         report_content.append("")
@@ -762,13 +911,18 @@ def handle_codebase_analysis_commands(args, root: Path):
                         f.write("\n".join(report_content))
                     print_status(f"📄 Risk assessment saved to: {args.save_report}")
 
-                print("="*80)
+                print("=" * 80)
 
         elif args.codebase_cmd == "implement":
             import json
-            from ..core.phased_implementation_strategy import PhasedImplementationStrategy
+
+            from ..core.phased_implementation_strategy import (
+                PhasedImplementationStrategy,
+            )
             from ..core.risk_assessment_framework import RiskAssessmentFramework
-            from ..core.structural_recommendation_engine import StructuralRecommendationEngine
+            from ..core.structural_recommendation_engine import (
+                StructuralRecommendationEngine,
+            )
 
             strategy = PhasedImplementationStrategy(root)
 
@@ -778,6 +932,7 @@ def handle_codebase_analysis_commands(args, root: Path):
 
                 # Get risk assessments
                 from ..core.file_organization_analyzer import FileOrganizationAnalyzer
+
                 org_analyzer = FileOrganizationAnalyzer(root)
                 org_result = org_analyzer.analyze_organization()
                 engine = StructuralRecommendationEngine(root)
@@ -786,26 +941,34 @@ def handle_codebase_analysis_commands(args, root: Path):
 
                 changes = []
                 for move in recommendations.file_moves:
-                    change = framework.create_change_from_recommendation(move, "file_move")
+                    change = framework.create_change_from_recommendation(
+                        move, "file_move"
+                    )
                     changes.append(change)
                 for merge in recommendations.file_merges:
-                    change = framework.create_change_from_recommendation(merge, "file_merge")
+                    change = framework.create_change_from_recommendation(
+                        merge, "file_merge"
+                    )
                     changes.append(change)
 
                 risk_results = framework.assess_change_risks(changes)
-                plan = strategy.create_implementation_plan(risk_results, getattr(args, 'timeline_days', 30))
+                plan = strategy.create_implementation_plan(
+                    risk_results, getattr(args, "timeline_days", 30)
+                )
 
                 print_status(f"✅ Implementation plan created: {plan.plan_id}")
                 print(f"📅 Timeline: {getattr(args, 'timeline_days', 30)} days")
                 print(f"🎯 Phases: {len(plan.phases)}")
-                print(f"📋 Total steps: {sum(len(steps) for steps in plan.phases.values())}")
+                print(
+                    f"📋 Total steps: {sum(len(steps) for steps in plan.phases.values())}"
+                )
 
             elif args.action == "status":
                 # Show implementation status
                 plan_file = root / ".ai_onboard" / "implementation_plan.json"
                 if plan_file.exists():
                     # Load and display plan status
-                    with open(plan_file, 'r') as f:
+                    with open(plan_file, "r") as f:
                         plan_data = json.load(f)
 
                     print("\n🏗️  IMPLEMENTATION PLAN STATUS")
@@ -814,16 +977,142 @@ def handle_codebase_analysis_commands(args, root: Path):
                     print(f"Current Phase: {plan_data['current_phase']}")
                     print(f"Status: {plan_data['overall_status']}")
 
-                    for phase_name, steps in plan_data['phases'].items():
-                        completed = len([s for s in steps if s['status'] == 'completed'])
+                    for phase_name, steps in plan_data["phases"].items():
+                        completed = len(
+                            [s for s in steps if s["status"] == "completed"]
+                        )
                         total = len(steps)
-                        phase_indicator = " ← CURRENT" if phase_name == plan_data['current_phase'] else ""
-                        print(f"📊 {phase_name.upper()}: {completed}/{total}{phase_indicator}")
+                        phase_indicator = (
+                            " ← CURRENT"
+                            if phase_name == plan_data["current_phase"]
+                            else ""
+                        )
+                        print(
+                            f"📊 {phase_name.upper()}: {completed}/{total}{phase_indicator}"
+                        )
                 else:
-                    print_status("❌ No implementation plan found. Run 'ai_onboard codebase implement plan' first.")
+                    print_status(
+                        "❌ No implementation plan found. Run 'ai_onboard codebase implement plan' first."
+                    )
 
             elif args.action == "execute":
-                print_status("⚠️ Step execution not yet fully implemented")
+                # Execute a specific implementation step
+                step_id = getattr(args, "step_id", None)
+                dry_run = getattr(args, "dry_run", True)
+
+                if not step_id:
+                    print_status("❌ Step ID required for execution")
+                    return
+
+                # Load the implementation plan
+                plan_path = root / ".ai_onboard" / "implementation_plan.json"
+                if not plan_path.exists():
+                    print_status(
+                        "❌ No implementation plan found. Create one first with 'plan' action."
+                    )
+                    return
+
+                with open(plan_path, "r") as f:
+                    plan_data = json.load(f)
+
+                # Find the step in the plan
+                step_found = False
+                for phase_name, steps in plan_data.get("phases", {}).items():
+                    for step in steps:
+                        if step.get("step_id") == step_id:
+                            step_found = True
+
+                            # Create implementation strategy and execute step
+                            from ..core.phased_implementation_strategy import (
+                                ImplementationPlan,
+                                ImplementationStep,
+                                PhasedImplementationStrategy,
+                            )
+
+                            strategy = PhasedImplementationStrategy(root)
+
+                            # Convert step data to ImplementationStep object
+                            from ..core.phased_implementation_strategy import (
+                                ImplementationPhase,
+                            )
+
+                            # Determine phase from step_id
+                            if step_id.startswith("pilot"):
+                                phase = ImplementationPhase.PILOT
+                            elif step_id.startswith("low_risk"):
+                                phase = ImplementationPhase.LOW_RISK
+                            elif step_id.startswith("medium_risk"):
+                                phase = ImplementationPhase.MEDIUM_RISK
+                            elif step_id.startswith("high_risk"):
+                                phase = ImplementationPhase.HIGH_RISK
+                            elif step_id.startswith("validation"):
+                                phase = ImplementationPhase.VALIDATION
+                            else:
+                                phase = ImplementationPhase.PILOT  # Default
+
+                            implementation_step = ImplementationStep(
+                                step_id=step["step_id"],
+                                phase=phase,
+                                description=step["description"],
+                                status=step["status"],
+                                started_at=step.get("started_at"),
+                                completed_at=step.get("completed_at"),
+                                rollback_available=step.get("rollback_available", True),
+                            )
+
+                            # Convert plan data to ImplementationPlan object
+                            from datetime import datetime
+
+                            # Convert string dates to datetime objects
+                            created_at = datetime.fromisoformat(
+                                plan_data["created_at"].replace("Z", "+00:00")
+                            )
+                            target_completion = datetime.fromisoformat(
+                                plan_data["target_completion"].replace("Z", "+00:00")
+                            )
+
+                            # Convert current_phase string to enum
+                            current_phase_str = plan_data["current_phase"]
+                            if current_phase_str == "pilot":
+                                current_phase_enum = ImplementationPhase.PILOT
+                            elif current_phase_str == "low_risk":
+                                current_phase_enum = ImplementationPhase.LOW_RISK
+                            elif current_phase_str == "medium_risk":
+                                current_phase_enum = ImplementationPhase.MEDIUM_RISK
+                            elif current_phase_str == "high_risk":
+                                current_phase_enum = ImplementationPhase.HIGH_RISK
+                            elif current_phase_str == "validation":
+                                current_phase_enum = ImplementationPhase.VALIDATION
+                            else:
+                                current_phase_enum = ImplementationPhase.PILOT
+
+                            implementation_plan = ImplementationPlan(
+                                plan_id=plan_data["plan_id"],
+                                created_at=created_at,
+                                target_completion=target_completion,
+                                current_phase=current_phase_enum,
+                                overall_status=plan_data["overall_status"],
+                                phases=plan_data["phases"],  # Keep as dict for now
+                                phase_criteria=plan_data["phase_criteria"],
+                                success_metrics=plan_data.get("success_metrics", {}),
+                            )
+
+                            # Execute the step
+                            success = strategy.execute_step(
+                                implementation_plan, implementation_step, dry_run
+                            )
+
+                            if success:
+                                print_status(f"✅ Step {step_id} executed successfully")
+                            else:
+                                print_status(f"❌ Step {step_id} execution failed")
+
+                            break
+                    if step_found:
+                        break
+
+                if not step_found:
+                    print_status(f"❌ Step {step_id} not found in implementation plan")
 
             elif args.action == "advance":
                 print_status("⚠️ Phase advancement not yet fully implemented")

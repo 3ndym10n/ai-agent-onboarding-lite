@@ -7,17 +7,17 @@ the safety and impact of codebase organization changes before implementation.
 
 import ast
 import os
-import re
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Set, Tuple
+from typing import Any, Dict, List, Set
 
-from .tool_usage_tracker import track_tool_usage
+from .tool_usage_tracker import get_tool_tracker
 
 
 class RiskLevel(Enum):
     """Risk level classifications."""
+
     CRITICAL = "critical"
     HIGH = "high"
     MEDIUM = "medium"
@@ -26,6 +26,7 @@ class RiskLevel(Enum):
 
 class ImpactLevel(Enum):
     """Impact level classifications."""
+
     MINIMAL = "minimal"
     MODERATE = "moderate"
     SIGNIFICANT = "significant"
@@ -35,6 +36,7 @@ class ImpactLevel(Enum):
 
 class LikelihoodLevel(Enum):
     """Likelihood level classifications."""
+
     VERY_UNLIKELY = "very_unlikely"
     UNLIKELY = "unlikely"
     POSSIBLE = "possible"
@@ -45,6 +47,7 @@ class LikelihoodLevel(Enum):
 @dataclass
 class RiskFactor:
     """Individual risk factor assessment."""
+
     name: str
     description: str
     impact: ImpactLevel
@@ -56,6 +59,7 @@ class RiskFactor:
 @dataclass
 class OrganizationChange:
     """Represents a proposed organization change."""
+
     change_id: str
     change_type: str  # 'file_move', 'file_merge', 'directory_create', etc.
     description: str
@@ -68,6 +72,7 @@ class OrganizationChange:
 @dataclass
 class RiskAssessmentResult:
     """Complete risk assessment for a change."""
+
     change: OrganizationChange
     overall_risk_score: float
     risk_level: RiskLevel
@@ -102,7 +107,7 @@ class RiskAssessmentFramework:
             ImpactLevel.MODERATE: 2,
             ImpactLevel.SIGNIFICANT: 3,
             ImpactLevel.SEVERE: 4,
-            ImpactLevel.CATASTROPHIC: 5
+            ImpactLevel.CATASTROPHIC: 5,
         }
 
         self.likelihood_weights = {
@@ -110,7 +115,7 @@ class RiskAssessmentFramework:
             LikelihoodLevel.UNLIKELY: 2,
             LikelihoodLevel.POSSIBLE: 3,
             LikelihoodLevel.LIKELY: 4,
-            LikelihoodLevel.VERY_LIKELY: 5
+            LikelihoodLevel.VERY_LIKELY: 5,
         }
 
         # Import analysis cache
@@ -121,7 +126,7 @@ class RiskAssessmentFramework:
         self,
         changes: List[OrganizationChange],
         include_dependencies: bool = True,
-        include_impact_analysis: bool = True
+        include_impact_analysis: bool = True,
     ) -> List[RiskAssessmentResult]:
         """
         Assess risks for a list of organization changes.
@@ -138,18 +143,43 @@ class RiskAssessmentFramework:
 
         print(f"🔍 Assessing risks for {len(changes)} organization changes...")
 
+        # Track tool usage
+        tracker = get_tool_tracker(self.root_path)
+
         for change in changes:
             result = self._assess_single_change(
-                change,
-                include_dependencies,
-                include_impact_analysis
+                change, include_dependencies, include_impact_analysis
             )
             results.append(result)
+
+            # Track individual change assessment
+            tracker.track_tool_usage(
+                tool_name="risk_assessment_engine",
+                tool_type="analysis",
+                parameters={
+                    "change_type": change.change_type,
+                    "affected_files": len(change.affected_files),
+                },
+                result="completed",
+            )
 
         # Sort by risk score (highest first)
         results.sort(key=lambda x: x.overall_risk_score, reverse=True)
 
         print(f"✅ Risk assessment complete - {len(results)} changes evaluated")
+
+        # Track overall assessment completion
+        tracker.track_tool_usage(
+            tool_name="comprehensive_risk_assessment",
+            tool_type="analysis",
+            parameters={
+                "changes_assessed": len(results),
+                "high_risk_count": len(
+                    [r for r in results if r.risk_level.value in ["critical", "high"]]
+                ),
+            },
+            result="completed",
+        )
 
         return results
 
@@ -157,7 +187,7 @@ class RiskAssessmentFramework:
         self,
         change: OrganizationChange,
         include_dependencies: bool,
-        include_impact_analysis: bool
+        include_impact_analysis: bool,
     ) -> RiskAssessmentResult:
         """Assess risk for a single organization change."""
 
@@ -205,7 +235,7 @@ class RiskAssessmentFramework:
             dependency_analysis=dependency_analysis,
             mitigation_effectiveness=mitigation_effectiveness,
             recommended_actions=recommended_actions,
-            safety_rating=safety_rating
+            safety_rating=safety_rating,
         )
 
     def _calculate_risk_score(self, risk_factors: List[RiskFactor]) -> float:
@@ -230,15 +260,15 @@ class RiskAssessmentFramework:
 
     def _analyze_dependencies(self, change: OrganizationChange) -> Dict[str, Any]:
         """Analyze dependencies affected by the change."""
-        analysis = {
+        analysis: Dict[str, Any] = {
             "import_dependencies": [],
             "reverse_dependencies": [],
             "external_dependencies": [],
-            "critical_paths": []
+            "critical_paths": [],
         }
 
         for file_path in change.affected_files:
-            if file_path.endswith('.py'):
+            if file_path.endswith(".py"):
                 # Analyze imports in this file
                 imports = self._analyze_file_imports(file_path)
                 analysis["import_dependencies"].extend(imports)
@@ -254,7 +284,8 @@ class RiskAssessmentFramework:
         # Identify critical paths (files with many dependencies)
         critical_threshold = 5
         critical_files = [
-            dep for dep in analysis["reverse_dependencies"]
+            dep
+            for dep in analysis["reverse_dependencies"]
             if len(self._find_reverse_dependencies(dep)) > critical_threshold
         ]
         analysis["critical_paths"] = list(set(critical_files))
@@ -268,17 +299,20 @@ class RiskAssessmentFramework:
             "affected_test_files": 0,
             "affected_config_files": 0,
             "breaking_change_potential": "low",
-            "recovery_complexity": "low"
+            "recovery_complexity": "low",
         }
 
         # Count affected imports
         dependency_analysis = self._analyze_dependencies(change)
-        impact["affected_import_statements"] = len(dependency_analysis["import_dependencies"])
+        impact["affected_import_statements"] = len(
+            dependency_analysis["import_dependencies"]
+        )
 
         # Count affected test files
         test_files_affected = [
-            dep for dep in dependency_analysis["reverse_dependencies"]
-            if 'test' in dep.lower() or dep.endswith('_test.py')
+            dep
+            for dep in dependency_analysis["reverse_dependencies"]
+            if "test" in dep.lower() or dep.endswith("_test.py")
         ]
         impact["affected_test_files"] = len(test_files_affected)
 
@@ -292,9 +326,9 @@ class RiskAssessmentFramework:
 
         # Assess recovery complexity
         total_affected = (
-            impact["affected_import_statements"] +
-            impact["affected_test_files"] +
-            len(dependency_analysis["critical_paths"])
+            impact["affected_import_statements"]
+            + impact["affected_test_files"]
+            + len(dependency_analysis["critical_paths"])
         )
 
         if total_affected > 50:
@@ -313,7 +347,7 @@ class RiskAssessmentFramework:
 
         imports = []
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
             tree = ast.parse(content, filename=file_path)
@@ -321,10 +355,10 @@ class RiskAssessmentFramework:
             for node in ast.walk(tree):
                 if isinstance(node, ast.Import):
                     for alias in node.names:
-                        imports.append(alias.name.split('.')[0])
+                        imports.append(alias.name.split(".")[0])
                 elif isinstance(node, ast.ImportFrom):
                     if node.module:
-                        imports.append(node.module.split('.')[0])
+                        imports.append(node.module.split(".")[0])
 
         except Exception:
             pass  # Skip files that can't be parsed
@@ -345,7 +379,7 @@ class RiskAssessmentFramework:
         # Walk through all Python files
         for root, dirs, files in os.walk(self.root_path):
             for file in files:
-                if file.endswith('.py'):
+                if file.endswith(".py"):
                     full_path = os.path.join(root, file)
                     if full_path != file_path:  # Don't check self-imports
                         imports = self._analyze_file_imports(full_path)
@@ -360,9 +394,9 @@ class RiskAssessmentFramework:
     def _file_to_module_name(self, file_path: str) -> str:
         """Convert file path to Python module name."""
         rel_path = os.path.relpath(file_path, self.root_path)
-        if rel_path.endswith('.py'):
+        if rel_path.endswith(".py"):
             rel_path = rel_path[:-3]
-        return rel_path.replace(os.sep, '.')
+        return rel_path.replace(os.sep, ".")
 
     def _calculate_mitigation_effectiveness(self, change: OrganizationChange) -> float:
         """Calculate how effective the mitigation strategies are."""
@@ -370,9 +404,16 @@ class RiskAssessmentFramework:
             return 0.3  # Low effectiveness with no mitigation
 
         # Count different types of mitigation strategies
-        has_automated_testing = any('test' in strategy.lower() for strategy in change.mitigation_strategies)
-        has_backup_plan = any('backup' in strategy.lower() or 'rollback' in strategy.lower() for strategy in change.mitigation_strategies)
-        has_validation = any('valid' in strategy.lower() for strategy in change.mitigation_strategies)
+        has_automated_testing = any(
+            "test" in strategy.lower() for strategy in change.mitigation_strategies
+        )
+        has_backup_plan = any(
+            "backup" in strategy.lower() or "rollback" in strategy.lower()
+            for strategy in change.mitigation_strategies
+        )
+        has_validation = any(
+            "valid" in strategy.lower() for strategy in change.mitigation_strategies
+        )
 
         effectiveness = 0.5  # Base effectiveness
 
@@ -400,7 +441,7 @@ class RiskAssessmentFramework:
         self,
         change: OrganizationChange,
         dependency_analysis: Dict[str, Any],
-        impact_analysis: Dict[str, Any]
+        impact_analysis: Dict[str, Any],
     ) -> float:
         """Calculate confidence score for the risk assessment."""
         confidence = 0.5  # Base confidence
@@ -421,7 +462,9 @@ class RiskAssessmentFramework:
 
         return max(0.1, min(1.0, confidence))
 
-    def _determine_safety_rating(self, risk_level: RiskLevel, confidence_score: float) -> str:
+    def _determine_safety_rating(
+        self, risk_level: RiskLevel, confidence_score: float
+    ) -> str:
         """Determine safety rating based on risk level and confidence."""
         if risk_level == RiskLevel.CRITICAL:
             return "dangerous"
@@ -440,49 +483,60 @@ class RiskAssessmentFramework:
         change: OrganizationChange,
         risk_level: RiskLevel,
         dependency_analysis: Dict[str, Any],
-        impact_analysis: Dict[str, Any]
+        impact_analysis: Dict[str, Any],
     ) -> List[str]:
         """Generate recommended actions based on risk assessment."""
         actions = []
 
         if risk_level == RiskLevel.CRITICAL:
-            actions.extend([
-                "🚨 REQUIRE APPROVAL: This change requires senior developer approval",
-                "🧪 REQUIRE TESTING: Comprehensive testing required before implementation",
-                "📋 REQUIRE REVIEW: Peer code review mandatory",
-                "🔄 REQUIRE ROLLBACK: Automated rollback plan required"
-            ])
+            actions.extend(
+                [
+                    "🚨 REQUIRE APPROVAL: This change requires senior developer approval",
+                    "🧪 REQUIRE TESTING: Comprehensive testing required before implementation",
+                    "📋 REQUIRE REVIEW: Peer code review mandatory",
+                    "🔄 REQUIRE ROLLBACK: Automated rollback plan required",
+                ]
+            )
 
         elif risk_level == RiskLevel.HIGH:
-            actions.extend([
-                "🧪 REQUIRE TESTING: Automated testing required",
-                "📋 REQUIRE REVIEW: Code review recommended",
-                "🔄 PLAN ROLLBACK: Prepare rollback procedures"
-            ])
+            actions.extend(
+                [
+                    "🧪 REQUIRE TESTING: Automated testing required",
+                    "📋 REQUIRE REVIEW: Code review recommended",
+                    "🔄 PLAN ROLLBACK: Prepare rollback procedures",
+                ]
+            )
 
         elif risk_level == RiskLevel.MEDIUM:
-            actions.extend([
-                "🧪 RECOMMEND TESTING: Consider automated testing",
-                "📝 DOCUMENT CHANGE: Document the change for team knowledge"
-            ])
+            actions.extend(
+                [
+                    "🧪 RECOMMEND TESTING: Consider automated testing",
+                    "📝 DOCUMENT CHANGE: Document the change for team knowledge",
+                ]
+            )
 
         # Add specific actions based on impact analysis
         if impact_analysis.get("affected_import_statements", 0) > 0:
-            actions.append(f"🔧 UPDATE IMPORTS: {impact_analysis['affected_import_statements']} import statements may need updates")
+            actions.append(
+                f"🔧 UPDATE IMPORTS: {impact_analysis['affected_import_statements']} import statements may need updates"
+            )
 
         if impact_analysis.get("affected_test_files", 0) > 0:
-            actions.append(f"🧪 UPDATE TESTS: {impact_analysis['affected_test_files']} test files may need updates")
+            actions.append(
+                f"🧪 UPDATE TESTS: {impact_analysis['affected_test_files']} test files may need updates"
+            )
 
         # Add dependency-specific actions
         if dependency_analysis.get("critical_paths"):
-            actions.append(f"⚠️ CRITICAL PATHS: {len(dependency_analysis['critical_paths'])} critical files identified - extra caution required")
+            actions.append(
+                f"⚠️ CRITICAL PATHS: {len(dependency_analysis['critical_paths'])} "
+                "critical files identified - extra caution required"
+            )
 
         return actions
 
     def create_change_from_recommendation(
-        self,
-        recommendation: Any,  # FileMoveRecommendation, etc.
-        change_type: str
+        self, recommendation: Any, change_type: str  # FileMoveRecommendation, etc.
     ) -> OrganizationChange:
         """
         Create an OrganizationChange from a recommendation.
@@ -494,13 +548,13 @@ class RiskAssessmentFramework:
         Returns:
             OrganizationChange with risk factors
         """
-        if hasattr(recommendation, 'file_path'):
+        if hasattr(recommendation, "file_path"):
             # File move recommendation
             change = OrganizationChange(
                 change_id=f"move_{recommendation.file_path.replace('/', '_').replace('.', '_')}",
                 change_type="file_move",
-                description=getattr(recommendation, 'rationale', ''),
-                affected_files=[recommendation.file_path]
+                description=getattr(recommendation, "rationale", ""),
+                affected_files=[recommendation.file_path],
             )
 
             # Add risk factors based on file type and impact
@@ -508,15 +562,18 @@ class RiskAssessmentFramework:
             change.risk_factors = risk_factors
 
             # Add mitigation strategies
-            change.mitigation_strategies = self._generate_file_move_mitigations(recommendation)
+            change.mitigation_strategies = self._generate_file_move_mitigations(
+                recommendation
+            )
 
-        elif hasattr(recommendation, 'target_file'):
+        elif hasattr(recommendation, "target_file"):
             # File merge recommendation
             change = OrganizationChange(
                 change_id=f"merge_{recommendation.target_file.replace('/', '_').replace('.', '_')}",
                 change_type="file_merge",
-                description=getattr(recommendation, 'rationale', ''),
-                affected_files=[recommendation.target_file] + getattr(recommendation, 'source_files', [])
+                description=getattr(recommendation, "rationale", ""),
+                affected_files=[recommendation.target_file]
+                + getattr(recommendation, "source_files", []),
             )
 
             # File merges are generally high risk
@@ -527,14 +584,14 @@ class RiskAssessmentFramework:
                     impact=ImpactLevel.SEVERE,
                     likelihood=LikelihoodLevel.POSSIBLE,
                     detection_difficulty=2,
-                    mitigation_strength=1.5
+                    mitigation_strength=1.5,
                 )
             ]
 
             change.mitigation_strategies = [
                 "Automated testing of merged functionality",
                 "Code review by multiple developers",
-                "Gradual rollout with feature flags"
+                "Gradual rollout with feature flags",
             ]
 
         else:
@@ -543,7 +600,7 @@ class RiskAssessmentFramework:
                 change_id=f"generic_{change_type}",
                 change_type=change_type,
                 description="Generic organization change",
-                affected_files=[]
+                affected_files=[],
             )
 
         return change
@@ -552,42 +609,48 @@ class RiskAssessmentFramework:
         """Assess risks for a file move recommendation."""
         risk_factors = []
 
-        file_path = getattr(recommendation, 'file_path', '')
-        target_location = getattr(recommendation, 'recommended_location', '')
+        file_path = getattr(recommendation, "file_path", "")
+        target_location = getattr(recommendation, "recommended_location", "")
 
         # Base risk depends on file type
-        if file_path.endswith(('.py', '.pyi')):
+        if file_path.endswith((".py", ".pyi")):
             # Python files are high risk due to imports
-            risk_factors.append(RiskFactor(
-                name="import_path_risk",
-                description="Moving Python files can break import statements",
-                impact=ImpactLevel.SEVERE,
-                likelihood=LikelihoodLevel.LIKELY,
-                detection_difficulty=2,
-                mitigation_strength=1.0
-            ))
+            risk_factors.append(
+                RiskFactor(
+                    name="import_path_risk",
+                    description="Moving Python files can break import statements",
+                    impact=ImpactLevel.SEVERE,
+                    likelihood=LikelihoodLevel.LIKELY,
+                    detection_difficulty=2,
+                    mitigation_strength=1.0,
+                )
+            )
 
-        elif file_path.endswith(('.yml', '.yaml', '.json', '.ini', '.cfg')):
+        elif file_path.endswith((".yml", ".yaml", ".json", ".ini", ".cfg")):
             # Config files are medium risk
-            risk_factors.append(RiskFactor(
-                name="configuration_access_risk",
-                description="Moving config files may break application configuration",
-                impact=ImpactLevel.MODERATE,
-                likelihood=LikelihoodLevel.POSSIBLE,
-                detection_difficulty=1,
-                mitigation_strength=0.8
-            ))
+            risk_factors.append(
+                RiskFactor(
+                    name="configuration_access_risk",
+                    description="Moving config files may break application configuration",
+                    impact=ImpactLevel.MODERATE,
+                    likelihood=LikelihoodLevel.POSSIBLE,
+                    detection_difficulty=1,
+                    mitigation_strength=0.8,
+                )
+            )
 
-        elif file_path.endswith('.md'):
+        elif file_path.endswith(".md"):
             # Documentation files are low risk
-            risk_factors.append(RiskFactor(
-                name="documentation_access_risk",
-                description="Moving documentation may affect discoverability",
-                impact=ImpactLevel.MINIMAL,
-                likelihood=LikelihoodLevel.UNLIKELY,
-                detection_difficulty=1,
-                mitigation_strength=0.5
-            ))
+            risk_factors.append(
+                RiskFactor(
+                    name="documentation_access_risk",
+                    description="Moving documentation may affect discoverability",
+                    impact=ImpactLevel.MINIMAL,
+                    likelihood=LikelihoodLevel.UNLIKELY,
+                    detection_difficulty=1,
+                    mitigation_strength=0.5,
+                )
+            )
 
         return risk_factors
 
@@ -596,15 +659,17 @@ class RiskAssessmentFramework:
         mitigations = [
             "Automated import path updating",
             "Comprehensive testing before deployment",
-            "Gradual rollout with monitoring"
+            "Gradual rollout with monitoring",
         ]
 
-        file_path = getattr(recommendation, 'file_path', '')
-        if file_path.endswith(('.py', '.pyi')):
-            mitigations.extend([
-                "Static import analysis",
-                "Automated refactoring tools",
-                "IDE integration for path updates"
-            ])
+        file_path = getattr(recommendation, "file_path", "")
+        if file_path.endswith((".py", ".pyi")):
+            mitigations.extend(
+                [
+                    "Static import analysis",
+                    "Automated refactoring tools",
+                    "IDE integration for path updates",
+                ]
+            )
 
         return mitigations

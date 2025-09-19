@@ -1,9 +1,4 @@
 import os
-from typing import Any, Dict, List
-
-from ...core.issue import Issue
-from ...core.registry import register
-
 
 class AgentsGuidancePresent:
     name = "repo.agents_guidance_present"

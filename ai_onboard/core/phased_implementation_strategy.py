@@ -12,14 +12,15 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Callable
+from typing import Any, Callable, Dict, List, Optional
 
 from .risk_assessment_framework import RiskAssessmentResult, RiskLevel
-from .tool_usage_tracker import track_tool_usage
+from .tool_usage_tracker import get_tool_tracker
 
 
 class ImplementationPhase(Enum):
     """Implementation phases for organization changes."""
+
     PILOT = "pilot"
     LOW_RISK = "low_risk"
     MEDIUM_RISK = "medium_risk"
@@ -30,6 +31,7 @@ class ImplementationPhase(Enum):
 
 class ValidationStatus(Enum):
     """Status of validation checks."""
+
     PENDING = "pending"
     RUNNING = "running"
     PASSED = "passed"
@@ -40,6 +42,7 @@ class ValidationStatus(Enum):
 @dataclass
 class PhaseCriteria:
     """Criteria for advancing to a phase."""
+
     max_risk_score: float
     required_tests_passed: bool = True
     stakeholder_approval_required: bool = False
@@ -50,6 +53,7 @@ class PhaseCriteria:
 @dataclass
 class ValidationResult:
     """Result of a validation check."""
+
     check_name: str
     status: ValidationStatus
     details: str
@@ -61,6 +65,7 @@ class ValidationResult:
 @dataclass
 class ImplementationStep:
     """A single step in the implementation process."""
+
     step_id: str
     phase: ImplementationPhase
     description: str
@@ -75,13 +80,16 @@ class ImplementationStep:
 @dataclass
 class ImplementationPlan:
     """Complete phased implementation plan."""
+
     plan_id: str
     created_at: datetime
     target_completion: datetime
     phases: Dict[ImplementationPhase, List[ImplementationStep]]
     phase_criteria: Dict[ImplementationPhase, PhaseCriteria]
     current_phase: ImplementationPhase = ImplementationPhase.PILOT
-    overall_status: str = "planning"  # planning, in_progress, completed, paused, rolled_back
+    overall_status: str = (
+        "planning"  # planning, in_progress, completed, paused, rolled_back
+    )
     success_metrics: Dict[str, Any] = field(default_factory=dict)
 
 
@@ -111,36 +119,36 @@ class PhasedImplementationStrategy:
                 required_tests_passed=True,
                 stakeholder_approval_required=False,
                 automated_validation_required=True,
-                rollback_plan_required=True
+                rollback_plan_required=True,
             ),
             ImplementationPhase.LOW_RISK: PhaseCriteria(
                 max_risk_score=10.0,
                 required_tests_passed=True,
                 stakeholder_approval_required=False,
                 automated_validation_required=True,
-                rollback_plan_required=True
+                rollback_plan_required=True,
             ),
             ImplementationPhase.MEDIUM_RISK: PhaseCriteria(
                 max_risk_score=20.0,
                 required_tests_passed=True,
                 stakeholder_approval_required=True,
                 automated_validation_required=True,
-                rollback_plan_required=True
+                rollback_plan_required=True,
             ),
             ImplementationPhase.HIGH_RISK: PhaseCriteria(
-                max_risk_score=float('inf'),
+                max_risk_score=float("inf"),
                 required_tests_passed=True,
                 stakeholder_approval_required=True,
                 automated_validation_required=True,
-                rollback_plan_required=True
+                rollback_plan_required=True,
             ),
             ImplementationPhase.VALIDATION: PhaseCriteria(
-                max_risk_score=float('inf'),
+                max_risk_score=float("inf"),
                 required_tests_passed=True,
                 stakeholder_approval_required=True,
                 automated_validation_required=True,
-                rollback_plan_required=False
-            )
+                rollback_plan_required=False,
+            ),
         }
 
         # Validation functions
@@ -149,13 +157,11 @@ class PhasedImplementationStrategy:
             "file_existence": self._validate_file_existence,
             "syntax_check": self._validate_syntax_check,
             "test_execution": self._validate_test_execution,
-            "dependency_integrity": self._validate_dependency_integrity
+            "dependency_integrity": self._validate_dependency_integrity,
         }
 
     def create_implementation_plan(
-        self,
-        risk_assessments: List[RiskAssessmentResult],
-        timeline_days: int = 30
+        self, risk_assessments: List[RiskAssessmentResult], timeline_days: int = 30
     ) -> ImplementationPlan:
         """
         Create a phased implementation plan from risk assessments.
@@ -167,6 +173,9 @@ class PhasedImplementationStrategy:
         Returns:
             Complete phased implementation plan
         """
+        # Track tool usage
+        tracker = get_tool_tracker(self.root_path)
+
         plan_id = f"org_implementation_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
         created_at = datetime.now()
         target_completion = created_at + timedelta(days=timeline_days)
@@ -187,11 +196,23 @@ class PhasedImplementationStrategy:
             phases=phases,
             phase_criteria=self.phase_criteria.copy(),
             current_phase=ImplementationPhase.PILOT,
-            overall_status="planning"
+            overall_status="planning",
         )
 
         # Save the plan
         self._save_plan(plan)
+
+        # Track plan creation
+        tracker.track_tool_usage(
+            tool_name="implementation_plan_generator",
+            tool_type="planning",
+            parameters={
+                "timeline_days": timeline_days,
+                "total_assessments": len(risk_assessments),
+                "total_steps": sum(len(steps) for steps in phases.values()),
+            },
+            result="completed",
+        )
 
         return plan
 
@@ -203,7 +224,7 @@ class PhasedImplementationStrategy:
             RiskLevel.CRITICAL: [],
             RiskLevel.HIGH: [],
             RiskLevel.MEDIUM: [],
-            RiskLevel.LOW: []
+            RiskLevel.LOW: [],
         }
 
         for assessment in assessments:
@@ -214,7 +235,7 @@ class PhasedImplementationStrategy:
     def _create_phase_steps(
         self,
         phase: ImplementationPhase,
-        assessments_by_risk: Dict[RiskLevel, List[RiskAssessmentResult]]
+        assessments_by_risk: Dict[RiskLevel, List[RiskAssessmentResult]],
     ) -> List[ImplementationStep]:
         """Create implementation steps for a specific phase."""
         steps = []
@@ -225,7 +246,7 @@ class PhasedImplementationStrategy:
             ImplementationPhase.LOW_RISK: [RiskLevel.LOW, RiskLevel.MEDIUM],
             ImplementationPhase.MEDIUM_RISK: [RiskLevel.MEDIUM, RiskLevel.HIGH],
             ImplementationPhase.HIGH_RISK: [RiskLevel.HIGH, RiskLevel.CRITICAL],
-            ImplementationPhase.VALIDATION: []  # Validation phase has no new changes
+            ImplementationPhase.VALIDATION: [],  # Validation phase has no new changes
         }
 
         relevant_risks = phase_risk_mapping.get(phase, [])
@@ -241,7 +262,7 @@ class PhasedImplementationStrategy:
                         phase=phase,
                         description=f"Implement {assessment.change.change_type}: {assessment.change.description}",
                         risk_assessment=assessment,
-                        rollback_available=True
+                        rollback_available=True,
                     )
                     steps.append(step)
                     step_counter += 1
@@ -252,17 +273,14 @@ class PhasedImplementationStrategy:
                 step_id=f"{phase.value}_validation",
                 phase=phase,
                 description=f"Validate all changes in {phase.value} phase",
-                rollback_available=False
+                rollback_available=False,
             )
             steps.append(validation_step)
 
         return steps
 
     def execute_step(
-        self,
-        plan: ImplementationPlan,
-        step: ImplementationStep,
-        dry_run: bool = True
+        self, plan: ImplementationPlan, step: ImplementationStep, dry_run: bool = True
     ) -> bool:
         """
         Execute a single implementation step.
@@ -281,14 +299,16 @@ class PhasedImplementationStrategy:
         step.started_at = datetime.now()
 
         try:
-            if step.risk_assessment:
-                success = self._execute_organization_change(
-                    step.risk_assessment.change,
-                    dry_run
-                )
-            else:
+            # Check if this is a validation step or an organization change step
+            if "validation" in step.step_id:
                 # Validation step
                 success = self._execute_validation_step(step, dry_run)
+            else:
+                # Organization change step - extract file info from description and execute
+                print(f"  📋 Step: {step.description}")
+                success = self._execute_organization_change_from_description(
+                    step, dry_run
+                )
 
             if success:
                 step.status = "completed"
@@ -298,6 +318,9 @@ class PhasedImplementationStrategy:
                 step.status = "failed"
                 print(f"❌ Step failed")
 
+            # Update the plan's step data to reflect the changes
+            self._update_plan_step_status(plan, step)
+
             # Update plan status
             self._save_plan(plan)
 
@@ -306,6 +329,7 @@ class PhasedImplementationStrategy:
         except Exception as e:
             step.status = "failed"
             print(f"❌ Step execution failed: {e}")
+            self._update_plan_step_status(plan, step)
             self._save_plan(plan)
             return False
 
@@ -315,27 +339,102 @@ class PhasedImplementationStrategy:
         if not dry_run:
             self._create_backup(change)
 
-        # For now, just simulate the change
-        # In a real implementation, this would actually move/merge files
+        # Execute the actual change
         if change.change_type == "file_move":
-            print(f"  📁 Would move: {change.affected_files[0]}")
-            print(f"     From: {change.affected_files[0]}")
-            print(f"     To: {change.affected_files[0]}")  # Placeholder
-        elif change.change_type == "file_merge":
-            print(f"  🔗 Would merge: {', '.join(change.affected_files)}")
+            source_path = Path(change.affected_files[0])
+            target_dir = Path(change.target_directory)
+            target_path = target_dir / source_path.name
 
-        return True  # Simulate success
+            print(f"  📁 {'Would move' if dry_run else 'Moving'}: {source_path.name}")
+            print(f"     From: {source_path}")
+            print(f"     To: {target_path}")
+
+            if not dry_run:
+                # Create target directory if it doesn't exist
+                target_dir.mkdir(parents=True, exist_ok=True)
+
+                # Move the file
+                shutil.move(str(source_path), str(target_path))
+                print(f"  ✅ File moved successfully")
+            else:
+                print(f"  🔍 DRY RUN: File would be moved")
+
+        elif change.change_type == "file_merge":
+            print(
+                f"  🔗 {'Would merge' if dry_run else 'Merging'}: {', '.join(change.affected_files)}"
+            )
+            if not dry_run:
+                # TODO: Implement file merge logic
+                print(f"  ⚠️ File merge not yet implemented")
+            else:
+                print(f"  🔍 DRY RUN: Files would be merged")
+
+        return True
+
+    def _execute_organization_change_from_description(
+        self, step: ImplementationStep, dry_run: bool
+    ) -> bool:
+        """Execute organization change by parsing the step description."""
+        import re
+
+        # Parse the description to extract file and target directory info
+        description = step.description
+
+        # Pattern: "Implement file_move: [FileType] file '[filename]' should be in [target]/ directory"
+        pattern = (
+            r"Implement file_move: .*? file '([^']+)' should be in ([^/]+)/ directory"
+        )
+        match = re.search(pattern, description)
+
+        if not match:
+            print(f"  ❌ Could not parse file move from description: {description}")
+            return False
+
+        filename = match.group(1)
+        target_dir_name = match.group(2)
+
+        # Construct paths
+        source_path = self.root_path / filename
+        target_dir = self.root_path / target_dir_name
+        target_path = target_dir / filename
+
+        print(f"  📁 {'Would move' if dry_run else 'Moving'}: {filename}")
+        print(f"     From: {source_path}")
+        print(f"     To: {target_path}")
+
+        if not dry_run:
+            # Check if source file exists
+            if not source_path.exists():
+                print(f"  ❌ Source file does not exist: {source_path}")
+                return False
+
+            # Create target directory if it doesn't exist
+            target_dir.mkdir(parents=True, exist_ok=True)
+
+            # Check if target already exists
+            if target_path.exists():
+                print(f"  ⚠️ Target file already exists: {target_path}")
+                # For now, skip if target exists
+                return True
+
+            try:
+                # Move the file
+                shutil.move(str(source_path), str(target_path))
+                print(f"  ✅ File moved successfully")
+                return True
+            except Exception as e:
+                print(f"  ❌ Failed to move file: {e}")
+                return False
+        else:
+            print(f"  🔍 DRY RUN: File would be moved")
+            return True
 
     def _execute_validation_step(self, step: ImplementationStep, dry_run: bool) -> bool:
         """Execute validation for a phase."""
         print(f"  🧪 Running validation checks...")
 
         # Run validation checks
-        validation_checks = [
-            "import_resolution",
-            "file_existence",
-            "syntax_check"
-        ]
+        validation_checks = ["import_resolution", "file_existence", "syntax_check"]
 
         all_passed = True
         for check_name in validation_checks:
@@ -373,7 +472,7 @@ class PhasedImplementationStrategy:
             status=status,
             details=details,
             timestamp=datetime.now(),
-            duration=duration
+            duration=duration,
         )
 
     def _validate_import_resolution(self) -> tuple[bool, str]:
@@ -496,14 +595,16 @@ class PhasedImplementationStrategy:
             print(f"❌ Phase criteria not met for: {current_phase.value}")
             return False
 
-    def _get_next_phase(self, current_phase: ImplementationPhase) -> Optional[ImplementationPhase]:
+    def _get_next_phase(
+        self, current_phase: ImplementationPhase
+    ) -> Optional[ImplementationPhase]:
         """Get the next phase in sequence."""
         phase_order = [
             ImplementationPhase.PILOT,
             ImplementationPhase.LOW_RISK,
             ImplementationPhase.MEDIUM_RISK,
             ImplementationPhase.HIGH_RISK,
-            ImplementationPhase.VALIDATION
+            ImplementationPhase.VALIDATION,
         ]
 
         try:
@@ -515,7 +616,9 @@ class PhasedImplementationStrategy:
 
         return None
 
-    def _phase_criteria_met(self, plan: ImplementationPlan, phase: ImplementationPhase) -> bool:
+    def _phase_criteria_met(
+        self, plan: ImplementationPlan, phase: ImplementationPhase
+    ) -> bool:
         """Check if phase advancement criteria are met."""
         criteria = plan.phase_criteria[phase]
         phase_steps = plan.phases[phase]
@@ -529,7 +632,8 @@ class PhasedImplementationStrategy:
         for step in phase_steps:
             if step.step_id.endswith("_validation"):
                 failed_validations = [
-                    v for v in step.validation_results
+                    v
+                    for v in step.validation_results
                     if v.status in [ValidationStatus.FAILED, ValidationStatus.SKIPPED]
                 ]
                 if failed_validations:
@@ -550,32 +654,69 @@ class PhasedImplementationStrategy:
             "overall_status": plan.overall_status,
             "phases": {},
             "phase_criteria": {},
-            "success_metrics": plan.success_metrics
+            "success_metrics": plan.success_metrics,
         }
 
-        for phase, steps in plan.phases.items():
-            plan_data["phases"][phase.value] = [
-                {
-                    "step_id": step.step_id,
-                    "description": step.description,
-                    "status": step.status,
-                    "started_at": step.started_at.isoformat() if step.started_at else None,
-                    "completed_at": step.completed_at.isoformat() if step.completed_at else None,
-                    "rollback_available": step.rollback_available
-                } for step in steps
-            ]
+        # Handle both dict and enum-based phases
+        if isinstance(plan.phases, dict):
+            # If phases is already a dict (from JSON), use it directly
+            plan_data["phases"] = plan.phases
+        else:
+            # If phases is enum-based, convert it
+            for phase, steps in plan.phases.items():
+                plan_data["phases"][phase.value] = [
+                    {
+                        "step_id": step.step_id,
+                        "description": step.description,
+                        "status": step.status,
+                        "started_at": (
+                            step.started_at.isoformat() if step.started_at else None
+                        ),
+                        "completed_at": (
+                            step.completed_at.isoformat() if step.completed_at else None
+                        ),
+                        "rollback_available": step.rollback_available,
+                    }
+                    for step in steps
+                ]
 
-        for phase, criteria in plan.phase_criteria.items():
-            plan_data["phase_criteria"][phase.value] = {
-                "max_risk_score": criteria.max_risk_score,
-                "required_tests_passed": criteria.required_tests_passed,
-                "stakeholder_approval_required": criteria.stakeholder_approval_required,
-                "automated_validation_required": criteria.automated_validation_required,
-                "rollback_plan_required": criteria.rollback_plan_required
-            }
+        # Handle both dict and enum-based phase_criteria
+        if isinstance(plan.phase_criteria, dict):
+            # If phase_criteria is already a dict (from JSON), use it directly
+            plan_data["phase_criteria"] = plan.phase_criteria
+        else:
+            # If phase_criteria is enum-based, convert it
+            for phase, criteria in plan.phase_criteria.items():
+                plan_data["phase_criteria"][phase.value] = {
+                    "max_risk_score": criteria.max_risk_score,
+                    "required_tests_passed": criteria.required_tests_passed,
+                    "stakeholder_approval_required": criteria.stakeholder_approval_required,
+                    "automated_validation_required": criteria.automated_validation_required,
+                    "rollback_plan_required": criteria.rollback_plan_required,
+                }
 
-        with open(plan_file, 'w') as f:
+        with open(plan_file, "w") as f:
             json.dump(plan_data, f, indent=2)
+
+    def _update_plan_step_status(
+        self, plan: ImplementationPlan, step: ImplementationStep
+    ) -> None:
+        """Update the plan's step data to reflect the current step status."""
+        # Find and update the step in the plan's phases
+        for phase_name, steps in plan.phases.items():
+            for i, plan_step in enumerate(steps):
+                if plan_step.get("step_id") == step.step_id:
+                    # Update the step data
+                    plan.phases[phase_name][i]["status"] = step.status
+                    if step.started_at:
+                        plan.phases[phase_name][i][
+                            "started_at"
+                        ] = step.started_at.isoformat()
+                    if step.completed_at:
+                        plan.phases[phase_name][i][
+                            "completed_at"
+                        ] = step.completed_at.isoformat()
+                    return
 
     def generate_progress_report(self, plan: ImplementationPlan) -> str:
         """Generate a progress report for the implementation plan."""
@@ -586,7 +727,9 @@ class PhasedImplementationStrategy:
 
         report.append(f"Plan ID: {plan.plan_id}")
         report.append(f"Created: {plan.created_at.strftime('%Y-%m-%d %H:%M')}")
-        report.append(f"Target Completion: {plan.target_completion.strftime('%Y-%m-%d')}")
+        report.append(
+            f"Target Completion: {plan.target_completion.strftime('%Y-%m-%d')}"
+        )
         report.append(f"Current Phase: {plan.current_phase.value}")
         report.append(f"Overall Status: {plan.overall_status}")
         report.append("")
@@ -598,10 +741,14 @@ class PhasedImplementationStrategy:
                 completed = len([s for s in steps if s.status == "completed"])
                 total = len(steps)
 
-                status_icon = "✅" if completed == total else "🔄" if completed > 0 else "⏳"
+                status_icon = (
+                    "✅" if completed == total else "🔄" if completed > 0 else "⏳"
+                )
                 phase_indicator = " ← CURRENT" if phase == plan.current_phase else ""
 
-                report.append(f"{status_icon} {phase.value.upper()}: {completed}/{total} steps{phase_indicator}")
+                report.append(
+                    f"{status_icon} {phase.value.upper()}: {completed}/{total} steps{phase_indicator}"
+                )
 
                 if phase == plan.current_phase:
                     for step in steps:
@@ -610,14 +757,20 @@ class PhasedImplementationStrategy:
                             "in_progress": "🔄",
                             "failed": "❌",
                             "pending": "⏳",
-                            "rolled_back": "🔄"
+                            "rolled_back": "🔄",
                         }.get(step.status, "❓")
 
                         report.append(f"   {step_icon} {step.description}")
                         if step.status == "completed" and step.completed_at:
-                            duration = step.completed_at - step.started_at if step.started_at else None
+                            duration = (
+                                step.completed_at - step.started_at
+                                if step.started_at
+                                else None
+                            )
                             if duration:
-                                report.append(f"      Duration: {duration.total_seconds():.1f}s")
+                                report.append(
+                                    f"      Duration: {duration.total_seconds():.1f}s"
+                                )
 
         report.append("")
         report.append("=" * 60)

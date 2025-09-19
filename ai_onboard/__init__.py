@@ -1,9 +1,11 @@
 try:
-    from ._version import version as __version__
+    from importlib.metadata import version
+    from pathlib import Path
+
+    __version__ = version("ai-onboard")
 except ImportError:
     # Fallback for development / editable installs
     try:
-        from pathlib import Path
 
         version_file = Path(__file__).parent / "VERSION.txt"
         if version_file.exists():

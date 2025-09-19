@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
 
 from ..core.utils import read_json, write_json
+from .tool_usage_tracker import get_tool_tracker
 
 
 @dataclass
@@ -130,6 +131,9 @@ class CodeQualityAnalyzer:
         """
         print("🔍 Starting comprehensive code quality analysis...")
 
+        # Track tool usage
+        tracker = get_tool_tracker(self.root_path)
+
         # Phase 1: Collect all definitions and imports
         print("📊 Phase 1: Collecting code definitions and imports...")
         python_files = self._find_python_files()
@@ -141,6 +145,13 @@ class CodeQualityAnalyzer:
             except Exception as e:
                 print(f"   ⚠️  Error analyzing {file_path}: {e}")
 
+        tracker.track_tool_usage(
+            tool_name="code_quality_analyzer_definitions",
+            tool_type="analysis",
+            parameters={"files_processed": len(python_files)},
+            result="completed",
+        )
+
         # Phase 2: Analyze usage patterns
         print("🔗 Phase 2: Analyzing usage patterns...")
         for file_path in python_files:
@@ -148,6 +159,13 @@ class CodeQualityAnalyzer:
                 self._analyze_file_usage(file_path)
             except Exception as e:
                 print(f"   ⚠️  Error analyzing usage in {file_path}: {e}")
+
+        tracker.track_tool_usage(
+            tool_name="code_quality_analyzer_usage",
+            tool_type="analysis",
+            parameters={"files_processed": len(python_files)},
+            result="completed",
+        )
 
         # Phase 3: Detect issues
         print("🎯 Phase 3: Detecting quality issues...")
@@ -161,6 +179,16 @@ class CodeQualityAnalyzer:
                 result.files_analyzed += 1
             except Exception as e:
                 print(f"   ⚠️  Error analyzing quality in {file_path}: {e}")
+
+        tracker.track_tool_usage(
+            tool_name="code_quality_analyzer_issues",
+            tool_type="analysis",
+            parameters={
+                "files_analyzed": result.files_analyzed,
+                "issues_found": len(result.issues),
+            },
+            result="completed",
+        )
 
         # Phase 4: Calculate aggregate metrics
         print("📈 Phase 4: Calculating aggregate metrics...")
@@ -183,6 +211,19 @@ class CodeQualityAnalyzer:
             result.overall_quality_score = total_score / result.files_analyzed
 
         print("✅ Code quality analysis complete!")
+
+        # Final tracking
+        tracker.track_tool_usage(
+            tool_name="code_quality_analyzer_complete",
+            tool_type="analysis",
+            parameters={
+                "total_files": result.files_analyzed,
+                "total_issues": result.total_issues,
+                "quality_score": round(result.overall_quality_score, 1),
+            },
+            result="completed",
+        )
+
         return result
 
     def _find_python_files(self) -> List[str]:

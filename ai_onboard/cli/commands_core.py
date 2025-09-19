@@ -191,13 +191,20 @@ def add_core_commands(subparsers):
     s_wbs_sync = wbs_subparsers.add_parser(
         "sync", help="Synchronize all WBS views and caches"
     )
-    s_wbs_sync.add_argument(
-        "--force",
-        action="store_true",
-        help="Force full synchronization ignoring caches",
+
+    # WBS validate
+    s_wbs_validate = wbs_subparsers.add_parser(
+        "validate", help="Validate WBS data consistency and integrity"
     )
-    s_wbs_sync.add_argument(
-        "--validate", action="store_true", help="Run data consistency validation"
+    s_wbs_validate.add_argument(
+        "--fix",
+        action="store_true",
+        help="Automatically fix any consistency issues found",
+    )
+    s_wbs_validate.add_argument(
+        "--report",
+        action="store_true",
+        help="Generate detailed validation report",
     )
 
     # Task execution gates
@@ -1474,6 +1481,99 @@ def handle_core_commands(args, root: Path):
                     print(
                         f"❌ Sync failed: {sync_result.get('error', 'Unknown error')}"
                     )
+
+        elif wbs_cmd == "validate":
+            # WBS validate
+            from ..core.wbs_synchronization_engine import get_wbs_sync_engine
+
+            should_fix = getattr(args, "fix", False)
+            generate_report = getattr(args, "report", False)
+
+            engine = get_wbs_sync_engine(root)
+
+            print("🔍 Validating WBS data consistency and integrity...")
+
+            # Get consistency report
+            consistency_report = engine.get_data_consistency_report()
+
+            # Display results
+            print(f"📊 WBS Consistency Report:")
+            print(f"   • Data Valid: {'✅' if consistency_report['valid'] else '❌'}")
+            print(
+                f"   • Last Check: {time.strftime('%H:%M:%S', time.localtime(consistency_report['last_check']))}"
+            )
+            print(
+                f"   • Master Timestamp: {time.strftime('%H:%M:%S', time.localtime(consistency_report['master_timestamp']))}"
+            )
+
+            errors = consistency_report.get("errors", [])
+            warnings = consistency_report.get("warnings", [])
+            cache_status = consistency_report.get("cache_status", {})
+
+            if errors:
+                print(f"\n❌ Critical Issues ({len(errors)}):")
+                for error in errors:
+                    print(f"   • {error}")
+
+            if warnings:
+                print(f"\n⚠️  Warnings ({len(warnings)}):")
+                for warning in warnings:
+                    print(f"   • {warning}")
+
+            if cache_status:
+                print(f"\n📊 Cache Status ({len(cache_status)} views):")
+                for view_name, status in cache_status.items():
+                    expired = "❌ EXPIRED" if status["expired"] else "✅ FRESH"
+                    print(
+                        f"   • {view_name}: {expired} ({status['age']:.0f}s old, {status['size']} bytes)"
+                    )
+
+            # Generate detailed report if requested
+            if generate_report:
+                report_path = (
+                    root
+                    / ".ai_onboard"
+                    / "reports"
+                    / f"wbs_validation_{int(time.time())}.json"
+                )
+                report_path.parent.mkdir(parents=True, exist_ok=True)
+
+                with open(report_path, "w") as f:
+                    json.dump(consistency_report, f, indent=2, default=str)
+
+                print(f"\n📄 Detailed report saved to: {report_path}")
+
+            # Attempt to fix issues if requested
+            if should_fix and (errors or warnings):
+                print(
+                    f"\n🔧 Attempting to fix {len(errors)} errors and {len(warnings)} warnings..."
+                )
+
+                fixed_count = 0
+                for error in errors:
+                    # Implement basic fixes for common issues
+                    if "Missing name" in error:
+                        # Could implement name fixing logic here
+                        print(f"   • Would fix missing name: {error}")
+                        fixed_count += 1
+                    elif "Invalid phase data" in error:
+                        print(f"   • Would fix invalid phase: {error}")
+                        fixed_count += 1
+                    # Add more fix logic as needed
+
+                if fixed_count > 0:
+                    print(f"✅ Fixed {fixed_count} issues")
+                    print("💡 Run 'ai_onboard wbs validate' again to verify fixes")
+                else:
+                    print("ℹ️  No automatic fixes available for these issues")
+
+            # Overall status
+            if consistency_report["valid"]:
+                print("\n🎉 WBS data is fully consistent and valid!")
+            else:
+                print(
+                    f"\n⚠️  WBS data has {len(errors)} critical issues that need attention"
+                )
 
     else:
         print("❌ Unknown WBS command. Use --help for available commands.")

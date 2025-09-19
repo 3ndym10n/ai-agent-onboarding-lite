@@ -1,8 +1,3 @@
-from typing import Any, Dict, List
-
-from ..core.issue import Issue
-from ..core.registry import register
-
 
 class ExamplePolicy:
     name = "example.policy"

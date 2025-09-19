@@ -9,10 +9,6 @@ import json
 import time
 import uuid
 from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict, Optional
-
-try:
     from fastapi import (
         BackgroundTasks,
         FastAPI,
@@ -20,7 +16,6 @@ try:
         WebSocket,
         WebSocketDisconnect,
     )
-    from fastapi.middleware.cors import CORSMiddleware
 
     FASTAPI_AVAILABLE = True
 except ImportError:
@@ -32,9 +27,6 @@ from ..core import (
     planning,
     validation_runtime,
 )
-from ..core.ai_agent_collaboration_protocol import get_collaboration_protocol
-from ..core.cursor_ai_integration import get_cursor_integration
-from ..core.unified_metrics_collector import get_unified_metrics_collector
 from .models import (
     AgentRegistrationRequest,
     AgentRegistrationResponse,
@@ -86,7 +78,6 @@ class AIOnboardAPIServer:
         # Security - Initialize safely with error handling
         try:
             if FASTAPI_AVAILABLE:
-                from fastapi.security import HTTPBearer
 
                 self.security = HTTPBearer(auto_error=False)
             else:
@@ -98,7 +89,6 @@ class AIOnboardAPIServer:
     def _get_auth_dependency(self):
         """Get authentication dependency (conditional based on FastAPI availability)."""
         if FASTAPI_AVAILABLE and self.security:
-            from fastapi import Depends
 
             return Depends(self.security)
         else:

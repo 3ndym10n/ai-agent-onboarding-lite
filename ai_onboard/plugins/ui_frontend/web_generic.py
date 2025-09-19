@@ -1,10 +1,5 @@
 import json
 import os
-from typing import Any, Dict, List
-
-from ...core.issue import Issue
-from ...core.registry import register
-
 
 class NodeScriptsPresent:
     name = "node.pkg_scripts_present"

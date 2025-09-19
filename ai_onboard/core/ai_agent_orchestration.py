@@ -8,6 +8,7 @@ This system provides:
 - Real - time intervention system that can halt dangerous operations
 - Context continuity across conversation rounds with memory management
 - Novel "Intent Resolution" system that maps conversations to actions
+- INTELLIGENT TOOL ORCHESTRATION: Automatically applies development tools based on context
 """
 
 from __future__ import annotations
@@ -22,13 +23,29 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from . import alignment
 from .ai_agent_wrapper import IASGuardrails
+from .code_quality_analyzer import CodeQualityAnalyzer
+from .enhanced_conversation_context import get_enhanced_context_manager
+from .file_organization_analyzer import FileOrganizationAnalyzer
+from .mandatory_tool_consultation_gate import (
+    enforce_tool_consultation,
+    get_mandatory_gate,
+)
+from .risk_assessment_framework import RiskAssessmentFramework
 from .session_storage import SessionStorageManager
+from .structural_recommendation_engine import StructuralRecommendationEngine
+from .tool_usage_tracker import get_tool_tracker
 
 
 class DecisionStage(Enum):
     """Multi - stage decision pipeline stages."""
 
+    ENHANCED_CONTEXT_INTEGRATION = (
+        "enhanced_context_integration"  # Automatic context loading and enhancement
+    )
     INTAKE = "intake"  # Initial conversation analysis
+    MANDATORY_TOOL_CONSULTATION = (
+        "mandatory_tool_consultation"  # PRIME DIRECTIVE: Consult tools first
+    )
     INTENT_RESOLUTION = "intent_resolution"  # Map conversation to specific intents
     RISK_ASSESSMENT = "risk_assessment"  # Evaluate potential risks
     CONFIDENCE_SCORING = "confidence_scoring"  # Calculate execution confidence
@@ -47,6 +64,288 @@ class ConversationState(Enum):
     COMPLETED = "completed"
     FAILED = "failed"
     ROLLED_BACK = "rolled_back"
+
+
+class DevelopmentTool(Enum):
+    """Development tools that can be automatically applied."""
+
+    CODE_QUALITY_ANALYSIS = "code_quality_analysis"
+    ORGANIZATION_ANALYSIS = "organization_analysis"
+    STRUCTURAL_RECOMMENDATIONS = "structural_recommendations"
+    RISK_ASSESSMENT = "risk_assessment"
+    DEPENDENCY_ANALYSIS = "dependency_analysis"
+    DUPLICATE_DETECTION = "duplicate_detection"
+    IMPLEMENTATION_PLANNING = "implementation_planning"
+
+
+@dataclass
+class ToolApplicationTrigger:
+    """Triggers for automatic tool application."""
+
+    trigger_type: str  # 'keyword', 'context', 'pattern', 'time_based'
+    keywords: List[str] = field(default_factory=list)
+    contexts: List[str] = field(
+        default_factory=list
+    )  # 'code_changes', 'refactoring', 'cleanup', 'analysis'
+    patterns: List[str] = field(default_factory=list)
+    priority: int = 1  # 1-5, higher = more important
+    cooldown_minutes: int = 30  # Don't reapply same tool too frequently
+
+
+@dataclass
+class IntelligentToolOrchestrator:
+    """
+    Intelligent orchestrator that automatically applies development tools based on context.
+
+    This system analyzes conversations and development activities to determine when to
+    automatically apply code quality analysis, risk assessment, and other development tools.
+    """
+
+    root_path: Path
+    tool_tracker: Any = field(init=False)
+
+    # Tool application rules
+    tool_triggers: Dict[DevelopmentTool, List[ToolApplicationTrigger]] = field(
+        default_factory=dict
+    )
+
+    def __post_init__(self):
+        self.tool_tracker = get_tool_tracker(self.root_path)
+        self._initialize_tool_triggers()
+
+    def _initialize_tool_triggers(self):
+        """Initialize intelligent triggers for automatic tool application."""
+
+        # Code Quality Analysis triggers
+        self.tool_triggers[DevelopmentTool.CODE_QUALITY_ANALYSIS] = [
+            ToolApplicationTrigger(
+                trigger_type="keyword",
+                keywords=[
+                    "cleanup",
+                    "refactor",
+                    "quality",
+                    "dead code",
+                    "unused",
+                    "optimize",
+                ],
+                priority=3,
+                cooldown_minutes=60,
+            ),
+            ToolApplicationTrigger(
+                trigger_type="context",
+                contexts=["refactoring", "cleanup"],
+                priority=4,
+                cooldown_minutes=30,
+            ),
+            ToolApplicationTrigger(
+                trigger_type="pattern",
+                patterns=["import.*unused", "dead.*code", "function.*never.*used"],
+                priority=5,
+                cooldown_minutes=15,
+            ),
+        ]
+
+        # Organization Analysis triggers
+        self.tool_triggers[DevelopmentTool.ORGANIZATION_ANALYSIS] = [
+            ToolApplicationTrigger(
+                trigger_type="keyword",
+                keywords=[
+                    "organize",
+                    "structure",
+                    "layout",
+                    "reorganize",
+                    "move files",
+                ],
+                priority=3,
+                cooldown_minutes=45,
+            ),
+            ToolApplicationTrigger(
+                trigger_type="context",
+                contexts=["file_organization", "directory_structure"],
+                priority=4,
+                cooldown_minutes=30,
+            ),
+        ]
+
+        # Risk Assessment triggers
+        self.tool_triggers[DevelopmentTool.RISK_ASSESSMENT] = [
+            ToolApplicationTrigger(
+                trigger_type="keyword",
+                keywords=["risk", "dangerous", "breaking", "impact", "safety"],
+                priority=4,
+                cooldown_minutes=20,
+            ),
+            ToolApplicationTrigger(
+                trigger_type="context",
+                contexts=["code_changes", "refactoring", "breaking_changes"],
+                priority=5,
+                cooldown_minutes=10,
+            ),
+        ]
+
+        # Implementation Planning triggers
+        self.tool_triggers[DevelopmentTool.IMPLEMENTATION_PLANNING] = [
+            ToolApplicationTrigger(
+                trigger_type="keyword",
+                keywords=["implement", "plan", "phased", "rollout", "deployment"],
+                priority=3,
+                cooldown_minutes=60,
+            ),
+            ToolApplicationTrigger(
+                trigger_type="context",
+                contexts=["large_changes", "complex_refactoring"],
+                priority=4,
+                cooldown_minutes=30,
+            ),
+        ]
+
+    def analyze_conversation_for_tool_application(
+        self,
+        conversation_history: List[Dict[str, Any]],
+        current_context: Dict[str, Any],
+    ) -> List[Dict[str, Any]]:
+        """
+        Analyze conversation and context to determine which tools should be automatically applied.
+
+        Returns list of recommended tool applications with confidence scores.
+        """
+
+        recommendations = []
+
+        # Analyze conversation content
+        full_conversation = " ".join(
+            [
+                msg.get("content", "")
+                for msg in conversation_history[-10:]  # Last 10 messages
+            ]
+        ).lower()
+
+        # Check each tool's triggers
+        for tool, triggers in self.tool_triggers.items():
+            tool_confidence = 0
+            trigger_matches = []
+
+            for trigger in triggers:
+                match_score = 0
+
+                if trigger.trigger_type == "keyword":
+                    # Check for keyword matches
+                    for keyword in trigger.keywords:
+                        if keyword.lower() in full_conversation:
+                            match_score += 1
+
+                elif trigger.trigger_type == "context":
+                    # Check context matches
+                    current_contexts = current_context.get("contexts", [])
+                    for ctx in trigger.contexts:
+                        if ctx in current_contexts:
+                            match_score += 2
+
+                elif trigger.trigger_type == "pattern":
+                    # Check pattern matches (simple string matching for now)
+                    for pattern in trigger.patterns:
+                        if pattern.lower() in full_conversation:
+                            match_score += 3
+
+                if match_score > 0:
+                    tool_confidence += match_score * trigger.priority
+                    trigger_matches.append(
+                        {
+                            "trigger": trigger.trigger_type,
+                            "matches": match_score,
+                            "priority": trigger.priority,
+                        }
+                    )
+
+            # If confidence is high enough, recommend the tool
+            if tool_confidence >= 3:  # Threshold for recommendation
+                recommendations.append(
+                    {
+                        "tool": tool.value,
+                        "confidence": min(
+                            tool_confidence / 10, 1.0
+                        ),  # Normalize to 0-1
+                        "triggers": trigger_matches,
+                        "reasoning": f"Detected {len(trigger_matches)} trigger matches with confidence {tool_confidence/10:.1f}",
+                    }
+                )
+
+        # Sort by confidence
+        recommendations.sort(key=lambda x: x["confidence"], reverse=True)
+
+        return recommendations
+
+    def execute_automatic_tool_application(
+        self, tool_name: str, context: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        Execute an automatic tool application based on detected triggers.
+
+        Returns execution results and status.
+        """
+
+        result = {"tool": tool_name, "executed": False, "results": None, "error": None}
+
+        try:
+            if tool_name == "code_quality_analysis":
+                analyzer = CodeQualityAnalyzer(self.root_path)
+                result["results"] = analyzer.analyze_codebase()
+                result["executed"] = True
+
+            elif tool_name == "organization_analysis":
+                analyzer = FileOrganizationAnalyzer(self.root_path)
+                result["results"] = analyzer.analyze_organization()
+                result["executed"] = True
+
+            elif tool_name == "structural_recommendations":
+                # First do organization analysis
+                org_analyzer = FileOrganizationAnalyzer(self.root_path)
+                org_result = org_analyzer.analyze_organization()
+
+                # Then generate recommendations
+                engine = StructuralRecommendationEngine(self.root_path)
+                result["results"] = engine.generate_recommendations(org_result)
+                result["executed"] = True
+
+            elif tool_name == "risk_assessment":
+                # Get recommendations first
+                org_analyzer = FileOrganizationAnalyzer(self.root_path)
+                org_result = org_analyzer.analyze_organization()
+
+                engine = StructuralRecommendationEngine(self.root_path)
+                recommendations = engine.generate_recommendations(org_result)
+
+                # Convert to changes for risk assessment
+                framework = RiskAssessmentFramework(self.root_path)
+                changes = []
+
+                # Convert recommendations to organization changes
+                for move in recommendations.file_moves:
+                    change = framework.create_change_from_recommendation(
+                        move, "file_move"
+                    )
+                    changes.append(change)
+
+                result["results"] = framework.assess_change_risks(changes)
+                result["executed"] = True
+
+            # Track the tool usage
+            if result["executed"]:
+                self.tool_tracker.track_tool_usage(
+                    tool_name=f"auto_applied_{tool_name}",
+                    tool_type="automatic_orchestration",
+                    parameters={
+                        "trigger_context": context,
+                        "confidence": context.get("confidence", 0),
+                    },
+                    result="completed",
+                )
+
+        except Exception as e:
+            result["error"] = str(e)
+            result["executed"] = False
+
+        return result
 
 
 @dataclass
@@ -403,6 +702,15 @@ class AIAgentOrchestrationLayer:
         self.command_orchestrator = CommandOrchestrator(root)
         self.guardrails = IASGuardrails()
 
+        # Initialize intelligent tool orchestrator
+        self.tool_orchestrator = IntelligentToolOrchestrator(root)
+
+        # Initialize mandatory tool consultation gate
+        self.mandatory_gate = get_mandatory_gate(root)
+
+        # Initialize enhanced context manager for automatic context integration
+        self.enhanced_context_manager = get_enhanced_context_manager(root)
+
         # Initialize session storage
         self.session_storage = SessionStorageManager(root)
 
@@ -479,6 +787,182 @@ class AIAgentOrchestrationLayer:
 
         return pipeline_result
 
+    def _enhance_context_automatically(
+        self, context: ConversationContext, user_input: str
+    ) -> Dict[str, Any]:
+        """
+        Automatically enhance context with cross-session memories and continuity.
+        This provides seamless context integration for AI agents.
+        """
+        start_time = time.time()
+
+        enhancement_result = {
+            "context_enhanced": False,
+            "cross_session_context": False,
+            "relevant_memories": [],
+            "context_insights": [],
+            "enhancement_time": 0.0,
+            "error": None,
+        }
+
+        try:
+            # Step 1: Get relevant memories for this session
+            relevant_memories = self.enhanced_context_manager._get_relevant_memories(
+                context.session_id, context.user_id
+            )
+
+            # Filter by topic if possible
+            current_topic = self._extract_topic_from_input(user_input)
+            topic_filtered_memories = [
+                memory
+                for memory in relevant_memories
+                if memory.topic.lower() == current_topic.lower()
+                or current_topic == "general"
+            ][
+                :5
+            ]  # Top 5 memories
+
+            enhancement_result["relevant_memories"] = topic_filtered_memories
+
+            # Step 2: Enhance conversation context with memories
+            if topic_filtered_memories:
+                # Add memory insights to context
+                memory_insights = []
+
+                for memory in topic_filtered_memories:
+                    memory_insights.append(
+                        {
+                            "topic": memory.topic,
+                            "key_facts": memory.key_facts[:3],  # First 3 facts
+                            "successful_patterns": memory.successful_patterns[
+                                :2
+                            ],  # First 2 patterns
+                            "relevance_score": getattr(memory, "relevance_score", 0.0),
+                        }
+                    )
+
+                    # Mark cross-session context as available
+                    if memory.session_id != context.session_id:
+                        enhancement_result["cross_session_context"] = True
+
+                enhancement_result["context_insights"] = memory_insights
+                enhancement_result["context_enhanced"] = True
+
+                # Step 3: Enhance the conversation context object with memory data
+                self._enhance_conversation_context(
+                    context, topic_filtered_memories, user_input
+                )
+
+            # Step 4: Track context continuity
+            self._track_context_continuity(context, user_input, topic_filtered_memories)
+
+        except Exception as e:
+            enhancement_result["error"] = str(e)
+            # Don't fail the pipeline if context enhancement fails - it's enhancement, not requirement
+
+        enhancement_result["enhancement_time"] = time.time() - start_time
+        return enhancement_result
+
+    def _extract_topic_from_input(self, user_input: str) -> str:
+        """Extract topic from user input for context matching."""
+        # Simple topic extraction - could be enhanced with NLP
+        input_lower = user_input.lower()
+
+        # Common development topics
+        topics = {
+            "code": ["code", "function", "class", "method", "variable"],
+            "testing": ["test", "testing", "assert", "fixture", "mock"],
+            "deployment": ["deploy", "build", "ci", "cd", "docker", "kubernetes"],
+            "documentation": ["doc", "readme", "comment", "document"],
+            "architecture": ["architecture", "design", "structure", "pattern"],
+            "performance": ["performance", "speed", "optimize", "memory", "cpu"],
+            "security": ["security", "auth", "permission", "vulnerability"],
+            "database": ["database", "sql", "query", "table", "migration"],
+            "api": ["api", "endpoint", "request", "response", "rest", "graphql"],
+            "ui": ["ui", "interface", "frontend", "component", "design"],
+        }
+
+        for topic, keywords in topics.items():
+            if any(keyword in input_lower for keyword in keywords):
+                return topic
+
+        return "general"  # Default topic
+
+    def _enhance_conversation_context(
+        self, context: ConversationContext, memories: List[Any], user_input: str
+    ) -> None:
+        """Enhance the conversation context with memory data."""
+        # Add context enhancement metadata to the context
+        if not hasattr(context, "enhanced_context"):
+            context.enhanced_context = {}
+
+        context.enhanced_context.update(
+            {
+                "memories_loaded": len(memories),
+                "cross_session_insights": [
+                    memory.key_facts[:2]
+                    for memory in memories
+                    if memory.session_id != context.session_id
+                ],
+                "successful_patterns": [
+                    pattern
+                    for memory in memories
+                    for pattern in memory.successful_patterns[
+                        :1
+                    ]  # One pattern per memory
+                ],
+                "last_enhancement": time.time(),
+            }
+        )
+
+        # Add memory context to the current conversation round
+        if context.conversation_rounds and len(context.conversation_rounds) > 0:
+            current_round = context.conversation_rounds[-1]
+            if not hasattr(current_round, "enhanced_context"):
+                current_round.enhanced_context = {}
+
+            current_round.enhanced_context.update(
+                {
+                    "memory_insights": [
+                        {
+                            "topic": memory.topic,
+                            "relevant_facts": memory.key_facts[:2],
+                            "confidence": memory.relevance_score,
+                        }
+                        for memory in memories[:3]  # Top 3 memories
+                    ],
+                    "context_continuity": True,
+                }
+            )
+
+    def _track_context_continuity(
+        self, context: ConversationContext, user_input: str, memories: List[Any]
+    ) -> None:
+        """Track context continuity across conversation rounds."""
+        try:
+            # Update context continuity metrics
+            continuity_data = {
+                "session_id": context.session_id,
+                "user_id": context.user_id,
+                "conversation_rounds": len(context.conversation_rounds),
+                "memories_accessed": len(memories),
+                "cross_session_references": sum(
+                    1 for m in memories if m.session_id != context.session_id
+                ),
+                "last_activity": time.time(),
+            }
+
+            # Store continuity data (could be used for analytics)
+            # For now, just track in the context
+            if not hasattr(context, "continuity_tracking"):
+                context.continuity_tracking = []
+
+            context.continuity_tracking.append(continuity_data)
+
+        except Exception:
+            # Don't fail if continuity tracking fails
+            pass
+
     def _run_decision_pipeline(
         self, context: ConversationContext, user_input: str
     ) -> Dict[str, Any]:
@@ -491,6 +975,62 @@ class AIAgentOrchestrationLayer:
             "ready_to_execute": False,
             "execution_plan": None,
         }
+
+        # STAGE -1: ENHANCED CONTEXT INTEGRATION (AUTOMATIC)
+        context.current_stage = DecisionStage.ENHANCED_CONTEXT_INTEGRATION
+
+        # Automatically enhance context with cross-session memories and continuity
+        context_enhancement = self._enhance_context_automatically(context, user_input)
+
+        context.stage_results["enhanced_context"] = context_enhancement
+        pipeline_results["pipeline_stages"]["enhanced_context_integration"] = {
+            "memories_loaded": len(context_enhancement.get("relevant_memories", [])),
+            "context_enhanced": context_enhancement.get("context_enhanced", False),
+            "cross_session_context": context_enhancement.get(
+                "cross_session_context", False
+            ),
+            "enhancement_time": context_enhancement.get("enhancement_time", 0.0),
+            "context_insights": context_enhancement.get("context_insights", []),
+        }
+
+        # STAGE 0: MANDATORY TOOL CONSULTATION (PRIME DIRECTIVE)
+        context.current_stage = DecisionStage.MANDATORY_TOOL_CONSULTATION
+
+        # Build enhanced context for tool consultation (now includes enhanced context)
+        consultation_context = {
+            "session_id": context.session_id,
+            "user_id": context.user_id,
+            "conversation_rounds": len(context.conversation_rounds),
+            "contexts": getattr(context, "detected_contexts", []),
+            "enhanced_context": context_enhancement,  # Include enhanced context
+        }
+
+        # ENFORCE mandatory tool consultation
+        tool_consultation = self.mandatory_gate.consult_tools_for_request(
+            user_input, consultation_context
+        )
+
+        context.stage_results["tool_consultation"] = tool_consultation
+        pipeline_results["pipeline_stages"]["mandatory_tool_consultation"] = {
+            "gate_passed": tool_consultation.gate_passed,
+            "tools_consulted": len(tool_consultation.relevant_tools),
+            "tools_applied": len(tool_consultation.recommended_tools),
+            "consultation_time": tool_consultation.consultation_time,
+            "tool_insights": {
+                name: analysis.get("insights", "No insights")
+                for name, analysis in tool_consultation.tool_analysis.items()
+                if analysis.get("executed")
+            },
+        }
+
+        # GATE CHECK: If consultation fails, block the pipeline
+        if not tool_consultation.gate_passed:
+            pipeline_results["final_decision"] = "tool_consultation_blocked"
+            pipeline_results["ai_agent_response"] = (
+                f"🚫 Tool consultation required before proceeding. "
+                f"Reason: {tool_consultation.blocking_reason}"
+            )
+            return pipeline_results
 
         # Stage 1: Intent Resolution
         context.current_stage = DecisionStage.INTENT_RESOLUTION
@@ -530,7 +1070,59 @@ class AIAgentOrchestrationLayer:
         context.planned_commands = execution_plan["commands"]
         pipeline_results["execution_plan"] = execution_plan
 
-        # Generate AI agent response
+        # INTELLIGENT TOOL APPLICATION: Analyze conversation for automatic tool application
+        current_context = {
+            "contexts": context.detected_contexts,
+            "confidence": confidence_scores.get("overall", 0.0),
+            "risk_level": risk_assessment.get("risk_level", "unknown"),
+            "intents": context.stage_results.get("intents", []),
+        }
+
+        # Convert conversation rounds to format expected by orchestrator
+        conversation_history = [
+            {"content": round.get("user_input", "")}
+            for round in context.conversation_rounds[-10:]
+        ]
+
+        # Analyze for automatic tool application
+        tool_recommendations = (
+            self.tool_orchestrator.analyze_conversation_for_tool_application(
+                conversation_history, current_context
+            )
+        )
+
+        # Apply high-confidence tools automatically
+        applied_tools = []
+        if tool_recommendations:
+            for recommendation in tool_recommendations:
+                if recommendation["confidence"] > 0.7:  # High confidence threshold
+                    print(
+                        f"🤖 AUTO-APPLYING TOOL: {recommendation['tool']} (confidence: {recommendation['confidence']:.1f})"
+                    )
+
+                    execution_result = (
+                        self.tool_orchestrator.execute_automatic_tool_application(
+                            recommendation["tool"], recommendation
+                        )
+                    )
+
+                    if execution_result["executed"]:
+                        applied_tools.append(
+                            {
+                                "tool": recommendation["tool"],
+                                "confidence": recommendation["confidence"],
+                                "results": execution_result["results"],
+                            }
+                        )
+                        print(f"✅ Auto-applied {recommendation['tool']} successfully")
+                    else:
+                        print(
+                            f"❌ Failed to auto-apply {recommendation['tool']}: {execution_result.get('error', 'Unknown error')}"
+                        )
+
+        pipeline_results["auto_applied_tools"] = applied_tools
+
+        # Generate AI agent response (enhanced with tool consultation results)
         ai_response = self._generate_ai_agent_response(context, pipeline_results)
         pipeline_results["ai_agent_response"] = ai_response
 
@@ -582,33 +1174,66 @@ class AIAgentOrchestrationLayer:
         self, context: ConversationContext, pipeline_results: Dict[str, Any]
     ) -> str:
         """Generate natural AI agent response based on pipeline results."""
+
+        # Get tool consultation results
+        tool_consultation_stage = pipeline_results["pipeline_stages"].get(
+            "mandatory_tool_consultation", {}
+        )
+        tool_insights = tool_consultation_stage.get("tool_insights", {})
+        tools_applied = tool_consultation_stage.get("tools_applied", 0)
+
+        # Start response with tool consultation summary
+        response = "🤖 **AI-ONBOARD TOOL-ENHANCED RESPONSE**\n\n"
+
+        if tools_applied > 0:
+            response += (
+                f"✅ **Tool Analysis Complete** ({tools_applied} tools applied):\n"
+            )
+            for tool_name, insight in tool_insights.items():
+                response += (
+                    f"   • **{tool_name.replace('_', ' ').title()}**: {insight}\n"
+                )
+            response += "\n"
+        else:
+            response += "ℹ️ **No specific tools were needed for this request**\n\n"
+
+        # Get confidence and intents
         confidence = pipeline_results["pipeline_stages"]["confidence_scoring"][
             "overall"
         ]
         intents = pipeline_results["pipeline_stages"]["intent_resolution"]["intents"]
         execution_plan = pipeline_results["execution_plan"]
 
+        # Generate response based on confidence, but always include tool context
         if confidence > 0.8:
-            response = f"✅ I understand what you want! Based on our conversation, I'll help you with:\n"
-            for intent, score in intents[:2]:
-                response += f"  • {intent.replace('_', ' ').title()} (confidence: {score:.1f})\n"
-            response += f"\nI'll run these commands for you: {', '.join(execution_plan['commands'])}\n"
-            response += "Should I proceed?"
-
-        elif confidence > 0.6:
-            response = f"🤔 I have a good understanding but want to confirm:\n"
+            response += f"🎯 **High Confidence Response**\n"
+            response += f"Based on the tool analysis above and our conversation, I'll help you with:\n"
             for intent, score in intents[:2]:
                 response += f"  • {intent.replace('_', ' ').title()} (confidence: {score:.1f})\n"
             response += f"\nPlanned commands: {', '.join(execution_plan['commands'])}\n"
-            response += "Does this match what you're looking for?"
+            response += "Should I proceed with this tool-informed approach?"
+
+        elif confidence > 0.6:
+            response += f"🤔 **Medium Confidence - Seeking Confirmation**\n"
+            response += (
+                f"The tool analysis provides helpful context. I believe you want:\n"
+            )
+            for intent, score in intents[:2]:
+                response += f"  • {intent.replace('_', ' ').title()} (confidence: {score:.1f})\n"
+            response += f"\nWith the insights from the tools above, planned commands: {', '.join(execution_plan['commands'])}\n"
+            response += (
+                "Does this tool-enhanced understanding match what you're looking for?"
+            )
 
         else:
-            response = f"❓ I need some clarification to help you better. Here's what I think you want:\n"
+            response += f"❓ **Clarification Needed - Tools Provide Context**\n"
+            response += f"While the tools above give us some insights, I need clarification on your main goal:\n"
             for intent, score in intents[:3]:
                 response += f"  • {intent.replace('_', ' ').title()} (confidence: {score:.1f})\n"
-            response += (
-                "\nCan you help me understand which of these is most important to you?"
-            )
+            response += "\nThe tool analysis will help me give you a better response once I understand your priority."
+
+        # Always mention that tools were consulted
+        response += f"\n💡 *This response is enhanced by ai_onboard tool analysis to ensure quality development practices.*"
 
         return response
 

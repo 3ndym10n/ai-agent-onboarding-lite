@@ -4,6 +4,7 @@ import argparse
 from pathlib import Path
 
 from ..core.automatic_error_prevention import AutomaticErrorPrevention
+from ..core.mandatory_tool_consultation_gate import enforce_tool_consultation
 from ..core.pattern_recognition_system import PatternRecognitionSystem
 from ..core.syntax_validator import validate_python_syntax
 from ..core.task_execution_gate import TaskExecutionGate
@@ -63,6 +64,14 @@ from .commands_enhanced_testing import (
 from .commands_enhanced_vision import (
     add_enhanced_vision_parser,
     handle_enhanced_vision_commands,
+)
+from .commands_holistic_orchestration import (
+    add_holistic_orchestration_commands,
+    handle_holistic_orchestration_commands,
+)
+from .commands_intelligent_monitoring import (
+    add_intelligent_monitoring_commands,
+    handle_intelligent_monitoring_commands,
 )
 from .commands_interrogate import add_interrogate_commands, handle_interrogate_commands
 from .commands_kaizen import add_kaizen_commands, handle_kaizen_commands
@@ -291,6 +300,9 @@ def main(argv=None):
     )
     sub = p.add_subparsers(dest="cmd", required=True)
 
+    # Get root path for tool consultation
+    root = Path.cwd()
+
     # Add core commands
     add_core_commands(sub)
 
@@ -360,6 +372,9 @@ def main(argv=None):
     # Add performance trend commands
     add_performance_trend_commands(sub)
 
+    # Add holistic orchestration commands
+    add_holistic_orchestration_commands(sub)
+
     # Add advanced test reporting commands
     add_advanced_test_reporting_commands(sub)
 
@@ -368,6 +383,9 @@ def main(argv=None):
 
     # Add codebase analysis commands
     add_codebase_analysis_commands(sub)
+
+    # Add intelligent monitoring commands
+    add_intelligent_monitoring_commands(sub)
 
     # TODO: Add other domain commands as they're refactored
     # from .commands_vision import add_vision_commands, handle_vision_commands
@@ -408,6 +426,43 @@ def main(argv=None):
         elif args.cmd == "help":
             p.print_help()
         return
+
+    # PRIME DIRECTIVE: MANDATORY TOOL CONSULTATION FOR ALL COMMANDS
+    print("🚀 AI-ONBOARD PRIME DIRECTIVE: Consulting tools for your request...")
+
+    # Build command description for tool consultation
+    command_description = f"ai_onboard {args.cmd}"
+    if hasattr(args, "subcmd") and args.subcmd:
+        command_description += f" {args.subcmd}"
+
+    # Add any significant arguments to the description
+    significant_args = []
+    for arg_name, arg_value in vars(args).items():
+        if arg_name not in ["cmd", "subcmd", "root"] and arg_value:
+            if isinstance(arg_value, bool) and arg_value:
+                significant_args.append(f"--{arg_name.replace('_', '-')}")
+            elif not isinstance(arg_value, bool):
+                significant_args.append(f"--{arg_name.replace('_', '-')} {arg_value}")
+
+    if significant_args:
+        command_description += f" {' '.join(significant_args)}"
+
+    # ENFORCE mandatory tool consultation
+    consultation_result = enforce_tool_consultation(
+        user_request=command_description,
+        context={
+            "command_type": "cli",
+            "command": args.cmd,
+            "subcommand": getattr(args, "subcmd", None),
+            "contexts": ["command_execution", "cli_usage"],
+        },
+        root_path=root,
+    )
+
+    # Check if gate passed
+    if not consultation_result.gate_passed:
+        print(f"🚫 Command execution blocked: {consultation_result.blocking_reason}")
+        return 1
 
     # Initialize UX middleware only for interactive commands
     if args.cmd not in ["status"]:
@@ -715,7 +770,7 @@ def main(argv=None):
             if handle_pattern_analysis_commands(args, root):
                 session_summary = tool_tracker.end_task_session("completed")
                 tool_tracker.display_tools_summary(session_summary)
-                return
+            return
 
     # Handle UI - enhanced commands with error monitoring
     if args.cmd in [
@@ -763,6 +818,14 @@ def main(argv=None):
             handle_performance_trend_commands(args, root)
             return
 
+    # Handle holistic orchestration commands with error monitoring
+    if args.cmd == "holistic":
+        with error_monitor.monitor_command_execution(
+            "holistic", "foreground", "cli_session"
+        ):
+            handle_holistic_orchestration_commands(args, root)
+            return
+
     # Handle advanced test reporting commands with error monitoring
     if args.cmd == "test - reports":
         with error_monitor.monitor_command_execution(
@@ -800,6 +863,32 @@ def main(argv=None):
         except Exception as e:
             session_summary = tool_tracker.end_task_session(
                 final_status="failed", summary=f"Codebase analysis failed: {str(e)}"
+            )
+            tool_tracker.display_tools_summary(session_summary)
+            raise
+
+    # Handle intelligent monitoring commands with error monitoring
+    if args.cmd == "intelligent":
+        tool_tracker = get_tool_tracker(root)
+        session_id = tool_tracker.start_task_session(
+            "intelligent_monitoring", "core_command"
+        )
+
+        try:
+            with error_monitor.monitor_command_execution(
+                "intelligent", "foreground", "cli_session"
+            ):
+                result = handle_intelligent_monitoring_commands(args, root)
+                session_summary = tool_tracker.end_task_session(
+                    final_status="completed",
+                    summary="Intelligent monitoring command completed successfully",
+                )
+                tool_tracker.display_tools_summary(session_summary)
+                return result
+        except Exception as e:
+            session_summary = tool_tracker.end_task_session(
+                final_status="failed",
+                summary=f"Intelligent monitoring failed: {str(e)}",
             )
             tool_tracker.display_tools_summary(session_summary)
             raise

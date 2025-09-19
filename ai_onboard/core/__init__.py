@@ -1,4 +1,4 @@
-# Core modules for ai - onboard
+# Core modules for ai-onboard
 
 # Essential core modules
 from . import (

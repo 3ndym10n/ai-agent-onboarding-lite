@@ -1,10 +1,5 @@
 import os
 import re
-from typing import Any, Dict, List
-
-from ...core.issue import Issue
-from ...core.registry import register
-
 PY_PATTERN = re.compile(r"^(__init__|[a - z0 - 9_]+)\.py$")
 TS_PATTERN = re.compile(r"^[a - z0 - 9\-]+\.tsx?$")  # kebab - case for ts / js files
 IGNORE_DIRS = {".git", ".ai_onboard", "ai_onboard", "node_modules", "__pycache__"}
