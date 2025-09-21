@@ -33,20 +33,17 @@ class ToolCategory(Enum):
 
     # User Experience Tools
     USER_PREFERENCES = "user_preferences"
-    CONTEXT_CONTINUITY = "context_continuity"
     CONVERSATION_ANALYSIS = "conversation_analysis"
     PATTERN_RECOGNITION = "pattern_recognition"
 
     # Safety & Validation Tools
     GATE_SYSTEM = "gate_system"
-    VALIDATION_RUNTIME = "validation_runtime"
     SAFETY_CHECKS = "safety_checks"
     ERROR_PREVENTION = "error_prevention"
 
     # Project Management Tools
     WBS_MANAGEMENT = "wbs_management"
     TASK_EXECUTION = "task_execution"
-    PROGRESS_TRACKING = "progress_tracking"
     METRICS_ANALYSIS = "metrics_analysis"
 
     # Development Workflow Tools
@@ -420,12 +417,6 @@ class ComprehensiveToolDiscovery:
                 "gate_requirements": ["safety_gate"],
                 "risk_level": "critical",
             },
-            "validation_runtime": {
-                "category": ToolCategory.VALIDATION_RUNTIME,
-                "keywords": ["validation", "runtime", "checks", "verify"],
-                "contexts": ["validation", "runtime_safety"],
-                "gate_requirements": ["validation_gate"],
-            },
             "automatic_error_prevention": {
                 "category": ToolCategory.ERROR_PREVENTION,
                 "keywords": ["error", "prevention", "automatic", "safety"],
@@ -465,12 +456,6 @@ class ComprehensiveToolDiscovery:
         tools = {}
 
         ux_tools = {
-            "context_continuity": {
-                "category": ToolCategory.CONTEXT_CONTINUITY,
-                "keywords": ["context", "continuity", "conversation", "memory"],
-                "contexts": ["conversation_management", "context_preservation"],
-                "user_preference_sensitive": True,
-            },
             "conversation_analysis": {
                 "category": ToolCategory.CONVERSATION_ANALYSIS,
                 "keywords": ["conversation", "analysis", "patterns", "behavior"],
@@ -518,12 +503,6 @@ class ComprehensiveToolDiscovery:
                 "keywords": ["task", "execution", "gate", "workflow"],
                 "contexts": ["task_execution", "workflow_management"],
                 "gate_requirements": ["task_gate"],
-            },
-            "progress_tracker": {
-                "category": ToolCategory.PROGRESS_TRACKING,
-                "keywords": ["progress", "tracking", "metrics", "status"],
-                "contexts": ["progress_monitoring", "metrics"],
-                "user_preference_sensitive": True,
             },
         }
 

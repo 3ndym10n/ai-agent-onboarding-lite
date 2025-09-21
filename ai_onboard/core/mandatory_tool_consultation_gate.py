@@ -294,7 +294,6 @@ class MandatoryToolConsultationGate:
             ToolCategory.DUPLICATE_DETECTION,
             ToolCategory.SAFETY_CHECKS,
             ToolCategory.ERROR_PREVENTION,
-            ToolCategory.VALIDATION_RUNTIME,
             ToolCategory.GATE_SYSTEM,
             ToolCategory.CLEANUP_SAFETY,
             ToolCategory.AI_AGENT_ORCHESTRATION,
@@ -325,7 +324,6 @@ class MandatoryToolConsultationGate:
                 elif tool_metadata.category in [
                     ToolCategory.SAFETY_CHECKS,
                     ToolCategory.ERROR_PREVENTION,
-                    ToolCategory.VALIDATION_RUNTIME,
                 ]:
                     execution_capability = "safety_tool"
                     can_auto_apply = True

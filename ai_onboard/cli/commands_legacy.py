@@ -17,19 +17,16 @@ from ..core import (
     alignment,
     charter,
     cleanup,
-    context_continuity,
     design_system,
     discovery,
     dynamic_planner,
     optimizer,
     planning,
-    progress_tracker,
     prompt_bridge,
     smart_debugger,
     state,
     telemetry,
     utils,
-    validation_runtime,
     versioning,
     vision_guardian,
     vision_interrogator,
@@ -342,12 +339,7 @@ def main(argv=None):
             return
 
         if args.cmd == "validate":
-            alignment.require_state(root, "aligned")
-            res = validation_runtime.run(root)
-            if args.report:
-                progress_tracker.write_report(root, res)
-                print("Wrote .ai_onboard / report.md (+ versioned copy).")
-            telemetry.record_run(root, res)
+            print("❌ Validation runtime is disabled (module removed)")
             return
 
         if args.cmd == "kaizen":
@@ -930,49 +922,9 @@ def main(argv=None):
             print('{"error":"unknown debug subcommand"}')
             return
 
-        # Context continuity commands
+        # Context continuity commands - DISABLED (module removed)
         if args.cmd == "context":
-            ccmd = getattr(args, "context_cmd", None)
-            context_manager = context_continuity.get_context_continuity_manager(root)
-
-            if ccmd == "summary":
-                # Get context summary
-                if hasattr(args, "level") and args.level:
-                    level = args.level
-                else:
-                    level = (
-                        input("Enter summary level (brief / full): ").strip() or "brief"
-                    )
-                result = context_manager.get_context_summary(level)
-                print(prompt_bridge.dumps_json(result))
-                return
-            elif ccmd == "drift":
-                # Check for drift
-                result = context_manager.check_context_drift()
-                print(prompt_bridge.dumps_json(result))
-                return
-            elif ccmd == "resolve":
-                # Resolve drift
-                if hasattr(args, "drift_type") and args.drift_type:
-                    drift_type = args.drift_type
-                else:
-                    drift_type = input("Enter drift type: ")
-
-                if hasattr(args, "resolution") and args.resolution:
-                    resolution_data = args.resolution
-                else:
-                    resolution_data = input("Enter resolution data (JSON): ")
-
-                try:
-                    resolution = json.loads(resolution_data) if resolution_data else {}
-                    result = context_manager.resolve_context_drift(
-                        drift_type, resolution
-                    )
-                    print(prompt_bridge.dumps_json(result))
-                except json.JSONDecodeError:
-                    print('{"error":"invalid JSON"}')
-                return
-            print('{"error":"unknown context subcommand"}')
+            print("❌ Context continuity commands are disabled (module removed)")
             return
 
         # Vision interrogation commands

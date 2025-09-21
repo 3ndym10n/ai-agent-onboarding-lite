@@ -9,7 +9,6 @@ from . import (
     progress_utils,
     # Validation and testing
     continuous_improvement_validator,
-    validation_runtime,
     # AI agent collaboration
     ai_agent_collaboration_protocol,
     cursor_ai_integration,
@@ -24,7 +23,6 @@ from . import (
     # Safety and cleanup
     cleanup_safety_gates,
     # Context and debugging
-    context_continuity,
     smart_debugger,
 )
 
