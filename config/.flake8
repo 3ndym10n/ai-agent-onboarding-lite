@@ -1,0 +1,20 @@
+[flake8]
+max-line-length = 120
+extend-ignore = E203,W503,W504
+# Phase 1: Re-enable non-breaking rules, keep docstring and complex rules disabled
+ignore = D100,D101,D102,D103,D104,D107,D200,D202,D205,D400,D401,
+         E702,E721,E722,F541,F811,F823,F841
+# Re-enabled: E201,E202,E203,E221,E222,E225,E226,E231,E402,E501,F401
+per-file-ignores =
+    __init__.py:F401
+    # Allow longer lines in specific files that need it
+    scripts/*:E501
+    ai_onboard/__init__.py:F401
+    # Temporary: Allow longer lines in complex files during cleanup
+    ai_onboard/core/commands.py:E501
+    ai_onboard/cli/commands_continuous_improvement.py:E501
+    ai_onboard/core/optimizer.py:E501
+    # Allow unused imports in performance trend analyzer
+    ai_onboard/core/performance_trend_analyzer.py:F401
+    # Allow module-level import not at top for test files
+    tests/unit/test_user_preference_learning.py:E402
