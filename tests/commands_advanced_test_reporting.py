@@ -7,6 +7,8 @@ advanced test reports with comprehensive analytics.
 
 import argparse
 import json
+
+from ..core.advanced_test_reporting import (
     ReportFormat,
     ReportLevel,
     get_advanced_test_report_generator,

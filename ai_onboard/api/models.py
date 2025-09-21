@@ -6,6 +6,12 @@ request validation, response serialization, and documentation generation.
 """
 
 from datetime import datetime
+from typing import Any, Dict, Optional
+
+from pydantic import BaseModel, Field
+
+
+class BaseAPIResponse(BaseModel):
     """Base API response model."""
 
     success: bool

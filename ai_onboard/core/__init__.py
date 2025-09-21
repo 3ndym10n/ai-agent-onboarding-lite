@@ -1,51 +1,39 @@
 # Core modules for ai-onboard
 
 # Essential core modules
-from . import (
-    # Planning and project management
-    charter,
-    planning,
-    dynamic_planner,
-    progress_utils,
-    # Validation and testing
-    continuous_improvement_validator,
-    # AI agent collaboration
+from . import (  # Planning and project management; Validation and testing; AI agent collaboration; System utilities; Vision and alignment; Safety and cleanup; Context and debugging
     ai_agent_collaboration_protocol,
+    alignment,
+    charter,
+    cleanup_safety_gates,
+    continuous_improvement_validator,
     cursor_ai_integration,
-    # System utilities
-    utils,
+    dynamic_planner,
+    planning,
+    progress_utils,
+    smart_debugger,
     state,
     telemetry,
-    # Vision and alignment
-    vision_interrogator,
+    utils,
     vision_guardian,
-    alignment,
-    # Safety and cleanup
-    cleanup_safety_gates,
-    # Context and debugging
-    smart_debugger,
+    vision_interrogator,
+)
+from .ai_agent_collaboration_protocol import (
+    AgentCapability,
+    AgentProfile,
+    CollaborationMode,
+    SafetyLevel,
 )
 
 # Export commonly used classes and functions
 from .continuous_improvement_validator import (
     ContinuousImprovementValidator,
-    ValidationResult,
     ValidationCategory,
-    ValidationTestCase,
     ValidationReport,
+    ValidationResult,
+    ValidationTestCase,
 )
-
-from .ai_agent_collaboration_protocol import (
-    AgentProfile,
-    AgentCapability,
-    CollaborationMode,
-    SafetyLevel,
-)
-
-from .cursor_ai_integration import (
-    CursorAIIntegration,
-    get_cursor_integration,
-)
+from .cursor_ai_integration import CursorAIIntegration, get_cursor_integration
 
 __all__ = [
     # Validators

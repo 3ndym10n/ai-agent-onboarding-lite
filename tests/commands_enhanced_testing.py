@@ -11,6 +11,8 @@ import json
 import subprocess
 import sys
 import time
+
+from ..core.continuous_improvement_validator import (
     ValidationReport,
 )
 

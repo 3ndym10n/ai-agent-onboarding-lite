@@ -9,6 +9,8 @@ import json
 import time
 import uuid
 from datetime import datetime
+
+try:
     from fastapi import (
         BackgroundTasks,
         FastAPI,
