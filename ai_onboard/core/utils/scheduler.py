@@ -1,5 +1,7 @@
 def order_rules(rules, hist, profiler):
     # Higher expected fault yield first (fallback to default), prefer lower time
+
+
     def score(r):
         yf = hist.get(r["id"], {}).get("fault_yield", 0.05)
         t = profiler.get(r["id"], {}).get("p50_time", 0.2)

@@ -65,8 +65,8 @@ class TestQualityScore(Enum):
     POOR = "poor"  # 50 - 64%
     CRITICAL = "critical"  # < 50%
 
-
 @dataclass
+
 class TestMetrics:
     """Comprehensive test execution metrics."""
 
@@ -86,8 +86,8 @@ class TestMetrics:
     test_velocity: float  # tests per second
     created_at: datetime = field(default_factory=datetime.now)
 
-
 @dataclass
+
 class QualityAssessment:
     """Test quality assessment results."""
 
@@ -102,8 +102,8 @@ class QualityAssessment:
     recommendations: List[str]
     benchmark_comparison: Dict[str, float]
 
-
 @dataclass
+
 class TrendInsight:
     """Insights derived from trend analysis."""
 
@@ -116,8 +116,8 @@ class TrendInsight:
     recommendations: List[str]
     impact_assessment: str
 
-
 @dataclass
+
 class TestExecutionContext:
     """Context information for test execution."""
 
@@ -133,8 +133,8 @@ class TestExecutionContext:
     duration: float
     resource_usage: Dict[str, Any]
 
-
 @dataclass
+
 class AdvancedTestReport:
     """Comprehensive test report with advanced analytics."""
 
@@ -157,6 +157,7 @@ class AdvancedTestReport:
 
 class AdvancedTestReportGenerator:
     """Advanced test report generator with comprehensive analytics."""
+
 
     def __init__(self, root: Path):
         self.root = root
@@ -183,6 +184,7 @@ class AdvancedTestReportGenerator:
 
         # Load historical reports for trend analysis
         self._load_historical_reports()
+
 
     def _load_config(self) -> Dict[str, Any]:
         """Load test reporting configuration."""
@@ -222,6 +224,7 @@ class AdvancedTestReportGenerator:
 
         return utils.read_json(self.config_path, default=default_config)
 
+
     def _initialize_quality_benchmarks(self) -> Dict[str, float]:
         """Initialize quality benchmarks for comparison."""
         return {
@@ -238,6 +241,7 @@ class AdvancedTestReportGenerator:
             "fair_reliability": 0.85,
             "poor_reliability": 0.70,
         }
+
 
     def generate_comprehensive_report(
         self,
@@ -347,6 +351,7 @@ class AdvancedTestReportGenerator:
             telemetry.log_event("test_report_generation_error", error=str(e))
             raise
 
+
     def _calculate_test_metrics(
         self, test_results: List[ValidationTestCase]
     ) -> TestMetrics:
@@ -411,6 +416,7 @@ class AdvancedTestReportGenerator:
             test_velocity=test_velocity,
         )
 
+
     def _generate_execution_context(
         self, test_results: List[ValidationTestCase]
     ) -> TestExecutionContext:
@@ -436,6 +442,7 @@ class AdvancedTestReportGenerator:
             },
         )
 
+
     def _get_memory_usage(self) -> float:
         """Get current memory usage."""
         try:
@@ -446,6 +453,7 @@ class AdvancedTestReportGenerator:
         except ImportError:
             return 0.0
 
+
     def _get_cpu_usage(self) -> float:
         """Get current CPU usage."""
         try:
@@ -454,6 +462,7 @@ class AdvancedTestReportGenerator:
             return psutil.cpu_percent(interval=0.1)
         except ImportError:
             return 0.0
+
 
     def _assess_test_quality(
         self, metrics: TestMetrics, test_results: List[ValidationTestCase]
@@ -531,6 +540,7 @@ class AdvancedTestReportGenerator:
             benchmark_comparison=benchmark_comparison,
         )
 
+
     def _calculate_performance_score(self, metrics: TestMetrics) -> float:
         """Calculate performance score based on test execution speed."""
         if metrics.average_duration == 0:
@@ -549,6 +559,7 @@ class AdvancedTestReportGenerator:
         else:
             return 0.2
 
+
     def _calculate_coverage_score(
         self, test_results: List[ValidationTestCase]
     ) -> float:
@@ -566,6 +577,7 @@ class AdvancedTestReportGenerator:
             return min(1.0, coverage_ratio + 0.1)
         else:
             return coverage_ratio
+
 
     def _calculate_reliability_score(
         self, test_results: List[ValidationTestCase], metrics: TestMetrics
@@ -587,6 +599,7 @@ class AdvancedTestReportGenerator:
 
         return min(1.0, base_score)
 
+
     def _calculate_maintainability_score(
         self, test_results: List[ValidationTestCase]
     ) -> float:
@@ -605,6 +618,7 @@ class AdvancedTestReportGenerator:
 
         return (name_score + documentation_score) / 2
 
+
     def _determine_quality_grade(self, overall_score: float) -> TestQualityScore:
         """Determine quality grade based on overall score."""
         if overall_score >= 0.95:
@@ -617,6 +631,7 @@ class AdvancedTestReportGenerator:
             return TestQualityScore.POOR
         else:
             return TestQualityScore.CRITICAL
+
 
     def _identify_improvement_areas(
         self,
@@ -644,6 +659,7 @@ class AdvancedTestReportGenerator:
 
         return areas
 
+
     def _identify_strengths(
         self,
         success_score: float,
@@ -667,6 +683,7 @@ class AdvancedTestReportGenerator:
             strengths.append("Well - maintained and documented tests")
 
         return strengths
+
 
     def _generate_quality_recommendations(
         self,
@@ -697,6 +714,7 @@ class AdvancedTestReportGenerator:
 
         return recommendations
 
+
     def _compare_with_benchmarks(
         self,
         success_score: float,
@@ -715,6 +733,7 @@ class AdvancedTestReportGenerator:
             "reliability_vs_excellent": reliability_score
             / self.quality_benchmarks["excellent_reliability"],
         }
+
 
     def _analyze_test_trends(
         self, test_results: List[ValidationTestCase], metrics: TestMetrics
@@ -759,6 +778,7 @@ class AdvancedTestReportGenerator:
         except Exception as e:
             telemetry.log_event("trend_analysis_error", error=str(e))
             return []
+
 
     def _create_trend_analysis(
         self, metric_name: str, values: List[float]
@@ -828,6 +848,7 @@ class AdvancedTestReportGenerator:
             },
         )
 
+
     def _detect_test_anomalies(
         self, test_results: List[ValidationTestCase], metrics: TestMetrics
     ) -> List[AnomalyDetection]:
@@ -878,6 +899,7 @@ class AdvancedTestReportGenerator:
             telemetry.log_event("anomaly_detection_error", error=str(e))
             return []
 
+
     def _determine_anomaly_severity(self, z_score: float):
         """Determine anomaly severity based on z - score."""
         from .performance_trend_analyzer import TrendSeverity
@@ -890,6 +912,7 @@ class AdvancedTestReportGenerator:
             return TrendSeverity.HIGH
         else:
             return TrendSeverity.CRITICAL
+
 
     def _generate_performance_insights(
         self, metrics: TestMetrics, trends: List[TrendAnalysis]
@@ -904,7 +927,8 @@ class AdvancedTestReportGenerator:
                     PerformanceInsight(
                         insight_id=f"test_success_rate_{int(time.time())}",
                         title="Low Test Success Rate Detected",
-                        description=f"Current test success rate is {metrics.success_rate:.1%}, which is below the recommended 80% threshold",
+                        description=f"Current test success rate is {metrics.success_rate:.1%},
+                            which is below the recommended 80% threshold",
                         category="reliability",
                         priority="high" if metrics.success_rate < 0.7 else "medium",
                         affected_metrics=["success_rate"],
@@ -928,7 +952,8 @@ class AdvancedTestReportGenerator:
                     PerformanceInsight(
                         insight_id=f"test_performance_{int(time.time())}",
                         title="Slow Test Execution Detected",
-                        description=f"Average test duration is {metrics.average_duration:.1f}s, which may impact development velocity",
+                        description=f"Average test duration is {metrics.average_duration:.1f}s,
+                            which may impact development velocity",
                         category="optimization",
                         priority="medium",
                         affected_metrics=["average_duration"],
@@ -979,6 +1004,7 @@ class AdvancedTestReportGenerator:
         except Exception as e:
             telemetry.log_event("performance_insights_error", error=str(e))
             return []
+
 
     def _generate_trend_insights(
         self, trends: List[TrendAnalysis], anomalies: List[AnomalyDetection]
@@ -1062,6 +1088,7 @@ class AdvancedTestReportGenerator:
             telemetry.log_event("trend_insights_error", error=str(e))
             return []
 
+
     def _compare_with_historical(self, current_metrics: TestMetrics) -> Dict[str, Any]:
         """Compare current metrics with historical data."""
         if len(self.report_history) < 3:
@@ -1126,6 +1153,7 @@ class AdvancedTestReportGenerator:
             telemetry.log_event("historical_comparison_error", error=str(e))
             return {"status": "comparison_error", "error": str(e)}
 
+
     def _generate_comprehensive_recommendations(
         self,
         quality_assessment: QualityAssessment,
@@ -1161,6 +1189,7 @@ class AdvancedTestReportGenerator:
         # Remove duplicates and limit
         unique_recommendations = list(dict.fromkeys(recommendations))
         return unique_recommendations[:10]  # Limit to top 10 recommendations
+
 
     def _generate_visualizations(
         self,
@@ -1202,6 +1231,7 @@ class AdvancedTestReportGenerator:
 
         return visualizations
 
+
     def _create_gauge_chart(self, value: float, title: str, chart_type: str) -> str:
         """Create ASCII gauge chart."""
         percentage = int(value * 100)
@@ -1218,6 +1248,7 @@ class AdvancedTestReportGenerator:
 
         gauge = "█" * filled + "░" * empty
         return f"{icon} {title}: [{gauge}] {percentage}%"
+
 
     def _create_test_distribution_chart(self, metrics: TestMetrics) -> str:
         """Create test distribution visualization."""
@@ -1236,6 +1267,7 @@ class AdvancedTestReportGenerator:
 
         return chart
 
+
     def _create_performance_chart(self, metrics: TestMetrics) -> str:
         """Create performance metrics chart."""
         chart = f"""Performance Metrics:
@@ -1246,6 +1278,7 @@ class AdvancedTestReportGenerator:
 📈 Test Velocity:     {metrics.test_velocity:.1f} tests / sec"""
 
         return chart
+
 
     def _create_trend_chart(self, trend: TrendAnalysis) -> str:
         """Create trend visualization."""
@@ -1265,6 +1298,7 @@ Confidence: [{confidence_bar:<10}] {trend.confidence:.1%}
 Data Points: {trend.data_points}"""
 
         return chart
+
 
     def _save_report(self, report: AdvancedTestReport, formats: List[ReportFormat]):
         """Save report in multiple formats."""
@@ -1288,6 +1322,7 @@ Data Points: {trend.data_points}"""
         except Exception as e:
             telemetry.log_event("report_save_error", error=str(e))
 
+
     def _save_json_report(self, report: AdvancedTestReport, report_dir: Path):
         """Save report as JSON."""
         json_path = report_dir / "report.json"
@@ -1296,6 +1331,7 @@ Data Points: {trend.data_points}"""
         report_dict = self._convert_to_serializable(report)
 
         # Handle datetime and enum serialization
+
         def json_serializer(obj):
             if isinstance(obj, datetime):
                 return obj.isoformat()
@@ -1307,6 +1343,7 @@ Data Points: {trend.data_points}"""
 
         with open(json_path, "w") as f:
             json.dump(report_dict, f, indent=2, default=json_serializer)
+
 
     def _convert_to_serializable(self, obj):
         """Convert complex objects to JSON - serializable format."""
@@ -1336,6 +1373,7 @@ Data Points: {trend.data_points}"""
         else:
             return obj
 
+
     def _save_html_report(self, report: AdvancedTestReport, report_dir: Path):
         """Save report as HTML."""
         html_path = report_dir / "report.html"
@@ -1344,6 +1382,7 @@ Data Points: {trend.data_points}"""
 
         with open(html_path, "w", encoding="utf-8") as f:
             f.write(html_content)
+
 
     def _save_csv_report(self, report: AdvancedTestReport, report_dir: Path):
         """Save test results as CSV."""
@@ -1379,6 +1418,7 @@ Data Points: {trend.data_points}"""
                     ]
                 )
 
+
     def _save_markdown_report(self, report: AdvancedTestReport, report_dir: Path):
         """Save report as Markdown."""
         md_path = report_dir / "report.md"
@@ -1387,6 +1427,7 @@ Data Points: {trend.data_points}"""
 
         with open(md_path, "w", encoding="utf-8") as f:
             f.write(md_content)
+
 
     def _generate_html_report(self, report: AdvancedTestReport) -> str:
         """Generate HTML report content."""
@@ -1399,7 +1440,8 @@ Data Points: {trend.data_points}"""
     <style>
         body {{ font-family: Arial, sans-serif; margin: 20px; }}
         .header {{ background: #f5f5f5; padding: 20px; border-radius: 5px; }}
-        .metrics {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0; }}
+        .metrics {{ display: grid; grid-template-columns: repeat(auto-fit,
+            minmax(200px, 1fr)); gap: 20px; margin: 20px 0; }}
         .metric-card {{ background: white; border: 1px solid #ddd; padding: 15px; border-radius: 5px; }}
         .quality-score {{ font-size: 2em; font-weight: bold; }}
         .excellent {{ color: #28a745; }}
@@ -1474,6 +1516,7 @@ Data Points: {trend.data_points}"""
 </body>
 </html>"""
 
+
     def _generate_markdown_report(self, report: AdvancedTestReport) -> str:
         """Generate Markdown report content."""
         return f"""# Advanced Test Report
@@ -1534,6 +1577,7 @@ Data Points: {trend.data_points}"""
 *Report generated by Advanced Test Reporting System v1.0*
 """
 
+
     def _save_report_summary(self, report: AdvancedTestReport):
         """Save report summary for historical tracking."""
         summary_path = self.reports_path / "report_history.jsonl"
@@ -1552,6 +1596,7 @@ Data Points: {trend.data_points}"""
         }
 
         utils.append_jsonl(summary_path, summary)
+
 
     def _load_historical_reports(self, limit: int = 20):
         """Load historical reports for trend analysis."""
@@ -1641,14 +1686,15 @@ Data Points: {trend.data_points}"""
         except Exception as e:
             telemetry.log_event("historical_reports_load_error", error=str(e))
 
+
     def _trim_report_history(self):
         """Trim report history to configured limit."""
         max_reports = self.config.get("trend_analysis", {}).get("lookback_reports", 20)
         if len(self.report_history) > max_reports:
             self.report_history = self.report_history[-max_reports:]
 
-
 # Factory function
+
 def get_advanced_test_report_generator(root: Path) -> AdvancedTestReportGenerator:
     """Get or create an AdvancedTestReportGenerator instance."""
     return AdvancedTestReportGenerator(root)

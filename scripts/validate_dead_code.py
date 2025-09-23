@@ -10,10 +10,9 @@ Performs comprehensive validation to ensure reported "dead code" is truly unused
 5. Configuration references
 6. Plugin/extension analysis
 """
+from ai_onboard.core.common_imports import json, os
 
 import ast
-import json
-import os
 import re
 from pathlib import Path
 from typing import Dict, List, Set

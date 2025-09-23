@@ -9,8 +9,8 @@ from typing import Any, Dict, List, Set, Tuple
 
 from . import alignment
 
-
 @dataclass
+
 class IASGuardrails:
     """Guardrails to prevent AI agent drift from core processes."""
 
@@ -44,11 +44,13 @@ class IASGuardrails:
 class AIAgentIASWrapper:
     """Wrapper that allows AI agents to interact with IAS collaboratively."""
 
+
     def __init__(self, root: Path):
         self.root = root
         self.guardrails = IASGuardrails()
         self.conversation_rounds = 0
         self.resolved_ambiguities: Set[str] = set()
+
 
     def get_alignment_preview(self) -> Dict[str, Any]:
         """Get alignment data without running commands (safe preview)."""
@@ -61,13 +63,16 @@ class AIAgentIASWrapper:
                 "confidence": 0.0,
             }
 
+
     def can_discuss_topic(self, topic: str) -> bool:
         """Check if a topic is within conversation boundaries."""
         return topic in self.guardrails.ALLOWED_CONVERSATION_AREAS
 
+
     def can_change_decision(self, decision_type: str) -> bool:
         """Check if a decision type can be modified."""
         return decision_type not in self.guardrails.LOCKED_DECISIONS
+
 
     def validate_conversation_boundaries(self, user_input: str) -> Tuple[bool, str]:
         """Validate that user input stays within allowed conversation areas."""
@@ -89,6 +94,7 @@ class AIAgentIASWrapper:
 
         return True, "Input within conversation boundaries"
 
+
     def generate_conversation_prompt(self, alignment_data: Dict[str, Any]) -> str:
         """Generate a natural conversation prompt based on alignment data."""
         decision = alignment_data.get("decision", "clarify")
@@ -103,6 +109,7 @@ class AIAgentIASWrapper:
         else:  # clarify
             return f"❓ Low confidence ({confidence:.2f}) - I need some clarification before proceeding. Here's what I found:\n\n{self._format_clarify_content(alignment_data)}\n\nCan you help me understand what I'm missing or correct my assumptions?"
 
+
     def _format_quick_confirm_content(self, data: Dict[str, Any]) -> str:
         """Format content for quick confirm prompts."""
         content = []
@@ -116,6 +123,7 @@ class AIAgentIASWrapper:
             content.append(f"\n ** Report saved to:** {data['report_path']}")
 
         return "\n".join(content)
+
 
     def _format_clarify_content(self, data: Dict[str, Any]) -> str:
         """Format content for clarification prompts."""
@@ -135,6 +143,7 @@ class AIAgentIASWrapper:
             content.append(f"\n ** Detailed report:** {data['report_path']}")
 
         return "\n".join(content)
+
 
     def process_user_response(
         self, user_input: str, alignment_data: Dict[str, Any]
@@ -217,6 +226,7 @@ class AIAgentIASWrapper:
             "needs_response": True,
         }
 
+
     def execute_command_with_flags(
         self, command: str, flags: List[str] = None
     ) -> Dict[str, Any]:
@@ -263,6 +273,7 @@ class AIAgentIASWrapper:
                 "error": f"Command execution failed: {str(e)}",
                 "command": " ".join(cmd_parts),
             }
+
 
     def get_conversation_summary(self) -> Dict[str, Any]:
         """Get summary of the conversation for context."""

@@ -18,11 +18,13 @@ from .wbs_synchronization_engine import get_wbs_sync_engine
 class WBSUpdateEngine:
     """Engine for updating the Work Breakdown Structure based on task integration."""
 
+
     def __init__(self, root: Path):
         self.root = root
         self.project_plan_path = root / ".ai_onboard" / "project_plan.json"
         self.backup_dir = root / ".ai_onboard" / "wbs_backups"
         self.backup_dir.mkdir(parents=True, exist_ok=True)
+
 
     def apply_task_integration(
         self, task_data: Dict[str, Any], context: Optional[Dict[str, Any]] = None
@@ -95,6 +97,7 @@ class WBSUpdateEngine:
                 "backup_restored": True,
             }
 
+
     def _apply_integration_updates_through_sync(
         self, integration_result: Dict[str, Any], sync_engine
     ) -> Dict[str, Any]:
@@ -149,6 +152,7 @@ class WBSUpdateEngine:
         else:
             return result
 
+
     def _apply_integration_updates(
         self, integration_result: Dict[str, Any]
     ) -> Dict[str, Any]:
@@ -195,6 +199,7 @@ class WBSUpdateEngine:
         else:
             return result
 
+
     def _add_new_subtask(
         self,
         wbs: Dict[str, Any],
@@ -239,6 +244,7 @@ class WBSUpdateEngine:
             phase["completion_percentage"] = max(0, current_completion - 5)
 
         return {"success": True, "subtask_id": subtask_id}
+
 
     def _modify_existing_subtask(
         self, wbs: Dict[str, Any], placement: Dict[str, Any], plan: Dict[str, Any]
@@ -287,6 +293,7 @@ class WBSUpdateEngine:
             "error": f"Could not find subtask {existing_subtask_id}",
         }
 
+
     def _add_new_phase(
         self,
         wbs: Dict[str, Any],
@@ -324,6 +331,7 @@ class WBSUpdateEngine:
 
         return {"success": True, "new_phase": phase_id}
 
+
     def _update_project_metadata(self, update_result: Dict[str, Any]) -> None:
         """Update project metadata after successful integration."""
         plan_data = utils.read_json(self.project_plan_path, default={})
@@ -358,6 +366,7 @@ class WBSUpdateEngine:
 
         utils.write_json(self.project_plan_path, plan_data)
 
+
     def _create_backup(self) -> Path:
         """Create a backup of the current project plan."""
         timestamp = (
@@ -374,6 +383,7 @@ class WBSUpdateEngine:
 
         return backup_path
 
+
     def _restore_backup(self, backup_path: Path) -> bool:
         """Restore project plan from backup."""
         try:
@@ -382,6 +392,7 @@ class WBSUpdateEngine:
             return True
         except Exception:
             return False
+
 
     def validate_wbs_integrity(self) -> Dict[str, Any]:
         """Validate the integrity of the WBS after updates."""
@@ -410,6 +421,7 @@ class WBSUpdateEngine:
             ),
         }
 
+
     def get_integration_history(self) -> List[Dict[str, Any]]:
         """Get history of all integration operations."""
         history_file = self.backup_dir / "integration_history.jsonl"
@@ -431,6 +443,7 @@ class WBSUpdateEngine:
             pass
 
         return history
+
 
     def record_integration_operation(self, operation_data: Dict[str, Any]) -> None:
         """Record an integration operation for audit purposes."""

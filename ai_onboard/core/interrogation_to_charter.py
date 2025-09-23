@@ -41,7 +41,8 @@ def sync_interrogation_to_charter(root: Path) -> bool:
             "objectives": [
                 stakeholders.get("sg_02", {}).get("response", {}).get("answer", ""),
                 success.get("sc_02", {}).get("response", {}).get("answer", ""),
-                "Complete AI agent orchestration system with safety and collaboration features",
+                "Complete AI agent orchestration system with safety and \
+                    collaboration features",
             ],
             "non_goals": [
                 scope.get("sb_02", {}).get("response", {}).get("answer", ""),

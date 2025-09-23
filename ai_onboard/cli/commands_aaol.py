@@ -60,6 +60,7 @@ def handle_aaol_commands(args, root: Path):
     orchestrator = create_ai_agent_orchestrator(root)
 
     # Windows - safe output: replace emojis with ASCII fallbacks
+
     def _ascii_safe(text: str) -> str:
         mapping = {
             "🤖": "[AI]",
@@ -114,11 +115,8 @@ def handle_aaol_commands(args, root: Path):
         # Show execution readiness
         if result.get("ready_to_execute"):
             print(_ascii_safe("\n🚀 Ready to Execute!"))
-            print(
-                _ascii_safe(
-                    f"   Commands: {result.get('execution_plan', {}).get('commands', [])}"
-                )
-            )
+            commands = result.get("execution_plan", {}).get("commands", [])
+            print(_ascii_safe(f"   Commands: {commands}"))
             print(
                 _ascii_safe(
                     f"   Run: ai_onboard aaol execute --session - id {args.session_id}"
@@ -242,11 +240,8 @@ def handle_aaol_commands(args, root: Path):
                 print("[AI] " + _ascii_safe(str(result["ai_agent_response"])))
 
             if result.get("ready_to_execute"):
-                print(
-                    _ascii_safe(
-                        f"🚀 Ready to execute: {result.get('execution_plan', {}).get('commands', [])}"
-                    )
-                )
+                demo_commands = result.get("execution_plan", {}).get("commands", [])
+                print(_ascii_safe(f"🚀 Ready to execute: {demo_commands}"))
 
                 # In real demo, would ask user if they want to execute
                 print(_ascii_safe("   [Demo mode - not executing actual commands]\n"))

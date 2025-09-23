@@ -11,7 +11,6 @@ No external deps. Python 3.8+.
 
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -79,8 +78,8 @@ def record_decision(
     _append_jsonl(root / CONVO_FILE, {"type": "decision", **rec})
     return rec
 
-
 @dataclass
+
 class ChecklistItem:
     id: str
     label: str
@@ -179,7 +178,8 @@ What to log per step:
 - Alignment preview: read .ai_onboard / alignment_report.json if present; otherwise infer risk areas
 
 Output policy:
-- After each action, update the checklist status in natural language and suggest the single next step.
+- After each action,
+    update the checklist status in natural language and suggest the single next step.
 - Keep each observation < 20 lines. Prefer bullets.
 """.strip()
     return prompt

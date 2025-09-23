@@ -1,6 +1,5 @@
 # mypy: ignore - errors
-import json
-import sys
+from ai_onboard.core.common_imports import json, sys
 from pathlib import Path
 from typing import Any, Dict
 

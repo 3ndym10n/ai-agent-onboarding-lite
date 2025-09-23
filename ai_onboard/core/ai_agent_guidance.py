@@ -35,8 +35,8 @@ class GuidanceLevel(Enum):
     ADVANCED = "advanced"
     EXPERT = "expert"
 
-
 @dataclass
+
 class GuidanceItem:
     """A single guidance item."""
 
@@ -52,8 +52,8 @@ class GuidanceItem:
     created_at: datetime = field(default_factory=datetime.now)
     updated_at: datetime = field(default_factory=datetime.now)
 
-
 @dataclass
+
 class AgentGuidanceProfile:
     """Profile for AI agent guidance."""
 
@@ -69,12 +69,14 @@ class AgentGuidanceProfile:
 class AIAgentGuidanceSystem:
     """Comprehensive guidance system for AI agents."""
 
+
     def __init__(self, project_root: Path):
         self.project_root = project_root
         self.collaboration_protocol = get_collaboration_protocol(project_root)
         self.guidance_items: Dict[str, GuidanceItem] = {}
         self.agent_profiles: Dict[str, AgentGuidanceProfile] = {}
         self._initialize_guidance_items()
+
 
     def _initialize_guidance_items(self):
         """Initialize the guidance items database."""
@@ -464,9 +466,11 @@ export AI_ONBOARD_COLLABORATION_MODE="collaborative"
             )
         )
 
+
     def _add_guidance_item(self, item: GuidanceItem):
         """Add a guidance item to the database."""
         self.guidance_items[item.id] = item
+
 
     def get_guidance_for_agent(
         self,
@@ -541,6 +545,7 @@ export AI_ONBOARD_COLLABORATION_MODE="collaborative"
         except Exception as e:
             return {"status": "error", "message": f"Failed to get guidance: {str(e)}"}
 
+
     def get_specific_guidance(self, guidance_id: str, agent_id: str) -> Dict[str, Any]:
         """Get a specific guidance item."""
         try:
@@ -594,6 +599,7 @@ export AI_ONBOARD_COLLABORATION_MODE="collaborative"
                 "message": f"Failed to get specific guidance: {str(e)}",
             }
 
+
     def mark_guidance_completed(
         self, agent_id: str, guidance_id: str
     ) -> Dict[str, Any]:
@@ -627,6 +633,7 @@ export AI_ONBOARD_COLLABORATION_MODE="collaborative"
                 "status": "error",
                 "message": f"Failed to mark guidance as completed: {str(e)}",
             }
+
 
     def get_agent_progress(self, agent_id: str) -> Dict[str, Any]:
         """Get progress summary for an agent."""
@@ -679,6 +686,7 @@ export AI_ONBOARD_COLLABORATION_MODE="collaborative"
                 "status": "error",
                 "message": f"Failed to get agent progress: {str(e)}",
             }
+
 
     def generate_contextual_guidance(
         self, agent_id: str, context: Dict[str, Any]
@@ -733,6 +741,7 @@ export AI_ONBOARD_COLLABORATION_MODE="collaborative"
                 "message": f"Failed to generate contextual guidance: {str(e)}",
             }
 
+
     def _can_access_level(
         self, agent_level: GuidanceLevel, item_level: GuidanceLevel
     ) -> bool:
@@ -745,6 +754,7 @@ export AI_ONBOARD_COLLABORATION_MODE="collaborative"
         }
 
         return level_hierarchy[agent_level] >= level_hierarchy[item_level]
+
 
     def _calculate_relevance_score(
         self, item: GuidanceItem, agent_profile: AgentGuidanceProfile
@@ -770,6 +780,7 @@ export AI_ONBOARD_COLLABORATION_MODE="collaborative"
             score -= 3.0
 
         return score
+
 
     def _check_agent_level_up(self, agent_profile: AgentGuidanceProfile):
         """Check if an agent should level up based on completed guidance."""

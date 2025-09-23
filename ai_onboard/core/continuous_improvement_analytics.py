@@ -1,7 +1,8 @@
 """
 Continuous Improvement Analytics and Reporting System.
 
-This module provides comprehensive analytics and reporting capabilities for the continuous improvement system:
+This module provides comprehensive analytics and \
+    reporting capabilities for the continuous improvement system:
 - Performance metrics and KPIs tracking
 - Trend analysis and forecasting
 - Custom report generation
@@ -58,6 +59,7 @@ class AlertLevel(Enum):
 
 
 @dataclass
+
 class Metric:
     """A single metric measurement."""
 
@@ -71,6 +73,7 @@ class Metric:
 
 
 @dataclass
+
 class KPI:
     """A Key Performance Indicator."""
 
@@ -87,6 +90,7 @@ class KPI:
 
 
 @dataclass
+
 class Report:
     """A generated report."""
 
@@ -105,6 +109,7 @@ class Report:
 
 
 @dataclass
+
 class Alert:
     """A system alert."""
 
@@ -123,6 +128,7 @@ class Alert:
 
 class ContinuousImprovementAnalytics:
     """Comprehensive analytics and reporting system for continuous improvement."""
+
 
     def __init__(self, root: Path):
         self.root = root
@@ -156,6 +162,7 @@ class ContinuousImprovementAnalytics:
         self._load_reports()
         self._load_alerts()
 
+
     def _ensure_directories(self):
         """Ensure all required directories exist."""
         for path in [
@@ -166,6 +173,7 @@ class ContinuousImprovementAnalytics:
             self.analytics_config_path,
         ]:
             utils.ensure_dir(path.parent)
+
 
     def _load_analytics_config(self) -> Dict[str, Any]:
         """Load analytics configuration."""
@@ -192,6 +200,7 @@ class ContinuousImprovementAnalytics:
                 },
             },
         )
+
 
     def _get_kpi_definitions(self) -> Dict[str, Dict[str, Any]]:
         """Get KPI definitions and calculations."""
@@ -247,6 +256,7 @@ class ContinuousImprovementAnalytics:
             },
         }
 
+
     def _load_metrics(self):
         """Load metrics from storage."""
         if not self.metrics_path.exists():
@@ -282,6 +292,7 @@ class ContinuousImprovementAnalytics:
                 except (json.JSONDecodeError, KeyError, ValueError):
                     continue
 
+
     def _load_kpis(self):
         """Load KPIs from storage."""
         if not self.kpis_path.exists():
@@ -308,6 +319,7 @@ class ContinuousImprovementAnalytics:
                 alerts=kpi_data.get("alerts", []),
             )
             self.kpis[kpi_id] = kpi
+
 
     def _load_reports(self):
         """Load reports from storage."""
@@ -338,6 +350,7 @@ class ContinuousImprovementAnalytics:
                     self.reports.append(report)
                 except (json.JSONDecodeError, KeyError, ValueError):
                     continue
+
 
     def _load_alerts(self):
         """Load alerts from storage."""
@@ -371,6 +384,7 @@ class ContinuousImprovementAnalytics:
                     self.alerts.append(alert)
                 except (json.JSONDecodeError, KeyError, ValueError):
                     continue
+
 
     def collect_metric(
         self,
@@ -412,6 +426,7 @@ class ContinuousImprovementAnalytics:
 
         return metric_id
 
+
     def _save_metric(self, metric: Metric):
         """Save a metric to storage."""
         data = {
@@ -427,6 +442,7 @@ class ContinuousImprovementAnalytics:
         with open(self.metrics_path, "a", encoding="utf - 8") as f:
             json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
+
 
     def _check_metric_alerts(self, metric: Metric):
         """Check if a metric triggers any alerts."""
@@ -447,11 +463,13 @@ class ContinuousImprovementAnalytics:
                                 else AlertLevel.CRITICAL
                             ),
                             title=f"{kpi_def['name']} Alert",
-                            description=f"{kpi_def['name']} is {metric.value:.2f}, below {level} threshold of {threshold}",
+                            description=f"{kpi_def['name']} is {metric.value:.2f},
+                                below {level} threshold of {threshold}",
                             metric_name=metric.name,
                             current_value=metric.value,
                             threshold_value=threshold,
                         )
+
 
     def _create_alert(
         self,
@@ -491,6 +509,7 @@ class ContinuousImprovementAnalytics:
             threshold_value=threshold_value,
         )
 
+
     def _save_alert(self, alert: Alert):
         """Save an alert to storage."""
         data = {
@@ -510,6 +529,7 @@ class ContinuousImprovementAnalytics:
         with open(self.alerts_path, "a", encoding="utf - 8") as f:
             json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
+
 
     def _update_related_kpis(self, metric: Metric):
         """Update KPIs related to a metric."""
@@ -551,6 +571,7 @@ class ContinuousImprovementAnalytics:
 
                 self._save_kpis()
 
+
     def _calculate_learning_rate(self) -> float:
         """Calculate learning rate KPI."""
         # Count learning events in the last 24 hours
@@ -562,11 +583,13 @@ class ContinuousImprovementAnalytics:
         ]
         return len(learning_events)
 
+
     def _calculate_recommendation_acceptance_rate(self) -> float:
         """Calculate recommendation acceptance rate KPI."""
         # This would analyze recommendation acceptance data
         # For now, return a simulated value
         return 75.0
+
 
     def _calculate_system_health_score(self) -> float:
         """Calculate system health score KPI."""
@@ -574,11 +597,13 @@ class ContinuousImprovementAnalytics:
         # For now, return a simulated value
         return 85.0
 
+
     def _calculate_user_satisfaction(self) -> float:
         """Calculate user satisfaction KPI."""
         # This would analyze user satisfaction data
         # For now, return a simulated value
         return 82.0
+
 
     def _calculate_knowledge_growth_rate(self) -> float:
         """Calculate knowledge growth rate KPI."""
@@ -591,17 +616,20 @@ class ContinuousImprovementAnalytics:
         ]
         return len(knowledge_metrics)
 
+
     def _calculate_error_resolution_time(self) -> float:
         """Calculate error resolution time KPI."""
         # This would analyze error resolution data
         # For now, return a simulated value
         return 25.0
 
+
     def _calculate_performance_improvement(self) -> float:
         """Calculate performance improvement KPI."""
         # This would analyze performance metrics over time
         # For now, return a simulated value
         return 12.0
+
 
     def _save_kpis(self):
         """Save KPIs to storage."""
@@ -623,6 +651,7 @@ class ContinuousImprovementAnalytics:
             }
 
         utils.write_json(self.kpis_path, data)
+
 
     def generate_report(
         self,
@@ -695,6 +724,7 @@ class ContinuousImprovementAnalytics:
 
         return report_id
 
+
     def _generate_performance_summary_data(
         self, period_start: datetime, period_end: datetime
     ) -> Dict[str, Any]:
@@ -755,6 +785,7 @@ class ContinuousImprovementAnalytics:
             },
         }
 
+
     def _generate_learning_analytics_data(
         self, period_start: datetime, period_end: datetime
     ) -> Dict[str, Any]:
@@ -771,6 +802,7 @@ class ContinuousImprovementAnalytics:
                 "pattern_confidence_avg": 0.0,
             },
         }
+
 
     def _generate_recommendation_effectiveness_data(
         self, period_start: datetime, period_end: datetime
@@ -790,6 +822,7 @@ class ContinuousImprovementAnalytics:
             },
         }
 
+
     def _generate_system_health_data(
         self, period_start: datetime, period_end: datetime
     ) -> Dict[str, Any]:
@@ -801,6 +834,7 @@ class ContinuousImprovementAnalytics:
             "self_healing": {"actions_taken": 0, "success_rate": 0.0},
         }
 
+
     def _generate_knowledge_base_growth_data(
         self, period_start: datetime, period_end: datetime
     ) -> Dict[str, Any]:
@@ -811,6 +845,7 @@ class ContinuousImprovementAnalytics:
             "quality": {"average_confidence": 0.0, "high_quality_percentage": 0.0},
             "patterns": {"discovered": 0, "validated": 0},
         }
+
 
     def _generate_user_satisfaction_data(
         self, period_start: datetime, period_end: datetime
@@ -826,6 +861,7 @@ class ContinuousImprovementAnalytics:
             "feedback": {"total_responses": 0, "positive_percentage": 0.0},
         }
 
+
     def _generate_trend_analysis_data(
         self, period_start: datetime, period_end: datetime
     ) -> Dict[str, Any]:
@@ -840,6 +876,7 @@ class ContinuousImprovementAnalytics:
             "forecasts": {"next_week": {}, "next_month": {}},
         }
 
+
     def _generate_report_summary(
         self, report_type: ReportType, data: Dict[str, Any]
     ) -> str:
@@ -852,6 +889,7 @@ class ContinuousImprovementAnalytics:
             return f"System health is {data['health_score']['trend']} with current score of {data['health_score']['current']:.1f}."
         else:
             return f"Report generated for {report_type.value} covering the specified period."
+
 
     def _generate_report_recommendations(
         self, report_type: ReportType, data: Dict[str, Any]
@@ -873,6 +911,7 @@ class ContinuousImprovementAnalytics:
 
         return recommendations
 
+
     def _save_report(self, report: Report):
         """Save a report to storage."""
         data = {
@@ -893,6 +932,7 @@ class ContinuousImprovementAnalytics:
         with open(self.reports_path, "a", encoding="utf - 8") as f:
             json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
+
 
     def get_dashboard_data(self) -> Dict[str, Any]:
         """Get data for dashboard display."""
@@ -934,6 +974,7 @@ class ContinuousImprovementAnalytics:
                 "active_alerts": len([a for a in self.alerts if not a.resolved_at]),
             },
         }
+
 
     def export_report(self, report_id: str, format: str = "json") -> str:
         """Export a report in the specified format."""
@@ -1013,6 +1054,7 @@ class ContinuousImprovementAnalytics:
 
         else:
             raise ValueError(f"Unsupported export format: {format}")
+
 
     def get_analytics_summary(self) -> Dict[str, Any]:
         """Get comprehensive analytics summary."""

@@ -5,7 +5,6 @@ This module ensures that when users provide responses through gates,
 those responses are automatically integrated into the vision interrogation data.
 """
 
-import json
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List
@@ -14,12 +13,14 @@ from typing import Any, Dict, List
 class GateVisionIntegrator:
     """Integrates gate responses into the vision interrogation system."""
 
+
     def __init__(self, project_root: Path):
         self.project_root = project_root
         self.vision_file = project_root / ".ai_onboard" / "vision_interrogation.json"
         self.gate_response_file = (
             project_root / ".ai_onboard" / "gates" / "gate_response.json"
         )
+
 
     def integrate_gate_response(self) -> bool:
         """
@@ -53,6 +54,7 @@ class GateVisionIntegrator:
             print(f"[X] Error integrating gate response: {e}")
             return False
 
+
     def _load_vision_data(self) -> Dict[str, Any]:
         """Load existing vision interrogation data or create new structure."""
         if self.vision_file.exists():
@@ -70,6 +72,7 @@ class GateVisionIntegrator:
             "insights": [],
             "ambiguities": [],
         }
+
 
     def _integrate_responses(
         self, gate_response: Dict[str, Any], vision_data: Dict[str, Any]
@@ -110,6 +113,7 @@ class GateVisionIntegrator:
         elif user_decision == "stop":
             vision_data["status"] = "paused"
 
+
     def _extract_insights(self, responses: List[str]) -> List[str]:
         """Extract key insights from user responses."""
         insights = []
@@ -140,6 +144,7 @@ class GateVisionIntegrator:
                 insights.append("User constraint: limited programming knowledge")
 
         return insights
+
 
     def _save_vision_data(self, vision_data: Dict[str, Any]):
         """Save vision data to file."""

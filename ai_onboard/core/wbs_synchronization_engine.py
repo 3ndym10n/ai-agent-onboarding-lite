@@ -16,8 +16,8 @@ from typing import Any, Callable, Dict, List, Optional, Set
 from . import utils
 from .tool_usage_tracker import track_tool_usage
 
-
 @dataclass
+
 class SynchronizationEvent:
     """Represents a WBS synchronization event."""
 
@@ -27,8 +27,8 @@ class SynchronizationEvent:
     data: Dict[str, Any] = field(default_factory=dict)
     affected_views: Set[str] = field(default_factory=set)
 
-
 @dataclass
+
 class ViewCache:
     """Cache for a specific WBS view."""
 
@@ -49,6 +49,7 @@ class WBSSynchronizationEngine:
     4. Managing cache invalidation
     5. Ensuring atomic updates
     """
+
 
     def __init__(self, root: Path):
         self.root = root
@@ -90,6 +91,7 @@ class WBSSynchronizationEngine:
             "task_priorities": {"work_breakdown_structure"},
             "wbs_analysis": {"work_breakdown_structure"},
         }
+
 
     def get_wbs_data(
         self, view_name: str = "default", use_cache: bool = True
@@ -141,6 +143,7 @@ class WBSSynchronizationEngine:
             )
 
             return view_data.copy()
+
 
     def update_wbs_data(self, updates: Dict[str, Any], source: str) -> Dict[str, Any]:
         """
@@ -232,6 +235,7 @@ class WBSSynchronizationEngine:
                 self._master_data = original_data
                 return {"success": False, "error": f"Update failed: {str(e)}"}
 
+
     def invalidate_view_cache(self, view_name: str) -> bool:
         """
         Invalidate cache for a specific view.
@@ -256,6 +260,7 @@ class WBSSynchronizationEngine:
                 return True
             return False
 
+
     def invalidate_all_caches(self) -> int:
         """
         Invalidate all view caches.
@@ -276,6 +281,7 @@ class WBSSynchronizationEngine:
             )
             return count
 
+
     def register_event_handler(self, event_type: str, handler: Callable) -> None:
         """
         Register an event handler for synchronization events.
@@ -287,6 +293,7 @@ class WBSSynchronizationEngine:
         if event_type not in self._event_handlers:
             self._event_handlers[event_type] = []
         self._event_handlers[event_type].append(handler)
+
 
     def get_data_consistency_report(self) -> Dict[str, Any]:
         """
@@ -313,6 +320,7 @@ class WBSSynchronizationEngine:
                 "master_timestamp": self._master_timestamp,
                 "last_check": time.time(),
             }
+
 
     def sync_all_views(self) -> Dict[str, Any]:
         """
@@ -346,6 +354,7 @@ class WBSSynchronizationEngine:
                 "message": "All views synchronized",
             }
 
+
     def _should_reload_master_data(self) -> bool:
         """Check if master data needs to be reloaded from disk."""
         if self._master_data is None:
@@ -360,6 +369,7 @@ class WBSSynchronizationEngine:
 
         return False
 
+
     def _load_master_data(self) -> None:
         """Load master WBS data from disk."""
         try:
@@ -373,6 +383,7 @@ class WBSSynchronizationEngine:
         except Exception as e:
             print(f"Warning: Failed to load WBS data: {e}")
             self._master_data = None
+
 
     def _generate_view_data(self, view_name: str) -> Dict[str, Any]:
         """Generate view-specific data from master data."""
@@ -397,6 +408,7 @@ class WBSSynchronizationEngine:
             view_data = self._generate_progress_view(view_data)
 
         return view_data
+
 
     def _generate_dashboard_view(self, base_data: Dict[str, Any]) -> Dict[str, Any]:
         """Generate dashboard-specific view data."""
@@ -436,10 +448,12 @@ class WBSSynchronizationEngine:
             "generated_at": time.time(),
         }
 
+
     def _generate_critical_path_view(self, base_data: Dict[str, Any]) -> Dict[str, Any]:
         """Generate critical path analysis view data."""
         # Add critical path specific data
         return {**base_data, "critical_path_ready": True, "generated_at": time.time()}
+
 
     def _generate_progress_view(self, base_data: Dict[str, Any]) -> Dict[str, Any]:
         """Generate progress analysis view data."""
@@ -471,8 +485,10 @@ class WBSSynchronizationEngine:
             "generated_at": time.time(),
         }
 
+
     def _apply_updates(self, updates: Dict[str, Any]) -> None:
         """Apply updates to master data."""
+
 
         def deep_update(base: Dict[str, Any], update: Dict[str, Any]) -> None:
             for key, value in update.items():
@@ -486,6 +502,7 @@ class WBSSynchronizationEngine:
                     base[key] = value
 
         deep_update(self._master_data, updates)
+
 
     def _validate_data_consistency(self) -> Dict[str, Any]:
         """Validate consistency of WBS data."""
@@ -507,6 +524,7 @@ class WBSSynchronizationEngine:
                 errors.append(f"Validator error: {str(e)}")
 
         return {"valid": len(errors) == 0, "errors": errors, "warnings": warnings}
+
 
     def _validate_wbs_structure(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """Validate WBS structural integrity."""
@@ -546,6 +564,7 @@ class WBSSynchronizationEngine:
 
         return {"errors": errors, "warnings": warnings}
 
+
     def _validate_task_references(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """Validate task references and dependencies."""
         errors = []
@@ -571,6 +590,7 @@ class WBSSynchronizationEngine:
             seen_ids.add(task_id)
 
         return {"errors": errors, "warnings": warnings}
+
 
     def _validate_completion_consistency(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """Validate task completion consistency."""
@@ -602,12 +622,14 @@ class WBSSynchronizationEngine:
 
         return {"errors": errors, "warnings": warnings}
 
+
     def _invalidate_affected_caches(self, updates: Dict[str, Any]) -> Set[str]:
         """Invalidate caches for views affected by the updates."""
         affected_views = set()
 
         # Determine which data sections were updated
         updated_sections = set()
+
 
         def collect_sections(data: Any, path: str = ""):
             if isinstance(data, dict):
@@ -631,9 +653,11 @@ class WBSSynchronizationEngine:
 
         return affected_views
 
+
     def _is_cache_expired(self, cache: ViewCache) -> bool:
         """Check if a cache entry has expired."""
         return time.time() - cache.timestamp > cache.ttl
+
 
     def _create_backup(self) -> Dict[str, Any]:
         """Create a backup of current WBS data."""
@@ -645,6 +669,7 @@ class WBSSynchronizationEngine:
         except Exception as e:
             return {"success": False, "error": f"Backup failed: {str(e)}"}
 
+
     def _save_master_data(self) -> Dict[str, Any]:
         """Save master data to disk."""
         try:
@@ -654,6 +679,7 @@ class WBSSynchronizationEngine:
         except Exception as e:
             return {"success": False, "error": f"Save failed: {str(e)}"}
 
+
     def _notify_event_handlers(self, event_type: str, affected_views: Set[str]) -> None:
         """Notify registered event handlers."""
         if event_type in self._event_handlers:
@@ -662,6 +688,7 @@ class WBSSynchronizationEngine:
                     handler(event_type, affected_views)
                 except Exception as e:
                     print(f"Warning: Event handler failed: {e}")
+
 
     def _record_event(self, event: SynchronizationEvent) -> None:
         """Record a synchronization event."""
@@ -682,6 +709,7 @@ class WBSSynchronizationEngine:
                 )
         except Exception as e:
             print(f"Warning: Failed to record sync event: {e}")
+
 
     def _get_cache_status(self) -> Dict[str, Any]:
         """Get status of all caches."""

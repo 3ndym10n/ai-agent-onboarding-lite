@@ -3,9 +3,9 @@
 Development setup script for ai - onboard.
 Sets up development environment and runs initial checks.
 """
+from ai_onboard.core.common_imports import sys
 
 import subprocess
-import sys
 
 
 def run_command(cmd, description):

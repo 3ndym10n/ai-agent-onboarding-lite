@@ -9,6 +9,8 @@ This module provides automatic error prevention that:
 - Integrates with validation and linting systems
 """
 
+# Direct import will be added below
+
 import ast
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -18,6 +20,7 @@ from .pattern_recognition_system import PatternRecognitionSystem
 
 class PreventionRule:
     """A rule for preventing specific types of errors."""
+
 
     def __init__(
         self,
@@ -37,6 +40,7 @@ class PreventionRule:
 class AutomaticErrorPrevention:
     """System for automatically preventing errors based on learned patterns."""
 
+
     def __init__(self, root: Path, pattern_system: PatternRecognitionSystem):
         self.root = root
         self.pattern_system = pattern_system
@@ -49,17 +53,20 @@ class AutomaticErrorPrevention:
         # Ensure directories exist
         self.prevention_dir.mkdir(parents=True, exist_ok=True)
 
+
     def _initialize_prevention_rules(self) -> List[PreventionRule]:
         """Initialize built-in prevention rules."""
         rules = []
 
         # CLI Error Prevention
+
         def check_cli_syntax(command: str) -> bool:
             """Check if command has basic CLI syntax issues."""
             # Check for common CLI mistakes
             if "--" in command and "=" not in command and len(command.split()) > 1:
                 return True  # Potential argument syntax issue
             return False
+
 
         def fix_cli_syntax(command: str) -> Dict[str, Any]:
             """Suggest CLI syntax fixes."""
@@ -85,6 +92,7 @@ class AutomaticErrorPrevention:
         )
 
         # Import Error Prevention
+
         def check_import_issues(code_content: str) -> bool:
             """Check for potential import issues."""
             try:
@@ -105,6 +113,7 @@ class AutomaticErrorPrevention:
                 return len(missing_imports) > 0
             except:
                 return False
+
 
         def fix_import_issues(code_content: str) -> Dict[str, Any]:
             """Suggest import fixes."""
@@ -129,6 +138,7 @@ class AutomaticErrorPrevention:
         )
 
         # Styling Error Prevention
+
         def check_styling_issues(code_content: str) -> bool:
             """Check for common styling issues."""
             issues = []
@@ -145,6 +155,7 @@ class AutomaticErrorPrevention:
                     issues.append(f"Line {i}: line too long ({len(line)} chars)")
 
             return len(issues) > 0
+
 
         def fix_styling_issues(code_content: str) -> Dict[str, Any]:
             """Suggest styling fixes."""
@@ -169,6 +180,7 @@ class AutomaticErrorPrevention:
         )
 
         # Type Error Prevention
+
         def check_type_issues(code_content: str) -> bool:
             """Check for potential type issues."""
             try:
@@ -194,6 +206,7 @@ class AutomaticErrorPrevention:
             except:
                 return False
 
+
         def fix_type_issues(code_content: str) -> Dict[str, Any]:
             """Suggest type checking improvements."""
             return {
@@ -217,6 +230,7 @@ class AutomaticErrorPrevention:
         )
 
         # Syntax Error Prevention
+
         def check_syntax_issues(code_content: str) -> bool:
             """Check for Python syntax issues."""
             try:
@@ -226,6 +240,7 @@ class AutomaticErrorPrevention:
                 return True  # Syntax error detected
             except Exception:
                 return False  # Other errors don't count as syntax issues
+
 
         def fix_syntax_issues(code_content: str) -> Dict[str, Any]:
             """Suggest syntax fixes."""
@@ -260,6 +275,7 @@ class AutomaticErrorPrevention:
         )
 
         # Runtime Error Prevention (basic)
+
         def check_runtime_issues(code_content: str) -> bool:
             """Check for potential runtime issues."""
             issues = []
@@ -284,6 +300,7 @@ class AutomaticErrorPrevention:
                     issues.append("Potential None access before list operations")
 
             return len(issues) > 0
+
 
         def fix_runtime_issues(code_content: str) -> Dict[str, Any]:
             """Suggest runtime error fixes."""
@@ -311,6 +328,7 @@ class AutomaticErrorPrevention:
         )
 
         # File Operation Safety
+
         def check_file_operation_issues(code_content: str) -> bool:
             """Check for unsafe file operations."""
             issues = []
@@ -334,6 +352,7 @@ class AutomaticErrorPrevention:
                 issues.append("Potential path traversal vulnerability")
 
             return len(issues) > 0
+
 
         def fix_file_operation_issues(code_content: str) -> Dict[str, Any]:
             """Suggest file operation safety fixes."""
@@ -362,6 +381,7 @@ class AutomaticErrorPrevention:
         )
 
         # Memory/Resource Leak Prevention
+
         def check_resource_leak_issues(code_content: str) -> bool:
             """Check for potential resource leaks."""
             issues = []
@@ -380,6 +400,7 @@ class AutomaticErrorPrevention:
                     issues.append(f"Potential resource leak: {indicator[:-1]}")
 
             return len(issues) > 0
+
 
         def fix_resource_leak_issues(code_content: str) -> Dict[str, Any]:
             """Suggest resource leak fixes."""
@@ -408,6 +429,7 @@ class AutomaticErrorPrevention:
 
         return rules
 
+
     def _check_import_exists(self, import_name: str) -> bool:
         """Check if an import exists in the current environment."""
         try:
@@ -415,6 +437,7 @@ class AutomaticErrorPrevention:
             return True
         except ImportError:
             return False
+
 
     def analyze_and_prevent(
         self,
@@ -524,6 +547,7 @@ class AutomaticErrorPrevention:
 
         return result
 
+
     def _apply_learned_prevention(
         self, content: str, content_type: str, context: Dict[str, Any]
     ) -> List[Dict[str, Any]]:
@@ -552,6 +576,7 @@ class AutomaticErrorPrevention:
 
         return recommendations
 
+
     def prevent_cli_errors(
         self, command: str, args: List[str] = None
     ) -> Dict[str, Any]:
@@ -575,6 +600,7 @@ class AutomaticErrorPrevention:
             content_type="command",
             context={"command": command, "args": args},
         )
+
 
     def prevent_code_errors(
         self, code_content: str, file_path: Optional[Path] = None
@@ -609,6 +635,7 @@ class AutomaticErrorPrevention:
         return self.analyze_and_prevent(
             code_content, content_type="code", context=context
         )
+
 
     def prevent_command_execution(
         self, command: str, args: Optional[List[str]] = None, cwd: Optional[Path] = None
@@ -668,6 +695,7 @@ class AutomaticErrorPrevention:
         )
 
         return analysis
+
 
     def _check_command_safety(
         self, command: str, args: Optional[List[str]], cwd: Optional[Path]
@@ -734,6 +762,7 @@ class AutomaticErrorPrevention:
 
         return checks
 
+
     def _should_block_command(
         self, analysis: Dict[str, Any], command_checks: Dict[str, Any]
     ) -> bool:
@@ -764,6 +793,7 @@ class AutomaticErrorPrevention:
 
         return False
 
+
     def _get_block_reason(
         self, analysis: Dict[str, Any], command_checks: Dict[str, Any]
     ) -> str:
@@ -785,6 +815,7 @@ class AutomaticErrorPrevention:
             )
 
         return "; ".join(reasons) if reasons else "Command blocked by safety analysis"
+
 
     def apply_automatic_fixes(
         self, content: str, prevention_result: Dict[str, Any]
@@ -823,6 +854,7 @@ class AutomaticErrorPrevention:
 
         return fixed_content, applied_fixes
 
+
     def _log_prevention_event(
         self, event_type: str, event_data: Dict[str, Any]
     ) -> None:
@@ -842,6 +874,7 @@ class AutomaticErrorPrevention:
         except Exception as e:
             # Don't crash if logging fails
             pass
+
 
     def get_prevention_stats(self) -> Dict[str, Any]:
         """Get statistics about prevention activities."""

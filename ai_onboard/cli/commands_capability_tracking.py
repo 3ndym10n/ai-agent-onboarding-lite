@@ -9,7 +9,6 @@ This module provides command - line interfaces for:
 """
 
 import argparse
-import json
 from datetime import datetime
 from pathlib import Path
 
@@ -457,7 +456,7 @@ def _handle_report_commands(args: argparse.Namespace, tracker, root: Path) -> No
     if args.format == "json":
         report_data = tracker._serialize_report(report)
         if args.save:
-            filename = f"capability_report_{datetime.now().strftime('%Y % m % d_ % H % M % S')}.json"
+            filename =                 f"capability_report_{datetime.now().strftime('%Y % m % d_ % H % M % S')}.json"
             with open(filename, "w") as f:
                 json.dump(report_data, f, indent=2)
             print(f"📁 Report saved to: {filename}")
@@ -539,7 +538,7 @@ def _handle_report_commands(args: argparse.Namespace, tracker, root: Path) -> No
         print()
 
     if args.save:
-        filename = f"capability_report_{datetime.now().strftime('%Y % m % d_ % H % M % S')}.txt"
+        filename =             f"capability_report_{datetime.now().strftime('%Y % m % d_ % H % M % S')}.txt"
         # Save text report (implementation would write formatted text)
         print(f"📁 Report saved to: {filename}")
 

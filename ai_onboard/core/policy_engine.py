@@ -26,7 +26,8 @@ def _read_policy_file(path: Path) -> Dict[str, Any]:
             except ImportError:
                 # YAML not available - log warning and fall back to JSON if available
                 logger.warning(
-                    f"PyYAML not available, cannot load {path}. Consider installing PyYAML for YAML policy support."
+                    f"PyYAML not available,
+                        cannot load {path}. Consider installing PyYAML for YAML policy support."
                 )
 
                 # Try to find a JSON equivalent
@@ -37,7 +38,8 @@ def _read_policy_file(path: Path) -> Dict[str, Any]:
 
                 # Return empty policy but log the issue
                 logger.error(
-                    f"YAML policy {path} cannot be loaded and no JSON fallback found. Policy enforcement may be weakened."
+                    f"YAML policy {path} cannot be loaded and \
+                        no JSON fallback found. Policy enforcement may be weakened."
                 )
                 return {}
 
@@ -58,7 +60,8 @@ def load(root: Path) -> dict:
     base_default = "./ai_onboard / policies / base.yaml"
     base_path = Path(manifest.get("policies", {}).get("base", base_default))
     base_full = root / base_path
-    # If configured base points to json but yaml exists, prefer configured; otherwise if default and json missing, try yaml
+    # If configured base points to json but yaml exists,
+        prefer configured; otherwise if default and json missing, try yaml
     policy = _read_policy_file(base_full)
 
     # Load self - preservation policies

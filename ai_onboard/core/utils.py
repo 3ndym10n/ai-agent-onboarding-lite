@@ -1,3 +1,13 @@
+"""
+Core utility functions for AI Onboard.
+
+Provides common functionality used throughout the system including:
+- File system operations
+- JSON handling with caching
+- Random ID generation
+- Date/time utilities
+"""
+
 import asyncio
 import json
 import random
@@ -109,8 +119,7 @@ def now_iso() -> str:
 def dumps_json(data) -> str:
     """Safe JSON serializer used by CLI output paths.
 
-    Falls back to default = str for objects that aren't natively serializable.
-    """
+    Falls back to default = str for objects that aren't natively serializable. """
     try:
         return json.dumps(data, ensure_ascii=False)
     except TypeError:

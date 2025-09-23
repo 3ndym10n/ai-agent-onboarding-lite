@@ -2,15 +2,16 @@
 Visible Tool Usage Tracker
 
 Shows the user exactly what tools are being used and the quality of their outcomes.
-This addresses the user's need to see when agents are actively using the built tools.
-"""
+This addresses the user's need to see when agents are actively using the built tools. """
 
-# Import read_json, write_json from utils.py module (parent directory)
-import importlib.util
+import json
 import time
-_utils_spec.loader.exec_module(_utils_module)
-read_json = _utils_module.read_json
-write_json = _utils_module.write_json
+from dataclasses import dataclass, field
+from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+from ..utils import read_json, write_json
 
 
 class ToolQualityLevel(Enum):
@@ -268,7 +269,6 @@ class VisibleToolTracker:
             }
 
             with open(self.tracking_path, "a", encoding="utf-8") as f:
-                import json
 
                 f.write(json.dumps(event_data) + "\n")
         except Exception as e:

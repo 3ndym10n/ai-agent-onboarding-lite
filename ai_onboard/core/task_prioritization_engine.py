@@ -582,7 +582,8 @@ class TaskPrioritizationEngine:
             "changes_applied": changes_applied,
             "changes_failed": changes_failed,
             "results": prioritization_results,
-            "message": f"Applied {changes_applied} priority changes, {changes_failed} failed",
+            "message": f"Applied {changes_applied} priority changes, "
+            f"{changes_failed} failed",
         }
 
     def _update_task_priority_in_wbs(

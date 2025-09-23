@@ -13,7 +13,6 @@ Author: AI Assistant
 
 import ast
 import os
-import sys
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -23,6 +22,7 @@ from ..core.utils import read_json, write_json
 
 
 @dataclass
+
 class ModuleDependency:
     """Represents a dependency relationship between modules."""
 
@@ -34,6 +34,7 @@ class ModuleDependency:
 
 
 @dataclass
+
 class ModuleMetrics:
     """Metrics for a single module."""
 
@@ -48,6 +49,7 @@ class ModuleMetrics:
 
 
 @dataclass
+
 class DependencyAnalysisResult:
     """Complete dependency analysis result."""
 
@@ -71,6 +73,7 @@ class DependencyMapper:
     - Module coupling/cohesion metrics
     - Dependency hierarchy analysis
     """
+
 
     def __init__(self, root_path: Path, exclude_patterns: Optional[List[str]] = None):
         """
@@ -100,6 +103,7 @@ class DependencyMapper:
         self.module_dependencies: Dict[str, List[ModuleDependency]] = defaultdict(list)
         self.module_to_file: Dict[str, str] = {}
         self.file_to_module: Dict[str, str] = {}
+
 
     def analyze_dependencies(self) -> DependencyAnalysisResult:
         """
@@ -162,6 +166,7 @@ class DependencyMapper:
         print("✅ Dependency analysis complete!")
         return result
 
+
     def _find_python_files(self) -> List[str]:
         """Find all Python files in the codebase."""
         python_files = []
@@ -177,6 +182,7 @@ class DependencyMapper:
                     python_files.append(os.path.join(root, file))
 
         return python_files
+
 
     def _is_excluded(self, path: str) -> bool:
         """Check if a path should be excluded."""
@@ -197,6 +203,7 @@ class DependencyMapper:
 
         return False
 
+
     def _file_to_module_name(self, file_path: str) -> str:
         """Convert file path to module name."""
         # Remove root path
@@ -214,6 +221,7 @@ class DependencyMapper:
             module_name = module_name[:-9]  # Remove .__init__
 
         return module_name
+
 
     def _analyze_file_dependencies(self, file_path: str) -> List[ModuleDependency]:
         """Analyze dependencies in a single file."""
@@ -273,13 +281,11 @@ class DependencyMapper:
 
         return dependencies
 
+
     def _is_standard_module(self, module_name: str) -> bool:
         """Check if a module is from Python's standard library."""
-        import json
-        import os
         import pathlib
         import re
-        import sys
 
         # Common standard library modules
         stdlib_modules = {
@@ -434,6 +440,7 @@ class DependencyMapper:
 
         return module_name in stdlib_modules
 
+
     def _build_dependency_graph(self) -> DependencyAnalysisResult:
         """Build the dependency graph from collected dependencies."""
         result = DependencyAnalysisResult()
@@ -457,6 +464,7 @@ class DependencyMapper:
 
         return result
 
+
     def _detect_circular_dependencies(
         self, dependency_graph: Dict[str, List[str]]
     ) -> List[List[str]]:
@@ -476,11 +484,13 @@ class DependencyMapper:
 
         return circular_deps
 
+
     def _simple_cycle_detection(self, graph: Dict[str, List[str]]) -> List[List[str]]:
         """Simple cycle detection using DFS."""
         cycles = []
         visited = set()
         rec_stack = set()
+
 
         def dfs(node, path):
             visited.add(node)
@@ -507,6 +517,7 @@ class DependencyMapper:
                 dfs(node, [])
 
         return cycles
+
 
     def _calculate_module_metrics(
         self, result: DependencyAnalysisResult
@@ -563,6 +574,7 @@ class DependencyMapper:
 
         return metrics
 
+
     def _find_strongly_connected_components(
         self, dependency_graph: Dict[str, List[str]]
     ) -> List[List[str]]:
@@ -577,11 +589,13 @@ class DependencyMapper:
             # Fallback - return empty list
             return []
 
+
     def _calculate_dependency_depths(
         self, dependency_graph: Dict[str, List[str]]
     ) -> Dict[str, int]:
         """Calculate the maximum dependency depth for each module."""
         depths = {}
+
 
         def calculate_depth(module: str, visited: Set[str]) -> int:
             if module in visited:
@@ -605,6 +619,7 @@ class DependencyMapper:
                 calculate_depth(module, set())
 
         return depths
+
 
     def generate_dependency_report(
         self, result: DependencyAnalysisResult, output_path: Optional[str] = None

@@ -52,6 +52,7 @@ class ConfirmationLevel(Enum):
 
 
 @dataclass
+
 class CleanupOperation:
     """Represents a cleanup operation to be performed."""
 
@@ -64,6 +65,7 @@ class CleanupOperation:
 
 
 @dataclass
+
 class SafetyGateContext:
     """Context passed between safety gates."""
 
@@ -76,6 +78,7 @@ class SafetyGateContext:
 
 
 @dataclass
+
 class RiskAssessment:
     """Risk assessment for a cleanup operation."""
 
@@ -86,6 +89,7 @@ class RiskAssessment:
     recommendations: List[str]
 
     @classmethod
+
     def from_score(cls, score: int, factors: List[str] = None) -> "RiskAssessment":
         """Create risk assessment from numeric score."""
         factors = factors or []
@@ -115,11 +119,13 @@ class RiskAssessment:
 class SafetyGate(ABC):
     """Abstract base class for safety gates."""
 
+
     def __init__(self, name: str):
         self.name = name
         self.enabled = True
 
     @abstractmethod
+
     def validate(self, context: SafetyGateContext) -> Tuple[GateResult, str]:
         """
         Validate the operation through this gate.
@@ -131,6 +137,7 @@ class SafetyGate(ABC):
             Tuple of (result, message)
         """
 
+
     def log(self, context: SafetyGateContext, message: str):
         """Log a message to the execution log."""
         timestamp = datetime.now().isoformat()
@@ -140,6 +147,7 @@ class SafetyGate(ABC):
 
 class PreFlightGate(SafetyGate):
     """Gate 1: Pre - flight validation for basic sanity checks."""
+
 
     def __init__(self):
         super().__init__("Pre - Flight Validation")
@@ -164,6 +172,7 @@ class PreFlightGate(SafetyGate):
             "venv",
             "env",
         }
+
 
     def validate(self, context: SafetyGateContext) -> Tuple[GateResult, str]:
         """Perform pre - flight validation."""
@@ -208,6 +217,7 @@ class PreFlightGate(SafetyGate):
         self.log(context, "Pre - flight validation passed")
         return GateResult.PASS, "Pre - flight validation successful"
 
+
     def _check_permissions(self, path: Path) -> bool:
         """Check if we have necessary permissions for the operation."""
         try:
@@ -223,9 +233,11 @@ class PreFlightGate(SafetyGate):
 class DependencyAnalysisGate(SafetyGate):
     """Gate 2: Comprehensive dependency analysis."""
 
+
     def __init__(self, root: Path):
         super().__init__("Dependency Analysis")
         self.dependency_checker = DependencyChecker(root)
+
 
     def validate(self, context: SafetyGateContext) -> Tuple[GateResult, str]:
         """Perform dependency analysis."""
@@ -262,8 +274,10 @@ class DependencyAnalysisGate(SafetyGate):
 class RiskAssessmentGate(SafetyGate):
     """Gate 3: Risk assessment and classification."""
 
+
     def __init__(self):
         super().__init__("Risk Assessment")
+
 
     def validate(self, context: SafetyGateContext) -> Tuple[GateResult, str]:
         """Perform risk assessment."""
@@ -336,7 +350,7 @@ class RiskAssessmentGate(SafetyGate):
             self.log(context, f"MANUAL_REVIEW: {message}")
             return GateResult.REQUIRE_MANUAL_REVIEW, message
         elif risk_assessment.level in [RiskLevel.HIGH, RiskLevel.MEDIUM]:
-            message = f"{risk_assessment.level.value.upper()} risk level requires confirmation"
+            message =                 f"{risk_assessment.level.value.upper()} risk level requires confirmation"
             self.log(context, f"REQUIRES_CONFIRMATION: {message}")
             return GateResult.REQUIRE_CONFIRMATION, message
 
@@ -347,8 +361,10 @@ class RiskAssessmentGate(SafetyGate):
 class HumanConfirmationGate(SafetyGate):
     """Gate 4: Human confirmation with detailed reporting."""
 
+
     def __init__(self):
         super().__init__("Human Confirmation")
+
 
     def validate(self, context: SafetyGateContext) -> Tuple[GateResult, str]:
         """Request human confirmation."""
@@ -417,6 +433,7 @@ class HumanConfirmationGate(SafetyGate):
             self.log(context, "Confirmation cancelled by user")
             return GateResult.FAIL, "Confirmation cancelled by user"
 
+
     def _generate_confirmation_report(
         self,
         operation: CleanupOperation,
@@ -476,9 +493,11 @@ class HumanConfirmationGate(SafetyGate):
 
         return "\n".join(lines)
 
+
     def _generate_confirmation_code(self) -> str:
         """Generate a simple confirmation code."""
         return secrets.token_hex(3).upper()
+
 
     def _generate_complex_confirmation_code(self) -> str:
         """Generate a complex confirmation code for high - risk operations."""
@@ -488,9 +507,11 @@ class HumanConfirmationGate(SafetyGate):
 class BackupExecuteGate(SafetyGate):
     """Gate 5: Backup creation and operation execution."""
 
+
     def __init__(self, root: Path):
         super().__init__("Backup & Execute")
         self.root = root
+
 
     def validate(self, context: SafetyGateContext) -> Tuple[GateResult, str]:
         """Create backup and execute operation."""
@@ -523,6 +544,7 @@ class BackupExecuteGate(SafetyGate):
             except Exception as rollback_error:
                 self.log(context, f"Rollback failed: {str(rollback_error)}")
                 return GateResult.FAIL, f"Operation and rollback both failed: {str(e)}"
+
 
     def _create_backup(self, operation: CleanupOperation) -> str:
         """Create comprehensive backup."""
@@ -582,6 +604,7 @@ class BackupExecuteGate(SafetyGate):
 
         return backup_id
 
+
     def _execute_operation(self, context: SafetyGateContext):
         """Execute the cleanup operation."""
         operation = context.operation
@@ -603,6 +626,7 @@ class BackupExecuteGate(SafetyGate):
             elif operation.operation_type == "modify":
                 # Modify operation would need specific modifications
                 pass  # Implementation depends on specific modifications
+
 
     def _rollback(self, backup_id: str):
         """Rollback using backup."""
@@ -634,9 +658,11 @@ class BackupExecuteGate(SafetyGate):
 class PostOperationGate(SafetyGate):
     """Gate 6: Post - operation validation and rollback options."""
 
+
     def __init__(self, root: Path):
         super().__init__("Post - Operation Validation")
         self.root = root
+
 
     def validate(self, context: SafetyGateContext) -> Tuple[GateResult, str]:
         """Validate system after operation."""
@@ -764,6 +790,7 @@ class PostOperationGate(SafetyGate):
         self.log(context, "All post - operation validations passed")
         return GateResult.PASS, "Post - operation validation successful"
 
+
     def _perform_rollback(self, context: SafetyGateContext):
         """Perform automatic rollback."""
         if not context.backup_id:
@@ -772,7 +799,7 @@ class PostOperationGate(SafetyGate):
         backup_dir = self.root / ".ai_onboard" / "backups" / context.backup_id
         manifest_path = backup_dir / "manifest.json"
 
-        print_activity("Performing automatic rollback...", "stop")
+        print_activity("Performing automatic rollback...")
 
         with open(manifest_path, "r") as f:
             manifest = json.load(f)
@@ -797,6 +824,7 @@ class PostOperationGate(SafetyGate):
 class CleanupSafetyGateFramework:
     """Main framework coordinating all safety gates."""
 
+
     def __init__(self, root: Path):
         self.root = root
         self.gates = [
@@ -816,6 +844,7 @@ class CleanupSafetyGateFramework:
             "require_confirmation_for_medium_risk": True,
         }
 
+
     def execute_cleanup_operation(
         self, operation: CleanupOperation
     ) -> Tuple[bool, str]:
@@ -828,7 +857,7 @@ class CleanupSafetyGateFramework:
         Returns:
             Tuple of (success, message)
         """
-        print_activity("Starting cleanup operation with safety gates", "start")
+        print_activity("Starting cleanup operation with safety gates")
 
         # Initialize context
         context = SafetyGateContext(operation=operation)
@@ -866,8 +895,9 @@ class CleanupSafetyGateFramework:
                 context.execution_log.append(f"EXCEPTION in {gate.name}: {str(e)}")
                 return False, error_msg
 
-        print_activity("All safety gates passed", "success")
+        print_activity("All safety gates passed")
         return True, "Cleanup operation completed successfully through all safety gates"
+
 
     def get_available_backups(self) -> List[Dict[str, Any]]:
         """Get list of available backups for rollback."""
@@ -889,6 +919,7 @@ class CleanupSafetyGateFramework:
                         continue
 
         return sorted(backups, key=lambda x: x.get("timestamp", ""), reverse=True)
+
 
     def rollback_operation(self, backup_id: str) -> Tuple[bool, str]:
         """Manually rollback a previous operation."""
@@ -914,6 +945,7 @@ class CleanupSafetyGateFramework:
 
 
 # Convenience functions for CLI integration
+
 def create_safety_framework(root: Path) -> CleanupSafetyGateFramework:
     """Create a configured safety gate framework."""
     return CleanupSafetyGateFramework(root)
@@ -944,7 +976,6 @@ def safe_cleanup_operation(
 
 if __name__ == "__main__":
     # Test the safety gate framework
-    import sys
 
     if len(sys.argv) < 2:
         print("Usage: python cleanup_safety_gates.py <test_file>")

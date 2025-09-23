@@ -9,7 +9,6 @@ This module provides command - line interfaces for:
 """
 
 import argparse
-import json
 import time
 from pathlib import Path
 
@@ -301,7 +300,8 @@ def _handle_run_cycle(args: argparse.Namespace, kaizen_engine) -> None:
         for action in cycle.actions_taken:
             status_icon = "✅" if action.get("status") == "completed" else "❌"
             print(
-                f"   {status_icon} {action.get('opportunity', action.get('decision', 'Unknown'))}"
+                f"   {status_icon} {action.get('opportunity',
+                    action.get('decision', 'Unknown'))}"
             )
 
         # Learning

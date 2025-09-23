@@ -2,9 +2,8 @@
 """
 Validate project structure against expected layout.
 """
+from ai_onboard.core.common_imports import os, sys
 
-import os
-import sys
 
 
 def validate_structure() -> bool:

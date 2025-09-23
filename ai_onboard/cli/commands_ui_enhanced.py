@@ -10,7 +10,6 @@ This module provides enhanced versions of CLI commands with:
 """
 
 import argparse
-import json
 import time
 from pathlib import Path
 from typing import Optional
@@ -54,7 +53,8 @@ def add_ui_enhanced_commands(subparsers):
     )
     help_parser.add_argument(
         "--tutorial",
-        help="Show tutorial (getting_started, project_setup, optimization, ai_features)",
+        help="Show tutorial (getting_started,
+            project_setup, optimization, ai_features)",
     )
     help_parser.add_argument(
         "--examples", action="store_true", help="Show command examples"
@@ -387,7 +387,8 @@ def _get_project_data(root: Path) -> dict:
                 "name": project_plan.get("project_name", "AI Onboard Project"),
                 "phase": exec_summary.get("current_phase", "Development"),
                 "progress": {
-                    "completion_percentage": actual_completion,  # Calculated from actual tasks
+                    "completion_percentage": actual_completion,
+                         # Calculated from actual tasks
                     "completed_tasks": completed_count,  # Actual count
                     "total_tasks": total_count,  # Actual count
                 },

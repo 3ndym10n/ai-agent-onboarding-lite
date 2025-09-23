@@ -54,8 +54,8 @@ class SafetyLevel(Enum):
     HIGH = "high"  # Enhanced safety checks
     CRITICAL = "critical"  # Maximum safety checks
 
-
 @dataclass
+
 class AgentProfile:
     """Profile of an AI agent's capabilities and constraints."""
 
@@ -73,8 +73,8 @@ class AgentProfile:
     created_at: datetime = field(default_factory=datetime.now)
     last_activity: datetime = field(default_factory=datetime.now)
 
-
 @dataclass
+
 class CollaborationSession:
     """Active collaboration session between AI agent and ai - onboard."""
 
@@ -93,6 +93,7 @@ class CollaborationSession:
 class AIAgentCollaborationProtocol:
     """Main protocol for AI agent collaboration with ai - onboard."""
 
+
     def __init__(self, project_root: Path):
         self.project_root = project_root
         self.sessions: Dict[str, CollaborationSession] = {}
@@ -100,6 +101,7 @@ class AIAgentCollaborationProtocol:
         self.protocol_config = self._load_protocol_config()
         self.error_monitor = get_error_monitor(project_root)
         self.vision_interrogator = get_enhanced_vision_interrogator(project_root)
+
 
     def _load_protocol_config(self) -> Dict[str, Any]:
         """Load protocol configuration."""
@@ -127,6 +129,7 @@ class AIAgentCollaborationProtocol:
 
         utils.write_json(config_path, default_config)
         return default_config
+
 
     def register_agent(self, agent_profile: AgentProfile) -> Dict[str, Any]:
         """Register an AI agent for collaboration."""
@@ -186,6 +189,7 @@ class AIAgentCollaborationProtocol:
 
         except Exception as e:
             return {"status": "error", "message": f"Failed to register agent: {str(e)}"}
+
 
     def start_collaboration_session(
         self, agent_id: str, project_root: Optional[Path] = None
@@ -261,6 +265,7 @@ class AIAgentCollaborationProtocol:
                 "status": "error",
                 "message": f"Failed to start collaboration session: {str(e)}",
             }
+
 
     def execute_agent_action(
         self, session_id: str, action: Dict[str, Any]
@@ -348,6 +353,7 @@ class AIAgentCollaborationProtocol:
         except Exception as e:
             return {"status": "error", "message": f"Failed to execute action: {str(e)}"}
 
+
     def handle_user_interaction(
         self, session_id: str, interaction: Dict[str, Any]
     ) -> Dict[str, Any]:
@@ -387,6 +393,7 @@ class AIAgentCollaborationProtocol:
                 "message": f"Failed to handle user interaction: {str(e)}",
             }
 
+
     def get_session_status(self, session_id: str) -> Dict[str, Any]:
         """Get status of a collaboration session."""
         if session_id not in self.sessions:
@@ -421,6 +428,7 @@ class AIAgentCollaborationProtocol:
                 session.safety_violations[-3:] if session.safety_violations else []
             ),
         }
+
 
     def end_collaboration_session(
         self, session_id: str, reason: str = "completed"
@@ -459,6 +467,7 @@ class AIAgentCollaborationProtocol:
         except Exception as e:
             return {"status": "error", "message": f"Failed to end session: {str(e)}"}
 
+
     def _validate_agent_profile(self, profile: AgentProfile) -> Dict[str, Any]:
         """Validate an agent profile."""
         errors = []
@@ -492,6 +501,7 @@ class AIAgentCollaborationProtocol:
             )
 
         return {"valid": len(errors) == 0, "errors": errors}
+
 
     def _initialize_session_context(
         self, session: CollaborationSession
@@ -531,6 +541,7 @@ class AIAgentCollaborationProtocol:
             context["context_errors"] = [str(e)]
 
         return context
+
 
     def _perform_safety_checks(
         self, session: CollaborationSession, action: Dict[str, Any]
@@ -593,6 +604,7 @@ class AIAgentCollaborationProtocol:
 
         return {"safe": True}
 
+
     def _is_protected_file(self, file_path: str) -> bool:
         """Check if a file is protected from modification."""
         protected_patterns = [
@@ -608,6 +620,7 @@ class AIAgentCollaborationProtocol:
                 return True
 
         return False
+
 
     def _is_dangerous_command(self, command: str) -> bool:
         """Check if a command is potentially dangerous."""
@@ -628,6 +641,7 @@ class AIAgentCollaborationProtocol:
                 return True
 
         return False
+
 
     def _execute_vision_interrogation_action(
         self, session: CollaborationSession, action: Dict[str, Any]
@@ -667,6 +681,7 @@ class AIAgentCollaborationProtocol:
                 "message": f"Unknown vision interrogation action: {action_subtype}",
             }
 
+
     def _execute_project_analysis_action(
         self, session: CollaborationSession, action: Dict[str, Any]
     ) -> Dict[str, Any]:
@@ -677,6 +692,7 @@ class AIAgentCollaborationProtocol:
             "action": "project_analysis",
             "message": "Project analysis action executed",
         }
+
 
     def _execute_planning_action(
         self, session: CollaborationSession, action: Dict[str, Any]
@@ -689,6 +705,7 @@ class AIAgentCollaborationProtocol:
             "message": "Planning action executed",
         }
 
+
     def _execute_gate_interaction_action(
         self, session: CollaborationSession, action: Dict[str, Any]
     ) -> Dict[str, Any]:
@@ -699,6 +716,7 @@ class AIAgentCollaborationProtocol:
             "action": "gate_interaction",
             "message": "Gate interaction action executed",
         }
+
 
     def _execute_file_operation_action(
         self, session: CollaborationSession, action: Dict[str, Any]
@@ -740,6 +758,7 @@ class AIAgentCollaborationProtocol:
                 "message": f"Unknown file operation: {operation}",
             }
 
+
     def _execute_command_action(
         self, session: CollaborationSession, action: Dict[str, Any]
     ) -> Dict[str, Any]:
@@ -755,6 +774,7 @@ class AIAgentCollaborationProtocol:
             "args": args,
         }
 
+
     def _handle_approval_interaction(
         self, session: CollaborationSession, interaction: Dict[str, Any]
     ) -> Dict[str, Any]:
@@ -764,6 +784,7 @@ class AIAgentCollaborationProtocol:
             "action": "user_approval_received",
             "message": "User approval processed",
         }
+
 
     def _handle_rejection_interaction(
         self, session: CollaborationSession, interaction: Dict[str, Any]
@@ -775,6 +796,7 @@ class AIAgentCollaborationProtocol:
             "message": "User rejection processed",
         }
 
+
     def _handle_clarification_interaction(
         self, session: CollaborationSession, interaction: Dict[str, Any]
     ) -> Dict[str, Any]:
@@ -785,6 +807,7 @@ class AIAgentCollaborationProtocol:
             "message": "User clarification processed",
         }
 
+
     def _handle_guidance_interaction(
         self, session: CollaborationSession, interaction: Dict[str, Any]
     ) -> Dict[str, Any]:
@@ -794,6 +817,7 @@ class AIAgentCollaborationProtocol:
             "action": "user_guidance_received",
             "message": "User guidance processed",
         }
+
 
     def _generate_session_summary(
         self, session: CollaborationSession, reason: str
@@ -813,6 +837,7 @@ class AIAgentCollaborationProtocol:
                 cap.value for cap in session.agent_profile.capabilities
             ],
         }
+
 
     def _save_agent_profiles(self):
         """Save agent profiles to persistent storage."""

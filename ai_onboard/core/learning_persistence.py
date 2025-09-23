@@ -1,5 +1,6 @@
 """
-Learning Persistence System (T4.9) - Persistent storage and retrieval of learned patterns.
+Learning Persistence System (T4.9) - Persistent storage and \
+    retrieval of learned patterns.
 
 This module provides persistent storage for learned patterns that:
 - Saves error patterns and prevention rules to disk
@@ -9,7 +10,6 @@ This module provides persistent storage for learned patterns that:
 - Ensures learning continuity between AI agent sessions
 """
 
-import json
 import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List
@@ -23,6 +23,7 @@ if TYPE_CHECKING:
 
 class LearningPersistenceManager:
     """Manages persistence of learned patterns and knowledge."""
+
 
     def __init__(self, root: Path):
         self.root = root
@@ -44,9 +45,11 @@ class LearningPersistenceManager:
         self._ensure_directories()
         self._load_stats()
 
+
     def _ensure_directories(self) -> None:
         """Ensure learning directories exist."""
         self.learning_dir.mkdir(parents=True, exist_ok=True)
+
 
     def _load_stats(self) -> None:
         """Load learning statistics from disk."""
@@ -58,12 +61,14 @@ class LearningPersistenceManager:
             # Start with default stats if loading fails
             pass
 
+
     def _save_stats(self) -> None:
         """Save learning statistics to disk."""
         try:
             utils.write_json(self.learning_stats_file, self.stats)
         except Exception as e:
             print(f"Warning: Failed to save learning stats: {e}")
+
 
     def save_pattern_backup(self, pattern_system) -> bool:
         """
@@ -159,6 +164,7 @@ class LearningPersistenceManager:
             print(f"Error saving pattern backup: {e}")
             return False
 
+
     def load_pattern_backup(self, pattern_system) -> bool:
         """
         Load patterns from backup.
@@ -230,7 +236,8 @@ class LearningPersistenceManager:
                     self._save_stats()
 
             print(
-                f"Restored {patterns_restored} error patterns, {cli_patterns_restored} CLI patterns, {behavior_patterns_restored} behavior patterns, {command_history_restored} command history entries from backup"
+                f"Restored {patterns_restored} error patterns,
+                    {cli_patterns_restored} CLI patterns, {behavior_patterns_restored} behavior patterns, {command_history_restored} command history entries from backup"
             )
             track_tool_usage(
                 "learning_persistence",
@@ -250,6 +257,7 @@ class LearningPersistenceManager:
             print(f"Error loading pattern backup: {e}")
             return False
 
+
     def record_learning_event(
         self, event_type: str, event_data: Dict[str, Any]
     ) -> None:
@@ -257,7 +265,8 @@ class LearningPersistenceManager:
         Record a learning event to the history log.
 
         Args:
-            event_type: Type of learning event ("pattern_learned", "pattern_applied", etc.)
+            event_type: Type of learning event ("pattern_learned",
+                "pattern_applied", etc.)
             event_data: Event-specific data
         """
         try:
@@ -292,6 +301,7 @@ class LearningPersistenceManager:
         except Exception as e:
             print(f"Warning: Failed to record learning event: {e}")
 
+
     def get_learning_history(self, limit: int = 100) -> List[Dict[str, Any]]:
         """
         Get recent learning history.
@@ -318,6 +328,7 @@ class LearningPersistenceManager:
             print(f"Warning: Failed to load learning history: {e}")
             return []
 
+
     def record_pattern_applied(
         self, pattern_id: str, context: Dict[str, Any] = None
     ) -> None:
@@ -339,6 +350,7 @@ class LearningPersistenceManager:
         self.stats["patterns_applied"] += 1
         self.stats["total_learning_events"] += 1
         self._save_stats()
+
 
     def record_error_prevented(
         self, pattern_id: str, error_type: str, context: Dict[str, Any] = None
@@ -364,6 +376,7 @@ class LearningPersistenceManager:
         self.stats["total_learning_events"] += 1
         self._save_stats()
 
+
     def increment_learning_sessions(self) -> None:
         """
         Increment the learning sessions counter.
@@ -371,6 +384,7 @@ class LearningPersistenceManager:
         """
         self.stats["learning_sessions"] += 1
         self._save_stats()
+
 
     def get_learning_stats(self) -> Dict[str, Any]:
         """
@@ -410,6 +424,7 @@ class LearningPersistenceManager:
 
         return stats
 
+
     def export_learning_data(self, export_path: Path) -> bool:
         """
         Export all learning data for backup or analysis.
@@ -441,6 +456,7 @@ class LearningPersistenceManager:
         except Exception as e:
             print(f"Error exporting learning data: {e}")
             return False
+
 
     def import_learning_data(self, import_path: Path) -> bool:
         """
@@ -480,6 +496,7 @@ class LearningPersistenceManager:
         except Exception as e:
             print(f"Error importing learning data: {e}")
             return False
+
 
     def cleanup_old_data(self, max_age_days: int = 90) -> int:
         """

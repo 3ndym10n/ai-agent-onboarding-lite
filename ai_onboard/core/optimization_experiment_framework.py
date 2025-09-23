@@ -1,5 +1,6 @@
 """
-Optimization Experiment Framework (T13) - Systematic optimization testing and validation.
+Optimization Experiment Framework (T13) - Systematic optimization testing and \
+    validation.
 
 This module provides a comprehensive framework for:
 - Designing and running optimization experiments
@@ -9,7 +10,6 @@ This module provides a comprehensive framework for:
 - Learning from experiment results to improve future optimizations
 """
 
-import json
 import math
 import statistics
 import threading
@@ -68,8 +68,8 @@ class StatisticalSignificance(Enum):
     SIGNIFICANT = "significant"  # 0.001 < p <= 0.01
     HIGHLY_SIGNIFICANT = "highly_significant"  # p <= 0.001
 
-
 @dataclass
+
 class ExperimentMetric:
     """A metric to measure during experiments."""
 
@@ -81,8 +81,8 @@ class ExperimentMetric:
     target_improvement: Optional[float] = None  # Percentage improvement expected
     measurement_function: Optional[str] = None  # Function name to call for measurement
 
-
 @dataclass
+
 class ExperimentCondition:
     """A specific condition / treatment in an experiment."""
 
@@ -95,8 +95,8 @@ class ExperimentCondition:
     risk_level: int = 1  # 1 - 5 scale
     expected_impact: float = 0.0  # Expected improvement percentage
 
-
 @dataclass
+
 class ExperimentDesign:
     """Design specification for an optimization experiment."""
 
@@ -127,8 +127,8 @@ class ExperimentDesign:
     created_at: datetime = field(default_factory=datetime.now)
     tags: List[str] = field(default_factory=list)
 
-
 @dataclass
+
 class ExperimentMeasurement:
     """A single measurement during an experiment."""
 
@@ -139,8 +139,8 @@ class ExperimentMeasurement:
     timestamp: datetime
     context: Dict[str, Any] = field(default_factory=dict)
 
-
 @dataclass
+
 class ExperimentResults:
     """Results of a completed experiment."""
 
@@ -161,8 +161,8 @@ class ExperimentResults:
     next_experiments: List[str] = field(default_factory=list)
     lessons_learned: List[str] = field(default_factory=list)
 
-
 @dataclass
+
 class RunningExperiment:
     """State of a currently running experiment."""
 
@@ -187,6 +187,7 @@ class RunningExperiment:
 class StatisticalAnalyzer:
     """Statistical analysis for optimization experiments."""
 
+
     def __init__(self):
         self.significance_levels = {
             0.001: StatisticalSignificance.HIGHLY_SIGNIFICANT,
@@ -194,6 +195,7 @@ class StatisticalAnalyzer:
             0.05: StatisticalSignificance.MARGINALLY_SIGNIFICANT,
             1.0: StatisticalSignificance.NOT_SIGNIFICANT,
         }
+
 
     def analyze_ab_test(
         self, control_values: List[float], treatment_values: List[float]
@@ -278,6 +280,7 @@ class StatisticalAnalyzer:
             ),
         }
 
+
     def analyze_multivariate(
         self, condition_data: Dict[str, List[float]]
     ) -> Dict[str, Any]:
@@ -319,6 +322,7 @@ class StatisticalAnalyzer:
             "recommendation": f"Condition '{best_condition[0]}' shows best performance with {improvement:.1f}% improvement",
         }
 
+
     def _generate_recommendation(
         self, improvement: float, significance: StatisticalSignificance, p_value: float
     ) -> str:
@@ -338,6 +342,7 @@ class StatisticalAnalyzer:
 
 class OptimizationExperimentFramework:
     """Main framework for optimization experiments."""
+
 
     def __init__(self, root: Path):
         self.root = root
@@ -363,6 +368,7 @@ class OptimizationExperimentFramework:
 
         # Load existing data
         self._load_persistent_data()
+
 
     def _load_persistent_data(self):
         """Load persistent experiment data."""
@@ -415,6 +421,7 @@ class OptimizationExperimentFramework:
 
         except Exception as e:
             print(f"Warning: Failed to load persistent experiment data: {e}")
+
 
     def _save_persistent_data(self):
         """Save persistent experiment data."""
@@ -495,6 +502,7 @@ class OptimizationExperimentFramework:
         except Exception as e:
             print(f"Warning: Failed to save persistent experiment data: {e}")
 
+
     def create_experiment_design(
         self,
         name: str,
@@ -525,6 +533,7 @@ class OptimizationExperimentFramework:
 
         return design
 
+
     def start_experiment(self, experiment_id: str) -> bool:
         """Start running an experiment."""
         if experiment_id not in self.experiment_designs:
@@ -554,6 +563,7 @@ class OptimizationExperimentFramework:
         print(f"Started experiment: {design.name} ({experiment_id})")
         return True
 
+
     def stop_experiment(self, experiment_id: str, reason: str = "manual_stop") -> bool:
         """Stop a running experiment."""
         if experiment_id not in self.running_experiments:
@@ -581,10 +591,12 @@ class OptimizationExperimentFramework:
 
         print(f"Stopped experiment: {running_exp.design.name} - {reason}")
         print(
-            f"Outcome: {results.outcome.value}, Improvement: {results.improvement_percentage:.2f}%"
+            f"Outcome: {results.outcome.value},
+                Improvement: {results.improvement_percentage:.2f}%"
         )
 
         return True
+
 
     def record_measurement(
         self,
@@ -619,6 +631,7 @@ class OptimizationExperimentFramework:
             self._check_early_stopping(running_exp)
 
         return True
+
 
     def _analyze_experiment_results(
         self, running_exp: RunningExperiment
@@ -704,6 +717,7 @@ class OptimizationExperimentFramework:
 
         return results
 
+
     def _determine_experiment_outcome(
         self, analysis: Dict[str, Any]
     ) -> ExperimentOutcome:
@@ -724,6 +738,7 @@ class OptimizationExperimentFramework:
             return ExperimentOutcome.NEUTRAL
         else:  # >5% regression
             return ExperimentOutcome.HARMFUL
+
 
     def _extract_lessons_learned(
         self, running_exp: RunningExperiment, analysis: Dict[str, Any]
@@ -761,6 +776,7 @@ class OptimizationExperimentFramework:
 
         return lessons
 
+
     def _suggest_next_experiments(
         self, running_exp: RunningExperiment, analysis: Dict[str, Any]
     ) -> List[str]:
@@ -784,6 +800,7 @@ class OptimizationExperimentFramework:
             suggestions.append("Test more conservative optimization parameters")
 
         return suggestions
+
 
     def _check_early_stopping(self, running_exp: RunningExperiment):
         """Check if experiment should be stopped early."""
@@ -825,6 +842,7 @@ class OptimizationExperimentFramework:
                         running_exp.design.experiment_id, "harmful_regression_detected"
                     )
 
+
     def _start_monitoring(self):
         """Start experiment monitoring thread."""
         if self._monitoring_active:
@@ -836,11 +854,13 @@ class OptimizationExperimentFramework:
         )
         self._monitoring_thread.start()
 
+
     def _stop_monitoring(self):
         """Stop experiment monitoring thread."""
         self._monitoring_active = False
         if self._monitoring_thread and self._monitoring_thread.is_alive():
             self._monitoring_thread.join(timeout=5)
+
 
     def _monitoring_loop(self):
         """Main monitoring loop for running experiments."""
@@ -883,6 +903,7 @@ class OptimizationExperimentFramework:
                 print(f"Error in experiment monitoring loop: {e}")
                 time.sleep(60)
 
+
     def get_experiment_status(self, experiment_id: str) -> Optional[Dict[str, Any]]:
         """Get current status of an experiment."""
         if experiment_id in self.running_experiments:
@@ -919,6 +940,7 @@ class OptimizationExperimentFramework:
 
         return None
 
+
     def get_all_experiments(self) -> Dict[str, Any]:
         """Get status of all experiments."""
         return {
@@ -935,7 +957,6 @@ class OptimizationExperimentFramework:
                 for exp_id, design in self.experiment_designs.items()
             },
         }
-
 
 # Global instance
 _optimization_experiment_framework: Optional[OptimizationExperimentFramework] = None

@@ -12,6 +12,7 @@ from typing import Dict, List, Optional, Tuple
 class SyntaxValidator:
     """Validates Python syntax and provides error correction suggestions."""
 
+
     def __init__(self):
         # Common syntax error patterns and their fixes
         self.error_patterns = {
@@ -26,9 +27,7 @@ class SyntaxValidator:
                 "fix": lambda code: self._fix_unterminated_fstring(code),
             },
             "mixed_quotes_fstring": {
-                "pattern": r'f"[^"]*\'|f\'[^\'"]*"',
-                "suggestion": "Use consistent quotes in f-string",
-                "fix": lambda code: self._fix_mixed_quotes(code),
+                "pattern": r'f"[^"]*\'|f\'[^\'"]*"', "suggestion": "Use consistent quotes in f-string", "fix": lambda code: self._fix_mixed_quotes(code),
             },
             "unclosed_parenthesis": {
                 "pattern": r"\([^)]*$",
@@ -46,6 +45,7 @@ class SyntaxValidator:
                 "fix": lambda code: self._fix_unclosed_brace(code),
             },
         }
+
 
     def validate_syntax(self, code: str) -> Dict:
         """
@@ -100,6 +100,7 @@ class SyntaxValidator:
             result["confidence"] = 0.3
             return result
 
+
     def _identify_error_pattern(self, code: str, error_msg: str) -> Optional[Dict]:
         """
         Identify the specific error pattern from code and error message.
@@ -143,6 +144,7 @@ class SyntaxValidator:
 
         return None
 
+
     def _fix_unterminated_string(self, code: str) -> str:
         """Attempt to fix unterminated string literals."""
         # Simple fix: add closing quote at end
@@ -151,6 +153,7 @@ class SyntaxValidator:
         elif code.count("'") % 2 == 1:
             return code + "'"
         return code
+
 
     def _fix_unterminated_fstring(self, code: str) -> str:
         """Attempt to fix unterminated f-strings."""
@@ -165,22 +168,27 @@ class SyntaxValidator:
                 break
         return "\n".join(lines)
 
+
     def _fix_mixed_quotes(self, code: str) -> str:
         """Attempt to fix mixed quotes in f-strings."""
         # This is complex - for now, suggest manual fix
         return code  # Return unchanged, manual fix needed
 
+
     def _fix_unclosed_paren(self, code: str) -> str:
         """Attempt to fix unclosed parentheses."""
         return code + ")"
+
 
     def _fix_unclosed_bracket(self, code: str) -> str:
         """Attempt to fix unclosed brackets."""
         return code + "]"
 
+
     def _fix_unclosed_brace(self, code: str) -> str:
         """Attempt to fix unclosed braces."""
         return code + "}"
+
 
     def get_error_statistics(self) -> Dict:
         """Get statistics about common syntax errors encountered."""
@@ -196,8 +204,8 @@ class SyntaxValidator:
             "auto_fix_rate": 0.6,  # Estimated 60% can be auto-fixed
         }
 
-
 # Convenience function for quick validation
+
 def validate_python_syntax(code: str) -> Dict:
     """
     Quick validation function for Python syntax.
@@ -211,8 +219,8 @@ def validate_python_syntax(code: str) -> Dict:
     validator = SyntaxValidator()
     return validator.validate_syntax(code)
 
-
 # Function to validate and potentially auto-fix code
+
 def validate_and_fix(code: str) -> Tuple[bool, str, str]:
     """
     Validate code and attempt auto-fix if possible.

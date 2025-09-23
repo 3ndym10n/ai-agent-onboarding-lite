@@ -9,7 +9,6 @@ This module provides command - line interfaces for:
 """
 
 import argparse
-import json
 from pathlib import Path
 
 from ..core.cursor_ai_integration import (
@@ -189,7 +188,8 @@ def _handle_cursor_context(args: argparse.Namespace, root: Path) -> None:
                 progress = context["progress"]
                 print(f"Overall Progress: {progress.get('overall_progress', 0):.1f}%")
                 print(
-                    f"Completed Tasks: {progress.get('completed_tasks', 0)}/{progress.get('total_tasks', 0)}"
+                    f"Completed Tasks: {progress.get('completed_tasks',
+                        0)}/{progress.get('total_tasks', 0)}"
                 )
                 print(f"Current Phase: {progress.get('current_phase', 'Unknown')}")
 

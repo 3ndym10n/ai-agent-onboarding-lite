@@ -339,7 +339,8 @@ def _export_to_markdown(interrogation_data: Dict[str, Any], output_file: Path) -
         f"**Status:** {interrogation_data.get('status', 'Unknown')}"
     )
     markdown_content.append(
-        f"**Vision Quality Score:** {interrogation_data.get('vision_quality_score', 0):.1%}"
+        f"**Vision Quality Score:** {interrogation_data.get('vision_quality_score',
+            0):.1%}"
     )
     markdown_content.append("")
 
@@ -396,7 +397,8 @@ def _export_to_html(interrogation_data: Dict[str, Any], output_file: Path) -> No
     <meta name="viewport" content="width = device - width, initial - scale = 1.0">
     <title > Vision Interrogation Results </ title>
     <style>
-        body { font - family: -apple - system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans - serif; max - width: 800px; margin: 0 auto; padding: 20px; }
+        body { font - family: -apple - system,
+            BlinkMacSystemFont, 'Segoe UI', Roboto, sans - serif; max - width: 800px; margin: 0 auto; padding: 20px; }
         h1 { color: #4f46e5; }
         h2 { color: #1e293b; border - bottom: 2px solid #e2e8f0; padding - bottom: 10px; }
         h3 { color: #374151; }
@@ -420,7 +422,8 @@ def _export_to_html(interrogation_data: Dict[str, Any], output_file: Path) -> No
         f"<p >< strong > Status:</strong> {interrogation_data.get('status', 'Unknown')}</p>"
     )
     html_content.append(
-        f"<p >< strong > Vision Quality Score:</strong> {interrogation_data.get('vision_quality_score', 0):.1%}</p>"
+        f"<p >< strong > Vision Quality Score:</strong> {interrogation_data.get('vision_quality_score',
+            0):.1%}</p>"
     )
     html_content.append("</div>")
 
@@ -454,7 +457,8 @@ def _export_to_html(interrogation_data: Dict[str, Any], output_file: Path) -> No
                 f"<p >< strong > Category:</strong> {insight.get('category', 'Unknown')}</p>"
             )
             html_content.append(
-                f"<p >< strong > Confidence:</strong> {insight.get('confidence', 0):.1%}</p>"
+                f"<p >< strong > Confidence:</strong> {insight.get('confidence',
+                    0):.1%}</p>"
             )
             html_content.append(f"<p>{insight.get('description', '')}</p>")
             html_content.append("</div>")

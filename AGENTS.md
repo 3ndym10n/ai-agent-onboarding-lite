@@ -10,11 +10,13 @@ This repository expects any AI coding agent or assistant to follow these rules:
 - Avoid adding dependencies without prior approval.
 
 Operational rules:
+
 - Use `.ai_onboard/` for generated artifacts; do not commit them.
 - If you add configs (editor, CI, codeowners), keep them small and focused.
 - For Python, keep changes compatible with 3.8+.
 
 Acknowledgement checklist for human authors and agents:
+
 - [ ] I reviewed AGENTS.md and followed its guidance.
 - [ ] I kept the scope minimal and documented changes.
 - [ ] I considered backward compatibility and tests.
@@ -32,7 +34,7 @@ and build artifacts (e.g., `.ai_onboard/`, `__pycache__/`, `*.egg-info/`, `dist/
 
 Additional guard (diff-based): `scripts/protected_paths_diff.py` fails if a PR touches sensitive paths. Wired in `.github/workflows/agentops.yml`. For local use, enable the sample pre-push hook:
 
-```
+```bash
 git config core.hooksPath .githooks
 ```
 
@@ -40,7 +42,7 @@ git config core.hooksPath .githooks
 
 Enable the local hook to block accidental deletion of protected files:
 
-```
+```bash
 git config core.hooksPath .githooks
 ```
 
@@ -57,3 +59,30 @@ Agents should follow these gates to stay aligned and safe:
 - Gate B (Safety): `python -m ai_onboard checkpoint create --scope "." --reason "pre-change"` when `files>10` or `lines>500`.
 - Gate C (Guard): `python -m ai_onboard prompt propose --diff '<json>'` must return a non-blocking decision (e.g., `allow` or `warn`). Any `block` → stop and request review.
 - Gate D (Post-op): `python -m ai_onboard validate --report` and address high-risk findings before merge.
+
+## Import Consolidation System
+
+The repository now includes a comprehensive import consolidation system for optimizing Python code structure. When working with imports:
+
+### Available Tools
+
+- **Analysis**: `python -m ai_onboard consolidate analyze` - Identifies consolidation opportunities
+- **Planning**: `python -m ai_onboard consolidate plan` - Creates migration plans with safety checks
+- **Execution**: `python -m ai_onboard consolidate execute` - Executes consolidation with rollback protection
+- **Validation**: `python -m ai_onboard consolidate validate` - Validates import equivalence
+
+### Safety Guidelines
+
+- Always use the built-in safety gates when consolidating imports
+- The system automatically creates backups and provides rollback capabilities
+- Import consolidation changes are protected by the same safety mechanisms as other operations
+- Use `--dry-run` flags to preview changes before execution
+
+### Best Practices
+
+- Consolidate only frequently used imports (appearing in 5+ files)
+- Prefer creating new utility modules over modifying existing ones
+- Always validate import equivalence after consolidation
+- Test thoroughly before committing consolidation changes
+
+For detailed documentation, see [docs/IMPORT_CONSOLIDATION_SYSTEM.md](docs/IMPORT_CONSOLIDATION_SYSTEM.md).

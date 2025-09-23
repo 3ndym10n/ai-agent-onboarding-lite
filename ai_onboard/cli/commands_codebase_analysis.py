@@ -5,7 +5,6 @@ Provides commands to analyze codebase structure, identify organizational
 improvements, and generate recommendations for better code organization.
 """
 
-import json
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -298,7 +297,6 @@ def handle_codebase_analysis_commands(args, root: Path):
                 _save_analysis_report(results, root)
 
         elif args.codebase_cmd == "report":
-            import json
 
             from ..core.codebase_analysis import CodebaseAnalyzer
 
@@ -317,7 +315,6 @@ def handle_codebase_analysis_commands(args, root: Path):
             _display_report(results, args.type)
 
         elif args.codebase_cmd == "organize":
-            import json
 
             from ..core.codebase_analysis import CodebaseAnalyzer
 
@@ -507,7 +504,6 @@ def handle_codebase_analysis_commands(args, root: Path):
             )
 
             if args.output == "json":
-                import json
 
                 output_data = {
                     "file_moves": [
@@ -565,10 +561,12 @@ def handle_codebase_analysis_commands(args, root: Path):
                 print(f"   File Move Recommendations: {summary.get('file_moves', 0)}")
                 print(f"   File Merge Recommendations: {summary.get('file_merges', 0)}")
                 print(
-                    f"   Directory Restructuring Plans: {summary.get('directory_plans', 0)}"
+                    f"   Directory Restructuring Plans: {summary.get('directory_plans',
+                        0)}"
                 )
                 print(
-                    f"   High Priority Items: {summary.get('high_priority_moves', 0) + summary.get('high_priority_merges', 0) + summary.get('high_priority_plans', 0)}"
+                    f"   High Priority Items: {summary.get('high_priority_moves',
+                        0) + summary.get('high_priority_merges', 0) + summary.get('high_priority_plans', 0)}"
                 )
 
                 # File moves
@@ -643,7 +641,8 @@ def handle_codebase_analysis_commands(args, root: Path):
                         f"File Merge Recommendations: {summary.get('file_merges', 0)}"
                     )
                     report_content.append(
-                        f"Directory Restructuring Plans: {summary.get('directory_plans', 0)}"
+                        f"Directory Restructuring Plans: {summary.get('directory_plans',
+                            0)}"
                     )
                     report_content.append("")
 
@@ -751,7 +750,6 @@ def handle_codebase_analysis_commands(args, root: Path):
             risk_results = framework.assess_change_risks(changes)
 
             if args.output == "json":
-                import json
 
                 output_data = {
                     "assessed_changes": len(risk_results),
@@ -914,7 +912,6 @@ def handle_codebase_analysis_commands(args, root: Path):
                 print("=" * 80)
 
         elif args.codebase_cmd == "implement":
-            import json
 
             from ..core.phased_implementation_strategy import (
                 PhasedImplementationStrategy,
@@ -1490,6 +1487,7 @@ def _save_analysis_report(results: Dict[str, Any], root: Path):
     report_path = report_dir / "codebase_analysis.json"
 
     # Convert Path objects and dataclasses to serializable format
+
     def serialize_results(obj):
         if isinstance(obj, Path):
             return str(obj)

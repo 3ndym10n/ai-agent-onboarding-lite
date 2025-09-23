@@ -130,7 +130,8 @@ def _handle_analyze(
             print("💡 Recommendations:")
             for rec in result["recommendations"]:
                 print(
-                    f"• {rec['suggestion']} (confidence: {rec.get('confidence', 0):.2f})"
+                    f"• {rec['suggestion']} (confidence: {rec.get('confidence',
+                        0):.2f})"
                 )
             print()
 

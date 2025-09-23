@@ -12,9 +12,7 @@ import subprocess
 import sys
 import time
 
-from ..core.continuous_improvement_validator import (
-    ValidationReport,
-)
+from ..core.continuous_improvement_validator import ValidationReport
 
 
 def add_enhanced_testing_commands(subparsers):

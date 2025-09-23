@@ -22,8 +22,8 @@ from . import utils
 from .learning_persistence import LearningPersistenceManager
 from .tool_usage_tracker import track_tool_usage
 
-
 @dataclass
+
 class ErrorPattern:
     """Represents a recognized error pattern."""
 
@@ -39,8 +39,8 @@ class ErrorPattern:
     prevention_rules: List[Dict[str, Any]] = field(default_factory=list)
     related_patterns: Set[str] = field(default_factory=set)
 
-
 @dataclass
+
 class CLIPattern:
     """Represents a learned CLI usage pattern."""
 
@@ -53,8 +53,8 @@ class CLIPattern:
     last_seen: float
     recommendations: List[str] = field(default_factory=list)
 
-
 @dataclass
+
 class BehaviorPattern:
     """Represents a learned user behavior pattern."""
 
@@ -69,8 +69,8 @@ class BehaviorPattern:
     first_seen: float = 0
     last_seen: float = 0
 
-
 @dataclass
+
 class PatternMatch:
     """A match of an error pattern."""
 
@@ -83,6 +83,7 @@ class PatternMatch:
 
 class PatternRecognitionSystem:
     """Advanced pattern recognition for error analysis and prevention."""
+
 
     def __init__(self, root: Path):
         self.root = root
@@ -140,6 +141,7 @@ class PatternRecognitionSystem:
 
         self._load_patterns()
 
+
     def _load_patterns(self) -> None:
         """Load persisted patterns (error, CLI, and behavior patterns)."""
         try:
@@ -175,6 +177,7 @@ class PatternRecognitionSystem:
         # Ensure patterns directory exists
         self.patterns_dir.mkdir(parents=True, exist_ok=True)
 
+
     def _load_error_patterns(self) -> None:
         """Load error patterns from file."""
         if self.patterns_file.exists():
@@ -182,6 +185,7 @@ class PatternRecognitionSystem:
             for pattern_id, pattern_data in data.items():
                 pattern = ErrorPattern(**pattern_data)
                 self.patterns[pattern_id] = pattern
+
 
     def _load_cli_patterns(self) -> None:
         """Load CLI patterns from file."""
@@ -191,6 +195,7 @@ class PatternRecognitionSystem:
                 pattern = CLIPattern(**pattern_data)
                 self.cli_patterns[pattern_id] = pattern
 
+
     def _load_behavior_patterns(self) -> None:
         """Load behavior patterns from file."""
         if self.behavior_patterns_file.exists():
@@ -198,6 +203,7 @@ class PatternRecognitionSystem:
             for pattern_id, pattern_data in data.items():
                 pattern = BehaviorPattern(**pattern_data)
                 self.behavior_patterns[pattern_id] = pattern
+
 
     def _save_patterns(self) -> None:
         """Save all patterns (error, CLI, behavior) to disk."""
@@ -222,6 +228,7 @@ class PatternRecognitionSystem:
             # Log error but don't crash
             print(f"Warning: Failed to save patterns: {e}")
 
+
     def _save_error_patterns(self) -> None:
         """Save error patterns to disk."""
         patterns_data = {}
@@ -241,6 +248,7 @@ class PatternRecognitionSystem:
             }
         utils.write_json(self.patterns_file, patterns_data)
 
+
     def _save_cli_patterns(self) -> None:
         """Save CLI patterns to disk."""
         patterns_data = {}
@@ -256,6 +264,7 @@ class PatternRecognitionSystem:
                 "recommendations": pattern.recommendations,
             }
         utils.write_json(self.cli_patterns_file, patterns_data)
+
 
     def _save_behavior_patterns(self) -> None:
         """Save behavior patterns to disk."""
@@ -274,6 +283,7 @@ class PatternRecognitionSystem:
                 "last_seen": pattern.last_seen,
             }
         utils.write_json(self.behavior_patterns_file, patterns_data)
+
 
     def analyze_error(self, error_data: Dict[str, Any]) -> PatternMatch:
         """
@@ -372,6 +382,7 @@ class PatternRecognitionSystem:
             timestamp=time.time(),
         )
 
+
     def _calculate_pattern_match(
         self, pattern: ErrorPattern, error_text: str, error_data: Dict[str, Any]
     ) -> float:
@@ -401,6 +412,7 @@ class PatternRecognitionSystem:
             confidence += 0.3
 
         return min(confidence, 1.0)
+
 
     def _create_pattern_from_error(
         self, error_data: Dict[str, Any]
@@ -442,6 +454,7 @@ class PatternRecognitionSystem:
 
         return pattern
 
+
     def _categorize_error(self, error_type: str, error_message: str) -> Optional[str]:
         """Categorize an error based on its type and message."""
         error_text = f"{error_type} {error_message}".lower()
@@ -471,6 +484,7 @@ class PatternRecognitionSystem:
             return "type_error"
 
         return "unknown_error"
+
 
     def update_pattern(self, pattern_id: str, error_data: Dict[str, Any]) -> None:
         """Update an existing pattern with new error data."""
@@ -525,6 +539,7 @@ class PatternRecognitionSystem:
                 "success",
             )
 
+
     def get_pattern_stats(self) -> Dict[str, Any]:
         """Get statistics about learned patterns."""
         total_patterns = len(self.patterns)
@@ -545,6 +560,7 @@ class PatternRecognitionSystem:
             ),
         }
 
+
     def get_prevention_recommendations(self, error_data: Dict[str, Any]) -> List[str]:
         """Get prevention recommendations for an error."""
         match = self.analyze_error(error_data)
@@ -563,6 +579,7 @@ class PatternRecognitionSystem:
         return ["Review error patterns and implement appropriate safeguards"]
 
     # ===== NEW LEARNING METHODS =====
+
 
     def learn_from_cli_usage(
         self, command: str, success: bool, context: Dict[str, Any] = None
@@ -599,6 +616,7 @@ class PatternRecognitionSystem:
         self._learn_behavior_from_cli(command, success, context)
 
         self._save_patterns()
+
 
     def _update_cli_patterns(
         self, command: str, success: bool, context: Dict[str, Any]
@@ -652,6 +670,7 @@ class PatternRecognitionSystem:
             )
             self.cli_patterns[pattern_id] = pattern
 
+
     def _learn_behavior_from_cli(
         self, command: str, success: bool, context: Dict[str, Any]
     ) -> None:
@@ -702,6 +721,7 @@ class PatternRecognitionSystem:
             pattern.last_seen = time.time()
             pattern.confidence = min(pattern.confidence + 0.1, 0.9)
 
+
     def learn_from_repeated_errors(self, error_data: Dict[str, Any]) -> None:
         """
         Learn from repeated error patterns to improve prevention.
@@ -734,6 +754,7 @@ class PatternRecognitionSystem:
 
         self._save_patterns()
 
+
     def _generate_error_signature(self, error_data: Dict[str, Any]) -> str:
         """Generate a signature for error clustering."""
         error_type = error_data.get("type", "")
@@ -749,6 +770,7 @@ class PatternRecognitionSystem:
             signature_parts.extend(key_words)
 
         return "_".join(signature_parts)
+
 
     def _create_repeated_error_pattern(
         self, signature: str, error_cluster: List[Dict[str, Any]]
@@ -824,11 +846,13 @@ class PatternRecognitionSystem:
             },
         )
 
+
     def _learn_error_timing_patterns(self, error_data: Dict[str, Any]) -> None:
         """Learn patterns related to when errors occur."""
         # This could analyze time-of-day, day-of-week patterns, etc.
         # For now, just track basic timing
         pass
+
 
     def get_cli_recommendations(self, current_command: str = None) -> List[str]:
         """
@@ -864,6 +888,7 @@ class PatternRecognitionSystem:
                 )  # Top 2 recommendations
 
         return recommendations[:5]  # Limit to 5 recommendations
+
 
     def get_behavior_insights(self) -> List[Dict[str, Any]]:
         """

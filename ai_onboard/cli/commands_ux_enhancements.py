@@ -9,14 +9,10 @@ This module provides command - line interfaces for:
 """
 
 import argparse
-import json
 from pathlib import Path
 
 from ..core.ui_enhancement_system import get_ui_enhancement_system
-from ..core.user_experience_enhancements import (
-    UXEventType,
-    get_ux_enhancement_system,
-)
+from ..core.user_experience_enhancements import UXEventType, get_ux_enhancement_system
 from .visual_components import create_chart, create_status_indicator
 
 

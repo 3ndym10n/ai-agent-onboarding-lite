@@ -2,7 +2,6 @@
 Tool Usage Tracker: Tracks and reports system tools used during task execution.
 """
 
-import json
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -13,6 +12,7 @@ from . import telemetry, utils
 class ToolUsageTracker:
     """Tracks which system tools and commands are used during task execution."""
 
+
     def __init__(self, root: Path):
         self.root = root
         self.tools_log_path = root / ".ai_onboard" / "tool_usage.jsonl"
@@ -20,6 +20,7 @@ class ToolUsageTracker:
         self.current_session: Optional[str] = None
         self.session_tools: List[Dict[str, Any]] = []
         utils.ensure_dir(self.tools_log_path.parent)
+
 
     def start_task_session(self, task_name: str, task_type: str = "command") -> str:
         """Start tracking a task session.
@@ -54,6 +55,7 @@ class ToolUsageTracker:
         utils.write_json(self.session_tools_path, session_data)
 
         return session_id
+
 
     def track_tool_usage(
         self,
@@ -107,6 +109,7 @@ class ToolUsageTracker:
         except Exception:
             # Best effort - don't fail if logging fails
             pass
+
 
     def end_task_session(
         self, final_status: str = "completed", summary: Optional[str] = None
@@ -164,6 +167,7 @@ class ToolUsageTracker:
 
         return session_summary
 
+
     def _generate_tools_summary(self) -> Dict[str, Any]:
         """Generate a summary of tools used in the current session."""
         if not self.session_tools:
@@ -195,6 +199,7 @@ class ToolUsageTracker:
             "unique_tools": len(tool_counts),
             "unique_tool_types": len(tool_types),
         }
+
 
     def display_tools_summary(self, session_summary: Dict[str, Any]) -> None:
         """Display a formatted summary of tools used during task execution."""
@@ -245,6 +250,7 @@ class ToolUsageTracker:
 
         print("=" * 60 + "\n")
 
+
     def get_recent_tool_usage(self, limit: int = 20) -> List[Dict[str, Any]]:
         """Get recent tool usage from the log."""
         if not self.tools_log_path.exists():
@@ -265,7 +271,6 @@ class ToolUsageTracker:
 
         # Return most recent tools
         return tools[-limit:]
-
 
 # Global instance for easy access
 _tool_tracker = None

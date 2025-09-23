@@ -10,7 +10,6 @@ Use ai_onboard.cli.commands_refactored.main() instead.
 """
 
 import argparse
-import json
 from pathlib import Path
 
 from ..core import (
@@ -344,7 +343,8 @@ def main(argv=None):
 
         if args.cmd == "kaizen":
             print(
-                "Kaizen: ingesting telemetry and nudging schedules / bounds (lightweight)."
+                "Kaizen: ingesting telemetry and \
+                    nudging schedules / bounds (lightweight)."
             )
             optimizer.nudge_from_metrics(root)
             return
@@ -364,7 +364,8 @@ def main(argv=None):
                 summary_lines = []
                 for pz in proposals.get("proposals", [])[:5]:
                     summary_lines.append(
-                        f"• {pz['id']} → {pz['title']} (risk={pz['risk']}, est_gain={pz['estimated_gain']}, conf={pz['confidence']})"
+                        f"• {pz['id']} → {pz['title']} (risk={pz['risk']},
+                            est_gain={pz['estimated_gain']}, conf={pz['confidence']})"
                     )
 
                 questions = [
@@ -377,7 +378,8 @@ def main(argv=None):
                 gate_request = GateRequest(
                     gate_type=GateType.CONFIRMATION_REQUIRED,
                     title="Optimization Strategist Proposals",
-                    description="Review and approve optimization proposals grounded in latest evidence.",
+                    description="Review and \
+                        approve optimization proposals grounded in latest evidence.",
                     context={
                         "executive_summary": {
                             "total_proposals": len(proposals.get("proposals", [])),
@@ -407,7 +409,8 @@ def main(argv=None):
 
                 selected = plan.get("selected_proposal", {})
                 sel_line = (
-                    f"• {selected.get('id','?')} → {selected.get('title','?')} (risk={selected.get('risk','?')}, est_gain={selected.get('estimated_gain','?')}, conf={selected.get('confidence','?')})"
+                    f"• {selected.get('id','?')} → {selected.get('title','?')} (risk={selected.get('risk','?')},
+                        est_gain={selected.get('estimated_gain','?')}, conf={selected.get('confidence','?')})"
                     if selected
                     else "• No proposal selected"
                 )
@@ -481,7 +484,7 @@ def main(argv=None):
 
         # Clean, early handler for cleanup to avoid legacy garbled prints below
         if args.cmd == "cleanup":
-            print_activity("Scanning for files to clean up...", "search")
+            print_activity("Scanning for files to clean up...")
 
             # Always start with dry - run to show what would be deleted
             result = cleanup.safe_cleanup(root, dry_run=True)
@@ -502,7 +505,8 @@ def main(argv=None):
                     print(f"  - {path.relative_to(root)}")
                 if len(result["scan_result"]["non_critical"]) > 10:
                     print(
-                        f"  ... and {len(result['scan_result']['non_critical']) - 10} more"
+                        f"  ... and \
+                            {len(result['scan_result']['non_critical']) - 10} more"
                     )
                 return
 
@@ -608,26 +612,26 @@ def main(argv=None):
                 gate_id = "progress_scan_confirmation"
 
                 # Create executive - level task descriptions function
+
                 def get_task_descriptions(task_ids):
                     """Convert task IDs to executive - level descriptions."""
                     task_descriptions = {
                         # Core Infrastructure (T1 - T7)
-                        "T1": "Project Structure & Setup - Basic project foundation and directory structure",
-                        "T2": "Development Environment Configuration - Python virtual environment and dependency management",
-                        "T3": "CI / CD Pipeline Setup - GitHub Actions workflows for automated testing and deployment",
-                        "T4": "Vision System Design - Core AI agent vision and alignment framework architecture",
-                        "T5": "Vision Validation Logic - Quality scoring and validation for AI agent vision",
-                        "T6": "Vision Implementation - Complete vision interrogation system deployment",
-                        "T7": "AI Agent Collaboration - Multi - agent communication and orchestration protocols",
+                        "T1": "Project Structure & Setup - Basic project foundation and \
+                            directory structure", "T2": "Development Environment Configuration - Python virtual environment and \
+                            dependency management", "T3": "CI / CD Pipeline Setup - GitHub Actions workflows for automated testing and \
+                            deployment", "T4": "Vision System Design - Core AI agent vision and \
+                            alignment framework architecture", "T5": "Vision Validation Logic - Quality scoring and \
+                            validation for AI agent vision", "T6": "Vision Implementation - Complete vision interrogation system deployment", "T7": "AI Agent Collaboration - Multi - agent communication and \
+                            orchestration protocols",
                         # System Robustness & Quality (T20 - T24)
-                        "T20": "Error Handling System - Automatic error interception and intelligent debugging",
-                        "T22": "Learning Feedback Loops - Continuous improvement through system learning",
-                        "T24": "Code Quality Standards - Black formatting and pre - commit hooks enforcement",
+                        "T20": "Error Handling System - Automatic error interception and \
+                            intelligent debugging", "T22": "Learning Feedback Loops - Continuous improvement through system learning", "T24": "Code Quality Standards - Black formatting and \
+                            pre - commit hooks enforcement",
                         # Enhanced Testing Foundation (T29 - T32)
-                        "T29": "Advanced Test Metrics - Enhanced performance monitoring and confidence scoring",
-                        "T30": "Intelligent Test Integration - SmartDebugger integration for error analysis",
-                        "T31": "Performance Monitoring - Baseline monitoring and degradation alerts",
-                        "T32": "Comprehensive Reporting - JSON / HTML reports with trend analysis",
+                        "T29": "Advanced Test Metrics - Enhanced performance monitoring and \
+                            confidence scoring", "T30": "Intelligent Test Integration - SmartDebugger integration for error analysis", "T31": "Performance Monitoring - Baseline monitoring and \
+                            degradation alerts", "T32": "Comprehensive Reporting - JSON / HTML reports with trend analysis",
                     }
 
                     descriptions = []
@@ -1084,7 +1088,7 @@ def main(argv=None):
             return
 
         if args.cmd == "cleanup":
-            print_activity("Scanning for files to clean up...", "search")
+            print_activity("Scanning for files to clean up...")
 
             # Always start with dry - run to show what would be deleted
             result = cleanup.safe_cleanup(root, dry_run=True)
@@ -1101,13 +1105,14 @@ def main(argv=None):
                 return
 
             if args.dry_run:
-                print_activity("DRY RUN MODE - No files will be deleted", "search")
+                print_activity("DRY RUN MODE - No files will be deleted")
                 print("Files that would be deleted:")
                 for path in result["scan_result"]["non_critical"][:10]:  # Show first 10
                     print(f"  - {path.relative_to(root)}")
                 if len(result["scan_result"]["non_critical"]) > 10:
                     print(
-                        f"  ... and {len(result['scan_result']['non_critical']) - 10} more"
+                        f"  ... and \
+                            {len(result['scan_result']['non_critical']) - 10} more"
                     )
                 return
 

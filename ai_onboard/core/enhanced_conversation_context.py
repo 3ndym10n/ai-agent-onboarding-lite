@@ -2,7 +2,8 @@
 Enhanced Conversation Context Management (T8) - Advanced context tracking for AI agents.
 
 This module provides enhanced conversation context management capabilities specifically
-designed for seamless AI agent collaboration, including context sharing, memory persistence,
+designed for seamless AI agent collaboration,
+    including context sharing, memory persistence,
 and cross - session continuity.
 """
 
@@ -21,8 +22,8 @@ from .unified_metrics_collector import (
     get_unified_metrics_collector,
 )
 
-
 @dataclass
+
 class ContextMemory:
     """Enhanced memory structure for conversation context."""
 
@@ -48,8 +49,8 @@ class ContextMemory:
     relevance_score: float = 1.0
     importance_level: str = "normal"  # low, normal, high, critical
 
-
 @dataclass
+
 class CrossSessionContext:
     """Context that persists across multiple sessions."""
 
@@ -73,8 +74,8 @@ class CrossSessionContext:
     safety_preferences: Dict[str, Any] = field(default_factory=dict)
     communication_style: str = "detailed"  # brief, detailed, technical
 
-
 @dataclass
+
 class ContextSharingProfile:
     """Profile for sharing context between AI agents."""
 
@@ -105,6 +106,7 @@ class ContextSharingProfile:
 class EnhancedConversationContextManager:
     """Enhanced conversation context management for AI agent collaboration."""
 
+
     def __init__(self, project_root: Path):
         self.root = project_root
         self.context_dir = project_root / ".ai_onboard" / "enhanced_context"
@@ -130,6 +132,7 @@ class EnhancedConversationContextManager:
 
         # Load existing data
         self._load_persistent_data()
+
 
     def _load_persistent_data(self):
         """Load persistent context data from storage."""
@@ -165,6 +168,7 @@ class EnhancedConversationContextManager:
         except Exception as e:
             print(f"Warning: Failed to load persistent context data: {e}")
 
+
     def _save_persistent_data(self):
         """Save persistent context data to storage."""
         try:
@@ -191,6 +195,7 @@ class EnhancedConversationContextManager:
 
         except Exception as e:
             print(f"Warning: Failed to save persistent context data: {e}")
+
 
     def enhance_session_context(self, session_id: str) -> Dict[str, Any]:
         """Enhance a session with cross - session context and memories."""
@@ -264,6 +269,7 @@ class EnhancedConversationContextManager:
             self._record_metric("context_enhancement_error", 1)
             return {"error": str(e)}
 
+
     def create_context_memory(
         self,
         session_id: str,
@@ -326,6 +332,7 @@ class EnhancedConversationContextManager:
         except Exception:
             self._record_metric("context_memory_error", 1)
             return ""
+
 
     def share_context_with_agent(
         self, session_id: str, target_agent_id: str, context_types: List[str]
@@ -419,6 +426,7 @@ class EnhancedConversationContextManager:
             self._record_metric("context_sharing_error", 1)
             return {"error": str(e)}
 
+
     def get_context_continuity_summary(self, user_id: str) -> Dict[str, Any]:
         """Get a summary of context continuity for a user across sessions."""
         try:
@@ -487,6 +495,7 @@ class EnhancedConversationContextManager:
         except Exception as e:
             return {"error": str(e)}
 
+
     def _get_or_create_cross_session_context(self, user_id: str) -> CrossSessionContext:
         """Get or create cross - session context for a user."""
         if user_id not in self.cross_session_contexts:
@@ -499,6 +508,7 @@ class EnhancedConversationContextManager:
             self._save_persistent_data()
 
         return self.cross_session_contexts[user_id]
+
 
     def _get_relevant_memories(
         self, session_id: str, user_id: str
@@ -551,6 +561,7 @@ class EnhancedConversationContextManager:
         relevant_memories.sort(key=lambda m: m.relevance_score, reverse=True)
         return relevant_memories[:10]  # Top 10 most relevant
 
+
     def _find_related_sessions(self, session_id: str) -> List[Dict[str, Any]]:
         """Find sessions related to the current one."""
         related = []
@@ -573,6 +584,7 @@ class EnhancedConversationContextManager:
                     )
 
         return related
+
 
     def _update_cross_session_context(
         self, user_id: str, session_id: str, topic: str, key_facts: List[str]
@@ -597,6 +609,7 @@ class EnhancedConversationContextManager:
         cross_context.last_updated = time.time()
         self._save_persistent_data()
 
+
     def _filter_sensitive_content(
         self, content: List[Dict[str, Any]], sensitive_topics: List[str]
     ) -> List[Dict[str, Any]]:
@@ -613,6 +626,7 @@ class EnhancedConversationContextManager:
 
         return filtered
 
+
     def _count_filtered_items(self, shared_context: Dict[str, Any]) -> int:
         """Count filtered items in shared context."""
         count = 0
@@ -624,6 +638,7 @@ class EnhancedConversationContextManager:
             else:
                 count += 1
         return count
+
 
     def _assess_user_experience(self, cross_context: CrossSessionContext) -> str:
         """Assess user experience level based on cross - session context."""
@@ -639,6 +654,7 @@ class EnhancedConversationContextManager:
             return "beginner"
         else:
             return "new"
+
 
     def _record_metric(
         self, name: str, value: float, dimensions: Optional[Dict[str, Any]] = None
@@ -656,7 +672,6 @@ class EnhancedConversationContextManager:
             self.metrics_collector.collect_metric(event)
         except Exception:
             pass  # Don't fail on metric errors
-
 
 # Global instance
 _enhanced_context_manager: Optional[EnhancedConversationContextManager] = None

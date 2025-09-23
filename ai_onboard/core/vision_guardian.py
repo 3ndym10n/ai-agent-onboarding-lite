@@ -1,5 +1,6 @@
 """
-Vision Guardian: Ensures all decisions align with project vision and prevents scope drift.
+Vision Guardian: Ensures all decisions align with project vision and \
+    prevents scope drift.
 """
 
 import json
@@ -12,11 +13,13 @@ from . import utils
 class VisionGuardian:
     """Ensures decisions align with project vision and manages scope changes."""
 
+
     def __init__(self, root: Path):
         self.root = root
         self.charter_path = root / ".ai_onboard" / "charter.json"
         self.plan_path = root / ".ai_onboard" / "plan.json"
         self.vision_log_path = root / ".ai_onboard" / "vision_log.jsonl"
+
 
     def get_vision_context(self) -> Dict[str, Any]:
         """Get current vision, objectives, and constraints."""
@@ -32,6 +35,7 @@ class VisionGuardian:
             "completed_milestones": self._get_completed_milestones(),
             "risk_appetite": charter_data.get("risk_appetite", "medium"),
         }
+
 
     def validate_decision_alignment(self, decision: Dict[str, Any]) -> Dict[str, Any]:
         """Validate if a proposed decision aligns with project vision."""
@@ -92,6 +96,7 @@ class VisionGuardian:
             "vision_context": vision_context,
         }
 
+
     def propose_scope_change(self, change_request: Dict[str, Any]) -> Dict[str, Any]:
         """Propose a scope change and request user validation."""
         validation = self.validate_decision_alignment(
@@ -132,6 +137,7 @@ class VisionGuardian:
             "reason": "Scope change aligns with project vision",
             "next_steps": ["Update charter if needed", "Update project plan"],
         }
+
 
     def update_vision_documents(self, updates: Dict[str, Any]) -> Dict[str, Any]:
         """Update vision and scoping documents based on approved changes."""
@@ -180,6 +186,7 @@ class VisionGuardian:
             "documents_updated": ["charter.json", "plan.json"],
         }
 
+
     def _aligns_with_objectives(self, description: str, objectives: List[str]) -> bool:
         """Check if a change aligns with project objectives."""
         description_lower = description.lower()
@@ -204,6 +211,7 @@ class VisionGuardian:
                 return True
         return False
 
+
     def _conflicts_with_non_goals(self, description: str, non_goals: List[str]) -> bool:
         """Check if a change conflicts with project non - goals."""
         description_lower = description.lower()
@@ -225,6 +233,7 @@ class VisionGuardian:
                 return True
         return False
 
+
     def _assess_milestone_impact(
         self, decision: Dict[str, Any], vision_context: Dict[str, Any]
     ) -> Dict[str, Any]:
@@ -236,10 +245,12 @@ class VisionGuardian:
             "impact_score": 0.0,
         }
 
+
     def _get_completed_milestones(self) -> List[str]:
         """Get list of completed milestones."""
         # This would integrate with progress tracking
         return []
+
 
     def _log_vision_event(self, event_type: str, data: Dict[str, Any]) -> None:
         """Log vision - related events for audit trail."""

@@ -5,7 +5,6 @@ This system automatically detects when gates are active and guides AI agents
 through the collaboration process.
 """
 
-import json
 import time
 from pathlib import Path
 from typing import Optional
@@ -14,17 +13,20 @@ from typing import Optional
 class AIAgentGateDetector:
     """Detects and handles active gates for AI agents."""
 
+
     def __init__(self, project_root: Path):
         self.project_root = project_root
         self.gates_dir = project_root / ".ai_onboard" / "gates"
         self.current_gate_file = self.gates_dir / "current_gate.md"
         self.response_file = self.gates_dir / "gate_response.json"
 
+
     def check_for_active_gate(self) -> Optional[str]:
         """Check if there's an active gate that needs attention."""
         if self.current_gate_file.exists():
             return self.current_gate_file.read_text(encoding="utf - 8")
         return None
+
 
     def extract_questions_from_gate(self, gate_content: str) -> list:
         """Extract questions from the gate file."""
@@ -44,6 +46,7 @@ class AIAgentGateDetector:
 
         return questions
 
+
     def create_response_file(
         self, user_responses: list, user_decision: str, additional_context: str = ""
     ):
@@ -59,6 +62,7 @@ class AIAgentGateDetector:
             json.dumps(response_data, indent=2), encoding="utf - 8"
         )
         print(f"[OK] Response file created: {self.response_file}")
+
 
     def generate_agent_prompt(self, gate_content: str) -> str:
         """Generate a prompt that forces the AI agent to follow gate protocol."""

@@ -3,8 +3,8 @@ from typing import Literal, Optional
 
 Severity = Literal["error", "warn", "info"]
 
-
 @dataclass
+
 class Issue:
     rule_id: str
     severity: Severity

@@ -1,7 +1,6 @@
 """Core CLI commands for ai - onboard."""
 
 import argparse
-import os
 import time
 from pathlib import Path
 from typing import Any, Dict, List
@@ -401,11 +400,11 @@ def _ias_gate(args, root: Path) -> bool:
         status_file = gate_system.gates_dir / "gate_status.json"
         if status_file.exists():
             try:
-                import json
 
                 status = json.loads(status_file.read_text(encoding="utf-8"))
                 created_at = status.get("created_at", 0)
-                # If gate has been waiting for more than 10 seconds, consider it timed out
+                # If gate has been waiting for more than 10 seconds,
+                    consider it timed out
                 if time.time() - created_at > 10:
                     telemetry.log_event(
                         "gate_timed_out_cleanup",
@@ -499,7 +498,6 @@ def _handle_gate_commands(args, root: Path):
             print("[ERROR] No active gate to respond to")
             return
 
-        import json
         import time
 
         response_data = {
@@ -598,7 +596,8 @@ def handle_core_commands(args, root: Path):
                     print(f"Reason: {reason}")
                     print(f"Bypass Token: {result['bypass_token']}")
                     print(
-                        f"Valid Until: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(result['expires_at']))}"
+                        f"Valid Until: {time.strftime('%Y-%m-%d %H:%M:%S',
+                            time.localtime(result['expires_at']))}"
                     )
                     print(f"Authorized By: {authorized_by}")
                     print(
@@ -616,7 +615,6 @@ def handle_core_commands(args, root: Path):
                 filter_command = getattr(args, "command", None)
 
                 try:
-                    import json
 
                     violations = []
                     if gate.execution_log_path.exists():
@@ -776,7 +774,6 @@ def handle_core_commands(args, root: Path):
         print(utils.dumps_json(rm))
     elif args.cmd == "work":
         # Show next task and log it
-        import json
 
         from ..core import runlog
 
@@ -1044,12 +1041,14 @@ def handle_core_commands(args, root: Path):
                         print(f"Ended: {session_data.get('end_time')}")
                         print(f"Status: {session_data.get('final_status', 'unknown')}")
                         print(
-                            f"Total Tools Used: {session_data.get('total_tools_used', 0)}"
+                            f"Total Tools Used: {session_data.get('total_tools_used',
+                                0)}"
                         )
                     else:
                         print("Status: In progress")
                         print(
-                            f"Tools Used So Far: {len(session_data.get('tools_used', []))}"
+                            f"Tools Used So Far: {len(session_data.get('tools_used',
+                                []))}"
                         )
                     print()
                     print("💡 Use --history to see recent tool usage")
@@ -1185,10 +1184,12 @@ def handle_core_commands(args, root: Path):
             if result["success"]:
                 print("✅ WBS update forced successfully!")
                 print(
-                    f"   📍 Phase Updated: {result.get('update_result', {}).get('phase_updated', 'unknown')}"
+                    f"   📍 Phase Updated: {result.get('update_result',
+                        {}).get('phase_updated', 'unknown')}"
                 )
                 print(
-                    f"   🔧 Update Type: {result.get('update_result', {}).get('update_type', 'unknown')}"
+                    f"   🔧 Update Type: {result.get('update_result',
+                        {}).get('update_type', 'unknown')}"
                 )
             else:
                 print(
@@ -1259,7 +1260,8 @@ def handle_core_commands(args, root: Path):
                     effort_value = factors["effort_value_ratio"]["assessment"]
 
                     print(
-                        f"   Key Factors: Critical Path: {critical_path}, Dependencies: {dependencies}, Value: {effort_value}"
+                        f"   Key Factors: Critical Path: {critical_path},
+                            Dependencies: {dependencies}, Value: {effort_value}"
                     )
 
                     # Show recommendations
@@ -1372,7 +1374,8 @@ def handle_core_commands(args, root: Path):
                         slack = result["slack_data"][task_id]
                         duration = timing["earliest_finish"] - timing["earliest_start"]
                         print(
-                            f"   {i}. {task_id} ({int(duration)} days, slack: {slack['total_slack']:.1f})"
+                            f"   {i}. {task_id} ({int(duration)} days,
+                                slack: {slack['total_slack']:.1f})"
                         )
                 else:
                     print(
@@ -1464,7 +1467,8 @@ def handle_core_commands(args, root: Path):
                 if sync_result["success"]:
                     print("✅ All WBS views synchronized successfully")
                     print(
-                        f"⏱️  Sync completed at {time.strftime('%H:%M:%S', time.localtime(sync_result['timestamp']))}"
+                        f"⏱️  Sync completed at {time.strftime('%H:%M:%S',
+                            time.localtime(sync_result['timestamp']))}"
                     )
                 else:
                     print(
@@ -1500,10 +1504,12 @@ def handle_core_commands(args, root: Path):
             print(f"📊 WBS Consistency Report:")
             print(f"   • Data Valid: {'✅' if consistency_report['valid'] else '❌'}")
             print(
-                f"   • Last Check: {time.strftime('%H:%M:%S', time.localtime(consistency_report['last_check']))}"
+                f"   • Last Check: {time.strftime('%H:%M:%S',
+                    time.localtime(consistency_report['last_check']))}"
             )
             print(
-                f"   • Master Timestamp: {time.strftime('%H:%M:%S', time.localtime(consistency_report['master_timestamp']))}"
+                f"   • Master Timestamp: {time.strftime('%H:%M:%S',
+                    time.localtime(consistency_report['master_timestamp']))}"
             )
 
             errors = consistency_report.get("errors", [])
@@ -1525,7 +1531,8 @@ def handle_core_commands(args, root: Path):
                 for view_name, status in cache_status.items():
                     expired = "❌ EXPIRED" if status["expired"] else "✅ FRESH"
                     print(
-                        f"   • {view_name}: {expired} ({status['age']:.0f}s old, {status['size']} bytes)"
+                        f"   • {view_name}: {expired} ({status['age']:.0f}s old,
+                            {status['size']} bytes)"
                     )
 
             # Generate detailed report if requested
@@ -1546,7 +1553,8 @@ def handle_core_commands(args, root: Path):
             # Attempt to fix issues if requested
             if should_fix and (errors or warnings):
                 print(
-                    f"\n🔧 Attempting to fix {len(errors)} errors and {len(warnings)} warnings..."
+                    f"\n🔧 Attempting to fix {len(errors)} errors and \
+                        {len(warnings)} warnings..."
                 )
 
                 fixed_count = 0

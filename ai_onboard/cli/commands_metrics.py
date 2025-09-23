@@ -11,7 +11,6 @@ This module provides command - line interfaces for:
 import argparse
 import csv
 import io
-import json
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List
@@ -684,6 +683,7 @@ def _generate_csv_report(report: Dict) -> str:
     writer = csv.writer(output)
 
     # Write report data as key - value pairs
+
     def write_dict(d, prefix=""):
         for key, value in d.items():
             full_key = f"{prefix}.{key}" if prefix else key

@@ -30,18 +30,19 @@ def _find_free_port(preferred: int = 8765) -> int:
 class _ApprovalHandler(BaseHTTPRequestHandler):
     server_version = "LeanApproval / 1.0"
 
+
     def _html(self, body: str) -> bytes:
         return (
             (
                 "<!doctype html >< html >< head >< meta charset='utf - 8'>"
                 "<title > AI Onboard Approval </ title>"
-                "<style > body{font - family:system - ui, Arial;margin:24px;max - width:860px}"
-                "button{padding:10px 16px;margin - right:8px}</style>"
-                "</head >< body>"
+                "<style > body{font - family:system - ui,
+                    Arial;margin:24px;max - width:860px}" "button{padding:10px 16px;margin - right:8px}</style>" "</head >< body>"
             )
             + body
             + "</body ></ html>"
         ).encode("utf - 8")
+
 
     def do_GET(self):  # noqa: N802
         ctx = self.server.context  # type: ignore[attr - defined]
@@ -73,6 +74,7 @@ class _ApprovalHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(self._html(body))
 
+
     def do_POST(self):  # noqa: N802
         length = int(self.headers.get("Content - Length", "0"))
         data = self.rfile.read(length).decode("utf - 8")
@@ -98,7 +100,8 @@ class _ApprovalHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(self._html("<h3 > Thanks! You may close this tab.</h3>"))
         # Shutdown in background to let response flush
-        Thread(target=self.server.shutdown, daemon=True).start()  # type: ignore[attr - defined]
+        Thread(target=self.server.shutdown,
+            daemon=True).start()  # type: ignore[attr - defined]
 
 
 def request_approval(

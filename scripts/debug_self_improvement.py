@@ -2,14 +2,13 @@
 """
 Debug Self-Improvement System Issues
 """
+from ai_onboard.core.common_imports import ai_onboard, sys
 
-import sys
 from pathlib import Path
 
 project_root = Path(__file__).parent
 sys.path.insert(0, str(project_root))
 
-from ai_onboard.core.pattern_recognition_system import PatternRecognitionSystem
 from ai_onboard.core.learning_persistence import LearningPersistenceManager
 from ai_onboard.core.automatic_error_prevention import AutomaticErrorPrevention
 

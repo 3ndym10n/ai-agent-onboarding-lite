@@ -7,10 +7,10 @@ the safety and impact of codebase organization changes before implementation.
 
 import ast
 import os
-from dataclasses import dataclass, field
-from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Set
+
+from ai_onboard.core.common_imports import Any, Dict, Enum, List, Path, dataclass, field
 
 from .tool_usage_tracker import get_tool_tracker
 

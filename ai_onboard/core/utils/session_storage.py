@@ -5,14 +5,13 @@ This module provides persistent storage for AI Agent Orchestration Layer session
 allowing them to survive across different CLI command executions.
 """
 
-import json
 import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-
 @dataclass
+
 class StoredSession:
     """Serializable session data for storage."""
 
@@ -47,6 +46,7 @@ class StoredSession:
 class SessionStorageManager:
     """Manages persistent storage of AAOL sessions."""
 
+
     def __init__(self, project_root: Path):
         self.project_root = project_root
         self.sessions_dir = project_root / ".ai_onboard" / "sessions"
@@ -56,10 +56,12 @@ class SessionStorageManager:
         self.index_file = self.sessions_dir / "sessions_index.json"
         self._ensure_index_exists()
 
+
     def _ensure_index_exists(self):
         """Ensure the sessions index file exists."""
         if not self.index_file.exists():
             self._save_index({})
+
 
     def _load_index(self) -> Dict[str, Dict[str, Any]]:
         """Load the sessions index."""
@@ -69,14 +71,17 @@ class SessionStorageManager:
         except (FileNotFoundError, json.JSONDecodeError):
             return {}
 
+
     def _save_index(self, index: Dict[str, Dict[str, Any]]):
         """Save the sessions index."""
         with open(self.index_file, "w", encoding="utf - 8") as f:
             json.dump(index, f, indent=2, default=str)
 
+
     def _get_session_file(self, session_id: str) -> Path:
         """Get the file path for a specific session."""
         return self.sessions_dir / f"{session_id}.json"
+
 
     def save_session(self, context: "ConversationContext") -> bool:
         """Save a session to disk."""
@@ -125,6 +130,7 @@ class SessionStorageManager:
             print(f"Error saving session {context.session_id}: {e}")
             return False
 
+
     def load_session(self, session_id: str) -> Optional["ConversationContext"]:
         """Load a session from disk."""
         try:
@@ -170,6 +176,7 @@ class SessionStorageManager:
             print(f"Error loading session {session_id}: {e}")
             return None
 
+
     def list_sessions(self, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """List all sessions, optionally filtered by user."""
         index = self._load_index()
@@ -180,6 +187,7 @@ class SessionStorageManager:
                 sessions.append({"session_id": session_id, **info})
 
         return sessions
+
 
     def get_user_sessions(self, user_id: str) -> List[Any]:
         """Get all sessions for a specific user as ConversationContext objects."""
@@ -194,6 +202,7 @@ class SessionStorageManager:
                     sessions.append(session)
 
         return sessions
+
 
     def delete_session(self, session_id: str) -> bool:
         """Delete a session from disk."""
@@ -215,6 +224,7 @@ class SessionStorageManager:
             print(f"Error deleting session {session_id}: {e}")
             return False
 
+
     def cleanup_expired_sessions(self, max_age_hours: int = 24) -> int:
         """Clean up sessions older than specified age. Returns count of deleted sessions."""
         cutoff_time = time.time() - (max_age_hours * 3600)
@@ -232,6 +242,7 @@ class SessionStorageManager:
                 deleted_count += 1
 
         return deleted_count
+
 
     def update_session_activity(self, session_id: str) -> bool:
         """Update the last activity timestamp for a session."""

@@ -5,7 +5,6 @@ This system provides a simple function that AI agents can call to
 automatically detect and handle any active gates.
 """
 
-import json
 import time
 from pathlib import Path
 from typing import List, Optional
@@ -127,8 +126,8 @@ def _extract_questions(gate_content: str) -> List[str]:
 
     return questions
 
-
 # Convenience function for quick gate handling
+
 def handle_gate_now(project_root: Path = None) -> bool:
     """Quick function to handle any active gates immediately."""
     return auto_handle_gates(project_root)

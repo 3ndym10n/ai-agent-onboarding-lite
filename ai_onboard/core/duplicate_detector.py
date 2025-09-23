@@ -21,10 +21,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
 
-from ..core.utils import read_json, write_json
-
 
 @dataclass
+
 class CodeBlock:
     """Represents a block of code for duplicate analysis."""
 
@@ -38,6 +37,7 @@ class CodeBlock:
 
 
 @dataclass
+
 class DuplicateGroup:
     """Represents a group of duplicate code blocks."""
 
@@ -47,6 +47,7 @@ class DuplicateGroup:
 
 
 @dataclass
+
 class DuplicateAnalysisResult:
     """Complete duplicate code analysis result."""
 
@@ -68,6 +69,7 @@ class DuplicateDetector:
     - Near-duplicate detection via similarity algorithms
     - Structural duplicate detection via AST comparison
     """
+
 
     def __init__(
         self,
@@ -104,6 +106,7 @@ class DuplicateDetector:
         self.code_blocks: List[CodeBlock] = []
         self.hash_to_blocks: Dict[str, List[CodeBlock]] = defaultdict(list)
         self.ast_hash_to_blocks: Dict[str, List[CodeBlock]] = defaultdict(list)
+
 
     def analyze_duplicates(self) -> DuplicateAnalysisResult:
         """
@@ -169,6 +172,7 @@ class DuplicateDetector:
         print("✅ Duplicate code analysis complete!")
         return result
 
+
     def _find_python_files(self) -> List[str]:
         """Find all Python files in the codebase."""
         python_files = []
@@ -184,6 +188,7 @@ class DuplicateDetector:
                     python_files.append(os.path.join(root, file))
 
         return python_files
+
 
     def _is_excluded(self, path: str) -> bool:
         """Check if a path should be excluded."""
@@ -203,6 +208,7 @@ class DuplicateDetector:
                     return True
 
         return False
+
 
     def _extract_code_blocks(self, file_path: str) -> List[CodeBlock]:
         """Extract meaningful code blocks from a Python file."""
@@ -273,6 +279,7 @@ class DuplicateDetector:
 
         return blocks
 
+
     def _find_function_end(self, func_node: ast.FunctionDef, lines: List[str]) -> int:
         """Find the end line of a function."""
         # Simple heuristic: find the next function/class at the same indentation level
@@ -289,13 +296,16 @@ class DuplicateDetector:
 
         return len(lines)
 
+
     def _find_class_end(self, class_node: ast.ClassDef, lines: List[str]) -> int:
         """Find the end line of a class."""
         return self._find_function_end(class_node, lines)
 
+
     def _get_line_indent(self, line: str) -> int:
         """Get the indentation level of a line."""
         return len(line) - len(line.lstrip())
+
 
     def _tokenize_code(self, code: str) -> List[str]:
         """Tokenize code into meaningful tokens for comparison."""
@@ -327,11 +337,13 @@ class DuplicateDetector:
 
         return tokens
 
+
     def _hash_content(self, content: str) -> str:
         """Generate a hash of the content."""
         # Normalize whitespace for better duplicate detection
         normalized = re.sub(r"\s+", " ", content.strip())
         return hashlib.md5(normalized.encode("utf-8")).hexdigest()
+
 
     def _find_exact_duplicates(self) -> List[DuplicateGroup]:
         """Find exact duplicate code blocks."""
@@ -346,6 +358,7 @@ class DuplicateDetector:
                 groups.append(group)
 
         return groups
+
 
     def _find_near_duplicates(self) -> List[DuplicateGroup]:
         """Find near-duplicate code blocks using similarity algorithms."""
@@ -412,6 +425,7 @@ class DuplicateDetector:
 
         return groups
 
+
     def _find_structural_duplicates(self) -> List[DuplicateGroup]:
         """Find structurally similar code blocks using AST comparison."""
         groups = []
@@ -438,6 +452,7 @@ class DuplicateDetector:
                 groups.append(group)
 
         return groups
+
 
     def _calculate_similarity(self, block1: CodeBlock, block2: CodeBlock) -> float:
         """Calculate similarity between two code blocks."""
@@ -467,10 +482,12 @@ class DuplicateDetector:
 
         return similarity
 
+
     def _hash_ast(self, tree: ast.AST) -> str:
         """Generate a hash representing the AST structure."""
         # Create a simplified representation of the AST
         structure = []
+
 
         def traverse(node, depth=0):
             if depth > 10:  # Limit depth to avoid infinite recursion
@@ -497,6 +514,7 @@ class DuplicateDetector:
         structure_str = "|".join(structure)
         return hashlib.md5(structure_str.encode("utf-8")).hexdigest()
 
+
     def _calculate_total_duplicate_lines(
         self, duplicate_groups: List[DuplicateGroup]
     ) -> int:
@@ -514,6 +532,7 @@ class DuplicateDetector:
                     processed_blocks.add(block_key)
 
         return total_lines
+
 
     def generate_duplicate_report(
         self, result: DuplicateAnalysisResult, output_path: Optional[str] = None

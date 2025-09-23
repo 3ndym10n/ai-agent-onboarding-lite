@@ -28,7 +28,8 @@ def add_advanced_test_reporting_commands(subparsers):
     parser = subparsers.add_parser(
         "test - reports",
         help="Advanced test reporting and analytics",
-        description="Generate comprehensive test reports with advanced analytics and insights",
+        description="Generate comprehensive test reports with advanced analytics and \
+            insights",
     )
 
     subcommands = parser.add_subparsers(
@@ -581,8 +582,8 @@ def _handle_config(args: argparse.Namespace, root: Path) -> None:
     except Exception as e:
         print(f"❌ Error managing configuration: {e}")
 
-
 # Helper functions
+
 def _run_tests_for_report(
     root: Path, categories: Optional[List[str]]
 ) -> List[ValidationTestCase]:
@@ -1018,6 +1019,5 @@ def _print_config_recursive(config: Dict, prefix: str):
             _print_config_recursive(value, full_key)
         else:
             print(f"  {full_key} = {value}")
-
 
 import statistics

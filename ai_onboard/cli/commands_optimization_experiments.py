@@ -9,7 +9,6 @@ This module provides command - line interfaces for:
 """
 
 import argparse
-import json
 from pathlib import Path
 
 from ..core.optimization_experiment_framework import (
@@ -289,7 +288,8 @@ def _handle_design_experiment(args: argparse.Namespace, framework) -> None:
     for condition in design.conditions:
         print(f"   • {condition.name} ({condition.condition_id})")
         print(
-            f"     Risk: {condition.risk_level}/5, Expected: {condition.expected_impact}%"
+            f"     Risk: {condition.risk_level}/5,
+                Expected: {condition.expected_impact}%"
         )
 
     print(f"\n📊 Metrics:")
@@ -484,7 +484,8 @@ def _handle_show_results(args: argparse.Namespace, framework) -> None:
             print(f"\n📊 Condition Results:")
             for condition, stats in analysis["condition_results"].items():
                 print(
-                    f"   {condition}: mean={stats['mean']:.3f}, std={stats['std']:.3f}, n={stats['count']}"
+                    f"   {condition}: mean={stats['mean']:.3f},
+                        std={stats['std']:.3f}, n={stats['count']}"
                 )
 
     if results.lessons_learned:
@@ -681,5 +682,6 @@ def _handle_template_commands(args: argparse.Namespace, framework) -> None:
         # This would implement template - based experiment creation
         print("✅ Template - based experiment creation coming soon!")
         print(
-            "💡 For now, use: opt - experiments design --name 'My Experiment' --description '...'"
+            "💡 For now,
+                use: opt - experiments design --name 'My Experiment' --description '...'"
         )

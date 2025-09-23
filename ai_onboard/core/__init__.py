@@ -1,7 +1,7 @@
 # Core modules for ai-onboard
 
 # Essential core modules
-from . import (  # Planning and project management; Validation and testing; AI agent collaboration; System utilities; Vision and alignment; Safety and cleanup; Context and debugging
+from . import (
     ai_agent_collaboration_protocol,
     alignment,
     charter,

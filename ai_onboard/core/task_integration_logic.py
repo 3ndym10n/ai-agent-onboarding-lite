@@ -16,9 +16,11 @@ from . import utils
 class TaskIntegrationLogic:
     """Logic for automatically integrating identified tasks into the project WBS."""
 
+
     def __init__(self, root: Path):
         self.root = root
         self.project_plan_path = root / ".ai_onboard" / "project_plan.json"
+
 
     def integrate_task(
         self, task_data: Dict[str, Any], context: Optional[Dict[str, Any]] = None
@@ -61,6 +63,7 @@ class TaskIntegrationLogic:
             ),
         }
 
+
     def _analyze_task_characteristics(
         self, task_data: Dict[str, Any]
     ) -> Dict[str, Any]:
@@ -75,6 +78,7 @@ class TaskIntegrationLogic:
             "skill_requirements": self._identify_skill_requirements(task_data),
         }
         return analysis
+
 
     def _classify_task_type(self, task_data: Dict[str, Any]) -> str:
         """Classify the task type based on its characteristics."""
@@ -167,6 +171,7 @@ class TaskIntegrationLogic:
         # Default classification
         return "general"
 
+
     def _assess_priority(self, task_data: Dict[str, Any]) -> str:
         """Assess the priority level of the task."""
         priority_indicators = {
@@ -203,6 +208,7 @@ class TaskIntegrationLogic:
         # Default to medium if no clear indicators
         return "medium"
 
+
     def _identify_dependencies(self, task_data: Dict[str, Any]) -> List[str]:
         """Identify potential dependencies for the task."""
         dependencies = []
@@ -236,6 +242,7 @@ class TaskIntegrationLogic:
 
         return dependencies
 
+
     def _estimate_effort(self, task_data: Dict[str, Any]) -> str:
         """Estimate the effort level required for the task."""
         text = f"{task_data.get('name', '')} {task_data.get('description', '')}".lower()
@@ -263,6 +270,7 @@ class TaskIntegrationLogic:
 
         return type_effort_map.get(task_type, "medium")
 
+
     def _assess_critical_path_impact(self, task_data: Dict[str, Any]) -> str:
         """Assess if this task impacts the critical path."""
         priority = task_data.get("priority", "medium")
@@ -287,6 +295,7 @@ class TaskIntegrationLogic:
                 return "critical_path"
 
         return "non_critical"
+
 
     def _determine_phase_alignment(self, task_data: Dict[str, Any]) -> Dict[str, Any]:
         """Determine which project phase this task aligns with."""
@@ -327,6 +336,7 @@ class TaskIntegrationLogic:
         # Default to current active phase
         return {"phase": "4.0", "confidence": 0.5, "reason": "default_current_phase"}
 
+
     def _identify_skill_requirements(self, task_data: Dict[str, Any]) -> List[str]:
         """Identify the skills required for this task."""
         skills = []
@@ -362,6 +372,7 @@ class TaskIntegrationLogic:
 
         return skills if skills else ["general_development"]
 
+
     def _determine_placement(
         self, task_analysis: Dict[str, Any], context: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
@@ -386,11 +397,13 @@ class TaskIntegrationLogic:
 
         return {
             "recommended_phase": recommended_phase,
-            "placement_type": placement_type,  # "new_subtask", "new_phase", "modify_existing"
+            "placement_type": placement_type,
+                 # "new_subtask", "new_phase", "modify_existing"
             "placement_details": placement_details,
             "confidence": phase_alignment["confidence"],
             "reasoning": phase_alignment["reason"],
         }
+
 
     def _find_best_existing_phase(
         self, task_analysis: Dict[str, Any], wbs: Dict[str, Any]
@@ -422,6 +435,7 @@ class TaskIntegrationLogic:
             [float(k) for k in wbs.keys() if k.replace(".", "").isdigit()]
         )
         return f"{int(phase_numbers[-1]) + 1}.0" if phase_numbers else "4.0"
+
 
     def _determine_placement_type(
         self, task_analysis: Dict[str, Any], phase: str, wbs: Dict[str, Any]
@@ -480,6 +494,7 @@ class TaskIntegrationLogic:
             "reason": "fallback_new_subtask",
         }
 
+
     def _generate_next_subtask_id(
         self, phase: str, existing_subtasks: Dict[str, Any]
     ) -> str:
@@ -499,6 +514,7 @@ class TaskIntegrationLogic:
 
         next_num = max(existing_ids) + 1 if existing_ids else 1
         return f"{phase}.{next_num}"
+
 
     def _find_best_subtask_match(
         self, task_analysis: Dict[str, Any], existing_subtasks: Dict[str, Any]
@@ -532,6 +548,7 @@ class TaskIntegrationLogic:
 
         return None
 
+
     def _find_or_create_general_subtask(
         self, phase: str, existing_subtasks: Dict[str, Any]
     ) -> Optional[str]:
@@ -546,6 +563,7 @@ class TaskIntegrationLogic:
 
         # Suggest creating a general subtask
         return None  # Caller will handle creating new subtask
+
 
     def _generate_integration_plan(
         self,
@@ -569,6 +587,7 @@ class TaskIntegrationLogic:
 
         return plan
 
+
     def _generate_task_id(
         self, task_data: Dict[str, Any], placement: Dict[str, Any]
     ) -> str:
@@ -586,6 +605,7 @@ class TaskIntegrationLogic:
             # Generate a standalone task ID
             base_id = placement["recommended_phase"]
             return f"{base_id}.task_{hash(task_data.get('name', 'unknown')) % 1000}"
+
 
     def _generate_integration_steps(self, placement: Dict[str, Any]) -> List[str]:
         """Generate the steps needed to integrate the task."""
@@ -627,6 +647,7 @@ class TaskIntegrationLogic:
         )
 
         return steps
+
 
     def _assess_integration_risks(
         self, task_analysis: Dict[str, Any], placement: Dict[str, Any]
@@ -681,6 +702,7 @@ class TaskIntegrationLogic:
             "mitigation_suggestions": self._generate_risk_mitigations(risks),
         }
 
+
     def _generate_risk_mitigations(self, risks: List[Dict[str, Any]]) -> List[str]:
         """Generate mitigation strategies for identified risks."""
         mitigations = []
@@ -705,6 +727,7 @@ class TaskIntegrationLogic:
             )
 
         return mitigations
+
 
     def _calculate_confidence(
         self, task_analysis: Dict[str, Any], placement: Dict[str, Any]

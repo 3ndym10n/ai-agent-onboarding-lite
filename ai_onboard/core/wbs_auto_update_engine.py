@@ -24,6 +24,7 @@ class WBSAutoUpdateEngine:
     automatically updates the WBS to reflect current project status.
     """
 
+
     def __init__(self, root: Path):
         self.root = root
         self.project_plan_path = root / ".ai_onboard" / "project_plan.json"
@@ -45,6 +46,7 @@ class WBSAutoUpdateEngine:
         # Track recently updated tasks to avoid redundant checks
         self.recent_updates: Set[str] = set()
         self.update_cooldown = 300  # 5 minutes cooldown between checks
+
 
     def auto_update_wbs(self, force: bool = False) -> Dict[str, Any]:
         """
@@ -143,6 +145,7 @@ class WBSAutoUpdateEngine:
             "duration": time.time() - start_time,
         }
 
+
     def _get_candidate_tasks(
         self, wbs_data: Dict[str, Any], force: bool = False
     ) -> Dict[str, Dict]:
@@ -170,6 +173,7 @@ class WBSAutoUpdateEngine:
                 candidates[task_id] = subtask_data
 
         return candidates
+
 
     def _assess_task_completion(
         self, task_id: str, task_data: Dict[str, Any]
@@ -213,6 +217,7 @@ class WBSAutoUpdateEngine:
             "reasons": completion_reasons,
         }
 
+
     def _check_code_implementation(
         self, task_id: str, task_name: str, description: str
     ) -> Dict[str, Any]:
@@ -246,6 +251,7 @@ class WBSAutoUpdateEngine:
             "reason": reason,
         }
 
+
     def _check_test_coverage(
         self, task_id: str, task_name: str, description: str
     ) -> Dict[str, Any]:
@@ -265,6 +271,7 @@ class WBSAutoUpdateEngine:
                 reason = "Test files found"
 
         return {"source": "test_coverage", "confidence": confidence, "reason": reason}
+
 
     def _check_documentation(
         self, task_id: str, task_name: str, description: str
@@ -286,6 +293,7 @@ class WBSAutoUpdateEngine:
 
         return {"source": "documentation", "confidence": confidence, "reason": reason}
 
+
     def _check_cli_commands(
         self, task_id: str, task_name: str, description: str
     ) -> Dict[str, Any]:
@@ -305,6 +313,7 @@ class WBSAutoUpdateEngine:
                 reason = "CLI implementation found"
 
         return {"source": "cli_commands", "confidence": confidence, "reason": reason}
+
 
     def _check_module_structure(
         self, task_id: str, task_name: str, description: str
@@ -330,6 +339,7 @@ class WBSAutoUpdateEngine:
             "reason": reason,
         }
 
+
     def _check_implementation_files(self, task_name: str) -> bool:
         """Check if implementation files exist for the given task."""
         # Simple heuristic: look for files that might correspond to the task
@@ -350,6 +360,7 @@ class WBSAutoUpdateEngine:
 
         return False
 
+
     def _check_test_files(self, task_name: str) -> bool:
         """Check if test files exist for the given task."""
         # Look for test files that might correspond to the task
@@ -365,6 +376,7 @@ class WBSAutoUpdateEngine:
             pass
 
         return False
+
 
     def _check_documentation_files(self, task_name: str) -> bool:
         """Check if documentation files exist for the given task."""
@@ -383,6 +395,7 @@ class WBSAutoUpdateEngine:
 
         return False
 
+
     def _check_cli_implementation(self, task_name: str) -> bool:
         """Check if CLI implementation exists for the given task."""
         # Look for CLI-related files and code
@@ -398,11 +411,13 @@ class WBSAutoUpdateEngine:
 
         return False
 
+
     def _check_structural_changes(self, task_name: str) -> bool:
         """Check if structural changes exist for the given task."""
         # This is a basic check - look for recent file changes
         # In a real implementation, this would check git history or file timestamps
         return True  # Placeholder - assume structural changes exist
+
 
     def _update_task_completion(
         self,
@@ -463,6 +478,7 @@ class WBSAutoUpdateEngine:
         except Exception as e:
             return {"success": False, "error": f"Failed to update task: {str(e)}"}
 
+
     def _load_wbs(self) -> Optional[Dict[str, Any]]:
         """Load the current WBS data."""
         try:
@@ -471,6 +487,7 @@ class WBSAutoUpdateEngine:
         except Exception as e:
             print(f"Warning: Failed to load WBS: {e}")
         return None
+
 
     def _save_wbs(self, wbs_data: Dict[str, Any]) -> Dict[str, Any]:
         """Save updated WBS data with backup."""
@@ -490,6 +507,7 @@ class WBSAutoUpdateEngine:
         except Exception as e:
             return {"success": False, "error": f"Failed to save WBS: {str(e)}"}
 
+
     def _record_update_event(self, event_data: Dict[str, Any]) -> None:
         """Record an auto-update event to the log."""
         try:
@@ -497,6 +515,7 @@ class WBSAutoUpdateEngine:
                 f.write(json.dumps(event_data, ensure_ascii=False) + "\n")
         except Exception as e:
             print(f"Warning: Failed to record update event: {e}")
+
 
     def _is_recently_updated(self, task_id: str) -> bool:
         """Check if a task was recently updated to avoid redundant checks."""
@@ -525,6 +544,7 @@ class WBSAutoUpdateEngine:
             pass
 
         return False
+
 
     def get_update_history(self, limit: int = 20) -> List[Dict[str, Any]]:
         """Get recent auto-update history."""

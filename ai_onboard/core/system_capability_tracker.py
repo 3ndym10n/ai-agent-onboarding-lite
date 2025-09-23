@@ -55,8 +55,8 @@ class UsagePattern(Enum):
     POWER_USER = "power_user"  # Advanced / expert usage
     AUTOMATION = "automation"  # Automated / scripted usage
 
-
 @dataclass
+
 class CapabilityUsageEvent:
     """A single capability usage event."""
 
@@ -87,8 +87,8 @@ class CapabilityUsageEvent:
     memory_usage_mb: Optional[float] = None
     cpu_usage_percent: Optional[float] = None
 
-
 @dataclass
+
 class CapabilityMetrics:
     """Metrics for a specific capability."""
 
@@ -120,8 +120,8 @@ class CapabilityMetrics:
     common_errors: Dict[str, int] = field(default_factory=dict)
     user_satisfaction: float = 0.0
 
-
 @dataclass
+
 class SystemCapabilityReport:
     """Comprehensive system capability usage report."""
 
@@ -159,8 +159,10 @@ class SystemCapabilityReport:
 class CapabilityRegistry:
     """Registry of all system capabilities."""
 
+
     def __init__(self):
         self.capabilities = self._initialize_capabilities()
+
 
     def _initialize_capabilities(self) -> Dict[str, Dict[str, Any]]:
         """Initialize the registry of system capabilities."""
@@ -330,9 +332,11 @@ class CapabilityRegistry:
             },
         }
 
+
     def get_capability_info(self, capability_name: str) -> Optional[Dict[str, Any]]:
         """Get information about a capability."""
         return self.capabilities.get(capability_name)
+
 
     def get_capabilities_by_category(self, category: CapabilityCategory) -> List[str]:
         """Get all capabilities in a specific category."""
@@ -341,6 +345,7 @@ class CapabilityRegistry:
             for name, info in self.capabilities.items()
             if info["category"] == category
         ]
+
 
     def get_capabilities_by_user_level(self, user_level: str) -> List[str]:
         """Get capabilities appropriate for a user level."""
@@ -353,6 +358,7 @@ class CapabilityRegistry:
 
 class SystemCapabilityTracker:
     """Main system capability usage tracker."""
+
 
     def __init__(self, root: Path):
         self.root = root
@@ -379,6 +385,7 @@ class SystemCapabilityTracker:
 
         # Initialize
         self._load_existing_metrics()
+
 
     def _load_config(self) -> Dict[str, Any]:
         """Load capability tracking configuration."""
@@ -415,6 +422,7 @@ class SystemCapabilityTracker:
 
         return default_config
 
+
     def _load_existing_metrics(self):
         """Load existing capability metrics from storage."""
         if self.metrics_file.exists():
@@ -447,6 +455,7 @@ class SystemCapabilityTracker:
 
             except Exception as e:
                 print(f"Warning: Failed to load existing metrics: {e}")
+
 
     def record_capability_usage(
         self,
@@ -524,6 +533,7 @@ class SystemCapabilityTracker:
 
         return event
 
+
     def _store_usage_event(self, event: CapabilityUsageEvent):
         """Store usage event to persistent storage."""
         try:
@@ -553,6 +563,7 @@ class SystemCapabilityTracker:
 
         except Exception as e:
             print(f"Warning: Failed to store usage event: {e}")
+
 
     def _update_capability_metrics(self, event: CapabilityUsageEvent):
         """Update capability metrics based on usage event."""
@@ -619,11 +630,13 @@ class SystemCapabilityTracker:
         metrics.success_rate = success_count / metrics.total_uses
         metrics.error_rate = 1.0 - metrics.success_rate
 
+
     def get_capability_metrics(
         self, capability_name: str
     ) -> Optional[CapabilityMetrics]:
         """Get metrics for a specific capability."""
         return self.capability_metrics.get(capability_name)
+
 
     def get_category_metrics(
         self, category: CapabilityCategory
@@ -634,6 +647,7 @@ class SystemCapabilityTracker:
             for name, metrics in self.capability_metrics.items()
             if metrics.category == category
         }
+
 
     def get_usage_trends(self, capability_name: str, days: int = 30) -> Dict[str, Any]:
         """Get usage trends for a capability over time."""
@@ -682,6 +696,7 @@ class SystemCapabilityTracker:
                 sum(recent_usage.values()) / len(recent_usage) if recent_usage else 0
             ),
         }
+
 
     def get_user_capability_profile(self, user_id: str) -> Dict[str, Any]:
         """Get capability usage profile for a specific user."""
@@ -748,6 +763,7 @@ class SystemCapabilityTracker:
                 ]
             ),
         }
+
 
     def generate_system_report(self, days: int = 30) -> SystemCapabilityReport:
         """Generate comprehensive system capability usage report."""
@@ -850,6 +866,7 @@ class SystemCapabilityTracker:
 
         return report
 
+
     def _analyze_common_workflows(self) -> List[Dict[str, Any]]:
         """Analyze common command sequences to identify workflows."""
         workflows = []
@@ -889,6 +906,7 @@ class SystemCapabilityTracker:
 
         return sorted(common_workflows, key=lambda x: x["frequency"], reverse=True)[:10]
 
+
     def _analyze_user_behavior_patterns(self) -> Dict[str, Any]:
         """Analyze overall user behavior patterns."""
         patterns = {
@@ -901,6 +919,7 @@ class SystemCapabilityTracker:
         # This would analyze user profiles to categorize behavior patterns
         # Simplified implementation
         return patterns
+
 
     def _get_performance_leaders(self) -> List[Dict[str, Any]]:
         """Get capabilities with best performance metrics."""
@@ -919,6 +938,7 @@ class SystemCapabilityTracker:
                 )
 
         return sorted(leaders, key=lambda x: x["performance_score"], reverse=True)[:5]
+
 
     def _get_performance_concerns(self) -> List[Dict[str, Any]]:
         """Get capabilities with performance concerns."""
@@ -943,6 +963,7 @@ class SystemCapabilityTracker:
                         concerns[-1]["concerns"].append("low_success_rate")
 
         return sorted(concerns, key=lambda x: len(x["concerns"]), reverse=True)
+
 
     def _get_optimization_opportunities(self) -> List[Dict[str, Any]]:
         """Identify optimization opportunities."""
@@ -974,6 +995,7 @@ class SystemCapabilityTracker:
 
         return opportunities
 
+
     def _generate_feature_recommendations(self) -> List[str]:
         """Generate feature promotion recommendations."""
         recommendations = []
@@ -992,6 +1014,7 @@ class SystemCapabilityTracker:
 
         return recommendations[:5]
 
+
     def _generate_optimization_recommendations(self) -> List[str]:
         """Generate optimization recommendations."""
         recommendations = []
@@ -1005,6 +1028,7 @@ class SystemCapabilityTracker:
 
         return recommendations[:5]
 
+
     def _generate_ux_recommendations(self) -> List[str]:
         """Generate UX improvement recommendations."""
         recommendations = []
@@ -1017,6 +1041,7 @@ class SystemCapabilityTracker:
                 )
 
         return recommendations[:5]
+
 
     def _serialize_report(self, report: SystemCapabilityReport) -> Dict[str, Any]:
         """Serialize report for JSON storage."""
@@ -1041,6 +1066,7 @@ class SystemCapabilityTracker:
             "optimization_recommendations": report.optimization_recommendations,
             "user_experience_improvements": report.user_experience_improvements,
         }
+
 
     def save_metrics(self):
         """Save capability metrics to persistent storage."""
@@ -1076,7 +1102,6 @@ class SystemCapabilityTracker:
 
         except Exception as e:
             print(f"Warning: Failed to save metrics: {e}")
-
 
 # Global instance
 _capability_tracker: Optional[SystemCapabilityTracker] = None

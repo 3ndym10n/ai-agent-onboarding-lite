@@ -8,7 +8,6 @@ This module implements a comprehensive gate system that:
 4. Enforces safety protocols for task execution
 """
 
-import json
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
@@ -22,6 +21,7 @@ from .wbs_update_engine import update_wbs_for_task
 
 class TaskExecutionGate:
     """Comprehensive gate system for task execution control."""
+
 
     def __init__(self, root: Path):
         self.root = root
@@ -44,8 +44,10 @@ class TaskExecutionGate:
             "strict_mode": True,  # Require all tasks to be WBS-updated
             "auto_update": True,  # Attempt to update WBS automatically
             "emergency_bypass_timeout": 3600,  # 1 hour bypass validity
-            "max_blocked_attempts": 3,  # Allow retries before requiring manual intervention
+            "max_blocked_attempts": 3,
+                 # Allow retries before requiring manual intervention
         }
+
 
     def register_new_task(
         self,
@@ -57,7 +59,8 @@ class TaskExecutionGate:
 
         Args:
             task_data: Task information
-            source: Where the task was identified from (e.g., "error_analysis", "user_request")
+            source: Where the task was identified from (e.g.,
+                "error_analysis", "user_request")
             context: Additional context
 
         Returns:
@@ -106,6 +109,7 @@ class TaskExecutionGate:
             "requires_wbs_update": True,
             "message": "Task registered - WBS update required before execution",
         }
+
 
     def update_wbs_for_pending_tasks(self) -> Dict[str, Any]:
         """Update WBS for all pending tasks."""
@@ -179,6 +183,7 @@ class TaskExecutionGate:
             "results": results,
         }
 
+
     def check_execution_allowed(self, task_id: str) -> Dict[str, Any]:
         """Check if execution is allowed for a given task."""
         pending_data = utils.read_json(
@@ -207,6 +212,7 @@ class TaskExecutionGate:
             "status": "not_registered",
             "message": "Task not found in pending tasks - assuming execution allowed",
         }
+
 
     def check_execution_gates(
         self,
@@ -301,6 +307,7 @@ class TaskExecutionGate:
             "message": "All gates passed - execution allowed",
         }
 
+
     def enforce_execution_gates(
         self,
         command: str,
@@ -345,6 +352,7 @@ class TaskExecutionGate:
 
         return gate_check
 
+
     def create_emergency_bypass(
         self,
         command: str,
@@ -388,6 +396,7 @@ class TaskExecutionGate:
             }
         except Exception as e:
             return {"success": False, "error": f"Failed to create bypass: {str(e)}"}
+
 
     def _identify_affected_tasks(
         self, command: str, args: Dict[str, Any], context: Optional[Dict[str, Any]]
@@ -442,6 +451,7 @@ class TaskExecutionGate:
 
         return list(set(affected_tasks))  # Remove duplicates
 
+
     def _task_id_exists(self, task_id: str) -> bool:
         """Check if a task ID exists in the system."""
         try:
@@ -465,6 +475,7 @@ class TaskExecutionGate:
             return False
         except Exception:
             return False
+
 
     def _attempt_auto_wbs_updates(self, task_ids: List[str]) -> Dict[str, Any]:
         """Attempt to automatically update WBS for specified tasks."""
@@ -514,6 +525,7 @@ class TaskExecutionGate:
             "total_attempted": len(task_ids),
         }
 
+
     def _check_emergency_bypass(self, command: str) -> Dict[str, Any]:
         """Check if there's an active emergency bypass for this command."""
         try:
@@ -555,6 +567,7 @@ class TaskExecutionGate:
 
         return {"bypassed": False}
 
+
     def _update_bypass_usage(self, bypass: Dict[str, Any]) -> None:
         """Update bypass usage in the log."""
         try:
@@ -580,6 +593,7 @@ class TaskExecutionGate:
         except Exception as e:
             print(f"Warning: Error updating bypass usage: {e}")
 
+
     def _log_gate_violation(
         self, command: str, args: Dict[str, Any], gate_check: Dict[str, Any]
     ) -> None:
@@ -598,6 +612,7 @@ class TaskExecutionGate:
                 f.write(json.dumps(log_entry, ensure_ascii=False) + "\n")
         except Exception as e:
             print(f"Warning: Failed to log gate violation: {e}")
+
 
     def _log_gate_success(
         self, command: str, args: Dict[str, Any], gate_check: Dict[str, Any]
@@ -618,11 +633,13 @@ class TaskExecutionGate:
         except Exception as e:
             print(f"Warning: Failed to log gate success: {e}")
 
+
     def _increment_blocked_attempts(self, command: str, args: Dict[str, Any]) -> None:
         """Increment the counter of blocked attempts for this command."""
         # This could be enhanced to track attempts per command/args combination
         # For now, it's a placeholder for future enhancement
         pass
+
 
     def get_pending_tasks_summary(self) -> Dict[str, Any]:
         """Get a summary of all pending tasks."""
@@ -650,6 +667,7 @@ class TaskExecutionGate:
         summary["by_source"] = sources
 
         return summary
+
 
     def cleanup_completed_tasks(self, max_age_days: int = 30) -> int:
         """Remove old completed tasks from the pending list."""
@@ -699,6 +717,7 @@ class TaskExecutionGate:
 
         return removed_count
 
+
     def _log_task_registration(
         self, task_data: Dict[str, Any], action: str, integration_result: Dict[str, Any]
     ) -> None:
@@ -723,6 +742,7 @@ class TaskExecutionGate:
                 f.write("\n")
         except Exception:
             pass  # Best effort logging
+
 
     def force_wbs_update(self, task_id: str) -> Dict[str, Any]:
         """Force a WBS update for a specific pending task."""

@@ -6,6 +6,11 @@ the Prime Directive Cascade files that control AI agent behavior.
 """
 
 import argparse
+from pathlib import Path
+
+from ..core.directive_generator import get_directive_generator
+
+
 def add_directive_commands(subparsers):
     """Add directive management commands to CLI."""
 
@@ -24,7 +29,8 @@ def add_directive_commands(subparsers):
     generate_parser = directive_subparsers.add_parser(
         "generate",
         help="Generate all directive files",
-        description="Generate all Prime Directive Cascade files with current system state",
+        description="Generate all Prime Directive Cascade files with current "
+        "system state",
     )
     generate_parser.add_argument(
         "--force", action="store_true", help="Force regeneration even if files exist"
@@ -55,7 +61,8 @@ def add_directive_commands(subparsers):
     )
     show_parser.add_argument(
         "directive_name",
-        help="Name of the directive file to show (e.g., 'prime', 'persona', 'integration')",
+        help="Name of the directive file to show (e.g., 'prime', 'persona', "
+        "'integration')",
     )
     show_parser.set_defaults(func=_handle_show_directive)
 

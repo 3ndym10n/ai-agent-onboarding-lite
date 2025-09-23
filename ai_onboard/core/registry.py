@@ -6,9 +6,9 @@ from .issue import Issue
 class CheckPlugin(Protocol):
     name: str
 
+
     def run(self, paths: List[str], ctx: Dict[str, Any]) -> List[Issue]:
         ...  # fmt: skip
-
 
 REGISTRY: Dict[Tuple[str, str], List[CheckPlugin]] = {}
 

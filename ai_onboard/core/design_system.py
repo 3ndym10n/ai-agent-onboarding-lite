@@ -2,10 +2,10 @@
 Design System Management
 
 This module manages design tokens, components, and ensures design consistency
-across the project by tracking design decisions and validating against established patterns.
+across the project by tracking design decisions and \
+    validating against established patterns.
 """
 
-import json
 import logging
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -13,8 +13,8 @@ from typing import Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
+
 class DesignToken:
     """A design token (color, typography, spacing, etc.)"""
 
@@ -24,8 +24,8 @@ class DesignToken:
     description: str
     usage: Optional[List[str]] = None
 
-
 @dataclass
+
 class DesignComponent:
     """A reusable design component"""
 
@@ -36,8 +36,8 @@ class DesignComponent:
     usage_count: int = 0
     last_used: str = ""
 
-
 @dataclass
+
 class DesignPattern:
     """A design pattern or interaction pattern"""
 
@@ -51,6 +51,7 @@ class DesignPattern:
 class DesignSystemManager:
     """Manages the project's design system"""
 
+
     def __init__(self, project_path: str):
         self.project_path = Path(project_path)
         self.design_system_path = self.project_path / ".ai_onboard" / "design_system"
@@ -63,6 +64,7 @@ class DesignSystemManager:
         self.tokens = self._load_tokens()
         self.components = self._load_components()
         self.patterns = self._load_patterns()
+
 
     def _load_tokens(self) -> Dict[str, DesignToken]:
         """Load design tokens from file"""
@@ -79,6 +81,7 @@ class DesignSystemManager:
 
         return self._create_default_tokens()
 
+
     def _load_components(self) -> Dict[str, DesignComponent]:
         """Load design components from file"""
         if self.components_file.exists():
@@ -94,6 +97,7 @@ class DesignSystemManager:
 
         return {}
 
+
     def _load_patterns(self) -> Dict[str, DesignPattern]:
         """Load design patterns from file"""
         if self.patterns_file.exists():
@@ -108,6 +112,7 @@ class DesignSystemManager:
                 logger.error(f"Error loading design patterns: {e}")
 
         return self._create_default_patterns()
+
 
     def _create_default_tokens(self) -> Dict[str, DesignToken]:
         """Create default design tokens"""
@@ -163,6 +168,7 @@ class DesignSystemManager:
             ),
         }
 
+
     def _create_default_patterns(self) -> Dict[str, DesignPattern]:
         """Create default design patterns"""
         return {
@@ -175,7 +181,8 @@ class DesignSystemManager:
                     "information grouping",
                 ],
                 examples=["Product cards", "Feature cards", "Content cards"],
-                accessibility_notes="Ensure proper heading hierarchy and keyboard navigation",
+                accessibility_notes="Ensure proper heading hierarchy and \
+                    keyboard navigation",
             ),
             "form - validation": DesignPattern(
                 name="form - validation",
@@ -201,6 +208,7 @@ class DesignSystemManager:
             ),
         }
 
+
     def add_token(self, token: DesignToken) -> bool:
         """Add a new design token"""
         try:
@@ -211,6 +219,7 @@ class DesignSystemManager:
         except Exception as e:
             logger.error(f"Error adding design token: {e}")
             return False
+
 
     def add_component(self, component: DesignComponent) -> bool:
         """Add a new design component"""
@@ -223,6 +232,7 @@ class DesignSystemManager:
             logger.error(f"Error adding design component: {e}")
             return False
 
+
     def add_pattern(self, pattern: DesignPattern) -> bool:
         """Add a new design pattern"""
         try:
@@ -233,6 +243,7 @@ class DesignSystemManager:
         except Exception as e:
             logger.error(f"Error adding design pattern: {e}")
             return False
+
 
     def validate_design_consistency(self, design_description: str) -> Dict:
         """
@@ -288,6 +299,7 @@ class DesignSystemManager:
             "is_consistent": consistency_score >= 0.6,
         }
 
+
     def get_design_system_summary(self) -> Dict:
         """Get a summary of the design system"""
         return {
@@ -305,6 +317,7 @@ class DesignSystemManager:
             )[:5],
         }
 
+
     def _save_tokens(self):
         """Save design tokens to file"""
         try:
@@ -316,6 +329,7 @@ class DesignSystemManager:
                 )
         except Exception as e:
             logger.error(f"Error saving design tokens: {e}")
+
 
     def _save_components(self):
         """Save design components to file"""
@@ -331,6 +345,7 @@ class DesignSystemManager:
                 )
         except Exception as e:
             logger.error(f"Error saving design components: {e}")
+
 
     def _save_patterns(self):
         """Save design patterns to file"""

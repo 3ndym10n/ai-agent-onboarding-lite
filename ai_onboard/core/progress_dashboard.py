@@ -18,10 +18,12 @@ from typing import Any, Dict, List, Optional
 class ProgressDashboard:
     """Provides comprehensive progress tracking and visualization."""
 
+
     def __init__(self, project_root: Path):
         self.project_root = project_root
         self.plan_path = project_root / ".ai_onboard" / "plan.json"
         self.learning_log_path = project_root / ".ai_onboard" / "learning_events.jsonl"
+
 
     def generate_dashboard(self) -> Dict[str, Any]:
         """
@@ -49,6 +51,7 @@ class ProgressDashboard:
             "recommendations": self._generate_recommendations(plan),
         }
 
+
     def _generate_header(self) -> Dict[str, Any]:
         """Generate dashboard header with key summary stats."""
         return {
@@ -58,13 +61,15 @@ class ProgressDashboard:
             "status": "ACTIVE",
         }
 
+
     def _generate_overall_progress(self, plan: Dict[str, Any]) -> Dict[str, Any]:
         """Generate overall project progress metrics via canonical utils."""
         from . import progress_utils
 
         overall = progress_utils.compute_overall_progress(plan)
 
-        # Calculate progress rate (tasks per day) and estimated completion using existing helpers
+        # Calculate progress rate (tasks per day) and \
+            estimated completion using existing helpers
         progress_rate = self._calculate_progress_rate(plan)
 
         return {
@@ -77,6 +82,7 @@ class ProgressDashboard:
             "estimated_completion": self._estimate_completion_date(plan, progress_rate),
             "visual_bar": overall["visual_bar"],
         }
+
 
     def _generate_milestone_progress(
         self, plan: Dict[str, Any]
@@ -93,6 +99,7 @@ class ProgressDashboard:
             # Keep existing status semantics, already set by progress_utils
 
         return milestone_progress
+
 
     def _generate_task_status_breakdown(self, plan: Dict[str, Any]) -> Dict[str, Any]:
         """Generate detailed task status breakdown by category."""
@@ -115,6 +122,7 @@ class ProgressDashboard:
                 status_breakdown
             ),
         }
+
 
     def _generate_timeline_view(self, plan: Dict[str, Any]) -> Dict[str, Any]:
         """Generate timeline view of task completions."""
@@ -148,6 +156,7 @@ class ProgressDashboard:
             "peak_week": None,  # TODO: Implement with proper typing
         }
 
+
     def _generate_health_metrics(self, plan: Dict[str, Any]) -> Dict[str, Any]:
         """Generate project health metrics."""
         total_tasks = len(plan["tasks"])
@@ -171,6 +180,7 @@ class ProgressDashboard:
             "health_status": self._get_health_status(health_score),
             "health_color": self._get_health_color(health_score),
         }
+
 
     def _generate_upcoming_deadlines(
         self, plan: Dict[str, Any]
@@ -213,6 +223,7 @@ class ProgressDashboard:
 
         return sorted(upcoming, key=lambda x: x["days_remaining"])[:10]
 
+
     def _generate_blockers_and_risks(self, plan: Dict[str, Any]) -> Dict[str, Any]:
         """Generate blockers and risks analysis."""
         blockers = []
@@ -249,6 +260,7 @@ class ProgressDashboard:
             ),
         }
 
+
     def _generate_recent_activity(self) -> List[Dict[str, Any]]:
         """Generate recent activity from learning events."""
         recent_activity = []
@@ -273,6 +285,7 @@ class ProgressDashboard:
                 pass
 
         return recent_activity
+
 
     def _generate_recommendations(self, plan: Dict[str, Any]) -> List[str]:
         """Generate actionable recommendations based on current progress."""
@@ -308,6 +321,7 @@ class ProgressDashboard:
             tasks = milestone.get("tasks", [])
             if tasks:
 
+
                 def is_task_completed(task_id: str) -> bool:
                     task: Dict[str, Any] = next(
                         (t for t in plan["tasks"] if t["id"] == task_id), {}
@@ -330,6 +344,7 @@ class ProgressDashboard:
 
     # Helper methods
 
+
     def _calculate_progress_rate(self, plan: Dict[str, Any]) -> float:
         """Calculate tasks completed per day."""
         completed_tasks = [
@@ -351,6 +366,7 @@ class ProgressDashboard:
 
         return len(completed_tasks) / days
 
+
     def _estimate_completion_date(
         self, plan: Dict[str, Any], progress_rate: float
     ) -> Optional[str]:
@@ -367,11 +383,13 @@ class ProgressDashboard:
 
         return estimated_date.strftime("%Y -% m -% d")
 
+
     def _generate_progress_bar(self, percentage: float) -> str:
         """Legacy wrapper kept for compatibility; delegates to canonical utils."""
         from . import progress_utils
 
         return progress_utils.create_progress_bar(percentage, width=20)
+
 
     def _calculate_milestone_status(
         self, progress: float, target_date: Optional[str]
@@ -386,6 +404,7 @@ class ProgressDashboard:
         else:
             return "behind"
 
+
     def _calculate_days_remaining(self, target_date: Optional[str]) -> int:
         """Calculate days remaining until target date."""
         if not target_date:
@@ -397,6 +416,7 @@ class ProgressDashboard:
             return remaining.days
         except:
             return 999
+
 
     def _calculate_status_distribution(
         self, status_breakdown: Dict[str, int]
@@ -410,12 +430,14 @@ class ProgressDashboard:
             status: (count / total) * 100 for status, count in status_breakdown.items()
         }
 
+
     def _get_week_start(self, date_str: str) -> str:
         """Get the start of the week for a given date."""
         date = datetime.fromisoformat(date_str)
         # Monday is 0 in isocalendar
         week_start = date - timedelta(days=date.weekday())
         return week_start.strftime("%Y -% m -% d")
+
 
     def _count_overdue_tasks(self, plan: Dict[str, Any]) -> int:
         """Count overdue tasks."""
@@ -427,10 +449,12 @@ class ProgressDashboard:
                     overdue += 1
         return overdue
 
+
     def _calculate_days_blocked(self, task: Dict[str, Any]) -> int:
         """Calculate how long a task has been blocked."""
         # Simplified - could be enhanced with actual blocking start dates
         return 0
+
 
     def _get_health_status(self, score: float) -> str:
         """Get health status description."""
@@ -443,6 +467,7 @@ class ProgressDashboard:
         else:
             return "Needs Attention"
 
+
     def _get_health_color(self, score: float) -> str:
         """Get health color for visualization."""
         if score >= 80:
@@ -453,6 +478,7 @@ class ProgressDashboard:
             return "orange"
         else:
             return "red"
+
 
     def display_dashboard(self) -> None:
         """Display the progress dashboard in a readable format."""
@@ -530,7 +556,6 @@ def generate_progress_report(project_root: Path) -> Dict[str, Any]:
     """
     dashboard = ProgressDashboard(project_root)
     return dashboard.generate_dashboard()
-
 
 if __name__ == "__main__":
     # Generate and display progress dashboard

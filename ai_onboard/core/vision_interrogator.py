@@ -158,7 +158,8 @@ class VisionInterrogator:
                 {
                     "type": "vision_unclear",
                     "severity": "high",
-                    "description": f"Vision clarity score is {vision_clarity['score']:.2f}, needs >= 0.8",
+                    "description": f"Vision clarity score is {vision_clarity['score']:.2f}, "
+                    f"needs >= 0.8",
                 }
             )
 
@@ -514,9 +515,7 @@ class VisionInterrogator:
             "uncertain",
             "depends",
             "it depends",
-            "we'll see",
-            "tbd",
-            "to be determined",
+            "we'll see", "tbd", "to be determined",
         ]
 
         for indicator in ambiguity_indicators:

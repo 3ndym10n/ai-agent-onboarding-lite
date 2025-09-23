@@ -17,7 +17,6 @@ CRITICAL SAFETY PRINCIPLES:
 """
 
 import hashlib
-import json
 import secrets
 import shutil
 from dataclasses import dataclass, field
@@ -49,8 +48,8 @@ class ConfirmationRequirement(Enum):
     HUMAN_REVIEW = "human_review"  # Requires human expert review
     BLOCKED = "blocked"  # NEVER ALLOWED
 
-
 @dataclass
+
 class CleanupTarget:
     """A file or directory targeted for cleanup"""
 
@@ -62,8 +61,8 @@ class CleanupTarget:
     file_hash: Optional[str] = None
     dependencies: List[str] = field(default_factory=list)
 
-
 @dataclass
+
 class CleanupOperation:
     """A complete cleanup operation with full audit trail"""
 
@@ -89,6 +88,7 @@ class UltraSafeCleanupEngine:
     5. Backup creation (always backup before deletion)
     6. Integrity validation (verify system still works)
     """
+
 
     def __init__(self, root: Path):
         self.root = root
@@ -151,6 +151,7 @@ class UltraSafeCleanupEngine:
             ],
         }
 
+
     def scan_for_cleanup_targets(self) -> List[CleanupTarget]:
         """
         Scan the project for potential cleanup targets.
@@ -178,6 +179,7 @@ class UltraSafeCleanupEngine:
                         targets.append(target)
 
         return targets
+
 
     def _analyze_file_for_cleanup(self, path: Path) -> Optional[CleanupTarget]:
         """Analyze a single file for cleanup potential."""
@@ -226,6 +228,7 @@ class UltraSafeCleanupEngine:
             # If we can't analyze the file, skip it
             return None
 
+
     def _get_cleanup_reason(self, path: Path, risk_level: CleanupRiskLevel) -> str:
         """Get a clear, unambiguous reason for why this file can be cleaned."""
         reasons = {
@@ -257,6 +260,7 @@ class UltraSafeCleanupEngine:
 
         return f"{risk_level.value.title()} risk cleanup candidate"
 
+
     def _calculate_file_hash(self, path: Path) -> str:
         """Calculate SHA256 hash of file for integrity checking."""
         try:
@@ -264,6 +268,7 @@ class UltraSafeCleanupEngine:
                 return hashlib.sha256(f.read()).hexdigest()
         except OSError:
             return "unreadable"
+
 
     def create_cleanup_proposal(self, targets: List[CleanupTarget]) -> CleanupOperation:
         """
@@ -308,6 +313,7 @@ class UltraSafeCleanupEngine:
             operation_id=operation_id, targets=targets, risk_assessment=risk_assessment
         )
 
+
     def _estimate_operation_time(self, targets: List[CleanupTarget]) -> str:
         """Estimate how long the cleanup operation will take."""
         total_size_mb = sum(t.size_bytes for t in targets) / (1024 * 1024)
@@ -320,6 +326,7 @@ class UltraSafeCleanupEngine:
             return "Slow (5-30 minutes)"
         else:
             return "Very slow (> 30 minutes)"
+
 
     def present_cleanup_proposal(self, operation: CleanupOperation) -> bool:
         """
@@ -383,6 +390,7 @@ class UltraSafeCleanupEngine:
             safe_print(f"\n🚫 OPERATION BLOCKED - Contains critical files")
             return False
 
+
     def _confirm_explicit_file_list(self, operation: CleanupOperation) -> bool:
         """Require user to explicitly acknowledge each file."""
         safe_print(f"\n📝 EXPLICIT FILE CONFIRMATION REQUIRED")
@@ -407,6 +415,7 @@ class UltraSafeCleanupEngine:
 
         return True
 
+
     def _confirm_with_code(self, operation: CleanupOperation) -> bool:
         """Require confirmation code for medium-risk operations."""
         confirmation_code = secrets.token_hex(4).upper()
@@ -430,6 +439,7 @@ class UltraSafeCleanupEngine:
             safe_print("❌ Confirmation cancelled by user")
             return False
 
+
     def _require_human_review(self, operation: CleanupOperation) -> bool:
         """Require human expert review for high-risk operations."""
         safe_print(f"\n🚨 HUMAN EXPERT REVIEW REQUIRED")
@@ -442,6 +452,7 @@ class UltraSafeCleanupEngine:
         self._log_operation(operation, "requires_human_review")
 
         return False  # Always block high-risk operations in automated mode
+
 
     def execute_cleanup_operation(
         self, operation: CleanupOperation
@@ -490,10 +501,10 @@ class UltraSafeCleanupEngine:
             message = f"Cleanup completed successfully: {success_count} files deleted"
         elif integrity_ok:
             operation.status = "completed_with_errors"
-            message = f"Cleanup completed with {error_count} errors: {success_count} files deleted"
+            message =                 f"Cleanup completed with {error_count} errors: {success_count} files deleted"
         else:
             operation.status = "system_integrity_compromised"
-            message = "CRITICAL: System integrity compromised after cleanup - automatic rollback initiated"
+            message =                 "CRITICAL: System integrity compromised after cleanup - automatic rollback initiated"
 
             # Attempt rollback
             if self._rollback_operation(operation):
@@ -508,6 +519,7 @@ class UltraSafeCleanupEngine:
             operation.status in ["completed_successfully", "completed_with_errors"],
             message,
         )
+
 
     def _create_backup(self, operation: CleanupOperation) -> Dict[str, Any]:
         """Create a comprehensive backup of all targets."""
@@ -560,6 +572,7 @@ class UltraSafeCleanupEngine:
 
         return manifest
 
+
     def _validate_system_integrity(self) -> bool:
         """Validate that the system is still functional after cleanup."""
         critical_files = [
@@ -586,6 +599,7 @@ class UltraSafeCleanupEngine:
 
         safe_print("✅ System integrity validation passed")
         return True
+
 
     def _rollback_operation(self, operation: CleanupOperation) -> bool:
         """Rollback a failed operation using backup."""
@@ -627,6 +641,7 @@ class UltraSafeCleanupEngine:
 
         return error_count == 0
 
+
     def _log_operation(self, operation: CleanupOperation, event: str):
         """Log operation events to audit trail."""
         log_entry = {
@@ -643,8 +658,8 @@ class UltraSafeCleanupEngine:
         with open(self.operation_log, "a", encoding="utf-8") as f:
             f.write(json.dumps(log_entry, ensure_ascii=False) + "\n")
 
-
 # Convenience functions for CLI integration
+
 def scan_cleanup_targets(root: Path) -> List[CleanupTarget]:
     """Scan for cleanup targets."""
     engine = UltraSafeCleanupEngine(root)
@@ -671,4 +686,3 @@ def present_cleanup_proposal(root: Path, operation: CleanupOperation) -> bool:
     """Present cleanup proposal and get user confirmation."""
     engine = UltraSafeCleanupEngine(root)
     return engine.present_cleanup_proposal(operation)
-

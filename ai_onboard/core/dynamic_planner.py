@@ -3,7 +3,6 @@
 Updates project plans as milestones are hit and activities completed.
 """
 
-import json
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -13,15 +12,18 @@ from . import utils
 class DynamicPlanner:
     """Manages dynamic project planning with milestone tracking and plan updates."""
 
+
     def __init__(self, root: Path):
         self.root = root
         self.plan_path = root / ".ai_onboard" / "plan.json"
         self.progress_path = root / ".ai_onboard" / "progress.json"
         self.milestone_log_path = root / ".ai_onboard" / "milestone_log.jsonl"
 
+
     def get_current_plan(self) -> Dict[str, Any]:
         """Get the current project plan."""
         return utils.read_json(self.plan_path, default={})
+
 
     def get_progress(self) -> Dict[str, Any]:
         """Get current project progress."""
@@ -33,6 +35,7 @@ class DynamicPlanner:
                 "last_updated": utils.now_iso(),
             },
         )
+
 
     def mark_milestone_complete(
         self, milestone_name: str, completion_data: Dict[str, Any]
@@ -70,6 +73,7 @@ class DynamicPlanner:
             "next_milestones": self._get_next_milestones(plan, progress),
         }
 
+
     def update_activity_progress(
         self, activity_id: str, progress_data: Dict[str, Any]
     ) -> Dict[str, Any]:
@@ -98,6 +102,7 @@ class DynamicPlanner:
             "activity": activity_id,
             "milestones_triggered": milestone_updates["completed_milestones"],
         }
+
 
     def auto_update_plan(self) -> Dict[str, Any]:
         """Automatically update plan based on current progress and conditions."""
@@ -133,6 +138,7 @@ class DynamicPlanner:
             "reason": plan_updates["reason"],
         }
 
+
     def add_new_milestone(self, milestone_data: Dict[str, Any]) -> Dict[str, Any]:
         """Add a new milestone to the project plan."""
         plan = self.get_current_plan()
@@ -156,6 +162,7 @@ class DynamicPlanner:
             "milestone_id": milestone_id,
             "milestone_data": milestone_data,
         }
+
 
     def _check_plan_updates(
         self, plan: Dict[str, Any], progress: Dict[str, Any]
@@ -196,6 +203,7 @@ class DynamicPlanner:
 
         return {"needs_update": len(updates) > 0, "updates": updates, "reason": reason}
 
+
     def _apply_plan_updates(
         self, plan: Dict[str, Any], updates: List[Dict[str, Any]]
     ) -> Dict[str, Any]:
@@ -217,6 +225,7 @@ class DynamicPlanner:
 
         return updated_plan
 
+
     def _check_milestone_completion(
         self, plan: Dict[str, Any], progress: Dict[str, Any]
     ) -> Dict[str, Any]:
@@ -234,6 +243,7 @@ class DynamicPlanner:
                 completed_milestones.append(milestone_id)
 
         return {"completed_milestones": completed_milestones}
+
 
     def _milestone_criteria_met(
         self, milestone: Dict[str, Any], progress: Dict[str, Any]
@@ -256,6 +266,7 @@ class DynamicPlanner:
         # Check other criteria (can be expanded)
         return True
 
+
     def _get_next_milestones(
         self, plan: Dict[str, Any], progress: Dict[str, Any]
     ) -> List[Dict[str, Any]]:
@@ -273,12 +284,14 @@ class DynamicPlanner:
 
         return next_milestones
 
+
     def _activate_next_phase(
         self, plan: Dict[str, Any], completed_phase: str
     ) -> Dict[str, Any]:
         """Activate the next phase after a phase is completed."""
         # Implementation depends on phase structure
         return plan
+
 
     def _adjust_timeline(
         self, plan: Dict[str, Any], adjustment: Dict[str, Any]
@@ -287,12 +300,14 @@ class DynamicPlanner:
         # Implementation for timeline adjustments
         return plan
 
+
     def _update_risk_profile(
         self, plan: Dict[str, Any], risk_data: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Update project risk profile."""
         # Implementation for risk updates
         return plan
+
 
     def _check_timeline_adjustments(
         self, plan: Dict[str, Any], progress: Dict[str, Any]
@@ -301,12 +316,14 @@ class DynamicPlanner:
         # Implementation for timeline checking
         return []
 
+
     def _check_risk_updates(
         self, plan: Dict[str, Any], progress: Dict[str, Any]
     ) -> List[Dict[str, Any]]:
         """Check if risk profile needs updates."""
         # Implementation for risk checking
         return []
+
 
     def _log_milestone_event(
         self, event_type: str, milestone_id: str, data: Dict[str, Any]

@@ -50,6 +50,7 @@ class InterfaceMode(Enum):
 
 
 @dataclass
+
 class CommandInfo:
     """Information about a CLI command."""
 
@@ -67,6 +68,7 @@ class CommandInfo:
 
 
 @dataclass
+
 class UserProfile:
     """Profile of user interface preferences and expertise."""
 
@@ -95,6 +97,7 @@ class UserProfile:
 
 
 @dataclass
+
 class CommandSuggestion:
     """A suggested command for the user."""
 
@@ -106,6 +109,7 @@ class CommandSuggestion:
 
 
 @dataclass
+
 class UITheme:
     """Visual theme for the interface."""
 
@@ -129,6 +133,7 @@ class UITheme:
 class UIEnhancementSystem:
     """Main system for UI enhancements and user experience improvements."""
 
+
     def __init__(self, root: Path):
         self.root = root
         self.data_dir = root / ".ai_onboard" / "ui_enhancements"
@@ -149,6 +154,7 @@ class UIEnhancementSystem:
         self._initialize_command_registry()
         self._initialize_themes()
         self._load_user_profiles()
+
 
     def _load_ui_config(self) -> Dict[str, Any]:
         """Load UI configuration."""
@@ -184,6 +190,7 @@ class UIEnhancementSystem:
             json.dump(default_config, f, indent=2)
 
         return default_config
+
 
     def _initialize_command_registry(self):
         """Initialize the registry of available commands."""
@@ -344,6 +351,7 @@ class UIEnhancementSystem:
         for cmd in commands:
             self.command_registry[cmd.name] = cmd
 
+
     def _initialize_themes(self):
         """Initialize UI themes."""
         themes = {
@@ -384,6 +392,7 @@ class UIEnhancementSystem:
 
         self.ui_themes = themes
 
+
     def _load_user_profiles(self):
         """Load user profiles from storage."""
         profiles_file = self.data_dir / "user_profiles.json"
@@ -418,6 +427,7 @@ class UIEnhancementSystem:
             except Exception as e:
                 print(f"Warning: Failed to load user profiles: {e}")
 
+
     def _save_user_profiles(self):
         """Save user profiles to storage."""
         try:
@@ -446,6 +456,7 @@ class UIEnhancementSystem:
         except Exception as e:
             print(f"Warning: Failed to save user profiles: {e}")
 
+
     def get_user_profile(self, user_id: str = "default") -> UserProfile:
         """Get or create user profile."""
         if user_id not in self.user_profiles:
@@ -461,6 +472,7 @@ class UIEnhancementSystem:
             self._save_user_profiles()
 
         return self.user_profiles[user_id]
+
 
     def _detect_user_expertise(self, user_id: str) -> UserExpertiseLevel:
         """Auto - detect user expertise level based on usage patterns."""
@@ -491,6 +503,7 @@ class UIEnhancementSystem:
         except Exception:
             return UserExpertiseLevel.BEGINNER
 
+
     def _get_default_mode_for_expertise(
         self, expertise: UserExpertiseLevel
     ) -> InterfaceMode:
@@ -502,6 +515,7 @@ class UIEnhancementSystem:
             UserExpertiseLevel.EXPERT: InterfaceMode.EXPERT,
         }
         return mapping.get(expertise, InterfaceMode.STANDARD)
+
 
     def record_command_usage(self, user_id: str, command: str, success: bool = True):
         """Record command usage for learning."""
@@ -532,6 +546,7 @@ class UIEnhancementSystem:
         profile.last_updated = datetime.now()
         self._save_user_profiles()
 
+
     def get_command_suggestions(
         self, user_id: str, context: str = ""
     ) -> List[CommandSuggestion]:
@@ -558,6 +573,7 @@ class UIEnhancementSystem:
         max_suggestions = self.config.get("max_suggestions", 3)
 
         return filtered_suggestions[:max_suggestions]
+
 
     def _get_context_suggestions(
         self, context: str, profile: UserProfile
@@ -598,6 +614,7 @@ class UIEnhancementSystem:
 
         return suggestions
 
+
     def _get_usage_pattern_suggestions(
         self, profile: UserProfile
     ) -> List[CommandSuggestion]:
@@ -623,6 +640,7 @@ class UIEnhancementSystem:
                             )
 
         return suggestions
+
 
     def _get_expertise_suggestions(
         self, profile: UserProfile
@@ -658,6 +676,7 @@ class UIEnhancementSystem:
 
         return suggestions
 
+
     def _is_command_appropriate_for_user(
         self, cmd_info: CommandInfo, profile: UserProfile
     ) -> bool:
@@ -675,6 +694,7 @@ class UIEnhancementSystem:
         # Allow commands up to one level above user's current level
         return cmd_level_index <= user_level_index + 1
 
+
     def _are_prerequisites_met(
         self, cmd_info: CommandInfo, profile: UserProfile
     ) -> bool:
@@ -683,6 +703,7 @@ class UIEnhancementSystem:
             if profile.command_usage_count.get(prereq, 0) == 0:
                 return False
         return True
+
 
     def get_filtered_commands(
         self, user_id: str, category: Optional[CommandCategory] = None
@@ -718,6 +739,7 @@ class UIEnhancementSystem:
 
         return commands
 
+
     def _should_show_command_in_mode(
         self, cmd_info: CommandInfo, mode: InterfaceMode
     ) -> bool:
@@ -733,6 +755,7 @@ class UIEnhancementSystem:
             return cmd_info.expertise_level != UserExpertiseLevel.EXPERT
         else:  # EXPERT
             return True
+
 
     def format_output(
         self, text: str, style: str = "info", user_id: str = "default"
@@ -760,6 +783,7 @@ class UIEnhancementSystem:
 
         return f"{color}{text}{reset}"
 
+
     def get_progress_bar(
         self, current: int, total: int, width: int = 20, user_id: str = "default"
     ) -> str:
@@ -776,6 +800,7 @@ class UIEnhancementSystem:
         percentage = (current / total * 100) if total > 0 else 0
 
         return self.format_output(f"{bar} {percentage:.1f}%", "primary", user_id)
+
 
     def create_command_help(self, command: str, user_id: str = "default") -> str:
         """Create enhanced help text for a command."""
@@ -819,6 +844,7 @@ class UIEnhancementSystem:
             help_text.append(f"\nYour usage: {usage_count} times")
 
         return "\n".join(help_text)
+
 
     def get_dashboard_summary(self, user_id: str = "default") -> str:
         """Create a dashboard summary for the user."""

@@ -23,12 +23,14 @@ from .enhanced_vision_interrogator import (
 class VisionWebInterface:
     """Web interface for vision interrogation system."""
 
+
     def __init__(self, root: Path, port: int = 8080):
         self.root = root
         self.port = port
         self.interrogator = get_enhanced_vision_interrogator(root)
         self.server = None
         self.server_thread = None
+
 
     def start_web_interface(self) -> Dict[str, Any]:
         """Start the web interface server."""
@@ -59,6 +61,7 @@ class VisionWebInterface:
         except Exception as e:
             return {"status": "error", "message": f"Failed to start web interface: {e}"}
 
+
     def stop_web_interface(self) -> Dict[str, Any]:
         """Stop the web interface server."""
         try:
@@ -71,11 +74,14 @@ class VisionWebInterface:
         except Exception as e:
             return {"status": "error", "message": f"Failed to stop web interface: {e}"}
 
+
     def _create_request_handler(self):
         """Create custom HTTP request handler."""
         interrogator = self.interrogator
 
+
         class VisionRequestHandler(BaseHTTPRequestHandler):
+
             def do_GET(self):
                 if self.path == "/":
                     self._serve_main_page()
@@ -88,6 +94,7 @@ class VisionWebInterface:
                 else:
                     self._serve_404()
 
+
             def do_POST(self):
                 if self.path == "/api / start":
                     self._handle_start_interrogation()
@@ -98,6 +105,7 @@ class VisionWebInterface:
                 else:
                     self._serve_404()
 
+
             def _serve_main_page(self):
                 """Serve the main HTML page."""
                 html = self._generate_html()
@@ -106,15 +114,18 @@ class VisionWebInterface:
                 self.end_headers()
                 self.wfile.write(html.encode("utf - 8"))
 
+
             def _serve_status(self):
                 """Serve interrogation status."""
                 status = interrogator.get_enhanced_interrogation_status()
                 self._send_json_response(status)
 
+
             def _serve_questions(self):
                 """Serve current questions."""
                 questions_data = interrogator.get_current_questions()
                 self._send_json_response(questions_data)
+
 
             def _serve_project_types(self):
                 """Serve available project types."""
@@ -123,6 +134,7 @@ class VisionWebInterface:
                     for pt in ProjectType
                 ]
                 self._send_json_response({"project_types": project_types})
+
 
             def _handle_start_interrogation(self):
                 """Handle start interrogation request."""
@@ -133,6 +145,7 @@ class VisionWebInterface:
                 project_type = ProjectType(data.get("project_type", "generic"))
                 result = interrogator.start_enhanced_interrogation(project_type)
                 self._send_json_response(result)
+
 
             def _handle_submit_response(self):
                 """Handle submit response request."""
@@ -149,10 +162,12 @@ class VisionWebInterface:
                 )
                 self._send_json_response(result)
 
+
             def _handle_complete_interrogation(self):
                 """Handle complete interrogation request."""
                 result = interrogator.force_complete_interrogation()
                 self._send_json_response(result)
+
 
             def _send_json_response(self, data):
                 """Send JSON response."""
@@ -161,12 +176,14 @@ class VisionWebInterface:
                 self.end_headers()
                 self.wfile.write(json.dumps(data).encode("utf - 8"))
 
+
             def _serve_404(self):
                 """Serve 404 error."""
                 self.send_response(404)
                 self.send_header("Content - type", "text / plain")
                 self.end_headers()
                 self.wfile.write(b"Not Found")
+
 
             def _generate_html(self):
                 """Generate the main HTML page."""
@@ -185,7 +202,8 @@ class VisionWebInterface:
         }
 
         body {
-            font - family: -apple - system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans - serif;
+            font - family: -apple - system,
+                BlinkMacSystemFont, 'Segoe UI', Roboto, sans - serif;
             background: linear - gradient(135deg, #667eea 0%, #764ba2 100%);
             min - height: 100vh;
             padding: 20px;
@@ -509,6 +527,7 @@ class VisionWebInterface:
     </div>
 
     <script>
+
         class VisionInterrogationApp {
             constructor() {
                 this.currentPhase = null;
@@ -556,7 +575,7 @@ class VisionWebInterface:
                             </div>
                         </div>
                     `;
-                    document.getElementById('project - type - section').style.display = 'block';
+                    document.getElementById('project - type - section').style.display =                         'block';
                 } else if (status.status === 'in_progress') {
                     statusContent.innerHTML = `
                         <div class="status - info">
@@ -596,7 +615,7 @@ class VisionWebInterface:
                             </div>
                         </div>
                     `;
-                    document.getElementById('completion - section').style.display = 'block';
+                    document.getElementById('completion - section').style.display =                         'block';
                 }
             }
 
@@ -616,8 +635,8 @@ class VisionWebInterface:
 
                     if (result.status === 'enhanced_interrogation_started') {
                         this.projectType = projectType;
-                        document.getElementById('project - type - section').style.display = 'none';
-                        document.getElementById('questions - section').style.display = 'block';
+                        document.getElementById('project - type - section').style.display =                             'none';
+                        document.getElementById('questions - section').style.display =                             'block';
                         await this.loadQuestions();
                     } else {
                         this.showError('Failed to start interrogation: ' + result.message);
@@ -692,14 +711,15 @@ class VisionWebInterface:
                 });
 
                 // Setup submit button
-                document.getElementById('submit - btn').addEventListener('click', () => {
+                document.getElementById('submit - btn').addEventListener('click',
+                    () => {
                     this.submitAnswer(question);
                 });
             }
 
             async submitAnswer(question) {
                 const answer = document.getElementById('answer - input').value.trim();
-                const confidence = parseInt(document.getElementById('confidence - slider').value) / 100;
+                const confidence =                     parseInt(document.getElementById('confidence - slider').value) / 100;
 
                 if (!answer) {
                     this.showError('Please enter an answer');
@@ -746,8 +766,8 @@ class VisionWebInterface:
 
             showInsights(result) {
                 if (result.recommendations && result.recommendations.length > 0) {
-                    const insightsSection = document.getElementById('insights - section');
-                    const insightsContent = document.getElementById('insights - content');
+                    const insightsSection =                         document.getElementById('insights - section');
+                    const insightsContent =                         document.getElementById('insights - content');
 
                     let insightsHtml = '';
                     result.recommendations.forEach(rec => {

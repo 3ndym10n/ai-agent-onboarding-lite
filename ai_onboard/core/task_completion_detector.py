@@ -8,7 +8,6 @@ This system keeps the project plan synchronized with actual development
 progress, ensuring accurate progress tracking and milestone completion.
 """
 
-import json
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List
@@ -17,10 +16,12 @@ from typing import Any, Dict, List
 class TaskCompletionDetector:
     """Detects task completion by verifying implementation components."""
 
+
     def __init__(self, project_root: Path):
         self.project_root = project_root
         self.plan_path = project_root / ".ai_onboard" / "plan.json"
         self.learning_log_path = project_root / ".ai_onboard" / "learning_events.jsonl"
+
 
     def detect_completed_tasks(self) -> Dict[str, Dict[str, Any]]:
         """
@@ -41,6 +42,7 @@ class TaskCompletionDetector:
         completed_tasks.update(self._detect_enhanced_testing_tasks())
 
         return completed_tasks
+
 
     def _detect_infrastructure_tasks(self) -> Dict[str, Dict[str, Any]]:
         """Detect completion of core infrastructure tasks."""
@@ -75,6 +77,7 @@ class TaskCompletionDetector:
 
         return completed
 
+
     def _detect_vision_system_tasks(self) -> Dict[str, Dict[str, Any]]:
         """Detect completion of vision system tasks."""
         completed = {}
@@ -88,7 +91,8 @@ class TaskCompletionDetector:
                 "status": "completed",
                 "completion_date": datetime.now().isoformat(),
                 "verified_by": "file_exists",
-                "evidence": "vision_interrogator.py exists and implements vision system",
+                "evidence": "vision_interrogator.py exists and \
+                    implements vision system",
             }
 
         # T5: Implement vision clarity scoring
@@ -124,6 +128,7 @@ class TaskCompletionDetector:
                 pass
 
         return completed
+
 
     def _detect_ai_agent_tasks(self) -> Dict[str, Dict[str, Any]]:
         """Detect completion of AI agent collaboration tasks."""
@@ -194,6 +199,7 @@ class TaskCompletionDetector:
 
         return completed
 
+
     def _detect_continuous_improvement_tasks(self) -> Dict[str, Dict[str, Any]]:
         """Detect completion of continuous improvement tasks."""
         completed = {}
@@ -245,6 +251,7 @@ class TaskCompletionDetector:
 
         return completed
 
+
     def _detect_system_robustness_tasks(self) -> Dict[str, Dict[str, Any]]:
         """Detect completion of system robustness tasks."""
         completed = {}
@@ -289,6 +296,7 @@ class TaskCompletionDetector:
 
         return completed
 
+
     def _detect_quality_restoration_tasks(self) -> Dict[str, Dict[str, Any]]:
         """Detect completion of quality restoration tasks."""
         completed = {}
@@ -310,6 +318,7 @@ class TaskCompletionDetector:
                 pass
 
         return completed
+
 
     def _detect_enhanced_testing_tasks(self) -> Dict[str, Dict[str, Any]]:
         """Detect completion of enhanced testing foundation tasks."""
@@ -401,6 +410,7 @@ class TaskCompletionDetector:
 
         return completed
 
+
     def update_plan_with_completions(
         self, completed_tasks: Dict[str, Dict[str, Any]]
     ) -> bool:
@@ -444,6 +454,7 @@ class TaskCompletionDetector:
             print(f"Error updating plan: {e}")
             return False
 
+
     def generate_progress_report(self) -> Dict[str, Any]:
         """
         Generate a comprehensive progress report.
@@ -484,6 +495,7 @@ class TaskCompletionDetector:
             "blockers": self._identify_blockers(plan),
         }
 
+
     def _calculate_milestone_progress(
         self, plan: Dict[str, Any]
     ) -> List[Dict[str, Any]]:
@@ -520,6 +532,7 @@ class TaskCompletionDetector:
 
         return milestone_progress
 
+
     def _get_recent_completions(self, plan: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Get recently completed tasks."""
         completed_tasks = [
@@ -534,6 +547,7 @@ class TaskCompletionDetector:
         )
 
         return completed_tasks[:5]  # Return top 5 most recent
+
 
     def _identify_blockers(self, plan: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Identify potential blockers in the project plan."""
@@ -616,7 +630,6 @@ def run_task_completion_scan(project_root: Path) -> Dict[str, Any]:
         "progress_report": progress_report,
         "learning_event_logged": True,
     }
-
 
 if __name__ == "__main__":
     # Run task completion scan

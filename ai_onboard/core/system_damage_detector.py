@@ -2,15 +2,16 @@
 System Damage Risk Detector
 
 Detects actions that could break the system or cause real damage.
-This addresses the user's need to be warned about high-risk operations.
-"""
+This addresses the user's need to be warned about high-risk operations. """
 
-# Import read_json, write_json from utils.py module
-import importlib.util
+import json
 import time
-_utils_spec.loader.exec_module(_utils_module)
-read_json = _utils_module.read_json
-write_json = _utils_module.write_json
+from dataclasses import dataclass, field
+from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+from .utils import read_json, write_json
 
 
 class DamageLevel(Enum):
@@ -322,7 +323,6 @@ class SystemDamageDetector:
             }
 
             with open(self.damage_log_path, "a", encoding="utf-8") as f:
-                import json
 
                 f.write(json.dumps(risk_data) + "\n")
         except Exception as e:

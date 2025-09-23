@@ -9,22 +9,44 @@ from . import utils
 
 
 def _safe_components(results: Iterable[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Convert validation results into a compact, robust component summary.
-
-    - Uses defaults when keys are missing to avoid KeyError.
-    - Computes issue_count safely when the "issues" field is absent or not a list.
     """
-    out: List[Dict[str, Any]] = []
-    for r in results or []:
-        name = r.get("component", "unknown")
-        score = r.get("score", None)
-        issues = r.get("issues", [])
-        try:
-            issue_count = len(issues) if isinstance(issues, (list, tuple)) else int(issues)  # type: ignore[arg - type]
-        except Exception:
-            issue_count = 0
-        out.append({"name": name, "score": score, "issue_count": issue_count})
-    return out
+    Convert validation results into a compact, robust component summary.
+
+    Safely extracts component information with defaults to avoid KeyError.
+    Handles various formats of issue counts gracefully.
+    """
+    components = []
+
+    for result in results or []:
+        component_info = {
+            "name": result.get("component", "unknown"),
+            "score": result.get("score"),
+            "issue_count": _extract_issue_count(result.get("issues", [])),
+        }
+        components.append(component_info)
+
+    return components
+
+
+def _extract_issue_count(issues) -> int:
+    """
+    Safely extract issue count from various formats.
+
+    Args:
+        issues: Can be a list, tuple, int, or other format
+
+    Returns:
+        Integer count of issues, defaulting to 0 on error
+    """
+    try:
+        if isinstance(issues, (list, tuple)):
+            return len(issues)
+        elif isinstance(issues, (int, str)):
+            return int(issues)
+        else:
+            return 0
+    except (ValueError, TypeError):
+        return 0
 
 
 def record_run(root: Path, res: Dict[str, Any]) -> None:
@@ -89,6 +111,7 @@ def last_run(root: Path) -> Dict[str, Any] | None:
 
 
 # Lightweight event logger for audits
+
 def log_event(event: str, **fields: Any) -> None:
     logs_dir = Path(".ai_onboard") / "logs"
     utils.ensure_dir(logs_dir)

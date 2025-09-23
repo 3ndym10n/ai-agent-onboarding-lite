@@ -1,8 +1,8 @@
-import json
-import os
+
 
 class NodeScriptsPresent:
     name = "node.pkg_scripts_present"
+
 
     def run(self, paths: List[str], ctx: Dict[str, Any]):
         root = ctx["root"]
@@ -46,6 +46,5 @@ class NodeScriptsPresent:
 
 def _register():
     register("ui_frontend", "node_ts", NodeScriptsPresent())
-
 
 _register()

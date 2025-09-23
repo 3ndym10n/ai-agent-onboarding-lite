@@ -5,6 +5,8 @@ This module provides CLI commands for managing AI agent collaboration,
 including agent registration, session management, and guidance.
 """
 
+# Direct import will be added below
+
 import argparse
 from pathlib import Path
 

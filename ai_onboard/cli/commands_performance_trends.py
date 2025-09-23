@@ -6,7 +6,6 @@ forecasting, and insight generation.
 """
 
 import argparse
-import json
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -22,7 +21,8 @@ def add_performance_trend_commands(subparsers):
     parser = subparsers.add_parser(
         "perf - trends",
         help="Performance trend analysis and forecasting",
-        description="Analyze performance trends, detect anomalies, and generate forecasts",
+        description="Analyze performance trends,
+            detect anomalies, and generate forecasts",
     )
 
     subcommands = parser.add_subparsers(
@@ -443,8 +443,8 @@ def _handle_show_history(args: argparse.Namespace, root: Path) -> None:
     except Exception as e:
         print(f"❌ Error displaying history: {e}")
 
-
 # Display functions
+
 def _display_trends_table(trends):
     """Display trends in table format."""
     if not trends:

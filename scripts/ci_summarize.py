@@ -9,10 +9,11 @@ Summarize recent CI logs fetched into `.ai_onboard / logs/` into a single JSON r
 """
 from __future__ import annotations
 
-import json
 import re
 from pathlib import Path
 from typing import Dict, List, Set
+
+from ai_onboard.core.common_imports import json
 
 LOG_DIR = Path(".ai_onboard / logs")
 SUMMARY_PATH = LOG_DIR / "summary.json"

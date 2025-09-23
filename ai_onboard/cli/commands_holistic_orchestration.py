@@ -154,7 +154,6 @@ def handle_orchestrate_tools(args, root: Path):
     context = {}
     if args.context:
         try:
-            import json
 
             context = json.loads(args.context)
         except json.JSONDecodeError:
@@ -227,19 +226,22 @@ def handle_orchestration_status(args, root: Path):
         f"   • Communication style: {orchestrator.user_preferences.get('communication_style', 'unknown')}"
     )
     print(
-        f"   • Tool preferences: {len(orchestrator.user_preferences.get('tool_preferences', []))} tools"
+        f"   • Tool preferences: {len(orchestrator.user_preferences.get('tool_preferences',
+            []))} tools"
     )
     print(
         f"   • Safety level: {orchestrator.user_preferences.get('safety_level', 'unknown')}"
     )
     print(
-        f"   • Vision alignment required: {orchestrator.user_preferences.get('vision_alignment_required', False)}"
+        f"   • Vision alignment required: {orchestrator.user_preferences.get('vision_alignment_required',
+            False)}"
     )
 
     # Show vision context
     print(f"\n🎯 Vision Context:")
     print(
-        f"   • Project goals: {len(orchestrator.vision_context.get('project_goals', []))}"
+        f"   • Project goals: {len(orchestrator.vision_context.get('project_goals',
+            []))}"
     )
     print(f"   • Non-goals: {len(orchestrator.vision_context.get('non_goals', []))}")
     print(
@@ -273,7 +275,8 @@ def handle_orchestration_status(args, root: Path):
 
                 print(f"   {i+1}. {success} {request}")
                 print(
-                    f"      Tools: {tools_count}, Time: {exec_time:.2f}s, Strategy: {execution['strategy']}"
+                    f"      Tools: {tools_count},
+                        Time: {exec_time:.2f}s, Strategy: {execution['strategy']}"
                 )
         else:
             print("   No execution history available")

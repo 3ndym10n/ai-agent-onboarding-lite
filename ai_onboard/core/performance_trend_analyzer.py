@@ -51,8 +51,8 @@ class ForecastConfidence(Enum):
     HIGH = "high"  # 80 - 95%
     VERY_HIGH = "very_high"  # > 95%
 
-
 @dataclass
+
 class TrendAnalysis:
     """Results of trend analysis for a specific metric."""
 
@@ -72,8 +72,8 @@ class TrendAnalysis:
     analysis_timestamp: datetime = field(default_factory=datetime.now)
     context: Dict[str, Any] = field(default_factory=dict)
 
-
 @dataclass
+
 class PerformanceForecast:
     """Performance forecast for future time periods."""
 
@@ -89,8 +89,8 @@ class PerformanceForecast:
     created_at: datetime = field(default_factory=datetime.now)
     metadata: Dict[str, Any] = field(default_factory=dict)
 
-
 @dataclass
+
 class AnomalyDetection:
     """Results of anomaly detection analysis."""
 
@@ -105,8 +105,8 @@ class AnomalyDetection:
     detection_method: str
     confidence: float
 
-
 @dataclass
+
 class PerformanceInsight:
     """Actionable insights derived from trend analysis."""
 
@@ -127,6 +127,7 @@ class PerformanceInsight:
 
 class PerformanceTrendAnalyzer:
     """Advanced performance trend analysis and forecasting system."""
+
 
     def __init__(self, root: Path):
         self.root = root
@@ -161,12 +162,14 @@ class PerformanceTrendAnalyzer:
         utils.ensure_dir(self.data_path)
 
     @property
+
     def data_path(self) -> Path:
         """Alias for trends_path parent directory for backward compatibility."""
         return self.trends_path.parent / "performance_data"
 
         # Initialize baseline data
         self._initialize_baselines()
+
 
     def analyze_trends(
         self,
@@ -179,7 +182,8 @@ class PerformanceTrendAnalyzer:
         """Alias for analyze_performance_trends for backward compatibility."""
         # Handle positional arguments from tests
         if isinstance(time_window_days, list) and isinstance(min_data_points, list):
-            # Test is calling with positional args: analyze_trends(metric_name, data_points, timestamps)
+            # Test is calling with positional args: analyze_trends(metric_name,
+                data_points, timestamps)
             actual_data_points = time_window_days
             actual_timestamps = min_data_points
             actual_time_window_days = 30
@@ -249,6 +253,7 @@ class PerformanceTrendAnalyzer:
             metric_names=[metric_name] if metric_name else None
         )
 
+
     def detect_anomalies(
         self,
         metric_name: str,
@@ -305,6 +310,7 @@ class PerformanceTrendAnalyzer:
             metric_names=[metric_name] if metric_name else None,
         )
 
+
     def _load_config(self) -> Dict[str, Any]:
         """Load trend analysis configuration."""
         default_config = {
@@ -340,6 +346,7 @@ class PerformanceTrendAnalyzer:
 
         return utils.read_json(self.config_path, default=default_config)
 
+
     def _initialize_baselines(self):
         """Initialize performance baselines from historical data."""
         try:
@@ -364,6 +371,7 @@ class PerformanceTrendAnalyzer:
         except Exception as e:
             telemetry.log_event("trend_analyzer_init_error", error=str(e))
             self.baselines = {}
+
 
     def analyze_performance_trends(
         self, metric_names: Optional[List[str]] = None, time_period: str = "7d"
@@ -399,6 +407,7 @@ class PerformanceTrendAnalyzer:
         except Exception as e:
             telemetry.log_event("trend_analysis_error", error=str(e))
             return []
+
 
     def _analyze_metric_trend(
         self, metric_name: str, time_period: str
@@ -458,6 +467,7 @@ class PerformanceTrendAnalyzer:
             )
             return None
 
+
     def _calculate_trend_statistics(self, values: List[float]) -> Dict[str, float]:
         """Calculate comprehensive trend statistics using linear regression."""
         n = len(values)
@@ -499,6 +509,7 @@ class PerformanceTrendAnalyzer:
             "std": statistics.stdev(values) if n > 1 else 0,
         }
 
+
     def _determine_trend_direction(self, stats: Dict[str, float]) -> TrendDirection:
         """Determine the direction of the trend based on statistics."""
         slope = stats["slope"]
@@ -520,6 +531,7 @@ class PerformanceTrendAnalyzer:
             )  # For performance metrics, increasing usually means degrading
         else:
             return TrendDirection.IMPROVING
+
 
     def _determine_trend_severity(
         self, stats: Dict[str, float], metric_name: str
@@ -547,6 +559,7 @@ class PerformanceTrendAnalyzer:
         else:
             return TrendSeverity.CRITICAL
 
+
     def _calculate_volatility(self, values: List[float]) -> float:
         """Calculate volatility (coefficient of variation) of the values."""
         if len(values) < 2:
@@ -558,6 +571,7 @@ class PerformanceTrendAnalyzer:
 
         std_val = statistics.stdev(values)
         return std_val / mean_val
+
 
     def _calculate_autocorrelation(self, values: List[float], lag: int = 1) -> float:
         """Calculate autocorrelation to detect patterns in the data."""
@@ -580,6 +594,7 @@ class PerformanceTrendAnalyzer:
         except Exception:
             return 0.0
 
+
     def _calculate_trend_strength(
         self, stats: Dict[str, float], volatility: float
     ) -> float:
@@ -592,6 +607,7 @@ class PerformanceTrendAnalyzer:
         trend_strength = r_squared * 0.4 + confidence * 0.4 + volatility_factor * 0.2
 
         return min(trend_strength, 1.0)
+
 
     def detect_performance_anomalies(
         self, metric_names: Optional[List[str]] = None, lookback_hours: int = 24
@@ -626,6 +642,7 @@ class PerformanceTrendAnalyzer:
         except Exception as e:
             telemetry.log_event("anomaly_detection_error", error=str(e))
             return []
+
 
     def _detect_metric_anomalies(
         self, metric_name: str, lookback_hours: int
@@ -667,6 +684,7 @@ class PerformanceTrendAnalyzer:
                 "metric_anomaly_detection_error", metric=metric_name, error=str(e)
             )
             return []
+
 
     def _detect_zscore_anomalies(
         self, metric_name: str, values: List[float], timestamps: List[str]
@@ -714,6 +732,7 @@ class PerformanceTrendAnalyzer:
                 )
 
         return anomalies
+
 
     def _detect_iqr_anomalies(
         self, metric_name: str, values: List[float], timestamps: List[str]
@@ -773,6 +792,7 @@ class PerformanceTrendAnalyzer:
 
         return anomalies
 
+
     def _detect_moving_average_anomalies(
         self, metric_name: str, values: List[float], timestamps: List[str]
     ) -> List[AnomalyDetection]:
@@ -822,6 +842,7 @@ class PerformanceTrendAnalyzer:
 
         return anomalies
 
+
     def _determine_anomaly_severity(self, deviation_score: float) -> TrendSeverity:
         """Determine severity based on deviation score."""
         if deviation_score < 2.0:
@@ -832,6 +853,7 @@ class PerformanceTrendAnalyzer:
             return TrendSeverity.HIGH
         else:
             return TrendSeverity.CRITICAL
+
 
     def generate_performance_forecast(
         self, metric_name: str, horizon_days: Optional[int] = None
@@ -916,6 +938,7 @@ class PerformanceTrendAnalyzer:
             )
             return None
 
+
     def _linear_forecast(self, values: List[float], horizon_days: int) -> List[float]:
         """Generate linear trend forecast."""
         trend_stats = self._calculate_trend_statistics(values)
@@ -930,6 +953,7 @@ class PerformanceTrendAnalyzer:
             forecast.append(max(0, predicted_value))  # Ensure non - negative values
 
         return forecast
+
 
     def _exponential_forecast(
         self, values: List[float], horizon_days: int
@@ -960,6 +984,7 @@ class PerformanceTrendAnalyzer:
 
         return forecast
 
+
     def _calculate_confidence_intervals(
         self, historical: List[float], forecast: List[float]
     ) -> List[Tuple[float, float]]:
@@ -980,6 +1005,7 @@ class PerformanceTrendAnalyzer:
             intervals.append((lower_bound, upper_bound))
 
         return intervals
+
 
     def _determine_forecast_confidence(
         self, historical: List[float], forecast: List[float]
@@ -1006,6 +1032,7 @@ class PerformanceTrendAnalyzer:
             return ForecastConfidence.MEDIUM
         else:
             return ForecastConfidence.LOW
+
 
     def _generate_forecast_recommendations(
         self,
@@ -1044,11 +1071,13 @@ class PerformanceTrendAnalyzer:
         # Confidence - based recommendations
         if confidence == ForecastConfidence.LOW:
             recommendations.append(
-                "⚠️ Low forecast confidence - increase monitoring frequency and collect more data"
+                "⚠️ Low forecast confidence - increase monitoring frequency and \
+                    collect more data"
             )
         elif confidence == ForecastConfidence.VERY_HIGH:
             recommendations.append(
-                "✅ High forecast confidence - suitable for capacity planning and SLA setting"
+                "✅ High forecast confidence - suitable for capacity planning and \
+                    SLA setting"
             )
 
         # Metric - specific recommendations
@@ -1074,6 +1103,7 @@ class PerformanceTrendAnalyzer:
             )
 
         return recommendations
+
 
     def _identify_forecast_risks(
         self, metric_name: str, values: List[float]
@@ -1117,6 +1147,7 @@ class PerformanceTrendAnalyzer:
 
         return risks
 
+
     def _detect_weekly_pattern(self, values: List[float]) -> bool:
         """Basic weekly pattern detection."""
         if len(values) < 14:  # Need at least 2 weeks
@@ -1128,6 +1159,7 @@ class PerformanceTrendAnalyzer:
             return weekly_correlation > 0.3
         except Exception:
             return False
+
 
     def generate_performance_insights(
         self,
@@ -1142,7 +1174,8 @@ class PerformanceTrendAnalyzer:
             and isinstance(trends, list)
             and anomalies is None
         ):
-            # Test is calling with positional args: generate_performance_insights(trends, anomalies)
+            # Test is calling with positional args: generate_performance_insights(trends,
+                anomalies)
             actual_trends = lookback_days
             actual_anomalies = trends
             actual_lookback_days = 30
@@ -1151,7 +1184,8 @@ class PerformanceTrendAnalyzer:
             actual_anomalies = anomalies
             actual_lookback_days = lookback_days
         """Generate actionable performance insights from trend analysis."""
-        # For testing purposes, if trends and anomalies are provided, create mock insights
+        # For testing purposes,
+            if trends and anomalies are provided, create mock insights
         if actual_trends is not None or actual_anomalies is not None:
             insights = []
             from datetime import datetime
@@ -1249,6 +1283,7 @@ class PerformanceTrendAnalyzer:
             telemetry.log_event("insight_generation_error", error=str(e))
             return []
 
+
     def _generate_trend_insights(
         self, trends: List[TrendAnalysis]
     ) -> List[PerformanceInsight]:
@@ -1313,6 +1348,7 @@ class PerformanceTrendAnalyzer:
 
         return insights
 
+
     def _generate_degradation_recommendations(self, trend: TrendAnalysis) -> List[str]:
         """Generate specific recommendations for performance degradation."""
         recommendations = []
@@ -1356,6 +1392,7 @@ class PerformanceTrendAnalyzer:
             )
 
         return recommendations
+
 
     def _generate_anomaly_insights(
         self, anomalies: List[AnomalyDetection]
@@ -1411,6 +1448,7 @@ class PerformanceTrendAnalyzer:
 
         return insights
 
+
     def _generate_capacity_insights(
         self, trends: List[TrendAnalysis]
     ) -> List[PerformanceInsight]:
@@ -1445,7 +1483,8 @@ class PerformanceTrendAnalyzer:
                         insight = PerformanceInsight(
                             insight_id=f"capacity_planning_{trend.metric_name}_{int(time.time())}",
                             title=f"Capacity Planning Alert: {trend.metric_name}",
-                            description=f"{trend.metric_name} forecast indicates potential capacity issues within 90 days, with predicted peak of {max_forecast:.1f}% (threshold: {threshold_value}%)",
+                            description=f"{trend.metric_name} forecast indicates potential capacity issues within 90 days,
+                                with predicted peak of {max_forecast:.1f}% (threshold: {threshold_value}%)",
                             category="capacity",
                             priority="high",
                             affected_metrics=[trend.metric_name],
@@ -1471,6 +1510,7 @@ class PerformanceTrendAnalyzer:
 
         return insights
 
+
     def _estimate_time_to_threshold(
         self, forecast: PerformanceForecast, threshold: float
     ) -> Optional[str]:
@@ -1479,6 +1519,7 @@ class PerformanceTrendAnalyzer:
             if value > threshold:
                 return f"{i + 1} days"
         return None
+
 
     def _prioritize_insights(
         self, insights: List[PerformanceInsight]
@@ -1498,12 +1539,14 @@ class PerformanceTrendAnalyzer:
             "efficiency": 1,
         }
 
+
         def priority_score(insight: PerformanceInsight) -> Tuple[int, int]:
             priority_val = priority_order.get(insight.priority, 0)
             category_val = category_order.get(insight.category, 0)
             return (priority_val, category_val)
 
         return sorted(insights, key=priority_score, reverse=True)
+
 
     def _get_available_performance_metrics(self) -> List[str]:
         """Get list of available performance metrics."""
@@ -1517,6 +1560,7 @@ class PerformanceTrendAnalyzer:
             "disk_io",
             "network_io",
         ]
+
 
     def _get_metric_history(
         self, metric_name: str, time_period: str
@@ -1570,6 +1614,7 @@ class PerformanceTrendAnalyzer:
 
         return list(reversed(data_points))  # Return chronological order
 
+
     def _save_trends(self, trends: List[TrendAnalysis]):
         """Save trend analysis results to persistent storage."""
         try:
@@ -1598,6 +1643,7 @@ class PerformanceTrendAnalyzer:
         except Exception as e:
             telemetry.log_event("trend_save_error", error=str(e))
 
+
     def _save_anomalies(self, anomalies: List[AnomalyDetection]):
         """Save anomaly detection results to persistent storage."""
         try:
@@ -1622,6 +1668,7 @@ class PerformanceTrendAnalyzer:
         except Exception as e:
             telemetry.log_event("anomaly_save_error", error=str(e))
 
+
     def _save_forecast(self, forecast: PerformanceForecast):
         """Save performance forecast to persistent storage."""
         try:
@@ -1644,6 +1691,7 @@ class PerformanceTrendAnalyzer:
 
         except Exception as e:
             telemetry.log_event("forecast_save_error", error=str(e))
+
 
     def _save_insights(self, insights: List[PerformanceInsight]):
         """Save performance insights to persistent storage."""
@@ -1668,8 +1716,8 @@ class PerformanceTrendAnalyzer:
         except Exception as e:
             telemetry.log_event("insight_save_error", error=str(e))
 
-
 # Factory function
+
 def get_performance_trend_analyzer(root: Path) -> PerformanceTrendAnalyzer:
     """Get or create a PerformanceTrendAnalyzer instance."""
     return PerformanceTrendAnalyzer(root)

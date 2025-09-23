@@ -43,8 +43,8 @@ class ToolExecutionContext(Enum):
     AI_AGENT_COORDINATION = "ai_agent_coordination"
     CONTINUOUS_IMPROVEMENT = "continuous_improvement"
 
-
 @dataclass
+
 class ToolExecutionPlan:
     """Plan for executing multiple tools in coordination."""
 
@@ -59,8 +59,8 @@ class ToolExecutionPlan:
     risk_level: str = "low"
     strategy: OrchestrationStrategy = OrchestrationStrategy.ADAPTIVE
 
-
 @dataclass
+
 class HolisticOrchestrationResult:
     """Result of holistic tool orchestration."""
 
@@ -82,6 +82,7 @@ class HolisticToolOrchestrator:
     user-preference-aware, and safety-compliant development assistance.
     """
 
+
     def __init__(self, root_path: Path):
         self.root_path = root_path
         self.tool_tracker = get_tool_tracker(root_path)
@@ -95,6 +96,7 @@ class HolisticToolOrchestrator:
 
         # Execution history for learning
         self.execution_history = []
+
 
     def orchestrate_tools_for_request(
         self,
@@ -221,6 +223,7 @@ class HolisticToolOrchestrator:
 
         return result
 
+
     def _create_execution_plan(
         self,
         user_request: str,
@@ -264,6 +267,7 @@ class HolisticToolOrchestrator:
 
         return plan
 
+
     def _analyze_request_for_tools(
         self, user_request: str, context: Dict[str, Any]
     ) -> Dict[str, ToolMetadata]:
@@ -299,6 +303,7 @@ class HolisticToolOrchestrator:
                 relevant_tools[tool_name] = metadata
 
         return relevant_tools
+
 
     def _determine_execution_order(
         self, plan: ToolExecutionPlan, strategy: OrchestrationStrategy
@@ -342,6 +347,7 @@ class HolisticToolOrchestrator:
                 + plan.supporting_tools
             )
 
+
     def _execute_vision_alignment(self, vision_tools: List[str]) -> Dict[str, Any]:
         """Execute vision alignment tools."""
 
@@ -363,6 +369,7 @@ class HolisticToolOrchestrator:
                 )
 
         return result
+
 
     def _apply_user_preferences(
         self, preference_tools: List[str], user_request: str
@@ -388,6 +395,7 @@ class HolisticToolOrchestrator:
 
         return result
 
+
     def _execute_safety_validations(self, safety_tools: List[str]) -> Dict[str, Any]:
         """Execute safety validation tools."""
 
@@ -409,6 +417,7 @@ class HolisticToolOrchestrator:
                 )
 
         return result
+
 
     def _execute_tool(
         self, tool_name: str, user_request: str, context: Dict[str, Any]
@@ -445,6 +454,7 @@ class HolisticToolOrchestrator:
                 "insights": [f"Tool {tool_name} execution failed: {e}"],
             }
 
+
     def _execute_code_quality_tool(
         self, tool_name: str, user_request: str, context: Dict[str, Any]
     ) -> Dict[str, Any]:
@@ -464,6 +474,7 @@ class HolisticToolOrchestrator:
                 f"Overall quality score: {result.overall_quality_score:.1f}",
             ],
         }
+
 
     def _execute_file_organization_tool(
         self, tool_name: str, user_request: str, context: Dict[str, Any]
@@ -485,6 +496,7 @@ class HolisticToolOrchestrator:
             ],
         }
 
+
     def _execute_vision_tool(
         self, tool_name: str, user_request: str, context: Dict[str, Any]
     ) -> Dict[str, Any]:
@@ -501,6 +513,7 @@ class HolisticToolOrchestrator:
             ],
         }
 
+
     def _execute_user_preference_tool(
         self, tool_name: str, user_request: str, context: Dict[str, Any]
     ) -> Dict[str, Any]:
@@ -512,10 +525,10 @@ class HolisticToolOrchestrator:
             "compliance_score": 0.9,  # Placeholder
             "insights": [
                 f"User preferences applied",
-                "Request matches user's preferred communication style",
-                "Tool selection aligns with user's workflow preferences",
+                "Request matches user's preferred communication style", "Tool selection aligns with user's workflow preferences",
             ],
         }
+
 
     def _execute_safety_tool(
         self, tool_name: str, user_request: str, context: Dict[str, Any]
@@ -533,6 +546,7 @@ class HolisticToolOrchestrator:
             ],
         }
 
+
     def _execute_generic_tool(
         self, tool_name: str, user_request: str, context: Dict[str, Any]
     ) -> Dict[str, Any]:
@@ -543,6 +557,7 @@ class HolisticToolOrchestrator:
             "result": "Generic tool execution completed",
             "insights": [f"Tool {tool_name} executed successfully"],
         }
+
 
     def _generate_recommendations(
         self, tool_results: Dict[str, Any], user_request: str
@@ -561,6 +576,7 @@ class HolisticToolOrchestrator:
                         recommendations.append(f"Optimization opportunity: {insight}")
 
         return recommendations
+
 
     def _estimate_execution_duration(self, plan: ToolExecutionPlan) -> float:
         """Estimate total execution duration for the plan."""
@@ -590,6 +606,7 @@ class HolisticToolOrchestrator:
 
         return total_duration
 
+
     def _assess_risk_level(self, plan: ToolExecutionPlan) -> str:
         """Assess the risk level of the execution plan."""
 
@@ -606,6 +623,7 @@ class HolisticToolOrchestrator:
         else:
             return "low"
 
+
     def _load_user_preferences(self) -> Dict[str, Any]:
         """Load user preferences from storage."""
 
@@ -617,6 +635,7 @@ class HolisticToolOrchestrator:
             "vision_alignment_required": True,
         }
 
+
     def _load_vision_context(self) -> Dict[str, Any]:
         """Load vision context from project files."""
 
@@ -627,6 +646,7 @@ class HolisticToolOrchestrator:
             "risk_appetite": "low",
             "milestones": ["phase_1_complete", "phase_2_complete"],
         }
+
 
     def _load_safety_gates(self) -> Dict[str, Any]:
         """Load safety gate configurations."""

@@ -39,6 +39,14 @@ from .commands_cleanup_safety import (
     add_cleanup_safety_commands,
     handle_cleanup_safety_commands,
 )
+from .commands_code_quality import (
+    add_code_quality_commands,
+    handle_code_quality_commands,
+)
+from .commands_project_management import (
+    add_project_management_commands,
+    handle_project_management_commands,
+)
 from .commands_codebase_analysis import (
     add_codebase_analysis_commands,
     handle_codebase_analysis_commands,
@@ -68,6 +76,10 @@ from .commands_enhanced_vision import (
 from .commands_holistic_orchestration import (
     add_holistic_orchestration_commands,
     handle_holistic_orchestration_commands,
+)
+from .commands_import_consolidation import (
+    add_consolidation_parser,
+    consolidate_imports_command,
 )
 from .commands_intelligent_monitoring import (
     add_intelligent_monitoring_commands,
@@ -101,15 +113,16 @@ def validate_and_execute_python(
     command: str, cwd: str = None, is_background: bool = False
 ) -> dict:
     """
-    Validate Python syntax and execute command if valid.
+    # Direct import will be added below
+        Validate Python syntax and execute command if valid.
 
-    Args:
-        command: Python code to validate and execute
-        cwd: Working directory for execution
-        is_background: Whether to run in background
+        Args:
+            command: Python code to validate and execute
+            cwd: Working directory for execution
+            is_background: Whether to run in background
 
-    Returns:
-        Dict with execution results and validation info
+        Returns:
+            Dict with execution results and validation info
     """
     # Extract Python code from command (remove 'python -c "..."')
     python_code = None
@@ -309,6 +322,12 @@ def main(argv=None):
     # Add cleanup safety commands
     add_cleanup_safety_commands(sub)
 
+    # Add code quality commands
+    add_code_quality_commands(sub)
+
+    # Add project management commands
+    add_project_management_commands(sub)
+
     # Add interrogate commands
     add_interrogate_commands(sub)
 
@@ -335,6 +354,9 @@ def main(argv=None):
 
     # Add Cursor AI integration commands
     add_cursor_commands(sub)
+
+    # Add import consolidation commands
+    add_consolidation_parser(sub)
 
     # Add API server commands
     add_api_commands(sub)
@@ -511,7 +533,8 @@ def main(argv=None):
                 "success",
             )
             print(
-                f"📋 WBS Auto-Update: {wbs_update_result['updated']} tasks integrated, {wbs_update_result['failed']} failed"
+                f"📋 WBS Auto-Update: {wbs_update_result['updated']} tasks integrated,
+                    {wbs_update_result['failed']} failed"
             )
 
         # Check if this is a critical operation requiring enhanced safety
@@ -672,6 +695,22 @@ def main(argv=None):
             handle_cleanup_safety_commands(args, root)
             return
 
+    # Handle code quality commands with error monitoring
+    if args.cmd == "code-quality":
+        with error_monitor.monitor_command_execution(
+            "code-quality", "foreground", "cli_session"
+        ):
+            handle_code_quality_commands(args)
+            return
+
+    # Handle project management commands with error monitoring
+    if args.cmd == "project":
+        with error_monitor.monitor_command_execution(
+            "project", "foreground", "cli_session"
+        ):
+            handle_project_management_commands(args)
+            return
+
     # Handle enhanced vision commands with error monitoring
     if args.cmd == "enhanced - vision":
         with error_monitor.monitor_command_execution(
@@ -718,6 +757,14 @@ def main(argv=None):
             "cursor", "foreground", "cli_session"
         ):
             handle_cursor_commands(args, root)
+            return
+
+    # Handle import consolidation commands with error monitoring
+    if args.cmd == "consolidate":
+        with error_monitor.monitor_command_execution(
+            "consolidate", "foreground", "cli_session"
+        ):
+            consolidate_imports_command(args)
             return
 
     # Handle API server commands with error monitoring
@@ -914,7 +961,6 @@ def main(argv=None):
     # Only show completion celebration for interactive commands
     if ux_middleware is not None:
         ux_middleware.show_completion_celebration(user_id)
-
 
 if __name__ == "__main__":
     main()

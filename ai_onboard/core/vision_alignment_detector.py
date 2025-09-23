@@ -1,16 +1,18 @@
 """
 Vision Alignment Detector
 
-Detects when actions or decisions don't align with the user's vision, charter, or project plan.
-This addresses the user's need to be consulted when things might be drifting.
-"""
+Detects when actions or decisions don't align with the user's vision,
+    charter, or project plan.
+This addresses the user's need to be consulted when things might be drifting. """
 
-# Import read_json, write_json from utils.py module
-import importlib.util
+import json
 import time
-_utils_spec.loader.exec_module(_utils_module)
-read_json = _utils_module.read_json
-write_json = _utils_module.write_json
+from dataclasses import dataclass, field
+from enum import Enum
+from pathlib import Path
+from typing import List
+
+from . import utils
 
 
 class AlignmentLevel(Enum):
@@ -36,6 +38,7 @@ class DriftType(Enum):
 
 
 @dataclass
+
 class AlignmentCheck:
     """Result of an alignment check."""
 
@@ -51,6 +54,7 @@ class AlignmentCheck:
 
 
 @dataclass
+
 class VisionCharter:
     """User's vision and charter preferences."""
 
@@ -76,6 +80,7 @@ class VisionAlignmentDetector:
     5. Project plan is maintained
     """
 
+
     def __init__(self, root_path: Path):
         self.root_path = root_path
         self.charter_path = root_path / ".ai_onboard" / "vision_charter.json"
@@ -90,10 +95,11 @@ class VisionAlignmentDetector:
         # Alignment check history
         self.recent_checks: List[AlignmentCheck] = []
 
+
     def _load_vision_charter(self) -> VisionCharter:
         """Load the user's vision charter preferences."""
         try:
-            data = read_json(self.charter_path, default={})
+            data = utils.read_json_cached(self.charter_path, default={})
             return VisionCharter(**data)
         except Exception:
             # Default charter based on user's stated preferences
@@ -108,6 +114,7 @@ class VisionAlignmentDetector:
                 rigorous_but_flexible=True,
             )
 
+
     def _save_vision_charter(self):
         """Save the vision charter."""
         try:
@@ -121,9 +128,10 @@ class VisionAlignmentDetector:
                 "collaborative_development": self.vision_charter.collaborative_development,
                 "rigorous_but_flexible": self.vision_charter.rigorous_but_flexible,
             }
-            write_json(self.charter_path, data)
+            utils.write_json(self.charter_path, data)
         except Exception as e:
             print(f"⚠️ Failed to save vision charter: {e}")
+
 
     def check_alignment(
         self,
@@ -234,6 +242,7 @@ class VisionAlignmentDetector:
 
         return check
 
+
     def _save_alignment_check(self, check: AlignmentCheck):
         """Save alignment check to persistent storage."""
         try:
@@ -250,11 +259,11 @@ class VisionAlignmentDetector:
             }
 
             with open(self.alignment_log_path, "a", encoding="utf-8") as f:
-                import json
 
                 f.write(json.dumps(check_data) + "\n")
         except Exception as e:
             print(f"⚠️ Failed to save alignment check: {e}")
+
 
     def display_alignment_check(self, check: AlignmentCheck):
         """Display alignment check results to the user."""
@@ -294,6 +303,7 @@ class VisionAlignmentDetector:
                 print(f"⚠️ Please review and provide guidance")
 
         print(f"=" * 50)
+
 
     def get_alignment_summary(self) -> Dict[str, Any]:
         """Get summary of recent alignment checks."""
@@ -344,6 +354,7 @@ class VisionAlignmentDetector:
                 c.concerns for c in self.recent_checks[-5:] if c.concerns
             ],
         }
+
 
     def update_vision_charter(self, **kwargs):
         """Update the vision charter based on user feedback."""

@@ -7,11 +7,10 @@ Learned from the README consolidation incident where 19 dependencies
 were nearly broken.
 """
 
-import ast
-from dataclasses import dataclass
-from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
+
+from ai_onboard.core.common_imports import Dict, Enum, List, Optional, Path, dataclass
 
 from .unicode_utils import print_content, print_status, safe_print
 
@@ -30,6 +29,7 @@ class DependencyType(Enum):
 
 
 @dataclass
+
 class Dependency:
     """Represents a dependency relationship."""
 
@@ -42,6 +42,7 @@ class Dependency:
 
 
 @dataclass
+
 class DependencyCheckResult:
     """Results of dependency checking."""
 
@@ -55,6 +56,7 @@ class DependencyCheckResult:
 
 class DependencyChecker:
     """Comprehensive dependency checker for safe cleanup operations."""
+
 
     def __init__(self, root: Path):
         """
@@ -94,6 +96,7 @@ class DependencyChecker:
             "__main__.py",
         }
 
+
     def check_dependencies(
         self, target_files: List[Path]
     ) -> List[DependencyCheckResult]:
@@ -123,6 +126,7 @@ class DependencyChecker:
                 )
 
         return results
+
 
     def _check_single_file_dependencies(
         self, target_file: Path
@@ -166,6 +170,7 @@ class DependencyChecker:
             recommendations=recommendations,
         )
 
+
     def _scan_file_for_references(
         self, source_file: Path, target_file: Path
     ) -> List[Dependency]:
@@ -198,6 +203,7 @@ class DependencyChecker:
             pass
 
         return dependencies
+
 
     def _scan_python_file(
         self, source_file: Path, target_file: Path, content: str
@@ -282,6 +288,7 @@ class DependencyChecker:
 
         return dependencies
 
+
     def _scan_config_file(
         self, source_file: Path, target_file: Path, content: str
     ) -> List[Dependency]:
@@ -314,6 +321,7 @@ class DependencyChecker:
                     )
 
         return dependencies
+
 
     def _scan_documentation_file(
         self, source_file: Path, target_file: Path, content: str
@@ -356,6 +364,7 @@ class DependencyChecker:
 
         return dependencies
 
+
     def _scan_generic_file(
         self, source_file: Path, target_file: Path, content: str
     ) -> List[Dependency]:
@@ -383,6 +392,7 @@ class DependencyChecker:
 
         return dependencies
 
+
     def _matches_target(self, module_name: str, target_file: Path) -> bool:
         """Check if a module name matches the target file."""
         if not module_name:
@@ -406,6 +416,7 @@ class DependencyChecker:
 
         return False
 
+
     def _assess_risk(
         self, dependencies: List[Dependency], target_file: Path
     ) -> Tuple[str, bool]:
@@ -425,6 +436,7 @@ class DependencyChecker:
             return "medium", False
         else:
             return "low", True
+
 
     def generate_dependency_report(self, results: List[DependencyCheckResult]) -> str:
         """Generate a comprehensive dependency report."""
@@ -473,6 +485,7 @@ class DependencyChecker:
                 report.append(f"   ✓ {result.target_file.name}")
 
         return "\n".join(report)
+
 
     def create_dependency_fix_plan(
         self, results: List[DependencyCheckResult]
@@ -535,8 +548,8 @@ def check_cleanup_dependencies(root: Path, target_files: List[Path]) -> bool:
 
     if unsafe_files:
         print_status(
-            f"❌ {len(unsafe_files)} files have dependencies and cannot be safely deleted",
-            "error",
+            f"❌ {len(unsafe_files)} files have dependencies and \
+                cannot be safely deleted", "error",
         )
 
         # Generate fix plan
@@ -557,7 +570,6 @@ def check_cleanup_dependencies(root: Path, target_files: List[Path]) -> bool:
 
 if __name__ == "__main__":
     # Test the dependency checker
-    import sys
 
     if len(sys.argv) > 1:
         root = Path(sys.argv[1])

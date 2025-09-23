@@ -2,9 +2,9 @@
 Tool Usage Tracker: Tracks and reports system tools used during task execution.
 """
 
-# Import utils functions from utils.py module (parent directory, avoiding utils/ package conflict)
+# Import utils functions from utils.py module (parent directory,
+# avoiding utils/ package conflict)
 import importlib.util
-import json
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional

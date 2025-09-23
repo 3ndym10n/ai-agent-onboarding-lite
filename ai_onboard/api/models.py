@@ -305,8 +305,8 @@ class ErrorDetail(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.now)
     suggested_resolution: Optional[str] = None
 
-
 # Enums for validation
+
 class CollaborationMode(str, Enum):
     ASSISTIVE = "assistive"
     AUTONOMOUS = "autonomous"

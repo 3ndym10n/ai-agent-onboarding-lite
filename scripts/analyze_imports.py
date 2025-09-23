@@ -3,10 +3,9 @@
 Import Analysis Script for ai-onboard-lite
 Analyzes Python files to identify unused imports and consolidation opportunities.
 """
+from ai_onboard.core.common_imports import os, sys
 
 import ast
-import os
-import sys
 from collections import defaultdict
 from pathlib import Path
 from typing import Dict, List
@@ -26,7 +25,7 @@ class ImportAnalyzer:
 
     def analyze_codebase(self) -> Dict:
         """Analyze all Python files in the codebase."""
-        print("🔍 Starting comprehensive import analysis...")
+        print("Starting comprehensive import analysis...")
 
         for py_file in self.root_path.rglob("*.py"):
             if self._should_skip_file(py_file):
@@ -134,20 +133,23 @@ class ImportAnalyzer:
 
         if avg_imports > 15:
             recommendations.append(
-                "⚠️ HIGH: Average imports per file is very high ({:.1f}). Consider consolidating imports.".format(
+                "HIGH: Average imports per file is very high ({:.1f}). Consider consolidating imports.".format(
                     avg_imports
                 )
             )
         elif avg_imports > 10:
             recommendations.append(
-                "⚠️ MEDIUM: Average imports per file is elevated ({:.1f}). Review for consolidation opportunities.".format(
+                "MEDIUM: Average imports per file is elevated ({:.1f}). Review for consolidation opportunities.".format(
                     avg_imports
                 )
             )
 
+        # Add specific consolidation recommendations
+        recommendations.extend(self._get_consolidation_recommendations())
+
         if self.syntax_errors:
             recommendations.append(
-                f"🚨 CRITICAL: {len(self.syntax_errors)} files have syntax errors preventing import analysis."
+                f"CRITICAL: {len(self.syntax_errors)} files have syntax errors preventing import analysis."
             )
 
         # Check for commonly unused imports
@@ -169,7 +171,65 @@ class ImportAnalyzer:
 
         if commonly_unused:
             recommendations.append(
-                f"💡 Consider reviewing usage of standard library modules: {', '.join(commonly_unused[:5])}"
+                f"Consider reviewing usage of standard library modules: {', '.join(commonly_unused[:5])}"
+            )
+
+        return recommendations
+
+    def _get_consolidation_recommendations(self) -> List[str]:
+        """Generate specific consolidation recommendations based on import patterns."""
+        recommendations = []
+
+        # Get most commonly used modules
+        most_used = sorted(
+            [(module, len(files)) for module, files in self.module_usage.items()],
+            key=lambda x: x[1],
+            reverse=True,
+        )[:10]
+
+        # Check for common import patterns that could be consolidated
+        common_stdlib = [
+            "pathlib",
+            "typing",
+            "dataclasses",
+            "datetime",
+            "enum",
+            "collections",
+        ]
+        common_stdlib_usage = sum(
+            count for module, count in most_used if module in common_stdlib
+        )
+
+        if common_stdlib_usage > 100:
+            recommendations.append(
+                f"CONSOLIDATION: Consider creating a 'common_imports.py' module for frequently used stdlib imports "
+                f"({common_stdlib_usage} total usages of common stdlib modules)"
+            )
+
+        # Check for typing imports that could be consolidated
+        typing_usage = sum(count for module, count in most_used if module == "typing")
+        if typing_usage > 50:
+            recommendations.append(
+                f"CONSOLIDATION: High usage of 'typing' module ({typing_usage} files). "
+                f"Consider creating a 'types.py' module with commonly used type aliases"
+            )
+
+        # Check for pathlib usage
+        pathlib_usage = sum(count for module, count in most_used if module == "pathlib")
+        if pathlib_usage > 50:
+            recommendations.append(
+                f"CONSOLIDATION: High usage of 'pathlib' module ({pathlib_usage} files). "
+                f"Consider creating a 'paths.py' utility module with common path operations"
+            )
+
+        # Check for dataclasses usage
+        dataclasses_usage = sum(
+            count for module, count in most_used if module == "dataclasses"
+        )
+        if dataclasses_usage > 30:
+            recommendations.append(
+                f"CONSOLIDATION: High usage of 'dataclasses' module ({dataclasses_usage} files). "
+                f"Consider creating a 'models.py' module with common data structures"
             )
 
         return recommendations
@@ -181,35 +241,35 @@ def main():
     report = analyzer.analyze_codebase()
 
     print("\n" + "=" * 60)
-    print("📊 IMPORT ANALYSIS REPORT")
+    print("IMPORT ANALYSIS REPORT")
     print("=" * 60)
 
     summary = report["summary"]
-    print(f"\n📈 SUMMARY:")
+    print(f"\nSUMMARY:")
     print(f"   Files analyzed: {summary['files_analyzed']}")
     print(f"   Total imports: {summary['total_imports']}")
     print(f"   Average imports per file: {summary['average_imports_per_file']}")
     print(f"   Syntax errors: {summary['syntax_errors_count']}")
     print(f"   Unique modules: {summary['unique_modules_used']}")
 
-    print(f"\n📋 IMPORT TYPES:")
+    print(f"\nIMPORT TYPES:")
     for imp_type, count in report["import_types"].items():
         print(f"   {imp_type}: {count}")
 
-    print(f"\n🔝 MOST USED MODULES:")
+    print(f"\nMOST USED MODULES:")
     for module, count in report["most_used_modules"][:10]:
         print(f"   {module}: {count} files")
 
     if report["syntax_errors"]:
-        print(f"\n🚨 SYNTAX ERRORS (showing first 5):")
+        print(f"\nSYNTAX ERRORS (showing first 5):")
         for error in report["syntax_errors"][:5]:
             print(f"   {error['file']}: {error['error']}")
 
-    print(f"\n💡 RECOMMENDATIONS:")
+    print(f"\nRECOMMENDATIONS:")
     for rec in report["recommendations"]:
         print(f"   {rec}")
 
-    print(f"\n✅ Analysis complete!")
+    print(f"\nAnalysis complete!")
 
 
 if __name__ == "__main__":

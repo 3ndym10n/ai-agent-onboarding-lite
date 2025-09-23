@@ -159,7 +159,6 @@ def _generate_wbs_display(
         # Load project plan for WBS data
         project_plan_path = root / ".ai_onboard" / "project_plan.json"
         if project_plan_path.exists():
-            import json
 
             with open(project_plan_path, "r") as f:
                 project_plan = json.load(f)

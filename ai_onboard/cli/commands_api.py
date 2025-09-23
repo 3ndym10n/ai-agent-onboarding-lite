@@ -9,7 +9,6 @@ This module provides command - line interfaces for:
 """
 
 import argparse
-import json
 from pathlib import Path
 
 from ..core.unicode_utils import print_activity, print_content, print_status
@@ -97,7 +96,7 @@ def _handle_api_start(args: argparse.Namespace, root: Path) -> None:
     try:
         from ..api.server import get_api_server
 
-        print_activity(f"Starting AI Onboard API server...", "start")
+        print_activity(f"Starting AI Onboard API server...")
         print(f"   Host: {args.host}")
         print(f"   Port: {args.port}")
         print(f"   Project: {root}")
@@ -115,7 +114,7 @@ def _handle_api_start(args: argparse.Namespace, root: Path) -> None:
 
         if args.reload:
             server_config["reload"] = True
-            print_activity("Auto - reload enabled (development mode)", "sync")
+            print_activity("Auto - reload enabled (development mode)")
 
         print_content("\nAPI Documentation will be available at:", "docs")
         print(f"   Swagger UI: http://{args.host}:{args.port}/docs")
@@ -183,7 +182,8 @@ def _handle_api_status(args: argparse.Namespace, root: Path) -> None:
                 if status_response.status_code == 200:
                     project_data = status_response.json()
                     print(
-                        f"   Project Progress: {project_data.get('overall_progress', 0):.1f}%"
+                        f"   Project Progress: {project_data.get('overall_progress',
+                            0):.1f}%"
                     )
                     print(
                         f"   Current Phase: {project_data.get('current_phase', 'unknown')}"

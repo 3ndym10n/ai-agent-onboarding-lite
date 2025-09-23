@@ -27,8 +27,8 @@ from .unified_metrics_collector import (
     get_unified_metrics_collector,
 )
 
-
 @dataclass
+
 class CursorIntegrationConfig:
     """Configuration for Cursor AI integration."""
 
@@ -50,6 +50,7 @@ class CursorIntegrationConfig:
 class CursorAIIntegration:
     """Main integration class for Cursor AI collaboration."""
 
+
     def __init__(self, root: Path):
         self.root = root
         self.config = self._load_config()
@@ -59,6 +60,7 @@ class CursorAIIntegration:
         # Initialize if enabled
         if self.config.enabled:
             self._initialize_integration()
+
 
     def _load_config(self) -> CursorIntegrationConfig:
         """Load Cursor integration configuration."""
@@ -72,6 +74,7 @@ class CursorAIIntegration:
         config = CursorIntegrationConfig()
         self._save_config(config)
         return config
+
 
     def _save_config(self, config: CursorIntegrationConfig):
         """Save Cursor integration configuration."""
@@ -94,6 +97,7 @@ class CursorAIIntegration:
 
         utils.write_json(config_path, data)
 
+
     def _initialize_integration(self):
         """Initialize Cursor AI integration."""
         try:
@@ -115,6 +119,7 @@ class CursorAIIntegration:
         except Exception as e:
             self._record_metric("cursor_integration_error", 1)
             print(f"❌ Cursor AI integration initialization error: {e}")
+
 
     def _create_cursor_agent_profile(self) -> AgentProfile:
         """Create agent profile for Cursor AI."""
@@ -144,6 +149,7 @@ class CursorAIIntegration:
             requires_confirmation_for=self.config.require_confirmation,
             session_timeout=self.config.session_timeout,
         )
+
 
     def create_collaboration_session(
         self, user_id: str = "cursor_user"
@@ -177,6 +183,7 @@ class CursorAIIntegration:
             self._record_metric("cursor_session_error", 1)
             return {"success": False, "error": str(e)}
 
+
     def get_session_status(self, session_id: str) -> Dict[str, Any]:
         """Get the status of a collaboration session."""
         try:
@@ -187,6 +194,7 @@ class CursorAIIntegration:
             }
         except Exception as e:
             return {"success": False, "error": str(e)}
+
 
     def list_active_sessions(self) -> Dict[str, Any]:
         """List all active Cursor AI sessions."""
@@ -217,6 +225,7 @@ class CursorAIIntegration:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
+
     def end_session(self, session_id: str) -> Dict[str, Any]:
         """End a collaboration session."""
         try:
@@ -227,6 +236,7 @@ class CursorAIIntegration:
             }
         except Exception as e:
             return {"success": False, "error": str(e)}
+
 
     def translate_natural_language_command(
         self, natural_language: str
@@ -259,6 +269,7 @@ class CursorAIIntegration:
             "suggestions": list(command_mappings.keys()),
         }
 
+
     def _suggest_command_args(self, command: str, text: str) -> List[str]:
         """Suggest command arguments based on natural language context."""
         args = []
@@ -279,6 +290,7 @@ class CursorAIIntegration:
                 args.append("--preview")
 
         return args
+
 
     def get_project_context_for_cursor(self) -> Dict[str, Any]:
         """Get project context formatted for Cursor AI consumption."""
@@ -323,6 +335,7 @@ class CursorAIIntegration:
                 "integration_status": {"enabled": False, "error": str(e)},
             }
 
+
     def _get_progress_summary(self) -> Dict[str, Any]:
         """Get project progress summary."""
         try:
@@ -343,6 +356,7 @@ class CursorAIIntegration:
                 "current_phase": "unknown",
             }
 
+
     def _record_metric(self, name: str, value: float, **dimensions):
         """Record integration metric."""
         try:
@@ -362,6 +376,7 @@ class CursorAIIntegration:
             # Don't let metric collection errors break integration
             pass
 
+
     def get_configuration(self) -> Dict[str, Any]:
         """Get current configuration as dictionary."""
         return {
@@ -377,6 +392,7 @@ class CursorAIIntegration:
             "api_enabled": self.config.api_enabled,
             "api_port": self.config.api_port,
         }
+
 
     def create_agent_profile(
         self, user_id: str, profile_data: Dict[str, Any]
@@ -418,6 +434,7 @@ class CursorAIIntegration:
             self._record_metric("agent_profile_creation_error", 1)
             raise Exception(f"Failed to create agent profile: {e}")
 
+
     def get_agent_profile(self, agent_id: str) -> Optional[Dict[str, Any]]:
         """Get an agent profile by ID."""
         try:
@@ -432,6 +449,7 @@ class CursorAIIntegration:
         except Exception:
             self._record_metric("agent_profile_retrieval_error", 1)
             return None
+
 
     def create_session(
         self, user_id: str, project_context: Dict[str, Any]
@@ -461,6 +479,7 @@ class CursorAIIntegration:
             self._record_metric("session_creation_error", 1)
             raise Exception(f"Failed to create session: {e}")
 
+
     def get_session(self, session_id: str) -> Optional[Dict[str, Any]]:
         """Get a session by ID."""
         try:
@@ -475,6 +494,7 @@ class CursorAIIntegration:
             self._record_metric("session_retrieval_error", 1)
             return None
 
+
     def get_integration_status(self) -> Dict[str, Any]:
         """Get current integration status."""
         return {
@@ -488,7 +508,6 @@ class CursorAIIntegration:
             "last_initialized": datetime.now().isoformat(),
         }
 
-
 # Global instance
 _cursor_integration: Optional[CursorAIIntegration] = None
 
@@ -500,8 +519,8 @@ def get_cursor_integration(root: Path) -> CursorAIIntegration:
         _cursor_integration = CursorAIIntegration(root)
     return _cursor_integration
 
-
 # Convenience functions for CLI and API usage
+
 def initialize_cursor_integration(root: Path) -> Dict[str, Any]:
     """Initialize Cursor AI integration."""
     integration = get_cursor_integration(root)

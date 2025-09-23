@@ -6,10 +6,15 @@ directory restructuring, and code consolidation based on comprehensive
 analysis of codebase structure and relationships.
 """
 
-import os
-from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from ai_onboard.core.common_imports import (
+    Any,
+    Dict,
+    List,
+    Optional,
+    Path,
+    dataclass,
+    field,
+)
 
 
 @dataclass

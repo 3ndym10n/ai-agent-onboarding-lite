@@ -14,6 +14,7 @@ from . import utils
 class SmartDebugger:
     """Self - improving debugging system that learns from past issues."""
 
+
     def __init__(self, root: Path):
         self.root = root
         self.debug_log_path = root / ".ai_onboard" / "debug_log.jsonl"
@@ -25,6 +26,7 @@ class SmartDebugger:
 
         # Initialize enhanced debugging components
         self._initialize_enhanced_debugging()
+
 
     def analyze_error(self, error_data: Dict[str, Any]) -> Dict[str, Any]:
         """Analyze an error and provide smart debugging insights."""
@@ -67,6 +69,7 @@ class SmartDebugger:
             ),
             "contextual_insights": self._extract_contextual_insights(error_data),
         }
+
 
     def improve_patterns(self) -> Dict[str, Any]:
         """Improve debugging patterns based on learning data."""
@@ -113,6 +116,7 @@ class SmartDebugger:
             "success_rate": self._calculate_success_rate(learning_data),
         }
 
+
     def get_debugging_stats(self) -> Dict[str, Any]:
         """Get debugging system statistics and performance metrics."""
         learning_data = self._load_learning_data()
@@ -144,6 +148,7 @@ class SmartDebugger:
             "last_improvement": learning_data.get("last_improvement"),
         }
 
+
     def _find_pattern_match(
         self, error_type: str, error_message: str
     ) -> Optional[Dict[str, Any]]:
@@ -166,6 +171,7 @@ class SmartDebugger:
                 }
 
         return best_match
+
 
     def _calculate_pattern_confidence(
         self, pattern: Dict[str, Any], error_type: str, error_message: str
@@ -197,6 +203,7 @@ class SmartDebugger:
 
         return min(confidence, 1.0)
 
+
     def _get_solution(self, pattern_id: str) -> Dict[str, Any]:
         """Get solution for a pattern."""
         solutions = self._load_solutions()
@@ -209,6 +216,7 @@ class SmartDebugger:
 
         # Default if not found
         return {"description": "No solution available", "steps": [], "type": "unknown"}
+
 
     def _generate_analysis(self, error_data: Dict[str, Any]) -> Dict[str, Any]:
         """Generate new analysis for an error."""
@@ -263,6 +271,7 @@ class SmartDebugger:
 
         return {"solution": solution, "confidence": confidence}
 
+
     def _generate_debugging_steps(
         self, error_data: Dict[str, Any], solution: Dict[str, Any]
     ) -> List[str]:
@@ -281,6 +290,7 @@ class SmartDebugger:
             steps.insert(0, f"Context: {context}")
 
         return steps
+
 
     def _generate_prevention_tips(self, error_data: Dict[str, Any]) -> List[str]:
         """Generate tips to prevent similar errors in the future."""
@@ -315,6 +325,7 @@ class SmartDebugger:
 
         return tips
 
+
     def _log_debug_session(
         self,
         error_data: Dict[str, Any],
@@ -336,6 +347,7 @@ class SmartDebugger:
             json.dump(entry, f)
             f.write("\n")
 
+
     def _learn_from_session(
         self, error_data: Dict[str, Any], solution: Dict[str, Any], confidence: float
     ) -> None:
@@ -355,6 +367,7 @@ class SmartDebugger:
 
         learning_data["sessions"].append(session)
         self._save_learning_data(learning_data)
+
 
     def _extract_pattern(
         self, error_data: Dict[str, Any], solution: Dict[str, Any]
@@ -378,6 +391,7 @@ class SmartDebugger:
             "usage_count": 1,
         }
 
+
     def _extract_key_phrases(self, message: str) -> List[str]:
         """Extract key phrases from error message for pattern matching."""
         # Simple extraction - can be enhanced with NLP
@@ -398,6 +412,7 @@ class SmartDebugger:
 
         return phrases
 
+
     def _add_pattern(self, pattern: Dict[str, Any]) -> str:
         """Add a new pattern to the pattern database."""
         patterns = self._load_patterns()
@@ -413,6 +428,7 @@ class SmartDebugger:
         self._save_patterns(patterns)
 
         return pattern_id
+
 
     def _improve_pattern(
         self, pattern: Dict[str, Any], learning_data: Dict[str, Any]
@@ -445,6 +461,7 @@ class SmartDebugger:
             "new_success_rate": new_success_rate,
         }
 
+
     def _calculate_success_rate(self, learning_data: Dict[str, Any]) -> float:
         """Calculate overall success rate."""
         sessions = learning_data.get("sessions", [])
@@ -453,6 +470,7 @@ class SmartDebugger:
 
         successful = len([s for s in sessions if s.get("success", False)])
         return successful / len(sessions)
+
 
     def _calculate_pattern_success_rate(self, learning_data: Dict[str, Any]) -> float:
         """Calculate success rate for pattern - based solutions."""
@@ -468,6 +486,7 @@ class SmartDebugger:
         successful = len([s for s in pattern_sessions if s.get("success", False)])
         return successful / len(pattern_sessions)
 
+
     def _get_recent_sessions(
         self, learning_data: Dict[str, Any], days: int = 7
     ) -> List[Dict[str, Any]]:
@@ -479,17 +498,21 @@ class SmartDebugger:
             s for s in learning_data.get("sessions", []) if s.get("ts", "") > cutoff_iso
         ]
 
+
     def _load_patterns(self) -> Dict[str, Any]:
         """Load debugging patterns."""
         return utils.read_json(self.patterns_path, default={"patterns": []})
+
 
     def _save_patterns(self, patterns: Dict[str, Any]) -> None:
         """Save debugging patterns."""
         utils.write_json(self.patterns_path, patterns)
 
+
     def _load_solutions(self) -> Dict[str, Any]:
         """Load debugging solutions."""
         return utils.read_json(self.solutions_path, default={"solutions": {}})
+
 
     def _load_learning_data(self) -> Dict[str, Any]:
         """Load learning data."""
@@ -497,9 +520,11 @@ class SmartDebugger:
             self.learning_path, default={"sessions": [], "improvements": []}
         )
 
+
     def _save_learning_data(self, learning_data: Dict[str, Any]) -> None:
         """Save learning data."""
         utils.write_json(self.learning_path, learning_data)
+
 
     def _initialize_enhanced_debugging(self) -> None:
         """Initialize enhanced debugging components."""
@@ -519,6 +544,7 @@ class SmartDebugger:
         if not self.confidence_model_path.exists():
             initial_model = self._create_initial_confidence_model()
             utils.write_json(self.confidence_model_path, initial_model)
+
 
     def _create_initial_pattern_database(self) -> Dict[str, Any]:
         """Create initial pattern database with common error patterns."""
@@ -626,6 +652,7 @@ class SmartDebugger:
             },
         }
 
+
     def _create_initial_confidence_model(self) -> Dict[str, Any]:
         """Create initial confidence scoring model."""
         return {
@@ -673,6 +700,7 @@ class SmartDebugger:
             },
         }
 
+
     def _perform_enhanced_analysis(self, error_data: Dict[str, Any]) -> Dict[str, Any]:
         """Perform enhanced analysis with advanced debugging techniques."""
         error_type = error_data.get("type", "")
@@ -688,6 +716,7 @@ class SmartDebugger:
         }
 
         return enhanced_analysis
+
 
     def _analyze_error_code(self, error_data: Dict[str, Any]) -> Dict[str, Any]:
         """Analyze the error in the context of the code where it occurred."""
@@ -743,6 +772,7 @@ class SmartDebugger:
 
         return analysis
 
+
     def _analyze_stack_trace(self, error_data: Dict[str, Any]) -> Dict[str, Any]:
         """Analyze stack trace for debugging insights."""
         enriched_context = error_data.get("enriched_context", {})
@@ -792,6 +822,7 @@ class SmartDebugger:
 
         return insights
 
+
     def _analyze_error_context(self, context: Dict[str, Any]) -> Dict[str, Any]:
         """Analyze error context for patterns and insights."""
         if not isinstance(context, dict):
@@ -825,6 +856,7 @@ class SmartDebugger:
             analysis["risk_factors"].append("short_session_id_may_indicate_test")
 
         return analysis
+
 
     def _assess_error_severity(self, error_data: Dict[str, Any]) -> Dict[str, Any]:
         """Assess the severity of the error."""
@@ -868,6 +900,7 @@ class SmartDebugger:
             "severity_factors": severity_factors,
             "requires_immediate_attention": severity_score > 0.8,
         }
+
 
     def _identify_root_causes(self, error_data: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Identify potential root causes of the error."""
@@ -946,6 +979,7 @@ class SmartDebugger:
         # Return top 3 most likely root causes
         return sorted(root_causes, key=lambda x: x["confidence"], reverse=True)[:3]
 
+
     def _generate_alternative_solutions(
         self, error_data: Dict[str, Any], primary_solution: Dict[str, Any]
     ) -> List[Dict[str, Any]]:
@@ -961,17 +995,17 @@ class SmartDebugger:
                 [
                     {
                         "description": "Use hasattr() to check attribute existence",
-                        "code_example": "if hasattr(obj, 'attribute'): value = obj.attribute",
+                        "code_example": "if hasattr(obj, 'attribute'): value =                             obj.attribute",
                         "confidence": 0.8,
                     },
                     {
                         "description": "Use getattr() with default value",
-                        "code_example": "value = getattr(obj, 'attribute', default_value)",
+                        "code_example": "value =                             getattr(obj, 'attribute', default_value)",
                         "confidence": 0.9,
                     },
                     {
                         "description": "Check object type before attribute access",
-                        "code_example": "if isinstance(obj, ExpectedClass): value = obj.attribute",
+                        "code_example": "if isinstance(obj, ExpectedClass): value =                             obj.attribute",
                         "confidence": 0.7,
                     },
                 ]
@@ -990,7 +1024,7 @@ class SmartDebugger:
                     },
                     {
                         "description": "Use importlib for dynamic imports",
-                        "code_example": "import importlib\nmodule = importlib.import_module('module_name')",
+                        "code_example": "import importlib\nmodule =                             importlib.import_module('module_name')",
                         "confidence": 0.6,
                     },
                 ]
@@ -1011,7 +1045,7 @@ class SmartDebugger:
                     },
                     {
                         "description": "Use try-except block",
-                        "code_example": "try:\n    value = my_dict['key']\nexcept KeyError:\n    value = default_value",
+                        "code_example": "try:\n    value =                             my_dict['key']\nexcept KeyError:\n    value = default_value",
                         "confidence": 0.7,
                     },
                 ]
@@ -1019,6 +1053,7 @@ class SmartDebugger:
 
         # Return top 2 alternatives
         return sorted(alternatives, key=lambda x: x["confidence"], reverse=True)[:2]
+
 
     def _extract_contextual_insights(
         self, error_data: Dict[str, Any]
@@ -1081,6 +1116,7 @@ class SmartDebugger:
 
         return insights
 
+
     def update_confidence_model(
         self, error_data: Dict[str, Any], was_successful: bool
     ) -> None:
@@ -1124,6 +1160,7 @@ class SmartDebugger:
 
         stats["last_adaptation"] = utils.now_iso()
         utils.write_json(self.confidence_model_path, model)
+
 
     def get_enhanced_debugging_stats(self) -> Dict[str, Any]:
         """Get enhanced debugging statistics including new metrics."""

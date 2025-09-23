@@ -5,15 +5,17 @@ This module generates directive files with real project data, learned patterns,
 and current system state to ensure the cascade is always current and relevant.
 """
 
-import json
 import time
+
 class DirectiveGenerator:
     """Generates and updates Prime Directive Cascade files with current project data."""
+
 
     def __init__(self, root_path: Path):
         self.root_path = root_path
         self.directives_dir = root_path / ".ai-directives"
         self.directives_dir.mkdir(exist_ok=True)
+
 
     def generate_all_directives(self) -> Dict[str, Any]:
         """Generate all directive files with current project data."""
@@ -35,6 +37,7 @@ class DirectiveGenerator:
         results["master"] = self._generate_master_prompt()
 
         return results
+
 
     def _get_system_state(self) -> Dict[str, Any]:
         """Get current system state for directive generation."""
@@ -62,6 +65,7 @@ class DirectiveGenerator:
                 "error": str(e),
                 "last_updated": time.time(),
             }
+
 
     def _generate_prime_directive(self) -> str:
         """Generate the prime directive file."""
@@ -109,6 +113,7 @@ This is not a suggestion. This is a **LEGAL REQUIREMENT** for AI agents working 
         )
 
         return content
+
 
     def _generate_persona_directive(self) -> str:
         """Generate the persona directive file."""
@@ -161,6 +166,7 @@ Type **"IDENTITY_ASSUMED"** to confirm you have assumed this persona.
 
         return content
 
+
     def _generate_integration_directive(self, system_state: Dict[str, Any]) -> str:
         """Generate the system integration directive with current system state."""
 
@@ -171,7 +177,8 @@ Type **"IDENTITY_ASSUMED"** to confirm you have assumed this persona.
 
 ## MANDATORY SYSTEM INTEGRATION
 
-As a bound development agent, you **MUST** integrate with the ai-onboard system for ALL development tasks.
+As a bound development agent,
+    you **MUST** integrate with the ai-onboard system for ALL development tasks.
 
 ## CURRENT SYSTEM STATE
 
@@ -231,6 +238,7 @@ Type **"SYSTEM_INTEGRATED"** to confirm you understand the integration requireme
 
         return content
 
+
     def _generate_vision_directive(self) -> str:
         """Generate the vision alignment directive."""
 
@@ -242,7 +250,8 @@ You **MUST** ensure ALL work aligns with the project's vision, charter, and plan
 
 ## PROJECT VISION
 
-**Core Mission**: Build a robust AI-assisted development system that ensures reliable, safe, and high-quality software development through intelligent tool orchestration and learning.
+**Core Mission**: Build a robust AI-assisted development system that ensures reliable,
+    safe, and high-quality software development through intelligent tool orchestration and learning.
 
 **Key Principles**:
 - **Safety First**: All changes must be safe and reversible
@@ -299,6 +308,7 @@ Type **"VISION_ALIGNED"** to confirm you understand the vision alignment require
 
         return content
 
+
     def _generate_tools_directive(self, system_state: Dict[str, Any]) -> str:
         """Generate the tools consultation directive with current tool state."""
 
@@ -314,7 +324,8 @@ You **MUST** consult the ai-onboard system tools before any development work.
 
 - **Total Tools Available**: {tools_count}
 - **System Status**: Active and Learning
-- **Tool Categories**: Code Quality, Pattern Recognition, Error Prevention, Safety, Learning
+- **Tool Categories**: Code Quality,
+    Pattern Recognition, Error Prevention, Safety, Learning
 
 ## CONSULTATION WORKFLOW
 
@@ -384,6 +395,7 @@ Type **"TOOLS_CONSULTED"** to confirm you understand the tool consultation requi
 
         return content
 
+
     def _generate_patterns_directive(self, system_state: Dict[str, Any]) -> str:
         """Generate the patterns application directive with current pattern state."""
 
@@ -407,7 +419,8 @@ You **MUST** apply learned patterns and error prevention rules to all developmen
 
 ## LEARNED PATTERNS
 
-The system has learned from previous interactions and continues to learn from every interaction.
+The system has learned from previous interactions and \
+    continues to learn from every interaction.
 
 ## PATTERN TYPES
 
@@ -482,6 +495,7 @@ Type **"PATTERNS_APPLIED"** to confirm you understand the pattern application re
         )
 
         return content
+
 
     def _generate_safety_directive(self, system_state: Dict[str, Any]) -> str:
         """Generate the safety checks directive with current safety state."""
@@ -587,6 +601,7 @@ Type **"SAFETY_VALIDATED"** to confirm you understand the safety validation requ
 
         return content
 
+
     def _generate_confirmation_directive(self) -> str:
         """Generate the confirmation directive."""
 
@@ -629,11 +644,13 @@ You **MUST** confirm you have read and understood ALL directives before proceedi
 
 ## FINAL CONFIRMATION
 
-**TYPE**: **"ALL_DIRECTIVES_CONFIRMED"** to confirm you have read and understood all directives.
+**TYPE**: **"ALL_DIRECTIVES_CONFIRMED"** to confirm you have read and \
+    understood all directives.
 
 ## PROCEEDING WITH WORK
 
-Only after confirming all directives, you may proceed with the user's request, following the established workflow:
+Only after confirming all directives,
+    you may proceed with the user's request, following the established workflow:
 
 1. **CONSULT** system tools
 2. **APPLY** learned patterns
@@ -650,6 +667,7 @@ Only after confirming all directives, you may proceed with the user's request, f
         )
 
         return content
+
 
     def _generate_master_prompt(self) -> str:
         """Generate the master prompt file."""
@@ -697,6 +715,7 @@ This is not optional. This is a **LEGAL REQUIREMENT** for AI agents working on t
         )
 
         return content
+
 
     def update_directives(self) -> Dict[str, Any]:
         """Update all directive files with current system state."""

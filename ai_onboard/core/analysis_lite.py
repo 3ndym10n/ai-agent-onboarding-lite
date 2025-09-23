@@ -7,7 +7,6 @@ Produces .ai_onboard / analysis.json with:
 - quick_wins: simple actionable suggestions
 """
 
-import json
 from pathlib import Path
 from typing import Any, Dict, List
 

@@ -12,9 +12,9 @@ Usage:
 
 If no files are specified, it will check all Python files in ai_onboard/core/
 """
+from ai_onboard.core.common_imports import sys
 
 import subprocess
-import sys
 
 
 def run_command(cmd: List[str], cwd: Path = None) -> tuple[int, str, str]:

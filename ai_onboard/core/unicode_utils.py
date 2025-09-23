@@ -1,5 +1,5 @@
 """
-Unicode utilities for cross - platform compatibility.
+Unicode utilities for cross-platform compatibility.
 
 This module provides utilities to handle Unicode characters safely across different
 platforms and terminal encodings, particularly for Windows systems that may not
@@ -8,7 +8,9 @@ support Unicode emojis in the console.
 
 import os
 import sys
-from typing import Optional
+from typing import Any, Dict, Optional
+
+from ai_onboard.core.common_imports import Any, Dict, Optional, os, sys
 
 # Emoji fallbacks for systems that don't support Unicode
 EMOJI_FALLBACKS = {
@@ -18,295 +20,399 @@ EMOJI_FALLBACKS = {
     "⚠️": "[WARN]",
     "ℹ️": "[INFO]",
     "🟢": "[GOOD]",
-    "🟡": "[WARN]",
-    "🔴": "[ERROR]",
-    "⚪": "[INACTIVE]",
-    "🟣": "[PENDING]",
-    # Activity indicators
-    "🚀": "[START]",
-    "🔄": "[SYNC]",
-    "⏸️": "[PAUSE]",
-    "⏹️": "[STOP]",
-    "⏭️": "[SKIP]",
-    "🔧": "[CONFIG]",
-    "🛠️": "[TOOLS]",
-    # Content indicators
-    "📋": "[STATUS]",
-    "📊": "[STATS]",
-    "📈": "[CHART]",
-    "📄": "[FILE]",
-    "📁": "[FOLDER]",
-    "🗂️": "[DOCS]",
-    "📝": "[NOTE]",
-    "💡": "[TIP]",
-    "🎯": "[TARGET]",
-    "🔍": "[SEARCH]",
-    "🧪": "[TEST]",
+    "🔴": "[BAD]",
+    "🟡": "[PENDING]",
     "⭐": "[STAR]",
-    "🔗": "[LINK]",
-    # Progress indicators
-    "▶️": "[PLAY]",
-    "⏯️": "[PLAY / PAUSE]",
-    "🔁": "[REPEAT]",
-    "↩️": "[BACK]",
-    "↪️": "[FORWARD]",
-    "🔀": "[SHUFFLE]",
-    # System indicators
-    "💻": "[SYSTEM]",
-    "🖥️": "[DESKTOP]",
-    "📱": "[MOBILE]",
-    "🌐": "[WEB]",
-    "☁️": "[CLOUD]",
-    "🔐": "[SECURE]",
+    "🎯": "[TARGET]",
+    "🚀": "[LAUNCH]",
+    "🔧": "[TOOL]",
+    "📊": "[CHART]",
+    "📈": "[TREND]",
+    "🔍": "[SEARCH]",
+    "💡": "[IDEA]",
+    "⚡": "[FAST]",
+    "🛡️": "[SHIELD]",
+    "🔒": "[LOCK]",
     "🔓": "[UNLOCK]",
+    "📝": "[NOTE]",
+    "📋": "[LIST]",
+    "📦": "[PACKAGE]",
+    "🗂️": "[FOLDER]",
+    "🎨": "[DESIGN]",
+    "🧪": "[TEST]",
+    "🔬": "[ANALYZE]",
+    "⚙️": "[SETTINGS]",
+    "🎲": "[RANDOM]",
+    "🌟": "[FEATURE]",
+    "🐛": "[BUG]",
+    "🔥": "[HOT]",
+    "❄️": "[COLD]",
+    "💎": "[PREMIUM]",
+    "🏆": "[WINNER]",
+    "📊": "[METRICS]",
+    "🎯": "[GOAL]",
+    "🚨": "[ALERT]",
+    "⏰": "[TIME]",
+    "💻": "[CODE]",
+    "🌐": "[WEB]",
+    "📱": "[MOBILE]",
+    "🖥️": "[DESKTOP]",
+    "☁️": "[CLOUD]",
+    "🔗": "[LINK]",
+    "📡": "[SIGNAL]",
+    "🎮": "[GAME]",
+    "🎵": "[MUSIC]",
+    "🎬": "[VIDEO]",
+    "📷": "[PHOTO]",
+    "🖼️": "[IMAGE]",
+    "📄": "[DOC]",
+    "📊": "[DATA]",
+    "🗄️": "[DATABASE]",
+    "🔐": "[SECURE]",
+    "🛠️": "[REPAIR]",
+    "⚖️": "[BALANCE]",
+    "🎪": "[EVENT]",
+    "🎭": "[THEATER]",
+    "🎨": "[ART]",
+    "🎯": "[PRECISION]",
+    "🎲": "[CHANCE]",
+    "🎳": "[STRIKE]",
+    "🎸": "[MUSIC]",
+    "🎺": "[TRUMPET]",
+    "🥁": "[DRUMS]",
+    "🎤": "[MIC]",
+    "🎧": "[HEADPHONES]",
+    "📻": "[RADIO]",
+    "📺": "[TV]",
+    "📹": "[CAMERA]",
+    "📽️": "[PROJECTOR]",
+    "🎞️": "[FILM]",
+    "📀": "[CD]",
+    "💿": "[DVD]",
+    "💾": "[FLOPPY]",
+    "💽": "[MINIDISC]",
+    "🖨️": "[PRINTER]",
+    "⌨️": "[KEYBOARD]",
+    "🖱️": "[MOUSE]",
+    "🖲️": "[TRACKBALL]",
+    "💻": "[LAPTOP]",
+    "🖥️": "[MONITOR]",
+    "📟": "[PAGER]",
+    "☎️": "[PHONE]",
+    "📞": "[RECEIVER]",
+    "📠": "[FAX]",
+    "📧": "[EMAIL]",
+    "📨": "[INCOMING]",
+    "📩": "[OUTGOING]",
+    "📪": "[MAILBOX]",
+    "📫": "[MAIL]",
+    "📬": "[OPEN_MAIL]",
+    "📭": "[NO_MAIL]",
+    "📮": "[POSTBOX]",
+    "🗳️": "[BALLOT]",
+    "✏️": "[PENCIL]",
+    "✒️": "[PEN]",
+    "🖋️": "[FOUNTAIN_PEN]",
+    "🖊️": "[BALLPOINT]",
+    "🖌️": "[PAINTBRUSH]",
+    "🗒️": "[SPIRAL_NOTE]",
+    "🗓️": "[SPIRAL_CALENDAR]",
+    "📅": "[CALENDAR]",
+    "📆": "[TEAR_OFF_CALENDAR]",
+    "🗑️": "[WASTEBASKET]",
+    "📇": "[CARD_INDEX]",
+    "🗃️": "[CARD_FILE_BOX]",
+    "🗄️": "[FILE_CABINET]",
+    "📋": "[CLIPBOARD]",
+    "📌": "[PUSHPIN]",
+    "📍": "[ROUND_PUSHPIN]",
+    "📎": "[PAPERCLIP]",
+    "🖇️": "[LINKED_PAPERCLIPS]",
+    "📏": "[STRAIGHT_RULER]",
+    "📐": "[TRIANGULAR_RULER]",
+    "✂️": "[SCISSORS]",
+    "🗝️": "[OLD_KEY]",
+    "🔨": "[HAMMER]",
+    "🪓": "[AXE]",
+    "⛏️": "[PICK]",
+    "⚒️": "[HAMMER_AND_PICK]",
+    "🛠️": "[HAMMER_AND_WRENCH]",
+    "🗡️": "[DAGGER]",
+    "⚔️": "[CROSSED_SWORDS]",
+    "🔫": "[WATER_PISTOL]",
+    "🪃": "[BOOMERANG]",
+    "🏹": "[BOW_AND_ARROW]",
+    "🛡️": "[SHIELD]",
+    "🪚": "[CARPENTRY_SAW]",
+    "🔧": "[WRENCH]",
+    "🪛": "[SCREWDRIVER]",
+    "🔩": "[NUT_AND_BOLT]",
+    "⚙️": "[GEAR]",
+    "🗜️": "[CLAMP]",
+    "⚖️": "[BALANCE_SCALE]",
+    "🦯": "[WHITE_CANE]",
+    "🔗": "[LINK]",
+    "⛓️": "[CHAINS]",
+    "🪝": "[HOOK]",
+    "🧰": "[TOOLBOX]",
+    "🧲": "[MAGNET]",
+    "🪜": "[LADDER]",
 }
 
 
 def is_unicode_supported() -> bool:
     """
-    Check if the current environment supports Unicode output.
+    Check if the current terminal/console supports Unicode characters.
 
     Returns:
         bool: True if Unicode is supported, False otherwise
     """
-    # Check if we're in a testing environment
-    if os.environ.get("AI_ONBOARD_TEST_MODE"):
-        return False  # Always use fallbacks in tests for consistency
-
-    # Check Python version and encoding
-    try:
-        # Try to encode a simple emoji
-        test_emoji = "✅"
-        test_emoji.encode(sys.stdout.encoding or "utf - 8")
-
-        # Check if stdout supports Unicode
-        if hasattr(sys.stdout, "encoding") and sys.stdout.encoding:
-            encoding = sys.stdout.encoding.lower()
-            # These encodings typically don't support full Unicode
-            if encoding in ["cp1252", "ascii", "latin - 1"]:
-                return False
-
-        return True
-
-    except (UnicodeEncodeError, AttributeError, LookupError):
-        return False
-
-
-def safe_print(text: str, **kwargs) -> None:
-    """
-    Print text with Unicode fallbacks for incompatible systems.
-
-    Args:
-        text: The text to print (may contain Unicode characters)
-        **kwargs: Additional arguments to pass to print()
-    """
-    if is_unicode_supported():
+    # Check if we're on Windows and using a console that might not support Unicode
+    if os.name == "nt":
         try:
-            print(text, **kwargs)
-            return
-        except UnicodeEncodeError:
-            pass  # Fall through to fallback
+            # Try to encode a Unicode character
+            "✅".encode(sys.stdout.encoding or "utf-8")
+            return True
+        except (UnicodeEncodeError, LookupError):
+            return False
 
-    # Use fallbacks
-    safe_text = text
-    for emoji, fallback in EMOJI_FALLBACKS.items():
-        safe_text = safe_text.replace(emoji, fallback)
-
-    try:
-        print(safe_text, **kwargs)
-    except UnicodeEncodeError:
-        # Last resort: encode to ASCII with replacement
-        ascii_text = safe_text.encode("ascii", errors="replace").decode("ascii")
-        print(ascii_text, **kwargs)
+    # On Unix-like systems, assume Unicode is supported
+    return True
 
 
-def safe_format(text: str) -> str:
+def safe_print(text: str, **kwargs: Any) -> None:
     """
-    Format text with Unicode fallbacks for incompatible systems.
+    Print text safely, falling back to ASCII alternatives for Unicode characters.
 
     Args:
-        text: The text to format (may contain Unicode characters)
-
-    Returns:
-        str: Text with Unicode characters replaced if necessary
+        text: The text to print, potentially containing Unicode characters
+        **kwargs: Additional keyword arguments to pass to print()
     """
     if is_unicode_supported():
-        return text
+        print(text, **kwargs)
+    else:
+        # Replace Unicode characters with ASCII alternatives
+        safe_text = text
+        for unicode_char, ascii_fallback in EMOJI_FALLBACKS.items():
+            safe_text = safe_text.replace(unicode_char, ascii_fallback)
+        print(safe_text, **kwargs)
 
-    # Use fallbacks
-    safe_text = text
-    for emoji, fallback in EMOJI_FALLBACKS.items():
-        safe_text = safe_text.replace(emoji, fallback)
 
-    return safe_text
-
-
-def get_status_indicator(status: str) -> str:
+def print_activity(message: str, **kwargs: Any) -> None:
     """
-    Get a status indicator with Unicode fallback.
+    Print an activity message with appropriate formatting.
 
     Args:
-        status: Status type ('success', 'error', 'warning', 'info')
-
-    Returns:
-        str: Unicode emoji or ASCII fallback
+        message: The activity message to print
+        **kwargs: Additional keyword arguments to pass to print()
     """
-    indicators = {
+    safe_print(f"🔄 {message}", **kwargs)
+
+
+def print_status(message: str, status: str = "info", **kwargs: Any) -> None:
+    """
+    Print a status message with appropriate emoji/indicator.
+
+    Args:
+        message: The message to print
+        status: The status type ('ok', 'error', 'warn', 'info')
+        **kwargs: Additional keyword arguments to pass to print()
+    """
+    status_icons = {
+        "ok": "✅",
         "success": "✅",
         "error": "❌",
+        "fail": "❌",
+        "warn": "⚠️",
         "warning": "⚠️",
         "info": "ℹ️",
         "good": "🟢",
         "bad": "🔴",
         "pending": "🟡",
-        "inactive": "⚪",
     }
 
-    emoji = indicators.get(status.lower(), "ℹ️")
-    return safe_format(emoji)
+    icon = status_icons.get(status.lower(), "ℹ️")
+    safe_print(f"{icon} {message}", **kwargs)
 
 
-def get_activity_indicator(activity: str) -> str:
+def print_content(content: str, prefix: str = "", **kwargs: Any) -> None:
     """
-    Get an activity indicator with Unicode fallback.
+    Print content with safe Unicode handling.
 
     Args:
-        activity: Activity type ('start', 'stop', 'sync', etc.)
+        content: The content to print
+        prefix: Optional prefix to add before each line
+        **kwargs: Additional keyword arguments to pass to print()
+    """
+    if prefix:
+        lines = content.split("\n")
+        for line in lines:
+            safe_print(f"{prefix}{line}", **kwargs)
+    else:
+        safe_print(content, **kwargs)
+
+
+def get_safe_formatter():
+    """
+    Get a formatter function that handles Unicode safely.
 
     Returns:
-        str: Unicode emoji or ASCII fallback
+        callable: A formatter function that handles Unicode appropriately
     """
-    indicators = {
-        "start": "🚀",
-        "stop": "⏹️",
-        "pause": "⏸️",
-        "sync": "🔄",
-        "config": "🔧",
-        "test": "🧪",
-        "search": "🔍",
-    }
-
-    emoji = indicators.get(activity.lower(), "▶️")
-    return safe_format(emoji)
 
 
-def get_content_indicator(content_type: str) -> str:
+    def safe_formatter(text: str) -> str:
+        return format_with_fallback(text)
+
+    return safe_formatter
+
+
+def format_with_fallback(text: str, unicode_chars: Dict[str, str] = None) -> str:
     """
-    Get a content type indicator with Unicode fallback.
+    Format text with Unicode characters, providing ASCII fallbacks if needed.
 
     Args:
-        content_type: Content type ('status', 'stats', 'file', etc.)
+        text: The text to format
+        unicode_chars: Optional dictionary of Unicode characters to use
 
     Returns:
-        str: Unicode emoji or ASCII fallback
+        str: The formatted text with appropriate character encoding
     """
-    indicators = {
-        "status": "📋",
-        "stats": "📊",
-        "chart": "📈",
-        "file": "📄",
-        "folder": "📁",
-        "docs": "🗂️",
-        "note": "📝",
-        "tip": "💡",
-        "target": "🎯",
-    }
+    if unicode_chars is None:
+        unicode_chars = EMOJI_FALLBACKS
 
-    emoji = indicators.get(content_type.lower(), "📄")
-    return safe_format(emoji)
+    if is_unicode_supported():
+        return text
+    else:
+        formatted_text = text
+        for unicode_char, ascii_fallback in unicode_chars.items():
+            formatted_text = formatted_text.replace(unicode_char, ascii_fallback)
+        return formatted_text
 
 
-class SafeFormatter:
-    """A formatter that handles Unicode safely across platforms."""
+def get_terminal_width() -> int:
+    """
+    Get the terminal width, with a sensible fallback.
 
-    def __init__(self, use_unicode: Optional[bool] = None):
-        """
-        Initialize the formatter.
+    Returns:
+        int: Terminal width in characters
+    """
+    try:
+        import shutil
 
-        Args:
-            use_unicode: Force Unicode on / off, or None for auto - detection
-        """
-        self.use_unicode = (
-            use_unicode if use_unicode is not None else is_unicode_supported()
+        return shutil.get_terminal_size().columns
+    except (ImportError, OSError):
+        return 80  # Sensible default
+
+
+def create_separator(char: str = "─", width: int = None) -> str:
+    """
+    Create a separator line with safe Unicode handling.
+
+    Args:
+        char: The character to use for the separator
+        width: The width of the separator (defaults to terminal width)
+
+    Returns:
+        str: A separator line
+    """
+    if width is None:
+        width = get_terminal_width()
+
+    # Use ASCII fallback if Unicode not supported
+    if not is_unicode_supported():
+        char = "-" if char in ["─", "━", "═"] else char
+
+    return char * width
+
+
+def print_separator(char: str = "─", width: int = None, **kwargs: Any) -> None:
+    """
+    Print a separator line with safe Unicode handling.
+
+    Args:
+        char: The character to use for the separator
+        width: The width of the separator (defaults to terminal width)
+        **kwargs: Additional keyword arguments to pass to print()
+    """
+    separator = create_separator(char, width)
+    safe_print(separator, **kwargs)
+
+
+def print_header(title: str, char: str = "═", **kwargs: Any) -> None:
+    """
+    Print a formatted header with safe Unicode handling.
+
+    Args:
+        title: The header title
+        char: The character to use for the border
+        **kwargs: Additional keyword arguments to pass to print()
+    """
+    width = get_terminal_width()
+
+    # Use ASCII fallback if Unicode not supported
+    if not is_unicode_supported():
+        char = "=" if char in ["═", "━", "─"] else char
+
+    border = char * width
+    title_line = f" {title} ".center(width, char)
+
+    safe_print("", **kwargs)
+    safe_print(border, **kwargs)
+    safe_print(title_line, **kwargs)
+    safe_print(border, **kwargs)
+    safe_print("", **kwargs)
+
+
+def print_box(content: str, title: str = None, **kwargs: Any) -> None:
+    """
+    Print content in a box with safe Unicode handling.
+
+    Args:
+        content: The content to display in the box
+        title: Optional title for the box
+        **kwargs: Additional keyword arguments to pass to print()
+    """
+    lines = content.split("\n")
+    max_line_length = max(len(line) for line in lines) if lines else 0
+    width = min(max_line_length + 4, get_terminal_width())
+
+    # Box drawing characters with ASCII fallbacks
+    if is_unicode_supported():
+        top_left, top_right = "┌", "┐"
+        bottom_left, bottom_right = "└", "┘"
+        horizontal, vertical = "─", "│"
+        title_left, title_right = "┤", "├"
+    else:
+        top_left = top_right = bottom_left = bottom_right = "+"
+        horizontal, vertical = "-", "|"
+        title_left = title_right = "+"
+
+    # Print top border
+    if title:
+        title_text = f" {title} "
+        title_padding = width - len(title_text) - 2
+        left_padding = title_padding // 2
+        right_padding = title_padding - left_padding
+        top_border = (
+            top_left
+            + horizontal * left_padding
+            + title_left
+            + title_text
+            + title_right
+            + horizontal * right_padding
+            + top_right
         )
+    else:
+        top_border = top_left + horizontal * (width - 2) + top_right
 
-    def format(self, text: str) -> str:
-        """Format text with Unicode safety."""
-        if self.use_unicode:
-            return text
-        return safe_format(text)
+    safe_print(top_border, **kwargs)
 
-    def print(self, text: str, **kwargs) -> None:
-        """Print text with Unicode safety."""
-        safe_print(text, **kwargs)
+    # Print content lines
+    for line in lines:
+        padded_line = f"{vertical} {line:<{width-4}} {vertical}"
+        safe_print(padded_line, **kwargs)
 
-    def status(self, message: str, status: str = "info") -> str:
-        """Format a status message."""
-        indicator = get_status_indicator(status)
-        return f"{indicator} {message}"
-
-    def activity(self, message: str, activity: str = "start") -> str:
-        """Format an activity message."""
-        indicator = get_activity_indicator(activity)
-        return f"{indicator} {message}"
-
-    def content(self, message: str, content_type: str = "info") -> str:
-        """Format a content message."""
-        indicator = get_content_indicator(content_type)
-        return f"{indicator} {message}"
-
-
-# Global formatter instance
-_formatter = SafeFormatter()
-
-
-def get_safe_formatter() -> SafeFormatter:
-    """Get the global safe formatter instance."""
-    return _formatter
-
-
-def configure_unicode_support(force_ascii: bool = False) -> None:
-    """
-    Configure Unicode support globally.
-
-    Args:
-        force_ascii: If True, force ASCII - only output
-    """
-    global _formatter
-    _formatter = SafeFormatter(use_unicode=not force_ascii)
-
-
-# Convenience functions
-def print_status(message: str, status: str = "info", **kwargs) -> None:
-    """Print a status message with safe Unicode handling."""
-    formatted = _formatter.status(message, status)
-    _formatter.print(formatted, **kwargs)
-
-
-def print_activity(message: str, activity: str = "start", **kwargs) -> None:
-    """Print an activity message with safe Unicode handling."""
-    formatted = _formatter.activity(message, activity)
-    _formatter.print(formatted, **kwargs)
-
-
-def print_content(message: str, content_type: str = "info", **kwargs) -> None:
-    """Print a content message with safe Unicode handling."""
-    formatted = _formatter.content(message, content_type)
-    _formatter.print(formatted, **kwargs)
-
-
-if __name__ == "__main__":
-    # Test the Unicode utilities
-    print("Testing Unicode utilities...")
-    print(f"Unicode supported: {is_unicode_supported()}")
-
-    print("\nTesting safe printing:")
-    safe_print("✅ This should work on all systems")
-    safe_print("📋 Project Status - Unicode test")
-    safe_print("🚀 Starting process...")
-
-    print("\nTesting formatter:")
-    formatter = get_safe_formatter()
-    formatter.print(formatter.status("Test successful", "success"))
-    formatter.print(formatter.activity("Testing activity", "test"))
-    formatter.print(formatter.content("Status information", "status"))
+    # Print bottom border
+    bottom_border = bottom_left + horizontal * (width - 2) + bottom_right
+    safe_print(bottom_border, **kwargs)

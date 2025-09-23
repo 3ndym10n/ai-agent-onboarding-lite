@@ -72,6 +72,7 @@ class ToolCategory(Enum):
 
 
 @dataclass
+
 class ToolMetadata:
     """Metadata for a discovered tool."""
 
@@ -92,6 +93,7 @@ class ToolMetadata:
 
 
 @dataclass
+
 class ToolDiscoveryResult:
     """Result of comprehensive tool discovery."""
 
@@ -106,6 +108,7 @@ class ToolDiscoveryResult:
 
 class ComprehensiveToolDiscovery:
     """Discovers and catalogs all available tools in the ai_onboard system."""
+
 
     def __init__(self, root_path: Path):
         self.root_path = root_path
@@ -155,6 +158,7 @@ class ComprehensiveToolDiscovery:
             r"mission.*",
             r"purpose.*",
         ]
+
 
     def discover_all_tools(self) -> ToolDiscoveryResult:
         """Discover all available tools in the system."""
@@ -225,6 +229,7 @@ class ComprehensiveToolDiscovery:
 
         return result
 
+
     def _discover_cli_tools(self) -> Dict[str, ToolMetadata]:
         """Discover CLI command tools."""
 
@@ -270,6 +275,7 @@ class ComprehensiveToolDiscovery:
                 print(f"Warning: Could not analyze CLI module {cmd_file}: {e}")
 
         return tools
+
 
     def _discover_core_tools(self) -> Dict[str, ToolMetadata]:
         """Discover core analysis and utility tools."""
@@ -337,7 +343,13 @@ class ComprehensiveToolDiscovery:
         for file_name, config in core_tool_mappings.items():
             file_path = core_path / file_name
             if file_path.exists():
-                tool_name = config["class"].lower()
+                # Convert CamelCase class name to snake_case tool name
+                class_name = config["class"]
+                tool_name = ""
+                for i, char in enumerate(class_name):
+                    if char.isupper() and i > 0:
+                        tool_name += "_"
+                    tool_name += char.lower()
                 tools[tool_name] = ToolMetadata(
                     name=tool_name,
                     category=config["category"],
@@ -356,6 +368,7 @@ class ComprehensiveToolDiscovery:
                 )
 
         return tools
+
 
     def _discover_vision_tools(self) -> Dict[str, ToolMetadata]:
         """Discover vision and alignment tools."""
@@ -404,6 +417,7 @@ class ComprehensiveToolDiscovery:
 
         return tools
 
+
     def _discover_safety_tools(self) -> Dict[str, ToolMetadata]:
         """Discover safety and validation tools."""
 
@@ -450,6 +464,7 @@ class ComprehensiveToolDiscovery:
 
         return tools
 
+
     def _discover_ux_tools(self) -> Dict[str, ToolMetadata]:
         """Discover user experience tools."""
 
@@ -485,6 +500,7 @@ class ComprehensiveToolDiscovery:
             )
 
         return tools
+
 
     def _discover_project_management_tools(self) -> Dict[str, ToolMetadata]:
         """Discover project management tools."""
@@ -525,6 +541,7 @@ class ComprehensiveToolDiscovery:
             )
 
         return tools
+
 
     def _discover_ai_agent_tools(self) -> Dict[str, ToolMetadata]:
         """Discover AI agent orchestration tools."""
@@ -578,6 +595,7 @@ class ComprehensiveToolDiscovery:
 
         return tools
 
+
     def _categorize_tools(
         self, tools: Dict[str, ToolMetadata]
     ) -> Dict[ToolCategory, List[ToolMetadata]]:
@@ -590,6 +608,7 @@ class ComprehensiveToolDiscovery:
             categorized[tool.category].append(tool)
 
         return categorized
+
 
     def _determine_cli_category(self, name: str, obj: Any) -> ToolCategory:
         """Determine the category of a CLI command."""
@@ -611,6 +630,7 @@ class ComprehensiveToolDiscovery:
             return ToolCategory.AI_AGENT_ORCHESTRATION
         else:
             return ToolCategory.CODE_QUALITY  # Default category
+
 
     def _extract_cli_keywords(self, name: str, obj: Any) -> List[str]:
         """Extract keywords from CLI command name and function."""
@@ -635,6 +655,7 @@ class ComprehensiveToolDiscovery:
 
         return keywords
 
+
     def _extract_cli_patterns(self, name: str) -> List[str]:
         """Extract patterns from CLI command name."""
 
@@ -648,6 +669,7 @@ class ComprehensiveToolDiscovery:
             patterns.append(f"handle.*{name_lower.replace('handle_', '')}")
 
         return patterns
+
 
     def _determine_cli_gates(self, name: str) -> List[str]:
         """Determine required gates for CLI commands."""
@@ -664,6 +686,7 @@ class ComprehensiveToolDiscovery:
 
         return gates
 
+
     def _requires_vision_alignment(self, name: str) -> bool:
         """Determine if CLI command requires vision alignment."""
 
@@ -671,6 +694,7 @@ class ComprehensiveToolDiscovery:
         vision_keywords = ["vision", "charter", "align", "interrogate", "plan", "goal"]
 
         return any(keyword in name_lower for keyword in vision_keywords)
+
 
     def _generate_patterns_from_keywords(self, keywords: List[str]) -> List[str]:
         """Generate regex patterns from keywords."""

@@ -1,5 +1,6 @@
 """
-User Experience Enhancements (T19) - Core UX improvements and intelligent user interactions.
+User Experience Enhancements (T19) - Core UX improvements and \
+    intelligent user interactions.
 
 This module implements comprehensive user experience enhancements that:
 - Provide intelligent error handling and recovery guidance
@@ -59,6 +60,7 @@ class UXSatisfactionLevel(Enum):
 
 
 @dataclass
+
 class UXEvent:
     """A user experience event."""
 
@@ -81,6 +83,7 @@ class UXEvent:
 
 
 @dataclass
+
 class UXIntervention:
     """A UX intervention to help the user."""
 
@@ -106,6 +109,7 @@ class UXIntervention:
 
 
 @dataclass
+
 class UserJourney:
     """A user's journey through the system."""
 
@@ -135,10 +139,12 @@ class UserJourney:
 class SmartErrorHandler:
     """Intelligent error handling with recovery guidance."""
 
+
     def __init__(self, root: Path):
         self.root = root
         self.error_patterns = self._load_error_patterns()
         self.recovery_strategies = self._load_recovery_strategies()
+
 
     def _load_error_patterns(self) -> Dict[str, Any]:
         """Load known error patterns and their solutions."""
@@ -158,8 +164,7 @@ class SmartErrorHandler:
             "FileNotFoundError": {
                 "common_causes": [
                     "File path incorrect",
-                    "File doesn't exist",
-                    "Permission issues",
+                    "File doesn't exist", "Permission issues",
                 ],
                 "recovery_actions": [
                     "Check file path spelling",
@@ -193,13 +198,12 @@ class SmartErrorHandler:
             },
         }
 
+
     def _load_recovery_strategies(self) -> Dict[str, List[str]]:
         """Load recovery strategies for different error types."""
         return {
             "first_time_user": [
-                "Don't worry! This is common for new users.",
-                "Try the getting started tutorial: help --tutorial getting_started",
-                "Use 'suggest' to get personalized recommendations",
+                "Don't worry! This is common for new users.", "Try the getting started tutorial: help --tutorial getting_started", "Use 'suggest' to get personalized recommendations",
             ],
             "experienced_user": [
                 "This error pattern suggests a configuration issue.",
@@ -207,11 +211,10 @@ class SmartErrorHandler:
                 "Try 'validate' to check system health",
             ],
             "complex_command": [
-                "Complex commands can be tricky. Let's break it down.",
-                "Try the interactive wizard: wizard <workflow - type>",
-                "Use 'help <command> --examples' for detailed examples",
+                "Complex commands can be tricky. Let's break it down.", "Try the interactive wizard: wizard <workflow - type>", "Use 'help <command> --examples' for detailed examples",
             ],
         }
+
 
     def handle_error(
         self, error: Exception, context: Dict[str, Any], user_id: str
@@ -273,9 +276,11 @@ class SmartErrorHandler:
 class OnboardingAssistant:
     """Intelligent onboarding assistance for new users."""
 
+
     def __init__(self, root: Path):
         self.root = root
         self.onboarding_flows = self._create_onboarding_flows()
+
 
     def _create_onboarding_flows(self) -> Dict[str, Dict[str, Any]]:
         """Create onboarding flows for different user types."""
@@ -286,8 +291,7 @@ class OnboardingAssistant:
                     {
                         "step": "welcome",
                         "title": "Welcome to AI Onboard!",
-                        "message": "Let's get you started with your first project.",
-                        "actions": ["help --tutorial getting_started", "charter"],
+                        "message": "Let's get you started with your first project.", "actions": ["help --tutorial getting_started", "charter"],
                     },
                     {
                         "step": "create_charter",
@@ -298,8 +302,7 @@ class OnboardingAssistant:
                     {
                         "step": "create_plan",
                         "title": "Generate Your Project Plan",
-                        "message": "Now let's create a detailed plan for your project.",
-                        "actions": ["plan", "help plan"],
+                        "message": "Now let's create a detailed plan for your project.", "actions": ["plan", "help plan"],
                     },
                     {
                         "step": "check_progress",
@@ -327,6 +330,7 @@ class OnboardingAssistant:
                 ],
             },
         }
+
 
     def get_onboarding_step(
         self, user_id: str, user_type: str = "first_time_user"
@@ -369,6 +373,7 @@ class OnboardingAssistant:
         # All steps completed
         return None
 
+
     def create_onboarding_intervention(self, user_id: str) -> Optional[UXIntervention]:
         """Create an onboarding intervention for a user."""
         next_step = self.get_onboarding_step(user_id)
@@ -392,9 +397,11 @@ class OnboardingAssistant:
 class WorkflowOptimizer:
     """Optimizes user workflows based on usage patterns."""
 
+
     def __init__(self, root: Path):
         self.root = root
         self.common_workflows = self._define_common_workflows()
+
 
     def _define_common_workflows(self) -> Dict[str, Dict[str, Any]]:
         """Define common user workflows."""
@@ -425,6 +432,7 @@ class WorkflowOptimizer:
             },
         }
 
+
     def detect_workflow_intent(
         self, user_id: str, recent_commands: List[str]
     ) -> Optional[str]:
@@ -444,6 +452,7 @@ class WorkflowOptimizer:
                 return workflow_id
 
         return None
+
 
     def suggest_workflow_continuation(
         self, user_id: str, workflow_id: str
@@ -496,10 +505,12 @@ class WorkflowOptimizer:
 class SatisfactionTracker:
     """Tracks and improves user satisfaction."""
 
+
     def __init__(self, root: Path):
         self.root = root
         self.satisfaction_data_file = root / ".ai_onboard" / "satisfaction_data.jsonl"
         utils.ensure_dir(self.satisfaction_data_file.parent)
+
 
     def record_satisfaction(
         self, user_id: str, context: str, score: float, feedback: str = ""
@@ -515,6 +526,7 @@ class SatisfactionTracker:
 
         with open(self.satisfaction_data_file, "a") as f:
             f.write(json.dumps(satisfaction_record) + "\n")
+
 
     def get_satisfaction_trend(self, user_id: str, days: int = 30) -> Dict[str, Any]:
         """Get satisfaction trend for a user."""
@@ -566,6 +578,7 @@ class SatisfactionTracker:
             "total_responses": len(scores),
         }
 
+
     def should_request_feedback(self, user_id: str) -> bool:
         """Determine if we should request feedback from user."""
         ui_system = get_ui_enhancement_system(self.root)
@@ -581,6 +594,7 @@ class SatisfactionTracker:
 
 class UserExperienceEnhancementSystem:
     """Main system for user experience enhancements."""
+
 
     def __init__(self, root: Path):
         self.root = root
@@ -602,6 +616,7 @@ class UserExperienceEnhancementSystem:
 
         # Configuration
         self.config = self._load_ux_config()
+
 
     def _load_ux_config(self) -> Dict[str, Any]:
         """Load UX enhancement configuration."""
@@ -636,6 +651,7 @@ class UserExperienceEnhancementSystem:
 
         return default_config
 
+
     def record_ux_event(
         self, event_type: UXEventType, user_id: str, **kwargs
     ) -> UXEvent:
@@ -654,6 +670,7 @@ class UserExperienceEnhancementSystem:
         self._analyze_event_and_intervene(event)
 
         return event
+
 
     def _analyze_event_and_intervene(self, event: UXEvent):
         """Analyze a UX event and create interventions if needed."""
@@ -719,6 +736,7 @@ class UserExperienceEnhancementSystem:
         for intervention in interventions:
             self.active_interventions[intervention.intervention_id] = intervention
 
+
     def _create_satisfaction_intervention(self, user_id: str) -> UXIntervention:
         """Create a satisfaction feedback intervention."""
         intervention = UXIntervention(
@@ -729,13 +747,13 @@ class UserExperienceEnhancementSystem:
             message="📝 How is your experience with AI Onboard so far?\n\nYour feedback helps us improve the system.",
             suggested_actions=[
                 "Rate your experience (1 - 5 scale)",
-                "Share what's working well",
-                "Suggest improvements",
+                "Share what's working well", "Suggest improvements",
             ],
             priority=1,  # Low priority
         )
 
         return intervention
+
 
     def get_pending_interventions(self, user_id: str) -> List[UXIntervention]:
         """Get pending interventions for a user."""
@@ -756,6 +774,7 @@ class UserExperienceEnhancementSystem:
         max_interventions = self.config.get("max_interventions_per_session", 3)
         return user_interventions[:max_interventions]
 
+
     def deliver_intervention(self, intervention_id: str) -> Optional[str]:
         """Deliver an intervention to the user and return formatted message."""
         intervention = self.active_interventions.get(intervention_id)
@@ -774,12 +793,14 @@ class UserExperienceEnhancementSystem:
 
         return "\n".join(message_parts)
 
+
     def dismiss_intervention(self, intervention_id: str, user_followed: bool = False):
         """Dismiss an intervention."""
         intervention = self.active_interventions.get(intervention_id)
         if intervention:
             intervention.dismissed_at = datetime.now()
             intervention.user_followed_suggestion = user_followed
+
 
     def get_user_journey(
         self, user_id: str, goal: str = "general_usage"
@@ -797,6 +818,7 @@ class UserExperienceEnhancementSystem:
 
         return self.user_journeys[journey_key]
 
+
     def update_journey_progress(
         self, user_id: str, step: str, success: bool, goal: str = "general_usage"
     ):
@@ -813,6 +835,7 @@ class UserExperienceEnhancementSystem:
             journey.errors_encountered += 1
             if step not in journey.steps_failed:
                 journey.steps_failed.append(step)
+
 
     def get_ux_analytics(self, user_id: str) -> Dict[str, Any]:
         """Get UX analytics for a user."""

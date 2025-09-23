@@ -104,7 +104,8 @@ class VisualDesignValidator:
             VisualAnalysis with scores and feedback
         """
         try:
-            # TODO: Integrate with computer vision API (e.g., Google Vision, Azure Computer Vision)
+            # TODO: Integrate with computer vision API (e.g.,
+            # Google Vision, Azure Computer Vision)
             # For now, simulate analysis based on file metadata and context
 
             analysis = self._simulate_visual_analysis(screenshot_path, project_context)

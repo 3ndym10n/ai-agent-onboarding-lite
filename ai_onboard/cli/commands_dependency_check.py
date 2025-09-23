@@ -182,7 +182,6 @@ def _handle_scan_project(args, root: Path):
     # Save results if requested
     if args.output:
         output_path = Path(args.output)
-        import json
 
         output_data = {
             "scan_date": str(Path().cwd()),
@@ -245,8 +244,8 @@ def _handle_validate_cleanup(args, root: Path):
     except ImportError as e:
         print_status(f"Could not import cleanup module: {e}", "error")
 
-
 # Convenience function for programmatic use
+
 def check_file_dependencies(
     root: Path, files: List[str], detailed: bool = False
 ) -> bool:

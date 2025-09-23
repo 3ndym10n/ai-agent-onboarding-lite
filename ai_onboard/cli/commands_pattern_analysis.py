@@ -94,7 +94,8 @@ def _handle_insights(args: argparse.Namespace, root: Path) -> bool:
             for i, insight in enumerate(behavior_insights, 1):
                 print(f"   {i}. [{insight['pattern_type']}] {insight['description']}")
                 print(
-                    f"      Frequency: {insight['frequency']}, Confidence: {insight['confidence']:.2f}"
+                    f"      Frequency: {insight['frequency']},
+                        Confidence: {insight['confidence']:.2f}"
                 )
                 if insight["recommendations"]:
                     print(f"      💡 {insight['recommendations'][0]}")
@@ -219,7 +220,8 @@ def _handle_stats(args: argparse.Namespace, root: Path) -> bool:
             for i, pattern in enumerate(top_patterns, 1):
                 print(f"   {i}. {pattern.pattern_type}: {pattern.signature[:60]}...")
                 print(
-                    f"      Frequency: {pattern.frequency}, Confidence: {pattern.confidence:.2f}"
+                    f"      Frequency: {pattern.frequency},
+                        Confidence: {pattern.confidence:.2f}"
                 )
 
         print(f"\nCLI Patterns: {len(pattern_system.cli_patterns)}")

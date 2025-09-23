@@ -6,10 +6,10 @@ Development Environment Validation Script
 This script validates that the development environment is properly set up
 and all tools are working correctly.
 """
+from ai_onboard.core.common_imports import json, sys
 
 import platform
 import subprocess
-import sys
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
@@ -324,7 +324,6 @@ def main():
         validator.print_summary(report)
 
         # Save report to file
-        import json
 
         report_file = project_root / ".ai_onboard" / "dev_env_report.json"
         report_file.parent.mkdir(exist_ok=True)

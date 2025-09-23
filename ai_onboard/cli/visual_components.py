@@ -19,6 +19,7 @@ from ..core.ui_enhancement_system import get_ui_enhancement_system
 class ProgressBar:
     """Animated progress bar with customizable styling."""
 
+
     def __init__(self, total: int, width: int = 40, user_id: str = "default"):
         self.total = total
         self.width = width
@@ -27,11 +28,13 @@ class ProgressBar:
         self.start_time = time.time()
         self.ui_system = None
 
+
     def _get_ui_system(self, root: Path):
         """Lazy load UI system to avoid circular imports."""
         if self.ui_system is None:
             self.ui_system = get_ui_enhancement_system(root)
         return self.ui_system
+
 
     def update(self, current: int, root: Path, message: str = "") -> str:
         """Update progress and return formatted string."""
@@ -64,6 +67,7 @@ class ProgressBar:
 
         return ui_system.format_output(progress_text, "primary", self.user_id)
 
+
     def _format_time(self, seconds: float) -> str:
         """Format time duration."""
         if seconds < 60:
@@ -81,9 +85,11 @@ class ProgressBar:
 class StatusIndicator:
     """Status indicators with icons and colors."""
 
+
     def __init__(self, root: Path, user_id: str = "default"):
         self.ui_system = get_ui_enhancement_system(root)
         self.user_id = user_id
+
 
     def success(self, message: str) -> str:
         """Format success message."""
@@ -91,23 +97,28 @@ class StatusIndicator:
             f"{self.ui_system.format_output('✅', 'success', self.user_id)} {message}"
         )
 
+
     def warning(self, message: str) -> str:
         """Format warning message."""
         return f"{self.ui_system.format_output('⚠️', 'warning', self.user_id)} {message}"
+
 
     def error(self, message: str) -> str:
         """Format error message."""
         return f"{self.ui_system.format_output('❌', 'error', self.user_id)} {message}"
 
+
     def info(self, message: str) -> str:
         """Format info message."""
         return f"{self.ui_system.format_output('ℹ️', 'info', self.user_id)} {message}"
+
 
     def progress(self, message: str) -> str:
         """Format progress message."""
         return (
             f"{self.ui_system.format_output('🔄', 'primary', self.user_id)} {message}"
         )
+
 
     def completed(self, message: str) -> str:
         """Format completed message."""
@@ -119,12 +130,14 @@ class StatusIndicator:
 class Table:
     """ASCII table formatter with alignment and styling."""
 
+
     def __init__(self, headers: List[str], root: Path, user_id: str = "default"):
         self.headers = headers
         self.rows: List[List[str]] = []
         self.ui_system = get_ui_enhancement_system(root)
         self.user_id = user_id
         self.column_widths: List[int] = [len(h) for h in headers]
+
 
     def add_row(self, row: List[str]):
         """Add a row to the table."""
@@ -136,6 +149,7 @@ class Table:
         for i, cell in enumerate(str_row):
             if i < len(self.column_widths):
                 self.column_widths[i] = max(self.column_widths[i], len(cell))
+
 
     def render(self, max_width: Optional[int] = None) -> str:
         """Render the table as a string."""
@@ -193,9 +207,11 @@ class Table:
 class Chart:
     """ASCII chart generator for simple data visualization."""
 
+
     def __init__(self, root: Path, user_id: str = "default"):
         self.ui_system = get_ui_enhancement_system(root)
         self.user_id = user_id
+
 
     def bar_chart(
         self, data: Dict[str, float], title: str = "", max_width: int = 50
@@ -228,6 +244,7 @@ class Chart:
             lines.append(line)
 
         return "\n".join(lines)
+
 
     def sparkline(self, values: List[float], width: int = 20) -> str:
         """Create a sparkline chart."""
@@ -262,12 +279,14 @@ class Chart:
 class Dashboard:
     """Dashboard component for status overview."""
 
+
     def __init__(self, root: Path, user_id: str = "default"):
         self.root = root
         self.ui_system = get_ui_enhancement_system(root)
         self.user_id = user_id
         self.status_indicator = StatusIndicator(root, user_id)
         self.chart = Chart(root, user_id)
+
 
     def create_project_dashboard(self, project_data: Dict[str, Any]) -> str:
         """Create project status dashboard."""
@@ -363,6 +382,7 @@ class Dashboard:
 
         return "\n".join(dashboard)
 
+
     def create_system_health_dashboard(self, health_data: Dict[str, Any]) -> str:
         """Create system health dashboard."""
         dashboard = []
@@ -423,11 +443,13 @@ class Dashboard:
 class AnimatedSpinner:
     """Animated spinner for long - running operations."""
 
+
     def __init__(self, root: Path, user_id: str = "default"):
         self.ui_system = get_ui_enhancement_system(root)
         self.user_id = user_id
         self.frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
         self.current_frame = 0
+
 
     def next_frame(self, message: str = "") -> str:
         """Get next spinner frame with message."""
@@ -441,8 +463,8 @@ class AnimatedSpinner:
         else:
             return spinner_text
 
-
 # Utility functions for easy access
+
 def create_progress_bar(
     total: int, width: int = 40, user_id: str = "default"
 ) -> ProgressBar:

@@ -134,8 +134,8 @@ def handle_intelligent_monitoring_commands(args, root: Path):
 
         print(f"Total activities in history: {len(activities)}")
 
-
 # Integration functions for automatic startup
+
 def initialize_intelligent_monitoring(root: Path):
     """
     Initialize intelligent monitoring on system startup.

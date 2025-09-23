@@ -13,7 +13,6 @@ Author: AI Assistant
 import ast
 import os
 import re
-import sys
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -24,6 +23,7 @@ from .tool_usage_tracker import get_tool_tracker
 
 
 @dataclass
+
 class CodeQualityIssue:
     """Represents a code quality issue found during analysis."""
 
@@ -37,6 +37,7 @@ class CodeQualityIssue:
 
 
 @dataclass
+
 class CodeQualityMetrics:
     """Code quality metrics for a file or module."""
 
@@ -52,6 +53,7 @@ class CodeQualityMetrics:
 
 
 @dataclass
+
 class CodeQualityAnalysisResult:
     """Complete analysis result for the codebase."""
 
@@ -74,6 +76,7 @@ class CodeQualityAnalyzer:
     - Code complexity issues
     - Code quality metrics
     """
+
 
     def __init__(self, root_path: Path, exclude_patterns: Optional[List[str]] = None):
         """
@@ -121,6 +124,7 @@ class CodeQualityAnalyzer:
         self.variable_usage: Dict[str, Set[str]] = defaultdict(
             set
         )  # var_name -> files_using_it
+
 
     def analyze_codebase(self) -> CodeQualityAnalysisResult:
         """
@@ -226,6 +230,7 @@ class CodeQualityAnalyzer:
 
         return result
 
+
     def _find_python_files(self) -> List[str]:
         """Find all Python files in the codebase, respecting exclude patterns."""
         python_files = []
@@ -241,6 +246,7 @@ class CodeQualityAnalyzer:
                     python_files.append(os.path.join(root, file))
 
         return python_files
+
 
     def _is_excluded(self, path: str) -> bool:
         """Check if a path should be excluded from analysis."""
@@ -260,6 +266,7 @@ class CodeQualityAnalyzer:
                     return True
 
         return False
+
 
     def _analyze_file_definitions(self, file_path: str) -> None:
         """Analyze a file to extract definitions and imports."""
@@ -316,6 +323,7 @@ class CodeQualityAnalyzer:
         except Exception as e:
             print(f"   ⚠️  Error parsing {file_path}: {e}")
 
+
     def _analyze_file_usage(self, file_path: str) -> None:
         """Analyze a file to extract usage patterns."""
         try:
@@ -351,6 +359,7 @@ class CodeQualityAnalyzer:
             pass
         except Exception as e:
             print(f"   ⚠️  Error analyzing usage in {file_path}: {e}")
+
 
     def _analyze_file_quality(
         self, file_path: str
@@ -443,6 +452,7 @@ class CodeQualityAnalyzer:
 
         return issues, metrics
 
+
     def _extract_imports_from_file(self, content: str) -> List[Tuple[str, int]]:
         """Extract imports and their line numbers from file content."""
         imports = []
@@ -463,6 +473,7 @@ class CodeQualityAnalyzer:
 
         return imports
 
+
     def _find_unused_imports(
         self, file_path: str, imports: List[Tuple[str, int]]
     ) -> List[Tuple[str, int]]:
@@ -479,6 +490,7 @@ class CodeQualityAnalyzer:
 
         return unused
 
+
     def _find_dead_functions(self, file_path: str) -> List[str]:
         """Find unused functions defined in a file."""
         dead_functions = []
@@ -494,6 +506,7 @@ class CodeQualityAnalyzer:
 
         return dead_functions
 
+
     def _calculate_complexity(self, tree: ast.AST) -> float:
         """Calculate code complexity score."""
         complexity = 0
@@ -508,6 +521,7 @@ class CodeQualityAnalyzer:
                 complexity += 1
 
         return complexity
+
 
     def _calculate_quality_score(
         self, metrics: CodeQualityMetrics, issues: List[CodeQualityIssue]
@@ -547,13 +561,11 @@ class CodeQualityAnalyzer:
 
         return max(0.0, min(100.0, score))
 
+
     def _is_standard_library_import(self, import_name: str) -> bool:
         """Check if an import is from Python's standard library."""
-        import json
-        import os
         import pathlib
         import re
-        import sys
 
         # Common standard library modules
         stdlib_modules = {
@@ -708,6 +720,7 @@ class CodeQualityAnalyzer:
 
         return import_name in stdlib_modules
 
+
     def _find_function_line(self, content: str, func_name: str) -> Optional[int]:
         """Find the line number where a function is defined."""
         lines = content.split("\n")
@@ -716,9 +729,11 @@ class CodeQualityAnalyzer:
                 return i
         return None
 
+
     def _get_parents(self, tree: ast.AST, node: ast.AST) -> List[ast.AST]:
         """Get all parent nodes of a given node in the AST."""
         parents = []
+
 
         def find_parents(current, target):
             for child in ast.iter_child_nodes(current):
@@ -732,6 +747,7 @@ class CodeQualityAnalyzer:
 
         find_parents(tree, node)
         return parents
+
 
     def generate_report(
         self, result: CodeQualityAnalysisResult, output_path: Optional[str] = None

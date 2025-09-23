@@ -5,7 +5,6 @@ This module provides a REST API server that allows external tools like Cursor AI
 to integrate with the AI Agent Onboarding system programmatically.
 """
 
-import json
 import time
 import uuid
 from datetime import datetime
@@ -23,12 +22,7 @@ try:
 except ImportError:
     FASTAPI_AVAILABLE = False
 
-from ..core import (
-    analysis_lite,
-    charter,
-    planning,
-    validation_runtime,
-)
+from ..core import analysis_lite, charter, planning, validation_runtime
 from .models import (
     AgentRegistrationRequest,
     AgentRegistrationResponse,
@@ -54,6 +48,7 @@ from .models import (
 
 class AIOnboardAPIServer:
     """Main API server for AI Onboard integrations."""
+
 
     def __init__(self, root: Path, host: str = "127.0.0.1", port: int = 8080):
         if not FASTAPI_AVAILABLE:
@@ -88,6 +83,7 @@ class AIOnboardAPIServer:
             print(f"Warning: Could not initialize security: {e}")
             self.security = None
 
+
     def _get_auth_dependency(self):
         """Get authentication dependency (conditional based on FastAPI availability)."""
         if FASTAPI_AVAILABLE and self.security:
@@ -95,6 +91,7 @@ class AIOnboardAPIServer:
             return Depends(self.security)
         else:
             return None
+
 
     def _create_app(self) -> FastAPI:
         """Create and configure FastAPI application."""
@@ -119,6 +116,7 @@ class AIOnboardAPIServer:
         self._add_routes(app)
 
         return app
+
 
     def _add_routes(self, app: FastAPI):
         """Add API routes to the FastAPI app."""
@@ -765,6 +763,7 @@ class AIOnboardAPIServer:
             # Can be enhanced to support filtered subscriptions
             pass
 
+
     def run(self, **kwargs):
         """Run the API server."""
         try:
@@ -778,7 +777,6 @@ class AIOnboardAPIServer:
             raise ImportError(
                 "uvicorn is required to run the API server. Install with: pip install uvicorn"
             )
-
 
 # Global server instance
 _api_server: Optional[AIOnboardAPIServer] = None

@@ -5,20 +5,14 @@ Safely removes dead code and unused imports using risk-based approach
 with comprehensive validation and rollback capabilities.
 """
 
-import ast
-import re
-from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple
-
 from .code_quality_analyzer import (
     CodeQualityAnalysisResult,
     CodeQualityAnalyzer,
     CodeQualityIssue,
 )
 
-
 @dataclass
+
 class CleanupResult:
     """Result of a cleanup operation."""
 
@@ -30,8 +24,8 @@ class CleanupResult:
     errors: List[str] = field(default_factory=list)
     rollback_available: bool = True
 
-
 @dataclass
+
 class ImportStatement:
     """Represents an import statement in Python code."""
 
@@ -50,10 +44,12 @@ class AutomatedCodeCleanup:
     Uses risk-based approach with comprehensive validation and rollback.
     """
 
+
     def __init__(self, root_path: Path):
         self.root_path = root_path
         self.backup_dir = root_path / ".ai_onboard" / "backups" / "code_cleanup"
         self.backup_dir.mkdir(parents=True, exist_ok=True)
+
 
     def remove_unused_imports(
         self, analysis_result: CodeQualityAnalysisResult, dry_run: bool = True
@@ -144,6 +140,7 @@ class AutomatedCodeCleanup:
 
         return result
 
+
     def _extract_import_statements(self, file_path: Path) -> List[ImportStatement]:
         """Extract all import statements from a Python file."""
 
@@ -187,6 +184,7 @@ class AutomatedCodeCleanup:
             statements = self._extract_imports_regex(file_path)
 
         return statements
+
 
     def _extract_imports_regex(self, file_path: Path) -> List[ImportStatement]:
         """Fallback regex-based import extraction for files with syntax errors."""
@@ -243,6 +241,7 @@ class AutomatedCodeCleanup:
 
         return statements
 
+
     def _matches_import_issue(
         self, import_stmt: ImportStatement, issue: CodeQualityIssue
     ) -> bool:
@@ -261,6 +260,7 @@ class AutomatedCodeCleanup:
                 name.lower() in issue_text for name in import_stmt.imported_names
             )
             return module_match or name_match
+
 
     def _remove_unused_imports_from_file(
         self, file_path: Path, unused_imports: List[ImportStatement]
@@ -283,6 +283,7 @@ class AutomatedCodeCleanup:
         with open(file_path, "w", encoding="utf-8") as f:
             f.writelines(lines)
 
+
     def _create_backup(self, file_path: Path) -> Path:
         """Create a backup of the file before modification."""
 
@@ -301,13 +302,13 @@ class AutomatedCodeCleanup:
 
         return backup_path
 
+
     def _validate_changes(self) -> bool:
         """Validate that changes don't break the codebase."""
 
         try:
             # Run a basic syntax check on modified Python files
             import subprocess
-            import sys
 
             # Simple validation: try to import the main module
             result = subprocess.run(
@@ -321,6 +322,7 @@ class AutomatedCodeCleanup:
 
         except Exception:
             return False
+
 
     def remove_simple_dead_functions(
         self, analysis_result: CodeQualityAnalysisResult, dry_run: bool = True
@@ -407,7 +409,6 @@ def run_automated_cleanup(
         result = CleanupResult()
         result.errors.append(f"Unknown cleanup type: {cleanup_type}")
         return result
-
 
 if __name__ == "__main__":
     import argparse

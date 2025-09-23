@@ -29,12 +29,14 @@ from .visual_components import create_status_indicator
 class UXMiddleware:
     """Middleware for automatic UX enhancements."""
 
+
     def __init__(self, root: Path):
         self.root = root
         self.ux_system = None  # Lazy loaded
         self.ui_system = None  # Lazy loaded
         self.capability_tracker = None  # Lazy loaded
         self.status = None  # Lazy loaded
+
 
     def _get_systems(self, user_id: str = "default"):
         """Lazy load systems to avoid circular imports."""
@@ -49,6 +51,7 @@ class UXMiddleware:
         return self.ux_system, self.ui_system, self.capability_tracker, self.status
 
     @contextmanager
+
     def enhanced_command_execution(self, command: str, user_id: str = "default"):
         """Context manager for enhanced command execution."""
         start_time = time.time()
@@ -83,6 +86,7 @@ class UXMiddleware:
             if success:
                 self._check_post_execution_interventions(command, user_id)
 
+
     def _show_pending_interventions(self, user_id: str):
         """Show pending interventions before command execution."""
         try:
@@ -111,6 +115,7 @@ class UXMiddleware:
         except Exception:
             # Silently fail to avoid disrupting main command
             pass
+
 
     def _handle_command_error(self, error: Exception, command: str, user_id: str):
         """Handle command errors with UX enhancements."""
@@ -158,6 +163,7 @@ class UXMiddleware:
         except Exception:
             # Silently fail to avoid cascading errors
             pass
+
 
     def _record_command_execution(
         self,
@@ -232,6 +238,7 @@ class UXMiddleware:
             # Silently fail to avoid disrupting main command
             pass
 
+
     def _check_post_execution_interventions(self, command: str, user_id: str):
         """Check for interventions after successful command execution."""
         try:
@@ -292,6 +299,7 @@ class UXMiddleware:
             # Silently fail to avoid disrupting main command
             pass
 
+
     def show_welcome_message(self, user_id: str = "default"):
         """Show welcome message for new users."""
         try:
@@ -334,6 +342,7 @@ class UXMiddleware:
             # Silently fail to avoid disrupting startup
             pass
 
+
     def show_completion_celebration(self, user_id: str = "default"):
         """Show celebration for command completion milestones."""
         try:
@@ -375,7 +384,6 @@ class UXMiddleware:
         except Exception:
             # Silently fail
             pass
-
 
 # Global middleware instance
 _ux_middleware: Optional[UXMiddleware] = None

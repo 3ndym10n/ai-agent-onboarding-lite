@@ -43,6 +43,12 @@ python -m ai_onboard metrics      # View project metrics and progress
 # Safe cleanup
 python -m ai_onboard cleanup --dry-run  # See what would be cleaned
 
+# Import consolidation (NEW)
+python -m ai_onboard consolidate analyze  # Analyze import consolidation opportunities
+python -m ai_onboard consolidate plan     # Create migration plan
+python -m ai_onboard consolidate execute  # Execute consolidation with safety checks
+python -m ai_onboard consolidate validate # Validate import equivalence
+
 # Agent-facing commands (feature-flagged)
 python -m ai_onboard prompt state|rules|summary|propose
 python -m ai_onboard checkpoint create|list|restore
@@ -62,6 +68,12 @@ python -m ai_onboard checkpoint create|list|restore
 - `kaizen` - Continuous improvement cycle
 - `metrics` - View project metrics and progress
 - `cleanup` - Safe cleanup of non-critical files
+
+### Import Consolidation (NEW)
+- `consolidate analyze` - Analyze import consolidation opportunities
+- `consolidate plan` - Create migration plan with safety checks
+- `consolidate execute` - Execute consolidation with rollback protection
+- `consolidate validate` - Validate import equivalence after changes
 
 ### AI Agent Features
 - `prompt` - Get state, rules, and summaries for AI agents
@@ -130,6 +142,43 @@ python examples/cursor_prompt_loop.py --status
 **Safety:**
 - The NL system only writes under `.ai_onboard/`
 - Use `AGENTS.md` for repo rules/guardrails
+
+## 🔧 Import Consolidation System
+
+The new import consolidation system helps optimize Python code by consolidating frequently used imports into shared modules, reducing verbosity and improving maintainability.
+
+### Features
+
+- **Smart Analysis**: Identifies consolidation opportunities based on import patterns
+- **Safety-First**: Multiple validation layers and automatic rollback capabilities
+- **Phased Migration**: Executes changes in phases with validation at each step
+- **Real-time Monitoring**: Tracks progress and validates equivalence
+
+### Usage
+
+```bash
+# Analyze current import patterns
+python -m ai_onboard consolidate analyze
+
+# Create a migration plan
+python -m ai_onboard consolidate plan --target common_imports
+
+# Execute consolidation with safety checks
+python -m ai_onboard consolidate execute --plan .ai_onboard/consolidation_plan.json
+
+# Validate import equivalence
+python -m ai_onboard consolidate validate --before .ai_onboard/backup_before/ --after .ai_onboard/after/
+```
+
+### Safety Features
+
+- **Automatic Backups**: Creates full project backups before changes
+- **Rollback Protection**: Automatic rollback on any failure
+- **Import Validation**: Validates that consolidated imports work correctly
+- **Progress Monitoring**: Real-time tracking of consolidation progress
+- **Risk Assessment**: Analyzes and mitigates potential risks
+
+For detailed documentation, see [IMPORT_CONSOLIDATION_SYSTEM.md](docs/IMPORT_CONSOLIDATION_SYSTEM.md).
 
 ## 🛡️ Safety Features
 

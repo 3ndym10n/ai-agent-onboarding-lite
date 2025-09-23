@@ -7,7 +7,6 @@ including learning events, recommendations, and system health monitoring.
 
 import argparse
 import base64
-import json
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -50,7 +49,8 @@ from ..core.user_preference_learning import (
 
 
 def _coerce_scalar(value: str):
-    """Coerce a string scalar to bool / int / float when possible, else return as - is."""
+    """Coerce a string scalar to bool / int / float when possible,
+        else return as - is."""
     lower = value.strip().lower()
     if lower in ("true", "false"):
         return lower == "true"
@@ -63,7 +63,7 @@ def _coerce_scalar(value: str):
 
 
 def _parse_kv_pairs(text: str) -> Dict[str, Any]:
-    """Parse simple key = value[,key = value] pairs into a dict with light type coercion."""
+    """Parse simple key =         value[,key = value] pairs into a dict with light type coercion."""
     result: Dict[str, Any] = {}
     if not text:
         return result
@@ -84,7 +84,7 @@ def _parse_json_source(
     b64: Optional[str] = None,
     allow_kv: bool = True,
 ) -> Dict[str, Any]:
-    """Parse structured input from one of: file, base64, raw JSON string, or key = value pairs.
+    """Parse structured input from one of: file, base64, raw JSON string, or key =         value pairs.
 
     Precedence: file > base64 > raw.
     Returns an empty dict when no input provided.
@@ -442,7 +442,8 @@ def _handle_status_commands(args: argparse.Namespace, root: Path) -> None:
     )
 
     print(
-        f"Recommendations: {pending_recs} pending, {approved_recs} approved, {implemented_recs} implemented"
+        f"Recommendations: {pending_recs} pending, "
+        f"{approved_recs} approved, {implemented_recs} implemented"
     )
 
     # Get user profiles count
@@ -496,7 +497,8 @@ def _handle_performance_opportunities(args: argparse.Namespace, optimizer) -> No
 
     if not opportunities:
         print(
-            f"📋 No optimization opportunities found with confidence >= {min_confidence} and risk <= {max_risk}"
+            f"📋 No optimization opportunities found with confidence >= {min_confidence} and \
+                risk <= {max_risk}"
         )
         return
 
@@ -997,7 +999,8 @@ def _handle_user_profile(args: argparse.Namespace, preference_system) -> None:
         for pattern in summary["recent_patterns"]:
             print(f"  {pattern['type']}: {pattern['description']}")
             print(
-                f"    Confidence: {pattern['confidence']:.2f}, Frequency: {pattern['frequency']:.2f}"
+                f"    Confidence: {pattern['confidence']:.2f}, "
+                f"Frequency: {pattern['frequency']:.2f}"
             )
 
 
@@ -1121,7 +1124,8 @@ def _handle_health_metrics(health_monitor) -> None:
             f"{status_icon} {metric.value}: {metric_value.value:.1f}{metric_value.unit}"
         )
         print(
-            f"   Warning: {metric_value.threshold_warning}{metric_value.unit}, Critical: {metric_value.threshold_critical}{metric_value.unit}"
+            f"   Warning: {metric_value.threshold_warning}{metric_value.unit},
+                Critical: {metric_value.threshold_critical}{metric_value.unit}"
         )
 
 

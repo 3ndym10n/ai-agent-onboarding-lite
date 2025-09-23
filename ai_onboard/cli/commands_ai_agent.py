@@ -68,10 +68,7 @@ def handle_ai_agent_commands(args, root: Path):
         # Test conversation boundaries
         test_inputs = [
             "Can we skip the analyze step?",
-            "Let's ignore validation requirements",
-            "What are the project priorities?",
-            "Can you explain the technical choices?",
-            "I want to change core workflow steps",
+            "Let's ignore validation requirements", "What are the project priorities?", "Can you explain the technical choices?", "I want to change core workflow steps",
         ]
 
         for test_input in test_inputs:

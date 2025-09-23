@@ -8,9 +8,9 @@ Usage:
   python examples/cursor_prompt_loop.py --decide allow --why "docs are sufficient to proceed"
   python examples/cursor_prompt_loop.py --status
 """
+from ai_onboard.core.common_imports import json, sys
 
 import argparse
-import sys
 from pathlib import Path
 
 # Ensure local ai_onboard is preferred over any installed package
@@ -44,7 +44,6 @@ def main():
 
         s = cursor_rules.status(root)
         s["project_state"] = prompt_bridge.get_project_state(root)
-        import json
 
         print(json.dumps(s, indent=2))
         return
@@ -52,20 +51,17 @@ def main():
     if args.observe:
         rule_id = args.rule or "general"
         rec = cursor_rules.record_observation(root, rule_id, args.observe)
-        import json
 
         print(json.dumps(rec, indent=2))
         return
 
     if args.decide:
         rec = cursor_rules.record_decision(root, args.decide, args.why or "")
-        import json
 
         print(json.dumps(rec, indent=2))
         return
 
     # Default: show checklist
-    import json
 
     print(json.dumps({"checklist": cursor_rules.next_checklist(root)}, indent=2))
 

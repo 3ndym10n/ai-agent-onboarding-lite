@@ -2,11 +2,10 @@
 """
 Setup script for local CI validation tools.
 """
+from ai_onboard.core.common_imports import os, sys
 
-import os
 import shutil
 import subprocess
-import sys
 from pathlib import Path
 
 

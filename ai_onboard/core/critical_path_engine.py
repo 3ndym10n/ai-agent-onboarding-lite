@@ -19,12 +19,14 @@ from .tool_usage_tracker import track_tool_usage
 class CriticalPathEngine:
     """Engine for analyzing and updating project critical paths."""
 
+
     def __init__(self, root: Path):
         self.root = root
         self.project_plan_path = root / ".ai_onboard" / "project_plan.json"
         track_tool_usage(
             "critical_path_engine", "ai_system", {"action": "initialize"}, "success"
         )
+
 
     def analyze_critical_path(self) -> Dict[str, Any]:
         """
@@ -74,11 +76,13 @@ class CriticalPathEngine:
 
         return analysis_results
 
+
     def _extract_tasks_with_dependencies(
         self, wbs: Dict[str, Any]
     ) -> Dict[str, Dict[str, Any]]:
         """Extract all tasks and normalize their dependency information."""
         tasks = {}
+
 
         def extract_from_phase(phase_id: str, phase_data: Dict[str, Any]):
             # Add the phase itself
@@ -120,6 +124,7 @@ class CriticalPathEngine:
 
         return tasks
 
+
     def _build_dependency_graph(
         self, tasks: Dict[str, Dict[str, Any]]
     ) -> Dict[str, List[str]]:
@@ -134,6 +139,7 @@ class CriticalPathEngine:
 
         return dict(graph)
 
+
     def _build_reverse_graph(
         self, dependency_graph: Dict[str, List[str]]
     ) -> Dict[str, List[str]]:
@@ -145,6 +151,7 @@ class CriticalPathEngine:
                 reverse_graph[successor].append(predecessor)
 
         return dict(reverse_graph)
+
 
     def _calculate_task_timing(
         self,
@@ -242,6 +249,7 @@ class CriticalPathEngine:
 
         return timing
 
+
     def _estimate_task_duration(self, task_data: Dict[str, Any]) -> int:
         """Estimate task duration based on effort level and status."""
         effort = task_data.get("estimated_effort", "medium").lower()
@@ -262,6 +270,7 @@ class CriticalPathEngine:
         else:
             return effort_duration
 
+
     def _identify_critical_path(
         self, tasks: Dict[str, Dict[str, Any]], timing_data: Dict[str, Dict[str, Any]]
     ) -> List[str]:
@@ -277,6 +286,7 @@ class CriticalPathEngine:
         critical_tasks.sort(key=lambda x: timing_data[x]["earliest_start"])
 
         return critical_tasks
+
 
     def _calculate_slack(
         self, timing_data: Dict[str, Dict[str, Any]]
@@ -296,6 +306,7 @@ class CriticalPathEngine:
 
         return slack_data
 
+
     def _calculate_project_duration(
         self, timing_data: Dict[str, Dict[str, Any]]
     ) -> int:
@@ -305,6 +316,7 @@ class CriticalPathEngine:
 
         max_finish = max(timing["earliest_finish"] for timing in timing_data.values())
         return int(max_finish)
+
 
     def update_critical_path_in_plan(
         self, analysis_results: Optional[Dict[str, Any]] = None
@@ -335,6 +347,7 @@ class CriticalPathEngine:
         updated_count = 0
 
         # Update tasks in WBS
+
         def update_phase_critical_path(phase_id: str, phase_data: Dict[str, Any]):
             nonlocal updated_count
 
@@ -386,6 +399,7 @@ class CriticalPathEngine:
             "project_duration": analysis_results["total_project_duration"],
             "message": f"Updated {updated_count} tasks with critical path designations",
         }
+
 
     def get_critical_path_report(self) -> Dict[str, Any]:
         """Generate a comprehensive critical path report."""

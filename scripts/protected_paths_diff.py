@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 import fnmatch
-import json
-import os
 import subprocess
-import sys
+
+from ai_onboard.core.common_imports import json, os, sys
 
 PROTECTED = [
     ".github/**",

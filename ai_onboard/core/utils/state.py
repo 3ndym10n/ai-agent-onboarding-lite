@@ -1,9 +1,7 @@
 
 
-
 class StateError(Exception):
     """Raised when an action requires a higher project state."""
-
 
 ORDER = ["unchartered", "chartered", "planned", "aligned", "executing", "kaizen_cycle"]
 

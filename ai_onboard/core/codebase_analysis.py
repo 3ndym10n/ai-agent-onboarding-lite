@@ -6,7 +6,8 @@ and quality. It identifies organizational improvements, structural issues,
 and provides actionable recommendations.
 
 Key Components:
-- File Organization Analysis: Analyzes current file placement and suggests optimal structure
+- File Organization Analysis: Analyzes current file placement and \
+    suggests optimal structure
 - Structural Recommendations: Recommends file moves, merges, and directory restructuring
 - Code Quality Analysis: Detects unused imports, dead code, and quality metrics
 - Dependency Mapping: Analyzes module relationships and usage patterns
@@ -16,7 +17,6 @@ Key Components:
 import ast
 import hashlib
 import os
-import re
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -28,6 +28,7 @@ from .unicode_utils import print_activity, print_status, safe_print
 
 
 @dataclass
+
 class FileOrganizationIssue:
     """Represents an issue with file organization."""
 
@@ -40,6 +41,7 @@ class FileOrganizationIssue:
 
 
 @dataclass
+
 class CodeQualityIssue:
     """Represents a code quality issue."""
 
@@ -53,6 +55,7 @@ class CodeQualityIssue:
 
 
 @dataclass
+
 class DependencyInfo:
     """Information about module dependencies."""
 
@@ -67,6 +70,7 @@ class DependencyInfo:
 
 
 @dataclass
+
 class DuplicateCodeBlock:
     """Represents a block of duplicate code."""
 
@@ -89,6 +93,7 @@ class CodebaseAnalyzer:
     - Structural recommendations
     """
 
+
     def __init__(self, root: Path):
         self.root = root
         self.dependency_map: Dict[str, DependencyInfo] = {}
@@ -109,6 +114,7 @@ class CodebaseAnalyzer:
             "*.pyo",
             "*.egg-info",
         ]
+
 
     def analyze_codebase(self) -> Dict[str, Any]:
         """
@@ -150,10 +156,12 @@ class CodebaseAnalyzer:
 
         print_status(
             f"✅ Analysis complete - found {len(self.organization_issues)} org issues, "
-            f"{len(self.quality_issues)} quality issues, {len(self.duplicates)} duplicates"
+            f"{len(self.quality_issues)} quality issues,
+                {len(self.duplicates)} duplicates"
         )
 
         return results
+
 
     def _build_dependency_map(self):
         """Build comprehensive dependency map of all Python modules."""
@@ -183,6 +191,7 @@ class CodebaseAnalyzer:
             f"Cross-referenced imports for {len(self.dependency_map)} modules",
         )
 
+
     def _find_python_files(self) -> List[Path]:
         """Find all Python files in the codebase."""
         python_files = []
@@ -198,6 +207,7 @@ class CodebaseAnalyzer:
                         python_files.append(file_path)
 
         return python_files
+
 
     def _should_ignore(self, path: Path) -> bool:
         """Check if path should be ignored."""
@@ -218,10 +228,12 @@ class CodebaseAnalyzer:
 
         return False
 
+
     def _get_module_name(self, file_path: Path) -> str:
         """Get module name from file path."""
         rel_path = file_path.relative_to(self.root)
         return str(rel_path.with_suffix("")).replace(os.sep, ".")
+
 
     def _analyze_file_dependencies(self, file_path: Path) -> DependencyInfo:
         """Analyze dependencies in a single Python file."""
@@ -264,6 +276,7 @@ class CodebaseAnalyzer:
                 module_name=self._get_module_name(file_path), file_path=file_path
             )
 
+
     def _extract_function_usage(self, content: str) -> Set[str]:
         """Extract function calls from content (heuristic)."""
         functions = set()
@@ -279,6 +292,7 @@ class CodebaseAnalyzer:
 
         return functions
 
+
     def _extract_class_usage(self, content: str) -> Set[str]:
         """Extract class instantiations from content (heuristic)."""
         classes = set()
@@ -292,12 +306,14 @@ class CodebaseAnalyzer:
 
         return classes
 
+
     def _cross_reference_imports(self):
         """Cross-reference imports to build imported_by relationships."""
         for module_name, dep_info in self.dependency_map.items():
             for imported_module in dep_info.imports:
                 if imported_module in self.dependency_map:
                     self.dependency_map[imported_module].imported_by.add(module_name)
+
 
     def _analyze_file_organization(self):
         """Analyze file organization and identify issues."""
@@ -311,6 +327,7 @@ class CodebaseAnalyzer:
         for module_name, dep_info in self.dependency_map.items():
             issues = self._check_file_organization(dep_info)
             self.organization_issues.extend(issues)
+
 
     def _check_file_organization(
         self, dep_info: DependencyInfo
@@ -349,6 +366,7 @@ class CodebaseAnalyzer:
 
         return issues
 
+
     def _suggest_directory(self, dep_info: DependencyInfo) -> Path:
         """Suggest appropriate directory for a file based on its content."""
         # Simple heuristic based on module name and content
@@ -364,6 +382,7 @@ class CodebaseAnalyzer:
                 return Path("ai_onboard")
 
         return dep_info.file_path.parent.relative_to(self.root)
+
 
     def _categorize_module(self, dep_info: DependencyInfo) -> str:
         """Categorize module based on its content and name."""
@@ -382,6 +401,7 @@ class CodebaseAnalyzer:
         else:
             return "core"  # default
 
+
     def _calculate_directory_confidence(
         self, dep_info: DependencyInfo, expected: Path, actual: Path
     ) -> float:
@@ -395,6 +415,7 @@ class CodebaseAnalyzer:
             return 0.8
         else:
             return 0.6
+
 
     def _check_merge_candidates(
         self, dep_info: DependencyInfo
@@ -421,6 +442,7 @@ class CodebaseAnalyzer:
 
         return issues
 
+
     def _find_related_files(self, dep_info: DependencyInfo) -> List[Path]:
         """Find files related to the given dependency info."""
         related = []
@@ -439,6 +461,7 @@ class CodebaseAnalyzer:
                     related.append(file_path)
 
         return related
+
 
     def _check_naming_conventions(
         self, dep_info: DependencyInfo
@@ -463,6 +486,7 @@ class CodebaseAnalyzer:
 
         return issues
 
+
     def _analyze_code_quality(self):
         """Analyze code quality across all files."""
         track_tool_usage(
@@ -478,6 +502,7 @@ class CodebaseAnalyzer:
                 self.quality_issues.extend(issues)
             except Exception as e:
                 print_status(f"⚠️ Error analyzing quality for {dep_info.file_path}: {e}")
+
 
     def _analyze_single_file_quality(
         self, dep_info: DependencyInfo
@@ -529,6 +554,7 @@ class CodebaseAnalyzer:
 
         return issues
 
+
     def _find_unused_imports(
         self, tree: ast.AST, dep_info: DependencyInfo
     ) -> List[str]:
@@ -564,6 +590,7 @@ class CodebaseAnalyzer:
 
         return unused
 
+
     def _calculate_complexity(self, func_node: ast.FunctionDef) -> int:
         """Calculate cyclomatic complexity of a function."""
         complexity = 1  # Base complexity
@@ -577,6 +604,7 @@ class CodebaseAnalyzer:
                 complexity += 1
 
         return complexity
+
 
     def _detect_duplicates(self):
         """Detect duplicate code blocks across the codebase."""
@@ -627,6 +655,7 @@ class CodebaseAnalyzer:
             f"Found {len(self.duplicates)} duplicate code blocks",
         )
 
+
     def _extract_code_blocks(self, file_path: Path) -> List[Tuple[int, int, str, str]]:
         """Extract code blocks from a file for duplicate detection."""
         blocks = []
@@ -639,36 +668,58 @@ class CodebaseAnalyzer:
             current_block = []
             start_line = 0
 
-            for i, line in enumerate(lines, 1):
-                line = line.strip()
+            for line_number, line in enumerate(lines, 1):
+                stripped_line = line.strip()
 
-                if line and not line.startswith("#"):  # Non-empty, non-comment
+                # Check if line contains actual code (not empty or comment)
+                if stripped_line and not stripped_line.startswith("#"):
+                    # Start new code block if this is the first line
                     if not current_block:
-                        start_line = i
-                    current_block.append(line)
+                        block_start_line = line_number
+                    current_block.append(stripped_line)
                 else:
-                    # End of block
+                    # Process completed code block
                     if len(current_block) >= self.min_duplicate_lines:
-                        block_text = "\n".join(current_block)
-                        block_hash = hashlib.md5(block_text.encode()).hexdigest()
-                        snippet = (
-                            "\n".join(current_block[:3]) + "\n..."
-                        )  # First 3 lines
-                        blocks.append((start_line, i - 1, block_hash, snippet))
+                        self._process_code_block(
+                            current_block, block_start_line, line_number - 1, blocks
+                        )
 
+                    # Reset for next block
                     current_block = []
 
-            # Handle last block
+            # Process final code block if file doesn't end with empty line
             if len(current_block) >= self.min_duplicate_lines:
-                block_text = "\n".join(current_block)
-                block_hash = hashlib.md5(block_text.encode()).hexdigest()
-                snippet = "\n".join(current_block[:3]) + "\n..."
-                blocks.append((start_line, len(lines), block_hash, snippet))
+                self._process_code_block(
+                    current_block, block_start_line, len(lines), blocks
+                )
 
         except Exception as e:
             print_status(f"⚠️ Error extracting blocks from {file_path}: {e}")
 
         return blocks
+
+
+    def _process_code_block(self, code_lines, start_line, end_line, blocks):
+        """
+        Process a code block for duplicate detection.
+
+        Args:
+            code_lines: List of code lines in the block
+            start_line: Starting line number of the block
+            end_line: Ending line number of the block
+            blocks: List to append processed block to
+        """
+        block_text = "\n".join(code_lines)
+        block_hash = hashlib.md5(block_text.encode()).hexdigest()
+
+        # Create preview snippet from first 3 lines
+        preview_lines = code_lines[:3]
+        snippet = "\n".join(preview_lines)
+        if len(code_lines) > 3:
+            snippet += "\n..."
+
+        blocks.append((start_line, end_line, block_hash, snippet))
+
 
     def _generate_structural_recommendations(self) -> Dict[str, Any]:
         """Generate structural recommendations based on analysis."""
@@ -700,6 +751,7 @@ class CodebaseAnalyzer:
 
         return recommendations
 
+
     def _analyze_directory_usage(self) -> Dict[Path, Dict[str, int]]:
         """Analyze file distribution across directories."""
         dir_stats = defaultdict(lambda: {"file_count": 0, "total_size": 0})
@@ -710,6 +762,7 @@ class CodebaseAnalyzer:
             dir_stats[rel_dir]["total_size"] += dep_info.file_path.stat().st_size
 
         return dict(dir_stats)
+
 
     def _generate_summary(self) -> Dict[str, Any]:
         """Generate summary of analysis results."""

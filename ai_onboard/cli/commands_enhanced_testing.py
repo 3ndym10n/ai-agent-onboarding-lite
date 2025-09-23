@@ -26,7 +26,8 @@ def add_enhanced_testing_commands(subparsers):
     parser = subparsers.add_parser(
         "enhanced - testing",
         help="Run enhanced tests with continuous improvement validation",
-        description="Execute comprehensive testing with validation, performance tracking, and reporting",
+        description="Execute comprehensive testing with validation,
+            performance tracking, and reporting",
     )
 
     subcommands = parser.add_subparsers(
@@ -271,7 +272,8 @@ def _handle_system_validation(args: argparse.Namespace, root: Path) -> None:
         print(f"\n⏱️ Validation completed in {execution_time:.2f} seconds")
         print(f"📊 System Health Score: {report.system_health_score:.1f}%")
         print(
-            f"🧪 Tests: {report.total_tests} total, {report.passed_tests} passed, {report.failed_tests} failed"
+            f"🧪 Tests: {report.total_tests} total,
+                {report.passed_tests} passed, {report.failed_tests} failed"
         )
 
         # Generate report in requested format
@@ -576,9 +578,11 @@ def _generate_html_report(
     <div class="report">
         <h3 > Report {report.get('report_id', 'Unknown')}</h3>
         <p >< strong > Date:</strong> {report.get('generated_at', 'Unknown')}</p>
-        <p >< strong > Health Score:</strong> {report.get('system_health_score', 0):.1f}%</p>
+        <p >< strong > Health Score:</strong> {report.get('system_health_score',
+            0):.1f}%</p>
         <p >< strong > Tests:</strong> {report.get('total_tests', 0)} total,
-           {report.get('passed_tests', 0)} passed, {report.get('failed_tests', 0)} failed </ p>
+           {report.get('passed_tests',
+               0)} passed, {report.get('failed_tests', 0)} failed </ p>
         <p >< strong > Summary:</strong> {report.get('summary', 'No summary')}</p>
     </div>
 """
@@ -634,7 +638,8 @@ def _generate_markdown_report(
             )
             f.write(f"- **Tests:** {latest.get('total_tests', 0)} total, ")
             f.write(
-                f"{latest.get('passed_tests', 0)} passed, {latest.get('failed_tests', 0)} failed\n\n"
+                f"{latest.get('passed_tests',
+                    0)} passed, {latest.get('failed_tests', 0)} failed\n\n"
             )
 
             if latest.get("recommendations"):

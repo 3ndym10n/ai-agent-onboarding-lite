@@ -46,6 +46,10 @@ if os.path.exists(_utils_path):
         read_json_async = utils_module.read_json_async
         read_multiple_json = utils_module.read_multiple_json
         read_multiple_json_sync = utils_module.read_multiple_json_sync
+        now_iso = utils_module.now_iso
+        dumps_json = utils_module.dumps_json
+        random_string = utils_module.random_string
+        append_jsonl = utils_module.append_jsonl
 
         # Add to __all__
         __all__.extend(
@@ -58,6 +62,10 @@ if os.path.exists(_utils_path):
                 "read_json_async",
                 "read_multiple_json",
                 "read_multiple_json_sync",
+                "now_iso",
+                "dumps_json",
+                "random_string",
+                "append_jsonl",
             ]
         )
     except (ImportError, AttributeError):

@@ -5,8 +5,8 @@ Automatically fix utils import issues in ai_onboard/core/
 This script finds all files that import utils incorrectly and fixes them
 to use the dynamic import approach instead of the conflicting package import.
 """
+from ai_onboard.core.common_imports import os
 
-import os
 import re
 
 def find_files_with_bad_imports() -> List[Path]:

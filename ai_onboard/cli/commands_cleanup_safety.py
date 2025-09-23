@@ -5,7 +5,6 @@ This module provides commands to manage cleanup safety gates,
 view backups, perform rollbacks, and configure safety settings.
 """
 
-import json
 from pathlib import Path
 
 from ..core.cleanup_safety_gates import (
@@ -112,7 +111,8 @@ def add_cleanup_safety_commands(subparsers):
     ultra_parser = safety_subparsers.add_parser(
         "ultra-cleanup",
         help="Ultra-safe incremental cleanup with zero-tolerance safety",
-        description="Perform cleanup operations with maximum safety and human oversight",
+        description="Perform cleanup operations with maximum safety and \
+            human oversight",
     )
     ultra_subparsers = ultra_parser.add_subparsers(
         dest="ultra_action", help="Ultra-safe cleanup actions"
@@ -332,7 +332,7 @@ def _handle_rollback(args, root: Path):
             return
 
     # Perform rollback
-    print_activity("Performing rollback...", "start")
+    print_activity("Performing rollback...")
 
     success, message = framework.rollback_operation(args.backup_id)
 
@@ -400,7 +400,8 @@ def _handle_clean_backups(args, root: Path):
         for backup_dir, backup_date, size in old_backups:
             age_days = (datetime.datetime.now() - backup_date).days
             safe_print(
-                f"  - {backup_dir.name} ({age_days} days old, {size/(1024 * 1024):.1f} MB)"
+                f"  - {backup_dir.name} ({age_days} days old, "
+                f"{size/(1024 * 1024):.1f} MB)"
             )
 
         safe_print(f"\n💡 Remove --dry - run to actually delete these backups")
@@ -434,7 +435,8 @@ def _handle_clean_backups(args, root: Path):
             safe_print(f"  ❌ Failed to delete {backup_dir.name}: {e}")
 
     print_status(
-        f"Cleanup completed: {deleted_count} backups deleted, {deleted_size/(1024 * 1024):.1f} MB freed",
+        f"Cleanup completed: {deleted_count} backups deleted, "
+        f"{deleted_size/(1024 * 1024):.1f} MB freed",
         "success",
     )
 
@@ -461,7 +463,6 @@ def _handle_config(args, root: Path):
 
     if config_file.exists():
         try:
-            import json
 
             with open(config_file, "r") as f:
                 config = json.load(f)
@@ -492,7 +493,6 @@ def _handle_config(args, root: Path):
     if changed:
         config_file.parent.mkdir(parents=True, exist_ok=True)
         with open(config_file, "w") as f:
-            import json
 
             json.dump(config, f, indent=2)
         print_status("Configuration saved", "success")
@@ -771,7 +771,8 @@ def _handle_ultra_execute(args, root: Path):
                     f"   Approved at: {latest_approval.get('timestamp', 'unknown')}"
                 )
                 safe_print(
-                    f"   Risk assessment: {latest_approval.get('risk_assessment', {}).get('max_risk_level', 'unknown')}"
+                    f"   Risk assessment: {latest_approval.get('risk_assessment',
+                        {}).get('max_risk_level', 'unknown')}"
                 )
 
                 # Create minimal operation for execution
@@ -803,6 +804,8 @@ def _handle_ultra_execute(args, root: Path):
 
 
 # Convenience function for other modules
+
+
 def is_safety_gates_available(root: Path) -> bool:
     """Check if cleanup safety gates are available and configured."""
     try:

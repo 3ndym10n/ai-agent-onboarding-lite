@@ -9,7 +9,6 @@ This module provides a comprehensive, high - performance metrics collection syst
 - Scales efficiently with system growth
 """
 
-import json
 import threading
 import time
 from collections import defaultdict, deque
@@ -45,8 +44,8 @@ class MetricCategory(Enum):
     ERROR = "error"
     RESOURCE = "resource"
 
-
 @dataclass
+
 class MetricEvent:
     """A single metric event."""
 
@@ -60,12 +59,13 @@ class MetricEvent:
     metadata: Dict[str, Any] = field(default_factory=dict)
     id: Optional[str] = None
 
+
     def __post_init__(self):
         if self.id is None:
             self.id = f"metric_{int(time.time())}_{utils.random_string(8)}"
 
-
 @dataclass
+
 class MetricQuery:
     """Query parameters for metric retrieval."""
 
@@ -78,8 +78,8 @@ class MetricQuery:
     limit: int = 1000
     aggregation: Optional[str] = None  # sum, avg, min, max, count
 
-
 @dataclass
+
 class MetricResult:
     """Result of a metric query."""
 
@@ -88,8 +88,8 @@ class MetricResult:
     aggregated_value: Optional[float] = None
     query_time_ms: float = 0.0
 
-
 @dataclass
+
 class MetricAlert:
     """A metric - based alert."""
 
@@ -106,6 +106,7 @@ class MetricAlert:
 
 class UnifiedMetricsCollector:
     """Central hub for all metrics collection and analysis."""
+
 
     def __init__(self, root: Path):
         self.root = root
@@ -145,6 +146,7 @@ class UnifiedMetricsCollector:
         # Start background processing
         self._start_background_processing()
 
+
     def _load_config(self):
         """Load metrics collection configuration."""
         default_config = {
@@ -179,6 +181,7 @@ class UnifiedMetricsCollector:
 
         self.config = utils.read_json(self.config_path, default=default_config)
         self.alert_rules = self.config.get("alert_rules", {})
+
 
     def _load_existing_metrics(self):
         """Load existing metrics from storage into hot storage for recent data."""
@@ -242,6 +245,7 @@ class UnifiedMetricsCollector:
         except Exception as e:
             print(f"Warning: Failed to load existing metrics: {e}")
 
+
     def collect_metric(self, metric: MetricEvent) -> str:
         """Collect a single metric event."""
         if not self.config.get("collection_enabled", True):
@@ -280,6 +284,7 @@ class UnifiedMetricsCollector:
                 "metric_collection_error", error=str(e), metric_name=metric.name
             )
             return metric.id
+
 
     def batch_collect(self, metrics: List[MetricEvent]) -> List[str]:
         """High - performance batch collection of multiple metrics."""
@@ -325,6 +330,7 @@ class UnifiedMetricsCollector:
                 "metric_batch_collection_error", error=str(e), batch_size=len(metrics)
             )
             return collected_ids
+
 
     def query_metrics(self, query: MetricQuery) -> MetricResult:
         """Query collected metrics with filtering and aggregation."""
@@ -392,6 +398,7 @@ class UnifiedMetricsCollector:
                 query_time_ms=(time.time() - start_time) * 1000,
             )
 
+
     def get_collection_stats(self) -> Dict[str, Any]:
         """Get metrics collection performance statistics."""
         return {
@@ -401,6 +408,7 @@ class UnifiedMetricsCollector:
             "active_alerts": len(self.active_alerts),
             "config": self.config,
         }
+
 
     def _anonymize_metric(self, metric: MetricEvent):
         """Anonymize sensitive fields in metric data."""
@@ -419,6 +427,7 @@ class UnifiedMetricsCollector:
                 metric.metadata[field_name] = (
                     f"hash_{hash(original_value) % 1000000:06d}"
                 )
+
 
     def _matches_query(self, metric: MetricEvent, query: MetricQuery) -> bool:
         """Check if a metric matches the query criteria."""
@@ -454,6 +463,7 @@ class UnifiedMetricsCollector:
 
         return True
 
+
     def _process_metric_async(self, metric: MetricEvent):
         """Async processing of a single metric (alerts, persistence)."""
         try:
@@ -467,6 +477,7 @@ class UnifiedMetricsCollector:
             telemetry.log_event(
                 "async_metric_processing_error", error=str(e), metric_id=metric.id
             )
+
 
     def _process_metrics_batch_async(self, metrics: List[MetricEvent]):
         """Async processing of metric batch."""
@@ -482,6 +493,7 @@ class UnifiedMetricsCollector:
             telemetry.log_event(
                 "async_batch_processing_error", error=str(e), batch_size=len(metrics)
             )
+
 
     def _check_alert_conditions(self, metric: MetricEvent):
         """Check if metric triggers any alert conditions."""
@@ -530,6 +542,7 @@ class UnifiedMetricsCollector:
                 value=metric.value,
             )
 
+
     def _generate_alert_actions(self, metric: MetricEvent, rule: Dict) -> List[str]:
         """Generate suggested actions for an alert."""
         actions = []
@@ -561,6 +574,7 @@ class UnifiedMetricsCollector:
 
         return actions
 
+
     def _persist_metric(self, metric: MetricEvent):
         """Persist a single metric to storage."""
         data = {
@@ -578,6 +592,7 @@ class UnifiedMetricsCollector:
         with open(self.metrics_path, "a", encoding="utf - 8") as f:
             json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
+
 
     def _persist_metrics_batch(self, metrics: List[MetricEvent]):
         """Persist a batch of metrics to storage."""
@@ -597,6 +612,7 @@ class UnifiedMetricsCollector:
                 json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
                 f.write("\n")
 
+
     def _persist_alert(self, alert: MetricAlert):
         """Persist an alert to storage."""
         data = {
@@ -615,6 +631,7 @@ class UnifiedMetricsCollector:
             json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 
+
     def _update_collection_stats(self, collection_time_ms: float, success: bool):
         """Update collection performance statistics."""
         if success:
@@ -630,10 +647,12 @@ class UnifiedMetricsCollector:
 
         self.collection_stats["last_collection_time"] = datetime.now().isoformat()
 
+
     def _start_background_processing(self):
         """Start background processing tasks."""
 
         # Periodic cleanup of old hot storage data
+
         def cleanup_hot_storage():
             cutoff_time = datetime.now() - timedelta(
                 days=self.config.get("hot_storage_days", 7)
@@ -659,6 +678,7 @@ class UnifiedMetricsCollector:
         # Schedule periodic cleanup (every hour)
         import threading
 
+
         def periodic_cleanup():
             while True:
                 time.sleep(3600)  # 1 hour
@@ -669,7 +689,6 @@ class UnifiedMetricsCollector:
 
         cleanup_thread = threading.Thread(target=periodic_cleanup, daemon=True)
         cleanup_thread.start()
-
 
 # Global instance
 _metrics_collector: Optional[UnifiedMetricsCollector] = None
@@ -682,8 +701,8 @@ def get_unified_metrics_collector(root: Path) -> UnifiedMetricsCollector:
         _metrics_collector = UnifiedMetricsCollector(root)
     return _metrics_collector
 
-
 # Convenience functions for common metric types
+
 def collect_performance_metric(
     name: str, value: float, unit: str = "ms", **dimensions
 ) -> str:

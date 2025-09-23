@@ -2,7 +2,6 @@
 Derive a simple roadmap from analysis.json + optional goal text.
 """
 
-import json
 from pathlib import Path
 from typing import Any, Dict
 

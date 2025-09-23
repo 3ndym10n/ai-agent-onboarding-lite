@@ -625,7 +625,8 @@ class SystemHealthMonitor:
             issue_id=issue_id,
             issue_type=HealthIssue(f"{metric.value}_issue"),
             severity=severity,
-            description=f"{metric.value} is {metric_value.value:.1f}{metric_value.unit}, exceeding {severity.value} threshold",
+            description=f"{metric.value} is {metric_value.value:.1f}{metric_value.unit}, "
+            f"exceeding {severity.value} threshold",
             affected_components=[metric.value],
             detected_at=datetime.now(),
             metrics={metric: metric_value.value},

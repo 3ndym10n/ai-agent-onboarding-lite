@@ -9,7 +9,6 @@ This module provides a comprehensive knowledge base system that:
 - Integrates with all system components for comprehensive knowledge building
 """
 
-import json
 import statistics
 import time
 from collections import Counter, defaultdict
@@ -68,8 +67,8 @@ class KnowledgeStatus(Enum):
     CONFLICTED = "conflicted"
     VERIFIED = "verified"
 
-
 @dataclass
+
 class KnowledgeItem:
     """A single piece of knowledge in the system."""
 
@@ -92,8 +91,8 @@ class KnowledgeItem:
     validation_evidence: List[Dict[str, Any]] = field(default_factory=list)
     usage_statistics: Dict[str, Any] = field(default_factory=dict)
 
-
 @dataclass
+
 class KnowledgePattern:
     """A pattern discovered in the knowledge base."""
 
@@ -110,8 +109,8 @@ class KnowledgePattern:
     validation_count: int = 0
     success_rate: float = 0.0
 
-
 @dataclass
+
 class KnowledgeRecommendation:
     """A knowledge - based recommendation."""
 
@@ -131,6 +130,7 @@ class KnowledgeRecommendation:
 
 class KnowledgeBaseEvolution:
     """Comprehensive knowledge base evolution system."""
+
 
     def __init__(self, root: Path):
         self.root = root
@@ -170,6 +170,7 @@ class KnowledgeBaseEvolution:
         self._load_knowledge_patterns()
         self._load_knowledge_recommendations()
 
+
     def _ensure_directories(self):
         """Ensure all required directories exist."""
         for path in [
@@ -179,6 +180,7 @@ class KnowledgeBaseEvolution:
             self.evolution_config_path,
         ]:
             utils.ensure_dir(path.parent)
+
 
     def _load_evolution_config(self) -> Dict[str, Any]:
         """Load knowledge evolution configuration."""
@@ -210,6 +212,7 @@ class KnowledgeBaseEvolution:
                 ],
             },
         )
+
 
     def _load_knowledge_items(self):
         """Load knowledge items from storage."""
@@ -262,6 +265,7 @@ class KnowledgeBaseEvolution:
                 except (json.JSONDecodeError, KeyError, ValueError):
                     continue
 
+
     def _load_knowledge_patterns(self):
         """Load knowledge patterns from storage."""
         if not self.patterns_path.exists():
@@ -285,6 +289,7 @@ class KnowledgeBaseEvolution:
                 success_rate=pattern_data.get("success_rate", 0.0),
             )
             self.knowledge_patterns[pattern.pattern_id] = pattern
+
 
     def _load_knowledge_recommendations(self):
         """Load knowledge recommendations from storage."""
@@ -319,6 +324,7 @@ class KnowledgeBaseEvolution:
                     self.knowledge_recommendations.append(recommendation)
                 except (json.JSONDecodeError, KeyError, ValueError):
                     continue
+
 
     def add_knowledge(
         self,
@@ -403,6 +409,7 @@ class KnowledgeBaseEvolution:
 
         return knowledge_id
 
+
     def _find_similar_knowledge(
         self, title: str, content: str, knowledge_type: KnowledgeType
     ) -> List[KnowledgeItem]:
@@ -422,6 +429,7 @@ class KnowledgeBaseEvolution:
 
         return similar_items
 
+
     def _calculate_text_similarity(self, text1: str, text2: str) -> float:
         """Calculate similarity between two text strings."""
         # Simple word - based similarity
@@ -436,6 +444,7 @@ class KnowledgeBaseEvolution:
 
         return len(intersection) / len(union) if union else 0.0
 
+
     def _calculate_relevance_score(self, content: str, tags: List[str]) -> float:
         """Calculate relevance score for knowledge content."""
         # Simple relevance scoring based on content length and tags
@@ -443,6 +452,7 @@ class KnowledgeBaseEvolution:
         tag_score = min(len(tags) / 5, 1.0)  # Normalize by 5 tags
 
         return (content_score + tag_score) / 2
+
 
     def _validate_knowledge_quality(self, knowledge_item: KnowledgeItem) -> bool:
         """Validate knowledge quality and determine if it should be active."""
@@ -466,6 +476,7 @@ class KnowledgeBaseEvolution:
 
         return True
 
+
     def _update_knowledge_index(self, knowledge_item: KnowledgeItem):
         """Update knowledge index and graph."""
         # Update tag index
@@ -476,6 +487,7 @@ class KnowledgeBaseEvolution:
         for related_id in knowledge_item.related_knowledge:
             self.knowledge_graph[knowledge_item.knowledge_id].add(related_id)
             self.knowledge_graph[related_id].add(knowledge_item.knowledge_id)
+
 
     def search_knowledge(
         self,
@@ -511,6 +523,7 @@ class KnowledgeBaseEvolution:
         results.sort(key=lambda x: x[1], reverse=True)
         return [item for item, _ in results[:limit]]
 
+
     def _calculate_query_relevance(
         self, query: str, knowledge_item: KnowledgeItem
     ) -> float:
@@ -541,6 +554,7 @@ class KnowledgeBaseEvolution:
 
         # Weighted combination
         return title_relevance * 0.4 + content_relevance * 0.4 + tag_relevance * 0.2
+
 
     def get_knowledge_recommendations(
         self, context: Dict[str, Any], limit: int = 5
@@ -573,6 +587,7 @@ class KnowledgeBaseEvolution:
 
         return recommendations[:limit]
 
+
     def _find_contextual_knowledge(
         self, context: Dict[str, Any]
     ) -> List[KnowledgeItem]:
@@ -596,6 +611,7 @@ class KnowledgeBaseEvolution:
         # Sort by relevance
         relevant_items.sort(key=lambda x: x[1], reverse=True)
         return [item for item, _ in relevant_items[:10]]
+
 
     def _calculate_context_relevance(
         self,
@@ -628,6 +644,7 @@ class KnowledgeBaseEvolution:
 
         return min(relevance, 1.0)
 
+
     def discover_patterns(self) -> List[KnowledgePattern]:
         """Discover patterns in the knowledge base."""
         if not self.evolution_config["pattern_discovery_enabled"]:
@@ -654,6 +671,7 @@ class KnowledgeBaseEvolution:
         self._save_knowledge_patterns()
 
         return patterns
+
 
     def _discover_workflow_patterns(self) -> List[KnowledgePattern]:
         """Discover workflow patterns from knowledge."""
@@ -686,6 +704,7 @@ class KnowledgeBaseEvolution:
                 patterns.append(pattern)
 
         return patterns
+
 
     def _discover_error_solution_patterns(self) -> List[KnowledgePattern]:
         """Discover error - solution patterns."""
@@ -723,6 +742,7 @@ class KnowledgeBaseEvolution:
 
         return patterns
 
+
     def _discover_performance_patterns(self) -> List[KnowledgePattern]:
         """Discover performance optimization patterns."""
         patterns = []
@@ -756,6 +776,7 @@ class KnowledgeBaseEvolution:
 
         return patterns
 
+
     def _extract_error_type(self, content: str) -> Optional[str]:
         """Extract error type from content."""
         # Simple error type extraction
@@ -774,6 +795,7 @@ class KnowledgeBaseEvolution:
 
         return None
 
+
     def _extract_optimization_type(self, content: str) -> Optional[str]:
         """Extract optimization type from content."""
         # Simple optimization type extraction
@@ -791,6 +813,7 @@ class KnowledgeBaseEvolution:
                 return opt_type
 
         return None
+
 
     def _trigger_knowledge_evolution(self, trigger: str, context: Any = None):
         """Trigger knowledge evolution based on events."""
@@ -827,6 +850,7 @@ class KnowledgeBaseEvolution:
         elif trigger == "usage_pattern_change":
             self._adapt_knowledge_relevance()
 
+
     def _evolve_knowledge_relationships(self, new_knowledge: KnowledgeItem):
         """Evolve knowledge relationships when new knowledge is added."""
         # Find and update related knowledge
@@ -847,6 +871,7 @@ class KnowledgeBaseEvolution:
                 # Update stored knowledge
                 self._save_knowledge_item(existing_item)
 
+
     def _evolve_knowledge_patterns(self):
         """Evolve knowledge patterns based on new discoveries."""
         # Update pattern confidence based on new evidence
@@ -862,6 +887,7 @@ class KnowledgeBaseEvolution:
 
         self._save_knowledge_patterns()
 
+
     def _find_pattern_examples(self, pattern: KnowledgePattern) -> List[str]:
         """Find new examples for a pattern."""
         examples = []
@@ -875,6 +901,7 @@ class KnowledgeBaseEvolution:
                 examples.append(item.knowledge_id)
 
         return examples
+
 
     def _item_matches_pattern(
         self, item: KnowledgeItem, pattern: KnowledgePattern
@@ -898,6 +925,7 @@ class KnowledgeBaseEvolution:
 
         return True
 
+
     def _resolve_knowledge_conflicts(self):
         """Resolve conflicts in knowledge base."""
         # Find conflicting knowledge items
@@ -911,6 +939,7 @@ class KnowledgeBaseEvolution:
                 if item.knowledge_id != best_item.knowledge_id:
                     item.status = KnowledgeStatus.CONFLICTED
                     self._save_knowledge_item(item)
+
 
     def _find_knowledge_conflicts(self) -> List[List[KnowledgeItem]]:
         """Find conflicting knowledge items."""
@@ -940,6 +969,7 @@ class KnowledgeBaseEvolution:
 
         return conflicts
 
+
     def _is_knowledge_conflict(
         self, item1: KnowledgeItem, item2: KnowledgeItem
     ) -> bool:
@@ -954,6 +984,7 @@ class KnowledgeBaseEvolution:
 
         # Check for contradictory content
         return self._has_contradictory_content(item1.content, item2.content)
+
 
     def _has_contradictory_content(self, content1: str, content2: str) -> bool:
         """Check if two content strings are contradictory."""
@@ -977,6 +1008,7 @@ class KnowledgeBaseEvolution:
 
         return False
 
+
     def _improve_knowledge_quality(self):
         """Improve knowledge quality through validation and enhancement."""
         for item in self.knowledge_items.values():
@@ -986,6 +1018,7 @@ class KnowledgeBaseEvolution:
                     item.status = KnowledgeStatus.ACTIVE
                     item.updated_at = datetime.now()
                     self._save_knowledge_item(item)
+
 
     def _adapt_knowledge_relevance(self):
         """Adapt knowledge relevance based on usage patterns."""
@@ -1002,6 +1035,7 @@ class KnowledgeBaseEvolution:
             # Update relevance score
             item.relevance_score = item.relevance_score * 0.7 + access_factor * 0.3
             self._save_knowledge_item(item)
+
 
     def get_knowledge_statistics(self) -> Dict[str, Any]:
         """Get comprehensive knowledge base statistics."""
@@ -1080,6 +1114,7 @@ class KnowledgeBaseEvolution:
             "knowledge_graph_size": len(self.knowledge_graph),
         }
 
+
     def _save_knowledge_item(self, knowledge_item: KnowledgeItem):
         """Save a knowledge item to storage."""
         data = {
@@ -1111,6 +1146,7 @@ class KnowledgeBaseEvolution:
             json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 
+
     def _save_knowledge_patterns(self):
         """Save knowledge patterns to storage."""
         data = []
@@ -1133,6 +1169,7 @@ class KnowledgeBaseEvolution:
             )
 
         utils.write_json(self.patterns_path, data)
+
 
     def _save_knowledge_recommendations(self):
         """Save knowledge recommendations to storage."""

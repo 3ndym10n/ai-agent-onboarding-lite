@@ -2,13 +2,12 @@
 Background Agent Manager (T23) - Core system for managing autonomous background AI agents.
 
 This module provides the foundational infrastructure for running AI agents autonomously
-in the background while maintaining safety, coordination, and alignment with project goals.
+in the background while maintaining safety,
+    coordination, and alignment with project goals.
 The system extends the existing AAOL to support long - running, autonomous operations.
 """
 
-import json
 import signal
-import sys
 import threading
 import time
 from abc import ABC, abstractmethod
@@ -57,8 +56,8 @@ class ScheduleType(Enum):
     EVENT_DRIVEN = "event_driven"  # Triggered by events
     ON_DEMAND = "on_demand"  # Manual triggering only
 
-
 @dataclass
+
 class AgentResourceLimits:
     """Resource limits for background agents."""
 
@@ -76,8 +75,8 @@ class AgentResourceLimits:
     enforce_network_limit: bool = True
     enforce_time_limit: bool = True
 
-
 @dataclass
+
 class AgentConfiguration:
     """Configuration for a background agent."""
 
@@ -110,8 +109,8 @@ class AgentConfiguration:
     updated_at: datetime = field(default_factory=datetime.now)
     tags: List[str] = field(default_factory=list)
 
-
 @dataclass
+
 class AgentStatus:
     """Current status of a background agent."""
 
@@ -146,8 +145,8 @@ class AgentStatus:
     error_count: int = 0
     restart_count: int = 0
 
-
 @dataclass
+
 class AgentExecution:
     """Record of an agent execution."""
 
@@ -180,6 +179,7 @@ class AgentExecution:
 class BackgroundAgent(ABC):
     """Abstract base class for background agents."""
 
+
     def __init__(self, agent_id: str, config: AgentConfiguration, root: Path):
         self.agent_id = agent_id
         self.config = config
@@ -210,6 +210,7 @@ class BackgroundAgent(ABC):
         self._initialize_agent()
 
     @abstractmethod
+
     def _initialize_agent(self):
         """Initialize agent - specific components."""
 
@@ -218,8 +219,10 @@ class BackgroundAgent(ABC):
         """Execute the agent's main functionality."""
 
     @abstractmethod
+
     def get_health_status(self) -> Dict[str, Any]:
         """Get the agent's health status."""
+
 
     def start(self) -> bool:
         """Start the background agent."""
@@ -248,6 +251,7 @@ class BackgroundAgent(ABC):
             self._handle_error(f"Startup failed: {e}")
             return False
 
+
     def stop(self) -> bool:
         """Stop the background agent."""
         if self.state not in [AgentState.RUNNING, AgentState.PAUSED]:
@@ -271,6 +275,7 @@ class BackgroundAgent(ABC):
             self._handle_error(f"Shutdown failed: {e}")
             return False
 
+
     def pause(self) -> bool:
         """Pause the background agent."""
         if self.state != AgentState.RUNNING:
@@ -279,6 +284,7 @@ class BackgroundAgent(ABC):
         self.state = AgentState.PAUSED
         self._on_pause()
         return True
+
 
     def resume(self) -> bool:
         """Resume the background agent."""
@@ -290,15 +296,18 @@ class BackgroundAgent(ABC):
         self._on_resume()
         return True
 
+
     def send_message(self, recipient: str, message: Dict[str, Any]):
         """Send a message to another agent."""
         message["sender"] = self.agent_id
         message["timestamp"] = datetime.now().isoformat()
         # Implementation would route through BackgroundAgentManager
 
+
     def register_event_handler(self, event_type: str, handler: Callable):
         """Register an event handler."""
         self.event_handlers[event_type] = handler
+
 
     def emit_event(self, event_type: str, data: Dict[str, Any]):
         """Emit an event."""
@@ -310,18 +319,23 @@ class BackgroundAgent(ABC):
         }
         # Implementation would route through BackgroundAgentManager
 
+
     def _startup(self) -> bool:
         """Agent - specific startup logic."""
         return True
 
+
     def _shutdown(self):
         """Agent - specific shutdown logic."""
+
 
     def _on_pause(self):
         """Called when agent is paused."""
 
+
     def _on_resume(self):
         """Called when agent is resumed."""
+
 
     def _handle_error(self, error: str):
         """Handle agent errors."""
@@ -337,6 +351,7 @@ class BackgroundAgent(ABC):
         except Exception:
             pass
 
+
     def update_activity(self):
         """Update last activity timestamp."""
         self.last_activity = datetime.now()
@@ -344,6 +359,7 @@ class BackgroundAgent(ABC):
 
 class ResourceMonitor:
     """Monitors resource usage for background agents."""
+
 
     def __init__(self, limits: AgentResourceLimits):
         self.limits = limits
@@ -357,6 +373,7 @@ class ResourceMonitor:
         self.network_counter = 0
         self.start_time: Optional[datetime] = None
 
+
     def start(self):
         """Start resource monitoring."""
         self.monitoring = True
@@ -364,12 +381,15 @@ class ResourceMonitor:
         # Start monitoring thread
         self._start_monitoring_thread()
 
+
     def stop(self):
         """Stop resource monitoring."""
         self.monitoring = False
 
+
     def _start_monitoring_thread(self):
         """Start the resource monitoring thread."""
+
 
         def monitor():
             while self.monitoring:
@@ -412,6 +432,7 @@ class ResourceMonitor:
         thread = threading.Thread(target=monitor, daemon=True)
         thread.start()
 
+
     def get_current_usage(self) -> Dict[str, float]:
         """Get current resource usage."""
         try:
@@ -434,19 +455,23 @@ class ResourceMonitor:
 class AgentSafetyMonitor:
     """Safety monitoring for background agents."""
 
+
     def __init__(self, agent: BackgroundAgent):
         self.agent = agent
         self.monitoring = False
         self.violations: List[str] = []
         self.intervention_triggered = False
 
+
     def start(self):
         """Start safety monitoring."""
         self.monitoring = True
 
+
     def stop(self):
         """Stop safety monitoring."""
         self.monitoring = False
+
 
     def check_safety_violation(self, operation: str, context: Dict[str, Any]) -> bool:
         """Check if an operation would violate safety policies."""
@@ -465,6 +490,7 @@ class AgentSafetyMonitor:
 
         return False
 
+
     def trigger_intervention(self, reason: str):
         """Trigger safety intervention."""
         if not self.intervention_triggered:
@@ -476,6 +502,7 @@ class AgentSafetyMonitor:
 
             # Notify safety system
             self._notify_safety_system(reason)
+
 
     def _notify_safety_system(self, reason: str):
         """Notify the safety system of intervention."""
@@ -495,6 +522,7 @@ class AgentSafetyMonitor:
 
 class BackgroundAgentManager:
     """Central manager for all background agents."""
+
 
     def __init__(self, root: Path):
         self.root = root
@@ -534,6 +562,7 @@ class BackgroundAgentManager:
         self._load_agent_configurations()
         self._setup_signal_handlers()
 
+
     def _load_manager_config(self) -> Dict[str, Any]:
         """Load background agent manager configuration."""
         config_file = self.data_dir / "manager_config.json"
@@ -568,6 +597,7 @@ class BackgroundAgentManager:
 
         return default_config
 
+
     def _load_agent_configurations(self):
         """Load agent configurations from storage."""
         config_dir = self.data_dir / "configs"
@@ -595,8 +625,10 @@ class BackgroundAgentManager:
             except Exception as e:
                 print(f"Failed to load agent config {config_file}: {e}")
 
+
     def _setup_signal_handlers(self):
         """Set up signal handlers for graceful shutdown."""
+
 
         def signal_handler(signum, frame):
             print("Received shutdown signal, stopping all agents...")
@@ -606,9 +638,11 @@ class BackgroundAgentManager:
         signal.signal(signal.SIGINT, signal_handler)
         signal.signal(signal.SIGTERM, signal_handler)
 
+
     def register_agent_class(self, agent_class: type, agent_type: str):
         """Register a new agent class."""
         # Implementation for dynamic agent registration
+
 
     def create_agent(self, config: AgentConfiguration) -> bool:
         """Create a new background agent."""
@@ -626,6 +660,7 @@ class BackgroundAgentManager:
         except Exception as e:
             print(f"Failed to create agent {config.agent_id}: {e}")
             return False
+
 
     def start_agent(self, agent_id: str) -> bool:
         """Start a background agent."""
@@ -667,6 +702,7 @@ class BackgroundAgentManager:
             print(f"Failed to start agent {agent_id}: {e}")
             return False
 
+
     def stop_agent(self, agent_id: str) -> bool:
         """Stop a background agent."""
         if agent_id not in self.agents:
@@ -690,13 +726,16 @@ class BackgroundAgentManager:
             print(f"Failed to stop agent {agent_id}: {e}")
             return False
 
+
     def get_agent_status(self, agent_id: str) -> Optional[AgentStatus]:
         """Get the status of a background agent."""
         return self.agent_statuses.get(agent_id)
 
+
     def list_agents(self) -> List[str]:
         """List all registered agents."""
         return list(self.agent_configs.keys())
+
 
     def list_running_agents(self) -> List[str]:
         """List all currently running agents."""
@@ -706,10 +745,12 @@ class BackgroundAgentManager:
             if status.state == AgentState.RUNNING
         ]
 
+
     def stop_all_agents(self):
         """Stop all running agents."""
         for agent_id in list(self.agents.keys()):
             self.stop_agent(agent_id)
+
 
     def _save_agent_config(self, config: AgentConfiguration):
         """Save agent configuration to storage."""
@@ -738,47 +779,57 @@ class BackgroundAgentManager:
         except Exception as e:
             print(f"Failed to save agent config {config.agent_id}: {e}")
 
-
 # Placeholder classes for scheduler, coordinator, etc.
+
 class AgentScheduler:
+
+
     def __init__(self, manager):
         self.manager = manager
 
+
     def schedule_agent(self, agent_id: str):
         pass
+
 
     def unschedule_agent(self, agent_id: str):
         pass
 
 
 class AgentCoordinator:
+
     def __init__(self, manager):
         self.manager = manager
 
 
 class BackgroundAgentSafetySystem:
+
     def __init__(self, manager):
         self.manager = manager
 
 
 class SharedResourceManager:
+
     def __init__(self, manager):
         self.manager = manager
 
 
 class AgentMessageBus:
+
     def __init__(self, manager):
         self.manager = manager
 
 
 class AgentEventDispatcher:
+
     def __init__(self, manager):
         self.manager = manager
 
-
 # Example agent implementations
+
 class ProjectHealthMonitor(BackgroundAgent):
     """Monitors project health metrics continuously."""
+
 
     def _initialize_agent(self):
         """Initialize project health monitoring."""
@@ -807,6 +858,7 @@ class ProjectHealthMonitor(BackgroundAgent):
         except Exception as e:
             return {"success": False, "error": str(e)}
 
+
     def get_health_status(self) -> Dict[str, Any]:
         """Get agent health status."""
         return {
@@ -818,6 +870,7 @@ class ProjectHealthMonitor(BackgroundAgent):
 
 class PerformanceMonitor(BackgroundAgent):
     """Monitors system performance and optimization opportunities."""
+
 
     def _initialize_agent(self):
         """Initialize performance monitoring."""
@@ -844,6 +897,7 @@ class PerformanceMonitor(BackgroundAgent):
         except Exception as e:
             return {"success": False, "error": str(e)}
 
+
     def get_health_status(self) -> Dict[str, Any]:
         """Get agent health status."""
         return {
@@ -851,7 +905,6 @@ class PerformanceMonitor(BackgroundAgent):
             "last_execution": self.last_activity,
             "opportunities_found": len(self.optimization_opportunities),
         }
-
 
 # Global instance
 _background_agent_manager: Optional[BackgroundAgentManager] = None

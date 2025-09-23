@@ -3,10 +3,10 @@
 Local CI validation script that runs the same checks as GitHub Actions.
 This helps catch issues before pushing to remote.
 """
+from ai_onboard.core.common_imports import sys
 
 import platform
 import subprocess
-import sys
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
