@@ -1,5 +1,6 @@
 """Interrogate commands for ai - onboard CLI."""
 
+import json
 from pathlib import Path
 
 from ..core import prompt_bridge, vision_interrogator
@@ -56,8 +57,7 @@ def handle_interrogate_commands(args, root: Path):
         print(prompt_bridge.dumps_json(result))
         return True
     elif icmd == "start":
-        # Start interrogation and \
-            immediately open a gate to collect answers from the human
+        # Start interrogation and immediately open a gate to collect answers from the human
         result = interrogator.start_interrogation()
         # Try to fetch questions for the gate prompt
         try:
@@ -174,8 +174,9 @@ def handle_interrogate_commands(args, root: Path):
             if questions:
                 request_approval(
                     title="Vision Interrogation - Provide Your Answers",
-                    description="Answer the questions below,
-                        then click Approve to submit.",
+                    description=(
+                        "Answer the questions below, then click Approve to submit."
+                    ),
                     questions=questions,
                     timeout_seconds=600,
                 )

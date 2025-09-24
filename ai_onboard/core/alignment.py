@@ -1,4 +1,3 @@
-
 from pathlib import Path
 
 from . import utils
@@ -65,6 +64,7 @@ def require_state(root: Path, needed: str) -> None:
     from . import state
 
     state.require_gate(root, needed)
+
 
 # --- Intelligent Alignment Preview (non - invasive) ---
 

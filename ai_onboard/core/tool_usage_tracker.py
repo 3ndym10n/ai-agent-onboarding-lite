@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from . import telemetry, utils
+import json
 
 
 class ToolUsageTracker:
@@ -173,8 +174,8 @@ class ToolUsageTracker:
         if not self.session_tools:
             return {}
 
-        tool_counts = {}
-        tool_types = {}
+        tool_counts: dict[str, Any] = {}
+        tool_types: dict[str, Any] = {}
         total_duration = 0.0
         tools_with_duration = 0
 

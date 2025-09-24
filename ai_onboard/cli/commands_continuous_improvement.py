@@ -7,6 +7,7 @@ including learning events, recommendations, and system health monitoring.
 
 import argparse
 import base64
+import json
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -26,9 +27,7 @@ from ..core.continuous_improvement_system import (
     LearningType,
     get_continuous_improvement_system,
 )
-from ..core.continuous_improvement_validator import (
-    get_continuous_improvement_validator,
-)
+from ..core.continuous_improvement_validator import get_continuous_improvement_validator
 from ..core.knowledge_base_evolution import (
     KnowledgeQuality,
     KnowledgeSource,
@@ -36,12 +35,8 @@ from ..core.knowledge_base_evolution import (
     KnowledgeType,
     get_knowledge_base_evolution,
 )
-from ..core.performance_optimizer import (
-    get_performance_optimizer,
-)
-from ..core.system_health_monitor import (
-    get_system_health_monitor,
-)
+from ..core.performance_optimizer import get_performance_optimizer
+from ..core.system_health_monitor import get_system_health_monitor
 from ..core.user_preference_learning import (
     InteractionType,
     get_user_preference_learning_system,
@@ -50,7 +45,8 @@ from ..core.user_preference_learning import (
 
 def _coerce_scalar(value: str):
     """Coerce a string scalar to bool / int / float when possible,
-        else return as - is."""
+    else return as - is.
+    """
     lower = value.strip().lower()
     if lower in ("true", "false"):
         return lower == "true"
@@ -1124,8 +1120,8 @@ def _handle_health_metrics(health_monitor) -> None:
             f"{status_icon} {metric.value}: {metric_value.value:.1f}{metric_value.unit}"
         )
         print(
-            f"   Warning: {metric_value.threshold_warning}{metric_value.unit},
-                Critical: {metric_value.threshold_critical}{metric_value.unit}"
+            f"   Warning: {metric_value.threshold_warning}{metric_value.unit}, "
+            f"Critical: {metric_value.threshold_critical}{metric_value.unit}"
         )
 
 
@@ -1244,7 +1240,7 @@ def _handle_healing_stats(health_monitor) -> None:
     )
 
     # Action type statistics
-    action_types = {}
+    action_types: dict[str, Any] = {}
     for action in history:
         action_type = action["action_type"]
         if action_type not in action_types:
@@ -1463,7 +1459,7 @@ def _handle_show_knowledge(args: argparse.Namespace, knowledge_base) -> None:
         print(f"Tags: {', '.join(item.tags)}")
 
     if item.metadata:
-        print(f"Metadata: {json.dumps(item.metadata, indent = 2)}")
+        print(f"Metadata: {json.dumps(item.metadata, indent=2)}")
 
     if item.related_knowledge:
         print(f"Related Knowledge: {', '.join(item.related_knowledge)}")
@@ -1695,6 +1691,8 @@ def _handle_metrics_commands(args: argparse.Namespace, analytics) -> None:
 
 def _handle_record_metric(args: argparse.Namespace, analytics) -> None:
     """Handle recording a metric."""
+    import json
+
     metric_type = MetricType(args.metric_type) if args.metric_type else MetricType.GAUGE
     tags = json.loads(args.tags) if args.tags else {}
     metadata = json.loads(args.metadata) if args.metadata else {}

@@ -13,23 +13,21 @@ import shutil
 from pathlib import Path
 from typing import List, Optional
 
-from ..core.ui_enhancement_system import (
+from ..core.user_experience_system import (
     CommandCategory,
     InterfaceMode,
     UserExpertiseLevel,
-    get_ui_enhancement_system,
+    get_user_experience_system,
 )
 
 
 class HelpSystem:
     """Enhanced help system with intelligent guidance."""
 
-
     def __init__(self, root: Path):
         self.root = root
-        self.ui_system = get_ui_enhancement_system(root)
+        self.ui_system = get_user_experience_system(root)
         self.terminal_width = self._get_terminal_width()
-
 
     def _get_terminal_width(self) -> int:
         """Get terminal width for formatting."""
@@ -37,7 +35,6 @@ class HelpSystem:
             return shutil.get_terminal_size().columns
         except Exception:
             return 80
-
 
     def show_main_help(
         self, user_id: str = "default", mode: Optional[str] = None
@@ -137,7 +134,6 @@ class HelpSystem:
 
         return "\n".join(help_text)
 
-
     def _format_category_header(self, category: CommandCategory, user_id: str) -> str:
         """Format category header with appropriate styling."""
         category_icons = {
@@ -155,7 +151,6 @@ class HelpSystem:
 
         return self.ui_system.format_output(f"{icon} {title}", "secondary", user_id)
 
-
     def _get_max_commands_for_mode(self, mode: InterfaceMode) -> int:
         """Get maximum commands to show per category based on mode."""
         if mode == InterfaceMode.SIMPLE:
@@ -166,7 +161,6 @@ class HelpSystem:
             return 10
         else:  # EXPERT
             return 20
-
 
     def _get_contextual_tips(self, profile, mode: InterfaceMode) -> List[str]:
         """Get contextual tips based on user profile and mode."""
@@ -228,7 +222,6 @@ class HelpSystem:
             )
 
         return tips
-
 
     def show_category_help(self, category_name: str, user_id: str = "default") -> str:
         """Show help for a specific category."""
@@ -307,13 +300,11 @@ class HelpSystem:
 
         return "\n".join(help_text)
 
-
     def show_command_help(
         self, command: str, user_id: str = "default", detailed: bool = False
     ) -> str:
         """Show detailed help for a specific command."""
         return self.ui_system.create_command_help(command, user_id)
-
 
     def show_interactive_help(self, user_id: str = "default") -> str:
         """Show interactive help menu."""
@@ -389,7 +380,6 @@ class HelpSystem:
 
         return "\n".join(help_text)
 
-
     def show_tutorial(
         self, topic: str = "getting_started", user_id: str = "default"
     ) -> str:
@@ -406,7 +396,6 @@ class HelpSystem:
             return f"Tutorial '{topic}' not found. Available: {available}"
 
         return tutorials[topic]
-
 
     def _create_getting_started_tutorial(self, user_id: str) -> str:
         """Create getting started tutorial."""
@@ -468,14 +457,12 @@ class HelpSystem:
 
         return "\n".join(tutorial)
 
-
     def _create_project_setup_tutorial(self, user_id: str) -> str:
         """Create project setup tutorial."""
         tutorial = []
 
         tutorial.append(
-            self.ui_system.format_output("🏗️ Project Setup Tutorial",
-                "primary", user_id)
+            self.ui_system.format_output("🏗️ Project Setup Tutorial", "primary", user_id)
         )
         tutorial.append("=" * min(40, self.terminal_width))
         tutorial.append("")
@@ -487,7 +474,6 @@ class HelpSystem:
         tutorial.append("Coming soon: Detailed project setup guide")
 
         return "\n".join(tutorial)
-
 
     def _create_optimization_tutorial(self, user_id: str) -> str:
         """Create optimization tutorial."""
@@ -507,7 +493,6 @@ class HelpSystem:
 
         return "\n".join(tutorial)
 
-
     def _create_ai_features_tutorial(self, user_id: str) -> str:
         """Create AI features tutorial."""
         tutorial = []
@@ -525,7 +510,6 @@ class HelpSystem:
         tutorial.append("Coming soon: Detailed AI features guide")
 
         return "\n".join(tutorial)
-
 
     def show_suggestions(self, user_id: str = "default", context: str = "") -> str:
         """Show personalized command suggestions."""
@@ -572,6 +556,7 @@ class HelpSystem:
         )
 
         return "\n".join(help_text)
+
 
 # Global instance
 _help_system: Optional[HelpSystem] = None

@@ -13,6 +13,7 @@ import time
 from pathlib import Path
 
 from ..core.kaizen_automation import get_kaizen_automation
+import json
 
 
 def add_kaizen_commands(subparsers):
@@ -523,7 +524,7 @@ def _handle_analytics_commands(args: argparse.Namespace, kaizen_engine) -> None:
         )
 
         # Impact distribution
-        impact_counts = {}
+        impact_counts: dict[str, Any] = {}
         for cycle in cycles:
             impact = cycle["overall_impact"]
             impact_counts[impact] = impact_counts.get(impact, 0) + 1

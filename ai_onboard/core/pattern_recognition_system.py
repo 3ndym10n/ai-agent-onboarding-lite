@@ -171,8 +171,8 @@ class PatternRecognitionSystem:
         except Exception as e:
             # If loading fails, start with empty patterns
             self.patterns = {}
-            self.cli_patterns = {}
-            self.behavior_patterns = {}
+            self.cli_patterns: dict[str, Any] = {}
+            self.behavior_patterns: dict[str, Any] = {}
 
         # Ensure patterns directory exists
         self.patterns_dir.mkdir(parents=True, exist_ok=True)

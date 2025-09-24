@@ -45,8 +45,8 @@ class ProjectType(Enum):
     ENTERPRISE_SOFTWARE = "enterprise_software"
     GENERIC = "generic"
 
-@dataclass
 
+@dataclass
 class Question:
     """Enhanced question structure."""
 
@@ -61,8 +61,8 @@ class Question:
     category: str = "general"
     priority: int = 1
 
-@dataclass
 
+@dataclass
 class Insight:
     """Structured insight from response analysis."""
 
@@ -76,8 +76,8 @@ class Insight:
     actionable: bool = False
     recommendations: List[str] = field(default_factory=list)
 
-@dataclass
 
+@dataclass
 class Ambiguity:
     """Identified ambiguity in responses."""
 
@@ -94,7 +94,6 @@ class Ambiguity:
 class EnhancedVisionInterrogator:
     """Enhanced vision interrogation system with adaptive questioning."""
 
-
     def __init__(self, root: Path):
         self.root = root
         self.charter_path = root / ".ai_onboard" / "charter.json"
@@ -103,7 +102,6 @@ class EnhancedVisionInterrogator:
 
         # Initialize question templates
         self._initialize_question_templates()
-
 
     def _initialize_question_templates(self):
         """Initialize question templates for different project types."""
@@ -115,7 +113,6 @@ class EnhancedVisionInterrogator:
             ProjectType.AI_ML_PROJECT: self._get_ai_ml_questions(),
             ProjectType.GENERIC: self._get_generic_questions(),
         }
-
 
     def detect_project_type(self, responses: Dict[str, Any]) -> ProjectType:
         """Detect project type based on responses."""
@@ -198,7 +195,6 @@ class EnhancedVisionInterrogator:
 
         return ProjectType.GENERIC
 
-
     def start_enhanced_interrogation(
         self, project_type: Optional[ProjectType] = None
     ) -> Dict[str, Any]:
@@ -239,7 +235,6 @@ class EnhancedVisionInterrogator:
             "next_questions": initial_questions,
             "session_id": interrogation["session_id"],
         }
-
 
     def submit_enhanced_response(
         self, phase: str, question_id: str, response: Dict[str, Any]
@@ -313,7 +308,6 @@ class EnhancedVisionInterrogator:
             "recommendations": self._generate_recommendations(insights, ambiguities),
         }
 
-
     def _get_web_app_questions(self) -> Dict[str, List[Question]]:
         """Get questions specific to web applications."""
         return {
@@ -328,8 +322,7 @@ class EnhancedVisionInterrogator:
                 ),
                 Question(
                     id="wa_vc_02",
-                    text="What is your target user base? (e.g.,
-                        consumers, businesses, developers)",
+                    text="What is your target user base? (e.g., consumers, businesses, developers)",
                     question_type=QuestionType.MULTIPLE_CHOICE,
                     validation_rules={
                         "options": [
@@ -370,7 +363,6 @@ class EnhancedVisionInterrogator:
             ],
         }
 
-
     def _get_mobile_app_questions(self) -> Dict[str, List[Question]]:
         """Get questions specific to mobile applications."""
         return {
@@ -399,7 +391,6 @@ class EnhancedVisionInterrogator:
                 ),
             ]
         }
-
 
     def _get_data_science_questions(self) -> Dict[str, List[Question]]:
         """Get questions specific to data science projects."""
@@ -436,7 +427,6 @@ class EnhancedVisionInterrogator:
             ]
         }
 
-
     def _get_api_service_questions(self) -> Dict[str, List[Question]]:
         """Get questions specific to API services."""
         return {
@@ -467,7 +457,6 @@ class EnhancedVisionInterrogator:
                 ),
             ]
         }
-
 
     def _get_ai_ml_questions(self) -> Dict[str, List[Question]]:
         """Get questions specific to AI / ML projects."""
@@ -504,7 +493,6 @@ class EnhancedVisionInterrogator:
                 ),
             ]
         }
-
 
     def _get_generic_questions(self) -> Dict[str, List[Question]]:
         """Get generic questions for any project type."""
@@ -603,7 +591,6 @@ class EnhancedVisionInterrogator:
             ],
         }
 
-
     def _enhanced_validate_response(
         self, phase: str, question_id: str, response: Dict[str, Any]
     ) -> Dict[str, Any]:
@@ -648,7 +635,6 @@ class EnhancedVisionInterrogator:
 
         return {"valid": len(errors) == 0, "errors": errors, "suggestions": suggestions}
 
-
     def _analyze_response_metadata(self, response: Dict[str, Any]) -> Dict[str, Any]:
         """Analyze response for metadata and patterns."""
         answer = response.get("answer", "").lower()
@@ -688,7 +674,6 @@ class EnhancedVisionInterrogator:
 
         return metadata
 
-
     def _analyze_sentiment(self, text: str) -> Dict[str, Any]:
         """Basic sentiment analysis of response text."""
         positive_words = [
@@ -723,7 +708,6 @@ class EnhancedVisionInterrogator:
             "positive_indicators": positive_count,
             "negative_indicators": negative_count,
         }
-
 
     def _generate_enhanced_insights(
         self,
@@ -819,7 +803,6 @@ class EnhancedVisionInterrogator:
 
         return insights
 
-
     def _identify_enhanced_ambiguities(
         self,
         phase: str,
@@ -886,7 +869,6 @@ class EnhancedVisionInterrogator:
 
         return ambiguities
 
-
     def _generate_follow_up_questions(
         self,
         phase: str,
@@ -934,7 +916,6 @@ class EnhancedVisionInterrogator:
 
         return follow_ups
 
-
     def _calculate_enhanced_vision_quality(
         self, interrogation_data: Dict[str, Any]
     ) -> float:
@@ -977,7 +958,6 @@ class EnhancedVisionInterrogator:
 
         return min(score, 1.0)
 
-
     def _is_enhanced_phase_complete(
         self, interrogation_data: Dict[str, Any], phase: str
     ) -> bool:
@@ -1007,7 +987,6 @@ class EnhancedVisionInterrogator:
         )
 
         return required_complete and critical_ambiguities_resolved
-
 
     def _complete_enhanced_phase(
         self, interrogation_data: Dict[str, Any], phase: str
@@ -1043,7 +1022,6 @@ class EnhancedVisionInterrogator:
                     )
             except Exception as e:
                 print(f"[WARNING] Error syncing to charter: {e}")
-
 
     def _generate_vision_quality_report(
         self, interrogation_data: Dict[str, Any]
@@ -1087,7 +1065,6 @@ class EnhancedVisionInterrogator:
             ),
         }
 
-
     def _generate_final_recommendations(
         self, insights: List[Dict[str, Any]], ambiguities: List[Dict[str, Any]]
     ) -> List[str]:
@@ -1121,7 +1098,6 @@ class EnhancedVisionInterrogator:
 
         return recommendations
 
-
     def _generate_recommendations(
         self, insights: List[Dict[str, Any]], ambiguities: List[Dict[str, Any]]
     ) -> List[str]:
@@ -1138,7 +1114,6 @@ class EnhancedVisionInterrogator:
 
         return list(set(recommendations))  # Remove duplicates
 
-
     def _get_phase_questions(
         self, phase: str, project_type: ProjectType
     ) -> List[Question]:
@@ -1147,7 +1122,6 @@ class EnhancedVisionInterrogator:
             project_type, self.question_templates[ProjectType.GENERIC]
         )
         return template.get(phase, [])
-
 
     def get_enhanced_interrogation_status(self) -> Dict[str, Any]:
         """Get comprehensive status of enhanced interrogation."""

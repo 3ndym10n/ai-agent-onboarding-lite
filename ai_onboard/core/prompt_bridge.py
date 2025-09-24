@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict
 
-from . import intent_checks, summarizer, telemetry, utils
+from . import summarizer, telemetry, utils
 
 
 def dumps_json(obj: Any) -> str:
@@ -38,7 +38,7 @@ def get_applicable_rules(
         parsed = json.loads(change_summary) if change_summary else {}
     except Exception:
         parsed = {"_note": "non - json change summary provided"}
-    rules = intent_checks.applicable_rules(root, man, target_path, parsed)
+    rules = utils.applicable_rules(root, man, target_path, parsed)
     return {"rules": rules}
 
 
@@ -52,4 +52,4 @@ def propose_action(root: Path, diff_json: str = "") -> Dict[str, Any]:
     except Exception as e:
         return {"decision": "deny", "reason": f"invalid diff json: {e}"}
     man = _manifest(root)
-    return intent_checks.propose(root, man, diff)
+    return utils.propose_intent_decision(root, man, diff)

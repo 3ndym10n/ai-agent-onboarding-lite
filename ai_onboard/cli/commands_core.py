@@ -1,9 +1,11 @@
 """Core CLI commands for ai - onboard."""
 
 import argparse
+import json
+import os
 import time
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, cast
 
 from ..core import alignment, telemetry, versioning
 from ..core.gate_system import create_clarification_gate, create_confirmation_gate
@@ -119,6 +121,19 @@ def add_core_commands(subparsers):
 
     # WBS update
     wbs_subparsers.add_parser("update", help="Force WBS updates for pending tasks")
+
+    # Enhanced WBS commands (using existing parsers)
+    health_parser = wbs_subparsers.add_parser(
+        "health", help="Show project health metrics"
+    )
+
+    analyze_parser = wbs_subparsers.add_parser(
+        "analyze", help="Analyze critical path with optimization suggestions"
+    )
+
+    optimize_parser = wbs_subparsers.add_parser(
+        "optimize", help="Get project optimization recommendations"
+    )
 
     # WBS pending
     wbs_subparsers.add_parser(
@@ -403,8 +418,7 @@ def _ias_gate(args, root: Path) -> bool:
 
                 status = json.loads(status_file.read_text(encoding="utf-8"))
                 created_at = status.get("created_at", 0)
-                # If gate has been waiting for more than 10 seconds,
-                    consider it timed out
+                # If gate has been waiting for more than 10 seconds, consider it timed out
                 if time.time() - created_at > 10:
                     telemetry.log_event(
                         "gate_timed_out_cleanup",
@@ -471,6 +485,8 @@ def _ias_gate(args, root: Path) -> bool:
 
 def _handle_gate_commands(args, root: Path):
     """Handle gate management commands."""
+    from ..core import utils
+
     gates_dir = root / ".ai_onboard" / "gates"
     current_gate_file = gates_dir / "current_gate.md"
     response_file = gates_dir / "gate_response.json"
@@ -596,8 +612,7 @@ def handle_core_commands(args, root: Path):
                     print(f"Reason: {reason}")
                     print(f"Bypass Token: {result['bypass_token']}")
                     print(
-                        f"Valid Until: {time.strftime('%Y-%m-%d %H:%M:%S',
-                            time.localtime(result['expires_at']))}"
+                        f"Valid Until: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(result['expires_at']))}"
                     )
                     print(f"Authorized By: {authorized_by}")
                     print(
@@ -852,8 +867,6 @@ def handle_core_commands(args, root: Path):
         print("Optimization complete.")
     elif args.cmd == "version":
         # Show the actual package version, not project version
-        import ai_onboard
-
         from ..core.tool_usage_tracker import get_tool_tracker
 
         tool_tracker = get_tool_tracker(root)
@@ -887,7 +900,7 @@ def handle_core_commands(args, root: Path):
                 tool_tracker.display_tools_summary(session_summary)
                 return
             # Show package version, not project version
-            print(f"ai - onboard package version: {ai_onboard.__version__}")
+            print(f"ai - onboard package version: {versioning.get_version(root)}")
             # Also show project version if it exists
             try:
                 project_version = versioning.get_version(root)
@@ -897,7 +910,7 @@ def handle_core_commands(args, root: Path):
                     "version_display",
                     "version_management",
                     parameters={
-                        "package_version": ai_onboard.__version__,
+                        "package_version": versioning.get_version(root),
                         "project_version": project_version,
                     },
                     result="success",
@@ -906,7 +919,7 @@ def handle_core_commands(args, root: Path):
                 tool_tracker.track_tool_usage(
                     "version_display",
                     "version_management",
-                    parameters={"package_version": ai_onboard.__version__},
+                    parameters={"package_version": versioning.get_version(root)},
                     result=f"partial: {str(e)}",
                 )
 
@@ -934,7 +947,8 @@ def handle_core_commands(args, root: Path):
             print(f"Found {len(items)} metric records:")
             for i, item in enumerate(items[-3:], 1):  # Show last 3
                 print(
-                    f"  {i}. {item.get('ts', 'unknown')} - pass={item.get('pass')} - components: {len(item.get('components', []))}"
+                    f"  {i}. {item.get('ts', 'unknown')} - pass={item.get('pass')} - "
+                    f"components: {len(item.get('components', []))}"
                 )
         print("Metrics display complete.")
     elif args.cmd == "cleanup":
@@ -1041,14 +1055,12 @@ def handle_core_commands(args, root: Path):
                         print(f"Ended: {session_data.get('end_time')}")
                         print(f"Status: {session_data.get('final_status', 'unknown')}")
                         print(
-                            f"Total Tools Used: {session_data.get('total_tools_used',
-                                0)}"
+                            f"Total Tools Used: {session_data.get('total_tools_used', 0)}"
                         )
                     else:
                         print("Status: In progress")
                         print(
-                            f"Tools Used So Far: {len(session_data.get('tools_used',
-                                []))}"
+                            f"Tools Used So Far: {len(session_data.get('tools_used', []))}"
                         )
                     print()
                     print("💡 Use --history to see recent tool usage")
@@ -1123,8 +1135,174 @@ def handle_core_commands(args, root: Path):
                     print(f"   {status_icon} {r['task_id']}: {r['status']}")
                     if r["status"] == "success":
                         print(
-                            f"      → Phase: {r.get('phase_updated', 'unknown')}, Type: {r.get('update_type', 'unknown')}"
+                            f"      → Phase: {r.get('phase_updated', 'unknown')}, "
+                            f"Type: {r.get('update_type', 'unknown')}"
                         )
+
+        elif wbs_cmd == "auto-update":
+            # Enhanced intelligent auto-update
+            from ..core.wbs_auto_update_engine import WBSAutoUpdateEngine
+
+            print("🧠 Running intelligent WBS auto-update...")
+            auto_engine = WBSAutoUpdateEngine(root)
+
+            force = getattr(args, "force", False)
+            result = auto_engine.auto_update_wbs(force=force)
+
+            if result["success"]:
+                print(f"✅ Auto-Update Complete:")
+                print(f"   • Tasks Updated: {result['updated_tasks']}")
+                print(f"   • Tasks Checked: {result['checked_tasks']}")
+                print(f"   • Duration: {result['duration']:.1f}s")
+
+                if result.get("results"):
+                    print("   • Evidence Found:")
+                    for task_result in result["results"][:3]:  # Show first 3
+                        task_id = task_result["task_id"]
+                        evidence = ", ".join(task_result.get("evidence", []))
+                        confidence = task_result.get("confidence", 0)
+                        print(
+                            f"     - {task_id}: {evidence} (confidence: {confidence:.1f})"
+                        )
+
+                        if task_result.get("cascade_updates"):
+                            print(
+                                f"       → Triggered: {len(task_result['cascade_updates'])} dependent tasks"
+                            )
+            else:
+                print(f"❌ Auto-Update Failed: {result.get('error', 'Unknown error')}")
+
+        elif wbs_cmd == "health":
+            # Project health metrics
+            from ..core.wbs_auto_update_engine import WBSAutoUpdateEngine
+
+            print("🏥 Project Health Analysis")
+            print("=" * 50)
+
+            auto_engine = WBSAutoUpdateEngine(root)
+            health = auto_engine.get_project_health_score()
+
+            if health.get("error"):
+                print(f"❌ Health Check Failed: {health['error']}")
+                return
+
+            # Overall health
+            score = health.get("health_score", 1.0)
+            status = health.get("status", "no_tasks")
+            status_emoji = {
+                "healthy": "💚",
+                "needs_attention": "🟡",
+                "critical": "🔴",
+            }.get(status, "❓")
+
+            print(
+                f"Overall Health: {status_emoji} {score:.1f}/1.0 ({status.replace('_', ' ').title()})"
+            )
+            print()
+
+            # Task breakdown
+            print("📊 Task Distribution:")
+            print(f"   • Total Tasks: {health.get('total_tasks', 0)}")
+            print(
+                f"   • Completed: {health.get('completed_tasks', 0)} ({health.get('completion_rate', 0):.1%})"
+            )
+            print(f"   • Ready to Start: {health.get('ready_tasks', 0)}")
+            print(f"   • Blocked: {health.get('blocked_tasks', 0)}")
+
+        elif wbs_cmd == "analyze":
+            # Enhanced critical path analysis
+            from ..core.critical_path_engine import CriticalPathEngine
+
+            print("🛤️  Critical Path Analysis")
+            print("=" * 50)
+
+            cp_engine = CriticalPathEngine(root)
+            analysis = cp_engine.analyze_critical_path()
+
+            # Critical path overview
+            critical_path = analysis.get("critical_path", [])
+            print(f"Critical Path: {len(critical_path)} tasks")
+            print(f"Project Duration: {analysis.get('total_project_duration', 0)} days")
+            print()
+
+            # Show critical tasks
+            if critical_path:
+                print("🔥 Critical Tasks:")
+                for task_id in critical_path[:5]:  # Show first 5
+                    print(f"   • {task_id}")
+                if len(critical_path) > 5:
+                    print(f"   ... and {len(critical_path) - 5} more")
+                print()
+
+            # Bottlenecks
+            bottlenecks = analysis.get("bottlenecks", {})
+            if bottlenecks.get("bottlenecks"):
+                print("🚧 Bottlenecks Detected:")
+                for bottleneck in bottlenecks["bottlenecks"][:3]:
+                    print(f"   • {bottleneck['task_id']}: {bottleneck['suggestion']}")
+                print()
+
+            # Optimization suggestions
+            suggestions = analysis.get("optimization_suggestions", [])
+            if suggestions:
+                print("💡 Optimization Suggestions:")
+                for suggestion in suggestions[:3]:
+                    priority_emoji = {"high": "🔴", "medium": "🟡", "low": "🟢"}.get(
+                        suggestion.get("priority"), "📝"
+                    )
+                    print(f"   {priority_emoji} {suggestion['suggestion']}")
+
+        elif wbs_cmd == "optimize":
+            # Project optimization recommendations
+            from ..core.critical_path_engine import CriticalPathEngine
+            from ..core.wbs_auto_update_engine import WBSAutoUpdateEngine
+
+            print("⚡ Project Optimization Analysis")
+            print("=" * 50)
+
+            # Get critical path analysis
+            cp_engine = CriticalPathEngine(root)
+            analysis = cp_engine.analyze_critical_path()
+
+            # Get project health
+            auto_engine = WBSAutoUpdateEngine(root)
+            health = auto_engine.get_project_health_score()
+
+            print("📈 Optimization Opportunities:")
+            print()
+
+            # Critical path optimization
+            critical_path = analysis.get("critical_path", [])
+            if len(critical_path) > 3:
+                print("🛤️  Critical Path:")
+                print(f"   • {len(critical_path)} tasks on critical path")
+                print("   • Look for tasks that can be parallelized")
+                print("   • Consider breaking down large critical tasks")
+                print()
+
+            # Resource optimization
+            resources = analysis.get("resource_constraints", {})
+            if resources.get("recommendations"):
+                print("👥 Resource Allocation:")
+                for rec in resources["recommendations"]:
+                    print(f"   • {rec}")
+                print()
+
+            # Overall recommendations
+            suggestions = analysis.get("optimization_suggestions", [])
+            high_priority = [s for s in suggestions if s.get("priority") == "high"]
+
+            if high_priority:
+                print("🔥 High Priority Actions:")
+                for suggestion in high_priority:
+                    print(f"   • {suggestion['suggestion']}")
+                print()
+
+            print("💡 Next Steps:")
+            print("   1. Address high-priority bottlenecks")
+            print("   2. Unblock tasks where possible")
+            print("   3. Review critical path for parallelization")
+            print("   4. Run 'wbs auto-update' regularly for real-time tracking")
 
         elif wbs_cmd == "pending":
             # Show detailed pending tasks
@@ -1184,12 +1362,10 @@ def handle_core_commands(args, root: Path):
             if result["success"]:
                 print("✅ WBS update forced successfully!")
                 print(
-                    f"   📍 Phase Updated: {result.get('update_result',
-                        {}).get('phase_updated', 'unknown')}"
+                    f"   📍 Phase Updated: {result.get('update_result', {}).get('phase_updated', 'unknown')}"
                 )
                 print(
-                    f"   🔧 Update Type: {result.get('update_result',
-                        {}).get('update_type', 'unknown')}"
+                    f"   🔧 Update Type: {result.get('update_result', {}).get('update_type', 'unknown')}"
                 )
             else:
                 print(
@@ -1260,8 +1436,8 @@ def handle_core_commands(args, root: Path):
                     effort_value = factors["effort_value_ratio"]["assessment"]
 
                     print(
-                        f"   Key Factors: Critical Path: {critical_path},
-                            Dependencies: {dependencies}, Value: {effort_value}"
+                        f"   Key Factors: Critical Path: {critical_path}, "
+                        f"Dependencies: {dependencies}, Value: {effort_value}"
                     )
 
                     # Show recommendations
@@ -1374,8 +1550,8 @@ def handle_core_commands(args, root: Path):
                         slack = result["slack_data"][task_id]
                         duration = timing["earliest_finish"] - timing["earliest_start"]
                         print(
-                            f"   {i}. {task_id} ({int(duration)} days,
-                                slack: {slack['total_slack']:.1f})"
+                            f"   {i}. {task_id} ({int(duration)} days, "
+                            f"slack: {slack['total_slack']:.1f})"
                         )
                 else:
                     print(
@@ -1457,8 +1633,11 @@ def handle_core_commands(args, root: Path):
                 if cache_status:
                     print(f"\n📊 Cache Status: {len(cache_status)} views cached")
                     for view_name, status in cache_status.items():
-                        expired = "❌ EXPIRED" if status["expired"] else "✅ FRESH"
-                        print(f"   • {view_name}: {expired} ({status['age']:.0f}s old)")
+                        status_dict = cast(Dict[str, Any], status)
+                        expired = "❌ EXPIRED" if status_dict["expired"] else "✅ FRESH"
+                        print(
+                            f"   • {view_name}: {expired} ({status_dict['age']:.0f}s old)"
+                        )
 
             if force_sync:
                 print("\n🔄 Forcing full WBS synchronization...")
@@ -1467,8 +1646,7 @@ def handle_core_commands(args, root: Path):
                 if sync_result["success"]:
                     print("✅ All WBS views synchronized successfully")
                     print(
-                        f"⏱️  Sync completed at {time.strftime('%H:%M:%S',
-                            time.localtime(sync_result['timestamp']))}"
+                        f"⏱️  Sync completed at {time.strftime('%H:%M:%S', time.localtime(sync_result['timestamp']))}"
                     )
                 else:
                     print(
@@ -1504,12 +1682,11 @@ def handle_core_commands(args, root: Path):
             print(f"📊 WBS Consistency Report:")
             print(f"   • Data Valid: {'✅' if consistency_report['valid'] else '❌'}")
             print(
-                f"   • Last Check: {time.strftime('%H:%M:%S',
-                    time.localtime(consistency_report['last_check']))}"
+                f"   • Last Check: {time.strftime('%H:%M:%S', time.localtime(consistency_report['last_check']))}"
             )
             print(
-                f"   • Master Timestamp: {time.strftime('%H:%M:%S',
-                    time.localtime(consistency_report['master_timestamp']))}"
+                f"   • Master Timestamp: "
+                f"{time.strftime('%H:%M:%S', time.localtime(consistency_report['master_timestamp']))}"
             )
 
             errors = consistency_report.get("errors", [])
@@ -1529,10 +1706,11 @@ def handle_core_commands(args, root: Path):
             if cache_status:
                 print(f"\n📊 Cache Status ({len(cache_status)} views):")
                 for view_name, status in cache_status.items():
-                    expired = "❌ EXPIRED" if status["expired"] else "✅ FRESH"
+                    status_dict = cast(Dict[str, Any], status)
+                    expired = "❌ EXPIRED" if status_dict["expired"] else "✅ FRESH"
                     print(
-                        f"   • {view_name}: {expired} ({status['age']:.0f}s old,
-                            {status['size']} bytes)"
+                        f"   • {view_name}: {expired} ("
+                        f"{status_dict['age']:.0f}s old, {status_dict['size']} bytes)"
                     )
 
             # Generate detailed report if requested

@@ -9,6 +9,7 @@ Produces .ai_onboard / analysis.json with:
 
 from pathlib import Path
 from typing import Any, Dict, List
+import json
 
 LANG_EXT = {
     ".py": "python",

@@ -6,7 +6,8 @@ request validation, response serialization, and documentation generation.
 """
 
 from datetime import datetime
-from typing import Any, Dict, Optional
+from enum import Enum
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -305,7 +306,9 @@ class ErrorDetail(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.now)
     suggested_resolution: Optional[str] = None
 
+
 # Enums for validation
+
 
 class CollaborationMode(str, Enum):
     ASSISTIVE = "assistive"

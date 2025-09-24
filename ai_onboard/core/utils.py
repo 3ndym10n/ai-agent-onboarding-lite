@@ -6,6 +6,12 @@ Provides common functionality used throughout the system including:
 - JSON handling with caching
 - Random ID generation
 - Date/time utilities
+- Error handling classes
+- Plugin registry
+- Profiling and telemetry
+- Issue tracking
+- Methodology selection
+- Intent checking
 """
 
 import asyncio
@@ -13,9 +19,11 @@ import json
 import random
 import string
 import time
+from contextlib import contextmanager
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Literal, Optional, Protocol, Tuple
 
 
 def ensure_dir(path: Path):
@@ -119,7 +127,8 @@ def now_iso() -> str:
 def dumps_json(data) -> str:
     """Safe JSON serializer used by CLI output paths.
 
-    Falls back to default = str for objects that aren't natively serializable. """
+    Falls back to default = str for objects that aren't natively serializable.
+    """
     try:
         return json.dumps(data, ensure_ascii=False)
     except TypeError:
@@ -141,3 +150,174 @@ def append_jsonl(path: Path, data: Dict[str, Any]):
     # Append to file
     with open(path, "a", encoding="utf - 8") as f:
         f.write(json_line)
+
+
+# =============================================================================
+# ERROR HANDLING CLASSES (consolidated from errors.py)
+# =============================================================================
+
+
+class AiOnboardError(Exception):
+    """Base exception for AI Onboard system."""
+
+    pass
+
+
+class PolicyError(AiOnboardError):
+    """Exception raised when policy validation fails."""
+
+    pass
+
+
+class GuardBlocked(AiOnboardError):
+    """Exception raised when a guard blocks an operation."""
+
+    pass
+
+
+def err(code: str, msg: str, **k):
+    """Create an error response dictionary."""
+    out = {"ok": False, "code": code, "message": msg}
+    out.update(k or {})
+    return out
+
+
+def ok(**k):
+    """Create a success response dictionary."""
+    out = {"ok": True}
+    out.update(k or {})
+    return out
+
+
+# =============================================================================
+# ISSUE TRACKING (consolidated from issue.py)
+# =============================================================================
+
+Severity = Literal["error", "warn", "info"]
+
+
+@dataclass
+class Issue:
+    """Represents an issue found during validation or analysis."""
+
+    rule_id: str
+    severity: Severity
+    message: str
+    file: Optional[str] = None
+    line: Optional[int] = None
+    confidence: float = 0.0
+    remediation: Optional[str] = None
+
+
+# =============================================================================
+# PLUGIN REGISTRY (consolidated from registry.py)
+# =============================================================================
+
+
+class CheckPlugin(Protocol):
+    """Protocol for check plugins."""
+
+    name: str
+
+    def run(self, paths: List[str], ctx: Dict[str, Any]) -> List[Issue]: ...
+
+
+REGISTRY: Dict[Tuple[str, str], List[CheckPlugin]] = {}
+
+
+def register(component_type: str, language: str, plugin: CheckPlugin):
+    """Register a check plugin."""
+    REGISTRY.setdefault((component_type, language), []).append(plugin)
+
+
+# =============================================================================
+# PROFILING UTILITIES (consolidated from profiler.py)
+# =============================================================================
+
+
+@contextmanager
+def timer():
+    """Context manager for timing operations."""
+    t0 = time.time()
+    yield lambda: time.time() - t0
+
+
+# =============================================================================
+# METHODOLOGY SELECTION (consolidated from methodology.py)
+# =============================================================================
+
+
+def pick_methodology(ch: dict) -> dict:
+    """Pick appropriate methodology based on charter parameters."""
+    team = ch.get("team_size", 3)
+    horizon = ch.get("delivery_horizon_days", 30)
+    pref = ch.get("preferred_methodology", "auto")
+
+    if pref != "auto":
+        chosen = pref
+    elif team <= 4 and horizon < 21:
+        chosen = "kanban"
+    elif horizon >= 21:
+        chosen = "scrum"
+    else:
+        chosen = "hybrid"
+
+    return {
+        "chosen": chosen,
+        "rationale": f"team={team}, horizon={horizon}, pref={pref}",
+    }
+
+
+# =============================================================================
+# AGENT TELEMETRY (consolidated from agent_telemetry.py)
+# =============================================================================
+
+
+def record_agent_event(root: Path, rec: Dict[str, Any]) -> None:
+    """Append a single cross-agent record to agents.jsonl. Best-effort."""
+    path = root / ".ai_onboard" / "agents.jsonl"
+    ensure_dir(path.parent)
+    out = {
+        "ts": now_iso(),
+    }
+    out.update(rec or {})
+    try:
+        with open(path, "a", encoding="utf-8") as f:
+            f.write(json.dumps(out, ensure_ascii=False, default=str) + "\n")
+    except Exception:
+        pass  # Best effort - don't fail if telemetry fails
+
+
+# =============================================================================
+# INTENT CHECKING (consolidated from intent_checks.py)
+# =============================================================================
+
+
+def applicable_rules(
+    root: Path, manifest: Dict[str, Any], target_path: str, change: Dict[str, Any]
+) -> List[Dict[str, Any]]:
+    """Get applicable rules for a given change."""
+    # Import here to avoid circular imports
+    from . import meta_policy
+
+    rules = meta_policy.rules_summary(manifest)
+    # Optionally tailor by target
+    for r in rules:
+        r["target"] = target_path
+    return rules
+
+
+def propose_intent_decision(
+    root: Path, manifest: Dict[str, Any], diff: Dict[str, Any]
+) -> Dict[str, Any]:
+    """Propose a decision based on intent analysis."""
+    # Import here to avoid circular imports
+    from . import meta_policy
+
+    ff = manifest.get("features") or {}
+    if ff.get("intent_checks", True) is False:
+        return {
+            "decision": "allow",
+            "reasons": [{"rule": "feature_flag", "detail": "intent_checks disabled"}],
+        }
+    return meta_policy.evaluate(manifest, diff)

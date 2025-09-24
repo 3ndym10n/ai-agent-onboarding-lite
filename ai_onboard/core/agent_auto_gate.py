@@ -97,6 +97,7 @@ def submit_gate_response(
     # Integrate response into vision system
     try:
         from .gate_vision_integration import integrate_latest_gate_response
+import json
 
         if integrate_latest_gate_response(project_root):
             print("[TARGET] Gate responses integrated into vision system!")

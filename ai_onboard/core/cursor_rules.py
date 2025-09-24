@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from . import prompt_bridge, utils
+import json
 
 CONVO_FILE = ".ai_onboard / conversation.jsonl"
 DECISIONS_FILE = ".ai_onboard / decisions.jsonl"

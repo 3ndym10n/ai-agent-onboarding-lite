@@ -11,6 +11,7 @@ progress, ensuring accurate progress tracking and milestone completion.
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List
+import json
 
 
 class TaskCompletionDetector:

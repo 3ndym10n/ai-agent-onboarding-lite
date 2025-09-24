@@ -18,7 +18,6 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 
 
 @dataclass
-
 class FileOrganizationIssue:
     """Represents an organization issue found during analysis."""
 
@@ -32,7 +31,6 @@ class FileOrganizationIssue:
 
 
 @dataclass
-
 class DirectoryAnalysis:
     """Analysis of a directory's contents and organization."""
 
@@ -46,7 +44,6 @@ class DirectoryAnalysis:
 
 
 @dataclass
-
 class FileOrganizationResult:
     """Complete file organization analysis result."""
 
@@ -69,7 +66,6 @@ class FileOrganizationAnalyzer:
     optimal codebase organization, identifying files in wrong locations
     and suggesting better directory structures.
     """
-
 
     def __init__(
         self,
@@ -112,7 +108,6 @@ class FileOrganizationAnalyzer:
         self.file_sizes: Dict[str, int] = {}
         self.file_complexity: Dict[str, float] = {}
 
-
     def analyze_organization(self) -> FileOrganizationResult:
         """
         Perform comprehensive file organization analysis.
@@ -136,8 +131,8 @@ class FileOrganizationAnalyzer:
         print("🏗️  Phase 3: Analyzing directory structures...")
         self.directory_analysis = self._analyze_directories()
         print(
-            f"✅ Directory analysis complete,
-                {len(self.directory_analysis)} directories analyzed"
+            f"✅ Directory analysis complete, "
+            f"{len(self.directory_analysis)} directories analyzed"
         )
 
         # Phase 4: Identify organization issues
@@ -224,7 +219,6 @@ class FileOrganizationAnalyzer:
         print("✅ File organization analysis complete!")
         return result
 
-
     def _discover_files(self) -> None:
         """Discover all relevant files in the codebase."""
         for root, dirs, files in os.walk(self.root_path):
@@ -252,7 +246,6 @@ class FileOrganizationAnalyzer:
                     if file.endswith(".py"):
                         self._analyze_file_complexity(file_path)
 
-
     def _is_excluded(self, path: str) -> bool:
         """Check if a path should be excluded."""
         path_str = str(path)
@@ -271,7 +264,6 @@ class FileOrganizationAnalyzer:
                     return True
 
         return False
-
 
     def _analyze_file_complexity(self, file_path: str) -> None:
         """Calculate basic complexity metrics for a Python file."""
@@ -319,7 +311,6 @@ class FileOrganizationAnalyzer:
 
         except Exception:
             self.file_complexity[file_path] = 0
-
 
     def _analyze_file_relationships(self) -> None:
         """Analyze relationships between files through imports."""
@@ -369,14 +360,12 @@ class FileOrganizationAnalyzer:
                 except Exception:
                     continue
 
-
     def _file_to_module(self, file_path: str) -> str:
         """Convert file path to module name."""
         rel_path = os.path.relpath(file_path, self.root_path)
         if rel_path.endswith(".py"):
             rel_path = rel_path[:-3]
         return rel_path.replace(os.sep, ".")
-
 
     def _analyze_directories(self) -> Dict[str, DirectoryAnalysis]:
         """Analyze the organization of each directory."""
@@ -426,7 +415,6 @@ class FileOrganizationAnalyzer:
 
         return directory_analysis
 
-
     def _calculate_directory_cohesion(self, dir_files: List[str]) -> float:
         """Calculate how cohesive a directory is (0-100)."""
         if not dir_files:
@@ -453,7 +441,6 @@ class FileOrganizationAnalyzer:
         cohesion = max(0, 100 - (entropy * 50))
         return cohesion
 
-
     def _identify_organization_issues(self) -> List[FileOrganizationIssue]:
         """Identify files that are potentially in wrong locations."""
         issues = []
@@ -467,7 +454,6 @@ class FileOrganizationAnalyzer:
         issues.extend(dir_issues)
 
         return issues
-
 
     def _analyze_file_placement(self, file_path: str) -> List[FileOrganizationIssue]:
         """Analyze if a file is in the right location."""
@@ -509,7 +495,6 @@ class FileOrganizationAnalyzer:
             issues.extend(self._analyze_python_file_placement(file_path))
 
         return issues
-
 
     def _analyze_python_file_placement(
         self, file_path: str
@@ -569,7 +554,6 @@ class FileOrganizationAnalyzer:
 
         return issues
 
-
     def _analyze_directory_issues(self) -> List[FileOrganizationIssue]:
         """Analyze directory-level organization issues."""
         issues = []
@@ -583,8 +567,9 @@ class FileOrganizationAnalyzer:
                         issue_type="should_split",
                         severity="high",
                         message=f"Directory contains {analysis.file_count} files - consider splitting",
-                        recommendation="Split large directories into smaller,
-                            more focused modules",
+                        recommendation=(
+                            "Split large directories into smaller, more focused modules"
+                        ),
                         related_files=[
                             f for f in self.all_files if f.startswith(dir_path)
                         ],
@@ -607,7 +592,6 @@ class FileOrganizationAnalyzer:
                 )
 
         return issues
-
 
     def _find_consolidation_candidates(self) -> List[List[str]]:
         """Find files that could be consolidated."""
@@ -641,7 +625,6 @@ class FileOrganizationAnalyzer:
                     consolidation_candidates.append(files)
 
         return consolidation_candidates
-
 
     def _generate_restructuring_recommendations(self) -> List[Dict[str, Any]]:
         """Generate recommendations for directory restructuring."""
@@ -682,7 +665,6 @@ class FileOrganizationAnalyzer:
             )
 
         return recommendations
-
 
     def generate_organization_report(
         self, result: FileOrganizationResult, output_path: Optional[str] = None

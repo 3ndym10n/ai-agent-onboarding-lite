@@ -9,6 +9,7 @@ This module provides adaptive configuration management that:
 - Maintains configuration history and rollback capabilities
 """
 
+import json
 import logging
 import time
 from dataclasses import dataclass, field
@@ -42,8 +43,8 @@ class AdaptationTrigger(Enum):
     SYSTEM_HEALTH_ISSUE = "system_health_issue"
     MANUAL_OVERRIDE = "manual_override"
 
-@dataclass
 
+@dataclass
 class ConfigurationSetting:
     """A single configuration setting with metadata."""
 
@@ -60,8 +61,8 @@ class ConfigurationSetting:
     last_modified: datetime = field(default_factory=datetime.now)
     modified_by: str = "system"
 
-@dataclass
 
+@dataclass
 class ConfigurationProfile:
     """A configuration profile for a specific context."""
 
@@ -75,8 +76,8 @@ class ConfigurationProfile:
     usage_count: int = 0
     effectiveness_score: float = 0.0
 
-@dataclass
 
+@dataclass
 class ConfigurationChange:
     """Record of a configuration change."""
 
@@ -92,8 +93,8 @@ class ConfigurationChange:
     reverted: bool = False
     reversion_reason: Optional[str] = None
 
-@dataclass
 
+@dataclass
 class AdaptationRule:
     """Rule for automatic configuration adaptation."""
 
@@ -111,7 +112,6 @@ class AdaptationRule:
 
 class AdaptiveConfigManager:
     """Intelligent adaptive configuration management system."""
-
 
     def __init__(self, root: Path):
         self.root = root
@@ -148,7 +148,6 @@ class AdaptiveConfigManager:
         if not self.current_config:
             self._initialize_default_config()
 
-
     def _ensure_directories(self):
         """Ensure all required directories exist."""
         for path in [
@@ -159,7 +158,6 @@ class AdaptiveConfigManager:
             self.config_analytics_path,
         ]:
             utils.ensure_dir(path.parent)
-
 
     def _initialize_default_config(self):
         """Initialize default configuration settings."""
@@ -246,7 +244,7 @@ class AdaptiveConfigManager:
                 key="auto_save_interval",
                 value=30,
                 category=ConfigurationCategory.SYSTEM_PERFORMANCE,
-                description="Auto - save interval in seconds",
+                description="Auto-save interval in seconds",
                 default_value=30,
                 min_value=5,
                 max_value=300,
@@ -256,7 +254,6 @@ class AdaptiveConfigManager:
 
         self.current_config = default_settings
         self._save_current_config()
-
 
     def _load_current_config(self):
         """Load current configuration from storage."""
@@ -280,7 +277,6 @@ class AdaptiveConfigManager:
                 last_modified=datetime.fromisoformat(setting_data["last_modified"]),
                 modified_by=setting_data.get("modified_by", "system"),
             )
-
 
     def _load_config_profiles(self):
         """Load configuration profiles from storage."""
@@ -319,7 +315,6 @@ class AdaptiveConfigManager:
                 effectiveness_score=profile_data.get("effectiveness_score", 0.0),
             )
 
-
     def _load_adaptation_rules(self):
         """Load adaptation rules from storage."""
         if not self.adaptation_rules_path.exists():
@@ -348,13 +343,12 @@ class AdaptiveConfigManager:
                 )
             )
 
-
     def _load_config_history(self):
         """Load configuration change history."""
         if not self.config_history_path.exists():
             return
 
-        with open(self.config_history_path, "r", encoding="utf - 8") as f:
+        with open(self.config_history_path, "r", encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
                 if not line:
@@ -378,7 +372,6 @@ class AdaptiveConfigManager:
                     )
                 except (json.JSONDecodeError, KeyError):
                     continue
-
 
     def _initialize_default_rules(self):
         """Initialize default adaptation rules."""
@@ -466,7 +459,7 @@ class AdaptiveConfigManager:
                 action={
                     "vision_interrogation_adaptive": {
                         "value": True,
-                        "reason": "Project - specific questions needed",
+                        "reason": "Project-specific questions needed",
                     }
                 },
                 priority=4,
@@ -475,7 +468,6 @@ class AdaptiveConfigManager:
 
         self.adaptation_rules = default_rules
         self._save_adaptation_rules()
-
 
     def get_all_configurations(self) -> List[Dict[str, Any]]:
         """Get all current configurations."""
@@ -497,7 +489,6 @@ class AdaptiveConfigManager:
         except Exception as e:
             self.logger.error(f"Failed to get all configurations: {e}")
             return []
-
 
     def get_configuration_profiles(self) -> List[Dict[str, Any]]:
         """Get all configuration profiles."""
@@ -523,13 +514,11 @@ class AdaptiveConfigManager:
             self.logger.error(f"Failed to get configuration profiles: {e}")
             return []
 
-
     def get_setting(self, key: str) -> Any:
         """Get a configuration setting value."""
         if key in self.current_config:
             return self.current_config[key].value
         return None
-
 
     def set_setting(
         self,
@@ -596,7 +585,6 @@ class AdaptiveConfigManager:
 
         return True
 
-
     def _validate_setting_value(
         self, setting: ConfigurationSetting, value: Any
     ) -> bool:
@@ -617,7 +605,6 @@ class AdaptiveConfigManager:
                 return False
 
         return True
-
 
     def adapt_configuration(
         self,
@@ -644,7 +631,6 @@ class AdaptiveConfigManager:
 
         return applied_changes
 
-
     def _evaluate_rule_condition(
         self, condition: Dict[str, Any], context: Dict[str, Any]
     ) -> bool:
@@ -670,7 +656,6 @@ class AdaptiveConfigManager:
 
         return True
 
-
     def _apply_rule_action(
         self, rule: AdaptationRule, context: Dict[str, Any], trigger: AdaptationTrigger
     ) -> List[ConfigurationChange]:
@@ -688,7 +673,6 @@ class AdaptiveConfigManager:
                 changes.append(self.config_history[-1])  # Get the last change
 
         return changes
-
 
     def create_configuration_profile(
         self,
@@ -739,7 +723,6 @@ class AdaptiveConfigManager:
 
         return profile_id
 
-
     def apply_configuration_profile(self, profile_id: str) -> bool:
         """Apply a configuration profile."""
         if profile_id not in self.config_profiles:
@@ -766,7 +749,6 @@ class AdaptiveConfigManager:
 
         return True
 
-
     def get_configuration_recommendations(
         self, context: Dict[str, Any], limit: int = 5
     ) -> List[Dict[str, Any]]:
@@ -787,7 +769,6 @@ class AdaptiveConfigManager:
 
         return recommendations[:limit]
 
-
     def _analyze_setting_for_recommendation(
         self, setting: ConfigurationSetting, context: Dict[str, Any]
     ) -> Optional[Dict[str, Any]]:
@@ -802,7 +783,6 @@ class AdaptiveConfigManager:
             "expected_impact": 0.3,
             "confidence": 0.7,
         }
-
 
     def get_configuration_analytics(self, days: int = 7) -> Dict[str, Any]:
         """Get configuration analytics for the last N days."""
@@ -852,7 +832,6 @@ class AdaptiveConfigManager:
             )[:5],
         }
 
-
     def _log_configuration_change(self, change: ConfigurationChange):
         """Log a configuration change to storage."""
         change_data = {
@@ -869,10 +848,9 @@ class AdaptiveConfigManager:
             "reversion_reason": change.reversion_reason,
         }
 
-        with open(self.config_history_path, "a", encoding="utf - 8") as f:
+        with open(self.config_history_path, "a", encoding="utf-8") as f:
             json.dump(change_data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
-
 
     def _save_current_config(self):
         """Save current configuration to storage."""
@@ -893,7 +871,6 @@ class AdaptiveConfigManager:
             }
 
         utils.write_json(self.config_path, data)
-
 
     def _save_config_profiles(self):
         """Save configuration profiles to storage."""
@@ -927,7 +904,6 @@ class AdaptiveConfigManager:
             }
 
         utils.write_json(self.config_profiles_path, data)
-
 
     def _save_adaptation_rules(self):
         """Save adaptation rules to storage."""

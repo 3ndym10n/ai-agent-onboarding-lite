@@ -8,6 +8,7 @@ those responses are automatically integrated into the vision interrogation data.
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List
+import json
 
 
 class GateVisionIntegrator:

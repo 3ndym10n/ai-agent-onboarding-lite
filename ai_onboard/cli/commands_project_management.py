@@ -19,8 +19,10 @@ def add_project_management_commands(subparsers):
     pm_parser = subparsers.add_parser(
         "project",
         help="Project management and tracking tools",
-        description="Comprehensive project management tools including critical path analysis,
-            progress tracking, and task management.",
+        description=(
+            "Comprehensive project management tools including critical path analysis, "
+            "progress tracking, and task management."
+        ),
     )
     pm_subparsers = pm_parser.add_subparsers(
         dest="project_cmd", help="Project management commands"
@@ -30,8 +32,9 @@ def add_project_management_commands(subparsers):
     critical_parser = pm_subparsers.add_parser(
         "critical-path",
         help="Analyze project critical path and dependencies",
-        description="Analyze project timeline,
-            identify critical path, and optimize project schedule.",
+        description=(
+            "Analyze project timeline, identify critical path, and optimize project schedule."
+        ),
     )
     critical_parser.set_defaults(func=handle_critical_path)
 
@@ -39,8 +42,9 @@ def add_project_management_commands(subparsers):
     progress_parser = pm_subparsers.add_parser(
         "progress",
         help="View project progress dashboard",
-        description="Display comprehensive project progress,
-            milestones, and status metrics.",
+        description=(
+            "Display comprehensive project progress, milestones, and status metrics."
+        ),
     )
     progress_parser.set_defaults(func=handle_progress_dashboard)
 
@@ -56,8 +60,9 @@ def add_project_management_commands(subparsers):
     priority_parser = pm_subparsers.add_parser(
         "prioritize",
         help="Analyze and prioritize project tasks",
-        description="Automatically prioritize tasks based on urgency,
-            impact, and dependencies.",
+        description=(
+            "Automatically prioritize tasks based on urgency, impact, and dependencies."
+        ),
     )
     priority_parser.set_defaults(func=handle_task_prioritization)
 

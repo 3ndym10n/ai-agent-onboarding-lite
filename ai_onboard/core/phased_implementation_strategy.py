@@ -6,6 +6,8 @@ organization improvements with built-in safety gates, validation steps,
 and rollback procedures.
 """
 
+import json
+import re
 import shutil
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
@@ -37,8 +39,8 @@ class ValidationStatus(Enum):
     FAILED = "failed"
     SKIPPED = "skipped"
 
-@dataclass
 
+@dataclass
 class PhaseCriteria:
     """Criteria for advancing to a phase."""
 
@@ -48,8 +50,8 @@ class PhaseCriteria:
     automated_validation_required: bool = True
     rollback_plan_required: bool = False
 
-@dataclass
 
+@dataclass
 class ValidationResult:
     """Result of a validation check."""
 
@@ -60,8 +62,8 @@ class ValidationResult:
     duration: Optional[float] = None
     error_message: Optional[str] = None
 
-@dataclass
 
+@dataclass
 class ImplementationStep:
     """A single step in the implementation process."""
 
@@ -75,8 +77,8 @@ class ImplementationStep:
     completed_at: Optional[datetime] = None
     rollback_available: bool = False
 
-@dataclass
 
+@dataclass
 class ImplementationPlan:
     """Complete phased implementation plan."""
 
@@ -99,7 +101,6 @@ class PhasedImplementationStrategy:
     Provides structured rollout with validation gates, safety checks,
     and rollback capabilities.
     """
-
 
     def __init__(self, root_path: Path):
         """
@@ -160,7 +161,6 @@ class PhasedImplementationStrategy:
             "dependency_integrity": self._validate_dependency_integrity,
         }
 
-
     def create_implementation_plan(
         self, risk_assessments: List[RiskAssessmentResult], timeline_days: int = 30
     ) -> ImplementationPlan:
@@ -217,7 +217,6 @@ class PhasedImplementationStrategy:
 
         return plan
 
-
     def _categorize_by_risk_level(
         self, assessments: List[RiskAssessmentResult]
     ) -> Dict[RiskLevel, List[RiskAssessmentResult]]:
@@ -233,7 +232,6 @@ class PhasedImplementationStrategy:
             categorized[assessment.risk_level].append(assessment)
 
         return categorized
-
 
     def _create_phase_steps(
         self,
@@ -282,7 +280,6 @@ class PhasedImplementationStrategy:
 
         return steps
 
-
     def execute_step(
         self, plan: ImplementationPlan, step: ImplementationStep, dry_run: bool = True
     ) -> bool:
@@ -308,8 +305,7 @@ class PhasedImplementationStrategy:
                 # Validation step
                 success = self._execute_validation_step(step, dry_run)
             else:
-                # Organization change step - extract file info from description and \
-                    execute
+                # Organization change step - extract file info from description and execute
                 print(f"  📋 Step: {step.description}")
                 success = self._execute_organization_change_from_description(
                     step, dry_run
@@ -337,7 +333,6 @@ class PhasedImplementationStrategy:
             self._update_plan_step_status(plan, step)
             self._save_plan(plan)
             return False
-
 
     def _execute_organization_change(self, change: Any, dry_run: bool) -> bool:
         """Execute an organization change."""
@@ -377,13 +372,10 @@ class PhasedImplementationStrategy:
 
         return True
 
-
     def _execute_organization_change_from_description(
         self, step: ImplementationStep, dry_run: bool
     ) -> bool:
         """Execute organization change by parsing the step description."""
-        import re
-
         # Parse the description to extract file and target directory info
         description = step.description
 
@@ -436,7 +428,6 @@ class PhasedImplementationStrategy:
             print(f"  🔍 DRY RUN: File would be moved")
             return True
 
-
     def _execute_validation_step(self, step: ImplementationStep, dry_run: bool) -> bool:
         """Execute validation for a phase."""
         print(f"  🧪 Running validation checks...")
@@ -456,7 +447,6 @@ class PhasedImplementationStrategy:
                 print(f"    ✅ {check_name}: {result.details}")
 
         return all_passed
-
 
     def _run_validation_check(self, check_name: str) -> ValidationResult:
         """Run a specific validation check."""
@@ -484,36 +474,30 @@ class PhasedImplementationStrategy:
             duration=duration,
         )
 
-
     def _validate_import_resolution(self) -> tuple[bool, str]:
         """Validate that all imports can be resolved."""
         # Placeholder - would run actual import tests
         return True, "All imports resolved successfully"
-
 
     def _validate_file_existence(self) -> tuple[bool, str]:
         """Validate that all expected files exist."""
         # Placeholder - would check file system state
         return True, "All expected files exist"
 
-
     def _validate_syntax_check(self) -> tuple[bool, str]:
         """Validate Python syntax in all files."""
         # Placeholder - would run syntax checks
         return True, "All Python files have valid syntax"
-
 
     def _validate_test_execution(self) -> tuple[bool, str]:
         """Validate that tests still pass."""
         # Placeholder - would run test suite
         return True, "All tests pass"
 
-
     def _validate_dependency_integrity(self) -> tuple[bool, str]:
         """Validate dependency relationships."""
         # Placeholder - would check dependency integrity
         return True, "All dependencies are intact"
-
 
     def rollback_step(self, plan: ImplementationPlan, step: ImplementationStep) -> bool:
         """
@@ -549,7 +533,6 @@ class PhasedImplementationStrategy:
             print(f"❌ Rollback failed: {e}")
             return False
 
-
     def _create_backup(self, change: Any) -> None:
         """Create a backup before making changes."""
         backup_name = f"backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
@@ -564,7 +547,6 @@ class PhasedImplementationStrategy:
                 backup_file.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(file_path, backup_file)
 
-
     def _find_backup_for_step(self, step: ImplementationStep) -> Optional[Path]:
         """Find the backup for a specific step."""
         # This would need more sophisticated backup tracking
@@ -574,7 +556,6 @@ class PhasedImplementationStrategy:
             return max(backups, key=lambda x: x.stat().st_mtime)
         return None
 
-
     def _restore_backup(self, backup_path: Path) -> None:
         """Restore files from a backup."""
         for backup_file in backup_path.rglob("*"):
@@ -583,7 +564,6 @@ class PhasedImplementationStrategy:
                 target_path = self.root_path / relative_path
                 target_path.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(backup_file, target_path)
-
 
     def advance_phase(self, plan: ImplementationPlan) -> bool:
         """
@@ -614,7 +594,6 @@ class PhasedImplementationStrategy:
             print(f"❌ Phase criteria not met for: {current_phase.value}")
             return False
 
-
     def _get_next_phase(
         self, current_phase: ImplementationPhase
     ) -> Optional[ImplementationPhase]:
@@ -635,7 +614,6 @@ class PhasedImplementationStrategy:
             pass
 
         return None
-
 
     def _phase_criteria_met(
         self, plan: ImplementationPlan, phase: ImplementationPhase
@@ -661,7 +639,6 @@ class PhasedImplementationStrategy:
                     return False
 
         return True
-
 
     def _save_plan(self, plan: ImplementationPlan) -> None:
         """Save the implementation plan to disk."""
@@ -720,7 +697,6 @@ class PhasedImplementationStrategy:
         with open(plan_file, "w") as f:
             json.dump(plan_data, f, indent=2)
 
-
     def _update_plan_step_status(
         self, plan: ImplementationPlan, step: ImplementationStep
     ) -> None:
@@ -740,7 +716,6 @@ class PhasedImplementationStrategy:
                             "completed_at"
                         ] = step.completed_at.isoformat()
                     return
-
 
     def generate_progress_report(self, plan: ImplementationPlan) -> str:
         """Generate a progress report for the implementation plan."""

@@ -43,7 +43,6 @@ class ToolRelevanceLevel(Enum):
 
 
 @dataclass
-
 class AvailableTool:
     """Represents an available ai_onboard tool."""
 
@@ -61,7 +60,6 @@ class AvailableTool:
 
 
 @dataclass
-
 class ToolConsultationResult:
     """Result of mandatory tool consultation."""
 
@@ -82,7 +80,6 @@ class MandatoryToolConsultationGate:
     and appropriate tools are consulted before generating any AI response.
     """
 
-
     def __init__(self, root_path: Path):
         self.root_path = root_path
         self.tool_tracker = get_tool_tracker(root_path)
@@ -96,7 +93,7 @@ class MandatoryToolConsultationGate:
         self.gate_config = {
             "require_critical_tools": True,
             "require_high_relevance_tools": False,
-                 # Allow passage without high-relevance tools
+            # Allow passage without high-relevance tools
             "allow_bypass": False,
             "minimum_consultation_time": 0.01,  # seconds (very fast for better UX)
             "max_tools_per_request": 5,
@@ -109,7 +106,6 @@ class MandatoryToolConsultationGate:
             "gate_blocks": 0,
             "bypasses": 0,
         }
-
 
     def _initialize_available_tools(self) -> Dict[str, AvailableTool]:
         """Initialize registry of available ai_onboard tools using comprehensive discovery."""
@@ -129,8 +125,7 @@ class MandatoryToolConsultationGate:
         core_tools = {
             "code_quality_analysis": AvailableTool(
                 name="code_quality_analysis",
-                description="Analyze code quality,
-                    detect unused imports, dead code, complexity",
+                description="Analyze code quality, detect unused imports, dead code, complexity",
                 tool_class=CodeQualityAnalyzer,
                 keywords=[
                     "quality",
@@ -169,8 +164,7 @@ class MandatoryToolConsultationGate:
             ),
             "organization_analysis": AvailableTool(
                 name="organization_analysis",
-                description="Analyze file organization,
-                    directory structure, placement issues",
+                description="Analyze file organization, directory structure, placement issues",
                 tool_class=FileOrganizationAnalyzer,
                 keywords=[
                     "organize",
@@ -201,8 +195,7 @@ class MandatoryToolConsultationGate:
             ),
             "structural_recommendations": AvailableTool(
                 name="structural_recommendations",
-                description="Generate recommendations for file moves,
-                    merges, restructuring",
+                description="Generate recommendations for file moves, merges, restructuring",
                 tool_class=StructuralRecommendationEngine,
                 keywords=[
                     "recommend",
@@ -224,8 +217,7 @@ class MandatoryToolConsultationGate:
             ),
             "risk_assessment": AvailableTool(
                 name="risk_assessment",
-                description="Assess risks of code changes,
-                    breaking changes, impact analysis",
+                description="Assess risks of code changes, breaking changes, impact analysis",
                 tool_class=RiskAssessmentFramework,
                 keywords=[
                     "risk",
@@ -253,8 +245,7 @@ class MandatoryToolConsultationGate:
             ),
             "dependency_analysis": AvailableTool(
                 name="dependency_analysis",
-                description="Analyze module dependencies,
-                    circular dependencies, coupling",
+                description="Analyze module dependencies, circular dependencies, coupling",
                 tool_class=DependencyMapper,
                 keywords=[
                     "dependencies",
@@ -276,8 +267,7 @@ class MandatoryToolConsultationGate:
             ),
             "duplicate_detection": AvailableTool(
                 name="duplicate_detection",
-                description="Detect duplicate code blocks,
-                    similar functions, redundant code",
+                description="Detect duplicate code blocks, similar functions, redundant code",
                 tool_class=DuplicateDetector,
                 keywords=[
                     "duplicate",
@@ -294,31 +284,33 @@ class MandatoryToolConsultationGate:
                 can_auto_apply=True,
             ),
             # Additional Code Quality Tools
-            "codebase_analysis": AvailableTool(
-                name="codebase_analysis",
-                description="Comprehensive codebase analysis including file relationships,
-                    organization, and quality metrics",
-                tool_class=None,  # Will be imported dynamically
-                keywords=[
-                    "codebase",
-                    "analysis",
-                    "structure",
-                    "architecture",
-                    "overview",
-                    "comprehensive",
-                    "relationships",
-                ],
-                contexts=["analysis", "code_review", "architecture_review"],
-                patterns=["codebase.*analysis",
-                    "comprehensive.*review", "architecture.*overview"],
-                execution_capability="analysis_tool",
-                requires_parameters=False,
-                can_auto_apply=True,
-            ),
+            # Removed: codebase_analysis (redundant with code_quality)
+            # "codebase_analysis": AvailableTool(
+            #     name="codebase_analysis",
+            #     description="Comprehensive codebase analysis including file relationships, organization, and quality metrics",
+            #     tool_class=None,  # Will be imported dynamically
+            #     keywords=[
+            #         "codebase",
+            #         "analysis",
+            #         "structure",
+            #         "architecture",
+            #         "overview",
+            #         "comprehensive",
+            #         "relationships",
+            #     ],
+            #     contexts=["analysis", "code_review", "architecture_review"],
+            #     patterns=[
+            #         "codebase.*analysis",
+            #         "comprehensive.*review",
+            #         "architecture.*overview",
+            #     ],
+            #     execution_capability="analysis_tool",
+            #     requires_parameters=False,
+            #     can_auto_apply=True,
+            # ),
             "syntax_validator": AvailableTool(
                 name="syntax_validator",
-                description="Validate Python syntax across all files,
-                    detect syntax errors and import issues",
+                description="Validate Python syntax across all files, detect syntax errors and import issues",
                 tool_class=None,  # Will be imported dynamically
                 keywords=[
                     "syntax",
@@ -337,8 +329,7 @@ class MandatoryToolConsultationGate:
             ),
             "dependency_checker": AvailableTool(
                 name="dependency_checker",
-                description="Check dependencies before cleanup operations,
-                    ensure safe file removal",
+                description="Check dependencies before cleanup operations, ensure safe file removal",
                 tool_class=None,  # Will be imported dynamically
                 keywords=[
                     "dependencies",
@@ -369,16 +360,18 @@ class MandatoryToolConsultationGate:
                     "workflow",
                 ],
                 contexts=["code_changes", "system_changes", "governance"],
-                patterns=["approval.*required",
-                    "review.*needed", "authorization.*pending"],
+                patterns=[
+                    "approval.*required",
+                    "review.*needed",
+                    "authorization.*pending",
+                ],
                 execution_capability="cli_function",
                 requires_parameters=False,
                 can_auto_apply=False,  # Requires user interaction
             ),
             "critical_path_engine": AvailableTool(
                 name="critical_path_engine",
-                description="Analyze project critical paths,
-                    dependencies, and timeline optimization",
+                description="Analyze project critical paths, dependencies, and timeline optimization",
                 tool_class=None,  # Will be imported dynamically
                 keywords=[
                     "critical",
@@ -433,8 +426,7 @@ class MandatoryToolConsultationGate:
             ),
             "task_prioritization_engine": AvailableTool(
                 name="task_prioritization_engine",
-                description="Automatically prioritize tasks based on urgency,
-                    impact, and dependencies",
+                description="Automatically prioritize tasks based on urgency, impact, and dependencies",
                 tool_class=None,  # Will be imported dynamically
                 keywords=[
                     "priority",
@@ -548,7 +540,6 @@ class MandatoryToolConsultationGate:
 
         return tools
 
-
     def consult_tools_for_request(
         self, user_request: str, context: Dict[str, Any] = None
     ) -> ToolConsultationResult:
@@ -633,7 +624,6 @@ class MandatoryToolConsultationGate:
         )
 
         return result
-
 
     def consult_tools_holistically(
         self, user_request: str, context: Dict[str, Any] = None
@@ -729,7 +719,6 @@ class MandatoryToolConsultationGate:
                 recommendations=[],
             )
 
-
     def _analyze_tool_relevance(
         self, user_request: str, context: Dict[str, Any]
     ) -> Dict[str, ToolRelevanceLevel]:
@@ -788,7 +777,6 @@ class MandatoryToolConsultationGate:
 
         return relevant_tools
 
-
     def _get_recommended_tools(
         self, relevant_tools: Dict[str, ToolRelevanceLevel]
     ) -> List[str]:
@@ -819,7 +807,6 @@ class MandatoryToolConsultationGate:
                     recommended.append(tool_name)
 
         return recommended
-
 
     def _apply_recommended_tools(
         self, recommended_tools: List[str], user_request: str, context: Dict[str, Any]
@@ -870,7 +857,6 @@ class MandatoryToolConsultationGate:
 
         return tool_analysis
 
-
     def _extract_tool_insights(self, tool_name: str, results: Any) -> Optional[str]:
         """Extract key insights from tool results for display."""
 
@@ -892,8 +878,10 @@ class MandatoryToolConsultationGate:
 
             elif tool_name == "dependency_mapper":
                 if hasattr(results, "circular_dependencies"):
-                    return f"{len(results.circular_dependencies)} circular dependencies detected,
-                        {results.modules_analyzed} modules analyzed"
+                    return (
+                        f"{len(results.circular_dependencies)} circular dependencies detected, "
+                        f"{results.modules_analyzed} modules analyzed"
+                    )
 
             elif tool_name == "vision_guardian":
                 if isinstance(results, dict):
@@ -918,57 +906,73 @@ class MandatoryToolConsultationGate:
                     project = results.get("project_name", "Unknown")
                     objectives = results.get("objectives_count", 0)
                     team_size = results.get("team_size", 0)
-                    return f"Charter loaded: {project} with {objectives} objectives,
-                        team size {team_size}"
+                    return (
+                        f"Charter loaded: {project} with {objectives} objectives, "
+                        f"team size {team_size}"
+                    )
 
             elif tool_name == "automatic_error_prevention":
                 if isinstance(results, dict):
                     prevented = results.get("errors_prevented", 0)
                     patterns = results.get("patterns_learned", 0)
-                    return f"Error prevention active: {prevented} errors prevented,
-                        {patterns} patterns learned"
+                    return (
+                        f"Error prevention active: {prevented} errors prevented, "
+                        f"{patterns} patterns learned"
+                    )
 
             elif tool_name == "pattern_recognition_system":
                 if isinstance(results, dict):
                     patterns = results.get("total_patterns", 0)
                     matches = results.get("successful_matches", 0)
-                    return f"Pattern system active: {patterns} patterns,
-                        {matches} successful matches"
+                    return (
+                        f"Pattern system active: {patterns} patterns, "
+                        f"{matches} successful matches"
+                    )
 
             elif tool_name == "task_execution_gate":
                 if isinstance(results, dict):
                     pending = results.get("pending_tasks", 0)
                     completed = results.get("completed_tasks", 0)
-                    return f"Task gate status: {pending} pending tasks,
-                        {completed} completed"
+                    return (
+                        f"Task gate status: {pending} pending tasks, "
+                        f"{completed} completed"
+                    )
 
             elif tool_name == "interrogation_system":
                 if isinstance(results, dict):
                     sessions = results.get("active_sessions", 0)
                     questions = results.get("total_questions_asked", 0)
-                    return f"Interrogation active: {sessions} sessions,
-                        {questions} questions asked"
+                    return (
+                        f"Interrogation active: {sessions} sessions, "
+                        f"{questions} questions asked"
+                    )
 
             elif tool_name == "conversation_analysis":
                 if isinstance(results, dict):
                     sessions = results.get("total_sessions", 0)
                     continuity = results.get("continuity_score", 0)
-                    return f"Conversation analysis: {sessions} sessions,
-                        continuity score {continuity:.1f}"
+                    return (
+                        f"Conversation analysis: {sessions} sessions, "
+                        f"continuity score {continuity:.1f}"
+                    )
 
             elif tool_name == "ui_enhancement":
                 if isinstance(results, dict):
                     interventions = results.get("pending_interventions", 0)
                     satisfaction = results.get("current_satisfaction", 0)
-                    return f"UX enhancements: {interventions} pending interventions,
-                        satisfaction {satisfaction:.1f}"
+                    return (
+                        f"UX enhancements: {interventions} pending interventions, "
+                        f"satisfaction {satisfaction:.1f}"
+                    )
 
             elif tool_name == "wbs_management":
                 if isinstance(results, dict):
                     consistency = results.get("overall_consistency", 0)
                     issues = results.get("total_issues", 0)
-                    return f"WBS management: {consistency:.1f}% consistency,
-                        {issues} issues found"
+                    return (
+                        f"WBS management: {consistency:.1f}% consistency, "
+                        f"{issues} issues found"
+                    )
 
             elif tool_name == "ai_agent_orchestration":
                 if isinstance(results, dict):
@@ -986,38 +990,49 @@ class MandatoryToolConsultationGate:
                 if isinstance(results, dict):
                     triggers = results.get("active_triggers", 0)
                     alerts = results.get("pending_alerts", 0)
-                    return f"Intelligent monitoring: {triggers} triggers,
-                        {alerts} pending alerts"
+                    return (
+                        f"Intelligent monitoring: {triggers} triggers, "
+                        f"{alerts} pending alerts"
+                    )
 
             elif tool_name == "user_preference_learning_system":
                 if isinstance(results, dict):
                     preferences = results.get("total_preferences", 0)
                     confidence = results.get("avg_confidence", 0)
-                    return f"User preferences: {preferences} learned,
-                        {confidence:.1f} avg confidence"
+                    return (
+                        f"User preferences: {preferences} learned, "
+                        f"{confidence:.1f} avg confidence"
+                    )
 
-            elif tool_name == "codebase_analysis":
+                # Removed: codebase_analysis (redundant with code_quality)
+                # elif tool_name == "codebase_analysis":
                 if isinstance(results, dict):
                     files = results.get("files_analyzed", 0)
                     issues = results.get("total_issues", 0)
-                    return f"Codebase analysis: {files} files analyzed,
-                        {issues} organization issues found"
+                    return (
+                        f"Codebase analysis: {files} files analyzed, "
+                        f"{issues} organization issues found"
+                    )
 
             elif tool_name == "syntax_validator":
                 if isinstance(results, dict):
                     total = results.get("total_files", 0)
                     valid = results.get("valid_files", 0)
                     invalid = results.get("invalid_files", 0)
-                    return f"Syntax validation: {valid}/{total} files valid,
-                        {invalid} syntax errors found"
+                    return (
+                        f"Syntax validation: {valid}/{total} files valid, "
+                        f"{invalid} syntax errors found"
+                    )
 
             elif tool_name == "dependency_checker":
                 if isinstance(results, dict):
                     safe = results.get("safe_to_remove", False)
                     total = results.get("total_targets", 0)
                     checked = results.get("checked_targets", 0)
-                    return f"Dependency check: {checked}/{total} targets analyzed,
-                        safe to remove: {safe}"
+                    return (
+                        f"Dependency check: {checked}/{total} targets analyzed, "
+                        f"safe to remove: {safe}"
+                    )
 
             elif tool_name == "approval_workflow":
                 if isinstance(results, dict):
@@ -1028,8 +1043,10 @@ class MandatoryToolConsultationGate:
                 if isinstance(results, dict):
                     critical_path = results.get("critical_path", [])
                     duration = results.get("project_duration", 0)
-                    return f"Critical path: {len(critical_path)} tasks,
-                        {duration} day duration"
+                    return (
+                        f"Critical path: {len(critical_path)} tasks, "
+                        f"{duration} day duration"
+                    )
 
             elif tool_name == "progress_dashboard":
                 if isinstance(results, dict):
@@ -1053,16 +1070,20 @@ class MandatoryToolConsultationGate:
                 if isinstance(results, dict):
                     wbs_elements = results.get("total_elements", 0)
                     consistency = results.get("consistency_score", 0)
-                    return f"WBS management: {wbs_elements} elements,
-                        {consistency:.1f}% consistency"
+                    return (
+                        f"WBS management: {wbs_elements} elements, "
+                        f"{consistency:.1f}% consistency"
+                    )
 
             elif tool_name == "automated_health_monitoring":
                 if isinstance(results, dict):
                     status = results.get("overall_status", "unknown")
                     healthy = results.get("summary", {}).get("healthy_tools", 0)
                     total = results.get("summary", {}).get("total_tools", 0)
-                    return f"Health monitoring: {healthy}/{total} tools healthy,
-                        status {status}"
+                    return (
+                        f"Health monitoring: {healthy}/{total} tools healthy, "
+                        f"status {status}"
+                    )
 
             # Generic tool recognition handler
             elif isinstance(results, dict) and results.get("status") == "recognized":
@@ -1077,7 +1098,6 @@ class MandatoryToolConsultationGate:
             pass
 
         return None
-
 
     def _evaluate_gate_passage(
         self,
@@ -1114,7 +1134,6 @@ class MandatoryToolConsultationGate:
         # Gate passes - tools were consulted
         return True, None
 
-
     def _display_consultation_results(self, result: ToolConsultationResult):
         """Display the consultation results to the user."""
 
@@ -1146,7 +1165,6 @@ class MandatoryToolConsultationGate:
 
         print("=" * 50)
 
-
     def get_consultation_stats(self) -> Dict[str, Any]:
         """Get consultation statistics."""
         return {
@@ -1154,7 +1172,6 @@ class MandatoryToolConsultationGate:
             "available_tools": len(self.available_tools),
             "gate_config": self.gate_config,
         }
-
 
     def bypass_gate(self, reason: str) -> bool:
         """Bypass the gate (emergency use only)."""

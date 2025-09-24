@@ -3,7 +3,7 @@
 import argparse
 from pathlib import Path
 
-from ..core.codebase_analysis import CodebaseAnalyzer
+# Removed: codebase_analysis (redundant with code_quality)
 from ..core.dependency_checker import check_cleanup_dependencies
 from ..core.syntax_validator import validate_python_syntax
 from ..core.unicode_utils import print_activity, print_header, print_status
@@ -30,7 +30,7 @@ def add_code_quality_commands(subparsers):
         description="Analyze the entire codebase for organization, "
         "dependencies, and quality metrics.",
     )
-    codebase_parser.set_defaults(func=handle_codebase_analysis)
+    # Removed: codebase analysis functionality (redundant with code_quality)
 
     # Syntax validation command
     syntax_parser = code_quality_subparsers.add_parser(
@@ -56,52 +56,14 @@ def add_code_quality_commands(subparsers):
 
 
 def handle_codebase_analysis(args):
-    """Handle comprehensive codebase analysis."""
-    print_header("COMPREHENSIVE CODEBASE ANALYSIS")
+    """Handle comprehensive codebase analysis - DEPRECATED."""
+    print_header("CODEBASE ANALYSIS - DEPRECATED")
+    print("⚠️  This functionality has been moved to code-quality commands.")
+    print("   Use 'python -m ai_onboard code-quality syntax' instead.")
+    return
 
-    try:
-        print_activity("Initializing codebase analyzer...")
-        analyzer = CodebaseAnalyzer(Path("."))
 
-        print_activity("Analyzing codebase structure...")
-        result = analyzer.analyze_codebase()
-
-        # Display results
-        print_header("ANALYSIS RESULTS")
-
-        print(f"📊 Files Analyzed: {result.get('files_analyzed', 0)}")
-        print(f"📁 Directories Analyzed: {result.get('directories_analyzed', 0)}")
-        print(f"🔗 Total Dependencies: {result.get('total_dependencies', 0)}")
-        print(f"⚠️  Organization Issues: {result.get('total_issues', 0)}")
-        print(
-            f"🔄 Circular Dependencies: {len(result.get('circular_dependencies',
-            []))}"
-        )
-        print(f"📦 Duplicate Groups: {len(result.get('consolidation_candidates', []))}")
-
-        # Show top issues
-        issues = result.get("organization_issues", [])
-        if issues:
-            print_header("TOP ORGANIZATION ISSUES")
-            for i, issue in enumerate(issues[:5]):  # Show top 5
-                severity_icon = (
-                    "🔴"
-                    if issue.get("severity") == "critical"
-                    else "🟠" if issue.get("severity") == "high" else "🟡"
-                )
-                print(f"{i+1}. {severity_icon} {issue.get('message', 'Unknown issue')}")
-
-        # Show circular dependencies
-        circular = result.get("circular_dependencies", [])
-        if circular:
-            print_header("CIRCULAR DEPENDENCIES DETECTED")
-            for i, cycle in enumerate(circular[:3]):  # Show first 3
-                print(f"{i+1}. {' → '.join(cycle)}")
-
-        print_status("Codebase analysis completed successfully", "success")
-
-    except Exception as e:
-        print_status(f"Codebase analysis failed: {e}", "error")
+# Removed: old codebase analysis implementation
 
 
 def handle_syntax_validation(args):

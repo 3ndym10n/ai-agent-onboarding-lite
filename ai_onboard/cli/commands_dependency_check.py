@@ -205,6 +205,7 @@ def _handle_validate_cleanup(args, root: Path):
     # Import cleanup module to get files that would be deleted
     try:
         from ..core.cleanup import scan_for_cleanup
+import json
 
         scan_result = scan_for_cleanup(root)
         non_critical_files = scan_result["non_critical"]

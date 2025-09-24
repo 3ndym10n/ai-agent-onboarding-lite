@@ -13,28 +13,18 @@ from ..core.universal_error_monitor import get_error_monitor
 
 # from ..plugins import example_policy  # ensure example plugin registers on import
 from .commands_aaol import add_aaol_commands, handle_aaol_commands
-from .commands_advanced_test_reporting import (
-    add_advanced_test_reporting_commands,
-    handle_advanced_test_reporting_commands,
-)
-from .commands_ai_agent import add_ai_agent_commands, handle_ai_agent_commands
+
+# Removed: commands_advanced_test_reporting (redundant with continuous_improvement)
+# Removed: commands_ai_agent (redundant with ai_agent_collaboration)
 from .commands_ai_agent_collaboration import (
     add_ai_agent_collaboration_parser,
     handle_ai_agent_collaboration_commands,
 )
 from .commands_api import add_api_commands, handle_api_commands
-from .commands_automatic_prevention import (
-    add_automatic_prevention_commands,
-    handle_automatic_prevention_commands,
-)
-from .commands_background_agents import (
-    add_background_agent_commands,
-    handle_background_agent_commands,
-)
-from .commands_capability_tracking import (
-    add_capability_tracking_commands,
-    handle_capability_tracking_commands,
-)
+
+# Removed: commands_automatic_prevention (redundant with cleanup_safety)
+# Removed: commands_background_agents (redundant with ai_agent_collaboration)
+# Removed: commands_capability_tracking (redundant with continuous_improvement)
 from .commands_cleanup_safety import (
     add_cleanup_safety_commands,
     handle_cleanup_safety_commands,
@@ -43,24 +33,17 @@ from .commands_code_quality import (
     add_code_quality_commands,
     handle_code_quality_commands,
 )
-from .commands_project_management import (
-    add_project_management_commands,
-    handle_project_management_commands,
-)
-from .commands_codebase_analysis import (
-    add_codebase_analysis_commands,
-    handle_codebase_analysis_commands,
-)
+
+# Removed: commands_codebase_analysis (redundant with code_quality)
 from .commands_continuous_improvement import (
     add_continuous_improvement_parser,
     handle_continuous_improvement_commands,
 )
 from .commands_core import add_core_commands, handle_core_commands
 from .commands_cursor import add_cursor_commands, handle_cursor_commands
-from .commands_decision_pipeline import (
-    add_decision_pipeline_commands,
-    handle_decision_pipeline_commands,
-)
+from .commands_decision_pipeline import add_decision_pipeline_commands
+
+# Removed: commands_decision_pipeline (redundant with holistic_orchestration)
 from .commands_enhanced_context import (
     add_enhanced_context_commands,
     handle_enhanced_context_commands,
@@ -87,25 +70,19 @@ from .commands_intelligent_monitoring import (
 )
 from .commands_interrogate import add_interrogate_commands, handle_interrogate_commands
 from .commands_kaizen import add_kaizen_commands, handle_kaizen_commands
-from .commands_metrics import add_metrics_commands, handle_metrics_commands
-from .commands_optimization_experiments import (
-    add_optimization_experiment_commands,
-    handle_optimization_experiment_commands,
+from .commands_project_management import (
+    add_project_management_commands,
+    handle_project_management_commands,
 )
-from .commands_pattern_analysis import (
-    add_pattern_analysis_commands,
-    handle_pattern_analysis_commands,
-)
-from .commands_performance_trends import (
-    add_performance_trend_commands,
-    handle_performance_trend_commands,
-)
+
+# Removed: commands_metrics (redundant with continuous_improvement)
+# Removed: commands_optimization_experiments (redundant with continuous_improvement)
+# Removed: commands_pattern_analysis (redundant with holistic_orchestration)
+# Removed: commands_performance_trends (redundant with continuous_improvement)
 from .commands_prompt import add_prompt_commands, handle_prompt_commands
-from .commands_ui_enhanced import add_ui_enhanced_commands, handle_ui_enhanced_commands
-from .commands_ux_enhancements import (
-    add_ux_enhancement_commands,
-    handle_ux_enhancement_commands,
-)
+from .commands_ux_enhanced import add_ux_enhanced_commands, handle_ux_enhanced_commands
+
+# Removed: commands_ux_enhancements (redundant with ui_enhanced)
 from .ux_middleware import get_ux_middleware
 
 
@@ -334,8 +311,7 @@ def main(argv=None):
     # Add prompt commands
     add_prompt_commands(sub)
 
-    # Add AI agent commands
-    add_ai_agent_commands(sub)
+    # Removed: AI agent commands (redundant with ai_agent_collaboration)
 
     # Add AAOL commands
     add_aaol_commands(sub)
@@ -349,8 +325,7 @@ def main(argv=None):
     # Add continuous improvement commands
     add_continuous_improvement_parser(sub)
 
-    # Add metrics commands
-    add_metrics_commands(sub)
+    # Removed: metrics commands (redundant with continuous_improvement)
 
     # Add Cursor AI integration commands
     add_cursor_commands(sub)
@@ -370,41 +345,32 @@ def main(argv=None):
     # Add Kaizen automation commands
     add_kaizen_commands(sub)
 
-    # Add optimization experiment commands
-    add_optimization_experiment_commands(sub)
+    # Removed: optimization experiment commands (redundant with continuous_improvement)
 
-    # Add pattern analysis commands
-    add_pattern_analysis_commands(sub)
+    # Removed: pattern analysis commands (redundant with holistic_orchestration)
 
-    # Add UI - enhanced commands
-    add_ui_enhanced_commands(sub)
+    # Add UX - enhanced commands (simplified)
+    add_ux_enhanced_commands(sub)
 
-    # Add UX enhancement commands
-    add_ux_enhancement_commands(sub)
+    # Removed: UX enhancement commands (redundant with ui_enhanced)
 
-    # Add capability tracking commands
-    add_capability_tracking_commands(sub)
+    # Removed: capability tracking commands (redundant with continuous_improvement)
 
-    # Add background agent commands
-    add_background_agent_commands(sub)
+    # Removed: background agent commands (redundant with ai_agent_collaboration)
 
     # Add enhanced testing commands
     add_enhanced_testing_commands(sub)
 
-    # Add performance trend commands
-    add_performance_trend_commands(sub)
+    # Removed: performance trend commands (redundant with continuous_improvement)
 
     # Add holistic orchestration commands
     add_holistic_orchestration_commands(sub)
 
-    # Add advanced test reporting commands
-    add_advanced_test_reporting_commands(sub)
+    # Removed: advanced test reporting commands (redundant with continuous_improvement)
 
-    # Add automatic prevention commands
-    add_automatic_prevention_commands(sub)
+    # Removed: automatic prevention commands (redundant with cleanup_safety)
 
-    # Add codebase analysis commands
-    add_codebase_analysis_commands(sub)
+    # Removed: codebase analysis commands (redundant with code_quality)
 
     # Add intelligent monitoring commands
     add_intelligent_monitoring_commands(sub)
@@ -490,7 +456,7 @@ def main(argv=None):
     if args.cmd not in ["status"]:
         ux_middleware = get_ux_middleware(root)
         user_id = "default"  # Could be extracted from environment or config
-        ux_middleware.show_welcome_message(user_id)
+        # Simplified: No welcome message needed
     else:
         ux_middleware = None
 
@@ -533,8 +499,8 @@ def main(argv=None):
                 "success",
             )
             print(
-                f"📋 WBS Auto-Update: {wbs_update_result['updated']} tasks integrated,
-                    {wbs_update_result['failed']} failed"
+                f"📋 WBS Auto-Update: {wbs_update_result['updated']} tasks integrated, "
+                f"{wbs_update_result['failed']} failed"
             )
 
         # Check if this is a critical operation requiring enhanced safety
@@ -671,13 +637,7 @@ def main(argv=None):
             if handle_prompt_commands(args, root):
                 return
 
-    # Handle AI agent commands with error monitoring
-    if args.cmd == "ai - agent":
-        with error_monitor.monitor_command_execution(
-            "ai - agent", "foreground", "cli_session"
-        ):
-            if handle_ai_agent_commands(args, root):
-                return
+    # Removed: AI agent commands (redundant with ai_agent_collaboration)
 
     # Handle AAOL commands with error monitoring
     if args.cmd == "aaol":
@@ -743,13 +703,7 @@ def main(argv=None):
             handle_continuous_improvement_commands(args, root)
             return
 
-    # Handle unified metrics commands with error monitoring
-    if args.cmd == "unified - metrics":
-        with error_monitor.monitor_command_execution(
-            "unified - metrics", "foreground", "cli_session"
-        ):
-            handle_metrics_commands(args, root)
-            return
+    # Removed: unified metrics commands (redundant with continuous_improvement)
 
     # Handle Cursor AI integration commands with error monitoring
     if args.cmd == "cursor":
@@ -783,13 +737,7 @@ def main(argv=None):
             handle_enhanced_context_commands(args, root)
             return
 
-    # Handle advanced decision pipeline commands with error monitoring
-    if args.cmd == "decision - pipeline":
-        with error_monitor.monitor_command_execution(
-            "decision - pipeline", "foreground", "cli_session"
-        ):
-            handle_decision_pipeline_commands(args, root)
-            return
+    # Removed: decision pipeline commands (redundant with holistic_orchestration)
 
     # Handle Kaizen automation commands with error monitoring
     if args.cmd == "kaizen - auto":
@@ -799,55 +747,27 @@ def main(argv=None):
             handle_kaizen_commands(args, root)
             return
 
-    # Handle optimization experiment commands with error monitoring
-    if args.cmd == "opt - experiments":
-        with error_monitor.monitor_command_execution(
-            "opt - experiments", "foreground", "cli_session"
-        ):
-            handle_optimization_experiment_commands(args, root)
-            return
+    # Removed: optimization experiment commands (redundant with continuous_improvement)
 
-    # Handle pattern analysis commands with error monitoring
-    if args.cmd == "patterns":
-        with error_monitor.monitor_command_execution(
-            "patterns", "foreground", "cli_session"
-        ):
-            tool_tracker = get_tool_tracker(root)
-            tool_tracker.start_task_session("pattern_analysis")
-            if handle_pattern_analysis_commands(args, root):
-                session_summary = tool_tracker.end_task_session("completed")
-                tool_tracker.display_tools_summary(session_summary)
-            return
+    # Removed: pattern analysis commands (redundant with holistic_orchestration)
 
-    # Handle UI - enhanced commands with error monitoring
+    # Handle UX - enhanced commands with error monitoring (simplified)
     if args.cmd in [
         "help",
         "dashboard",
         "suggest",
-        "discover",
-        "config",
-        "wizard",
+        "design",
         "status",
     ]:
         with error_monitor.monitor_command_execution(
             args.cmd, "foreground", "cli_session"
         ):
-            handle_ui_enhanced_commands(args, root)
+            handle_ux_enhanced_commands(args, root)
             return
 
-    # Handle UX enhancement commands with error monitoring
-    if args.cmd == "ux":
-        with error_monitor.monitor_command_execution("ux", "foreground", "cli_session"):
-            handle_ux_enhancement_commands(args, root)
-            return
+    # Removed: UX enhancement commands (redundant with ui_enhanced)
 
-    # Handle capability tracking commands with error monitoring
-    if args.cmd == "capability - tracking":
-        with error_monitor.monitor_command_execution(
-            "capability - tracking", "foreground", "cli_session"
-        ):
-            handle_capability_tracking_commands(args, root)
-            return
+    # Removed: capability tracking commands (redundant with continuous_improvement)
 
     # Handle enhanced testing commands with error monitoring
     if args.cmd == "enhanced - testing":
@@ -857,13 +777,7 @@ def main(argv=None):
             handle_enhanced_testing_commands(args, root)
             return
 
-    # Handle performance trend commands with error monitoring
-    if args.cmd == "perf - trends":
-        with error_monitor.monitor_command_execution(
-            "perf - trends", "foreground", "cli_session"
-        ):
-            handle_performance_trend_commands(args, root)
-            return
+    # Removed: performance trend commands (redundant with continuous_improvement)
 
     # Handle holistic orchestration commands with error monitoring
     if args.cmd == "holistic":
@@ -873,46 +787,11 @@ def main(argv=None):
             handle_holistic_orchestration_commands(args, root)
             return
 
-    # Handle advanced test reporting commands with error monitoring
-    if args.cmd == "test - reports":
-        with error_monitor.monitor_command_execution(
-            "test - reports", "foreground", "cli_session"
-        ):
-            handle_advanced_test_reporting_commands(args, root)
-            return
+    # Removed: advanced test reporting commands (redundant with continuous_improvement)
 
-    # Handle automatic prevention commands with error monitoring
-    if args.cmd == "prevention":
-        with error_monitor.monitor_command_execution(
-            "prevention", "foreground", "cli_session"
-        ):
-            handle_automatic_prevention_commands(args, root)
-            return
+    # Removed: automatic prevention commands (redundant with cleanup_safety)
 
-    # Handle codebase analysis commands with error monitoring
-    if args.cmd == "codebase":
-        tool_tracker = get_tool_tracker(root)
-        session_id = tool_tracker.start_task_session(
-            "codebase_analysis", "core_command"
-        )
-
-        try:
-            with error_monitor.monitor_command_execution(
-                "codebase", "foreground", "cli_session"
-            ):
-                result = handle_codebase_analysis_commands(args, root)
-                session_summary = tool_tracker.end_task_session(
-                    final_status="completed",
-                    summary="Codebase analysis completed successfully",
-                )
-                tool_tracker.display_tools_summary(session_summary)
-                return result
-        except Exception as e:
-            session_summary = tool_tracker.end_task_session(
-                final_status="failed", summary=f"Codebase analysis failed: {str(e)}"
-            )
-            tool_tracker.display_tools_summary(session_summary)
-            raise
+    # Removed: codebase analysis commands (redundant with code_quality)
 
     # Handle intelligent monitoring commands with error monitoring
     if args.cmd == "intelligent":
@@ -941,12 +820,6 @@ def main(argv=None):
             raise
 
     # Handle background agent commands with error monitoring
-    if args.cmd == "background - agents":
-        with error_monitor.monitor_command_execution(
-            "background - agents", "foreground", "cli_session"
-        ):
-            handle_background_agent_commands(args, root)
-            return
 
     # TODO: Handle other domain commands as they're refactored
     # elif args.cmd in ["vision", "design", "planning", "debug", "context"]:
@@ -961,6 +834,7 @@ def main(argv=None):
     # Only show completion celebration for interactive commands
     if ux_middleware is not None:
         ux_middleware.show_completion_celebration(user_id)
+
 
 if __name__ == "__main__":
     main()

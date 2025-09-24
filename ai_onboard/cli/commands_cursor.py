@@ -9,7 +9,9 @@ This module provides command - line interfaces for:
 """
 
 import argparse
+import json
 from pathlib import Path
+from typing import Any
 
 from ..core.cursor_ai_integration import (
     get_cursor_integration,
@@ -117,11 +119,11 @@ def _handle_cursor_init(args: argparse.Namespace, root: Path) -> None:
 
     try:
         if args.force:
-            # Force re - initialization by recreating the integration
-            global _cursor_integration
-            from ..core.cursor_ai_integration import _cursor_integration
+            # Force re-initialization by resetting the global instance
+            # Import the module and reset the global variable
+            import ai_onboard.core.cursor_ai_integration as cai
 
-            _cursor_integration = None
+            cai._cursor_integration = None
 
         result = initialize_cursor_integration(root)
 
@@ -188,8 +190,8 @@ def _handle_cursor_context(args: argparse.Namespace, root: Path) -> None:
                 progress = context["progress"]
                 print(f"Overall Progress: {progress.get('overall_progress', 0):.1f}%")
                 print(
-                    f"Completed Tasks: {progress.get('completed_tasks',
-                        0)}/{progress.get('total_tasks', 0)}"
+                    f"Completed Tasks: {progress.get('completed_tasks', 0)}/"
+                    f"{progress.get('total_tasks', 0)}"
                 )
                 print(f"Current Phase: {progress.get('current_phase', 'Unknown')}")
 
@@ -394,6 +396,7 @@ def _handle_cursor_config(args: argparse.Namespace, root: Path) -> None:
 
             # Convert value to appropriate type
             value_type = valid_keys[args.key]
+            value: Any  # Type can vary based on value_type
             if value_type == bool:
                 value = args.value.lower() in ("true", "yes", "1", "on")
             elif value_type == int:

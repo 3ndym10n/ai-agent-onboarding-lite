@@ -2,10 +2,12 @@
 Approval Workflow System
 
 Handles user approval for system changes with course correction capabilities.
-This addresses the user's need to approve suggestions and provide guidance when needed. """
+This addresses the user's need to approve suggestions and provide guidance when needed.
+"""
 
 # Import read_json, write_json from utils.py module
 import importlib.util
+import json
 import time
 from dataclasses import dataclass, field
 from enum import Enum
@@ -43,7 +45,6 @@ class ChangeType(Enum):
 
 
 @dataclass
-
 class ProposedAction:
     """A proposed action for user approval."""
 
@@ -60,7 +61,6 @@ class ProposedAction:
 
 
 @dataclass
-
 class ApprovalRequest:
     """An approval request for user review."""
 
@@ -87,7 +87,6 @@ class ApprovalWorkflow:
     5. Approval history is maintained
     """
 
-
     def __init__(self, root_path: Path):
         self.root_path = root_path
         self.requests_path = root_path / ".ai_onboard" / "approval_requests.jsonl"
@@ -98,7 +97,6 @@ class ApprovalWorkflow:
 
         # Load existing requests
         self._load_existing_requests()
-
 
     def _load_existing_requests(self):
         """Load existing approval requests from storage."""
@@ -114,7 +112,6 @@ class ApprovalWorkflow:
                                 self.active_requests[request.request_id] = request
         except Exception as e:
             print(f"⚠️ Failed to load approval requests: {e}")
-
 
     def _deserialize_request(self, data: Dict[str, Any]) -> ApprovalRequest:
         """Deserialize approval request from JSON data."""
@@ -145,7 +142,6 @@ class ApprovalWorkflow:
             modifications=data.get("modifications", []),
             expires_at=data.get("expires_at"),
         )
-
 
     def create_approval_request(
         self,
@@ -179,7 +175,6 @@ class ApprovalWorkflow:
         self._save_request(request)
 
         return request
-
 
     def _save_request(self, request: ApprovalRequest):
         """Save approval request to storage."""
@@ -215,7 +210,6 @@ class ApprovalWorkflow:
                 f.write(json.dumps(request_data) + "\n")
         except Exception as e:
             print(f"⚠️ Failed to save approval request: {e}")
-
 
     def display_approval_request(self, request: ApprovalRequest):
         """Display approval request to the user."""
@@ -273,7 +267,6 @@ class ApprovalWorkflow:
         print(f"  ⏰ WAIT - Defer decision (if not urgent)")
         print(f"=" * 60)
 
-
     def process_user_response(
         self, request_id: str, response: str, modifications: List[str] = None
     ) -> Dict[str, Any]:
@@ -320,8 +313,9 @@ class ApprovalWorkflow:
 
         else:
             return {
-                "error": "Invalid response. Please use: approve,
-                    reject, modify, or wait"
+                "error": (
+                    "Invalid response. Please use: approve, reject, modify, or wait"
+                )
             }
 
         # Update request
@@ -333,7 +327,6 @@ class ApprovalWorkflow:
 
         return result
 
-
     def get_pending_requests(self) -> List[ApprovalRequest]:
         """Get all pending approval requests."""
         return [
@@ -341,7 +334,6 @@ class ApprovalWorkflow:
             for req in self.active_requests.values()
             if req.status == ApprovalStatus.PENDING
         ]
-
 
     def check_expired_requests(self):
         """Check for and handle expired requests."""
@@ -358,7 +350,6 @@ class ApprovalWorkflow:
             del self.active_requests[request_id]
 
         return expired_requests
-
 
     def create_quick_approval_request(
         self, action_description: str, risk_level: str = "medium", context: str = ""
@@ -382,7 +373,6 @@ class ApprovalWorkflow:
             context=context or "Quick approval request",
             urgency="normal",
         )
-
 
     def get_approval_summary(self) -> Dict[str, Any]:
         """Get summary of approval requests."""

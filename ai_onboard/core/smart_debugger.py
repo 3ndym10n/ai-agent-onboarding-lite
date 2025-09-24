@@ -1076,7 +1076,7 @@ class SmartDebugger:
             ]
             if recent_usage:
                 # Analyze usage patterns
-                capability_counts = {}
+                capability_counts: dict[str, Any] = {}
                 for usage in recent_usage:
                     cap = usage.get("capability", "unknown")
                     capability_counts[cap] = capability_counts.get(cap, 0) + 1

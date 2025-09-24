@@ -24,7 +24,6 @@ if TYPE_CHECKING:
 class LearningPersistenceManager:
     """Manages persistence of learned patterns and knowledge."""
 
-
     def __init__(self, root: Path):
         self.root = root
         self.learning_dir = root / ".ai_onboard" / "learning"
@@ -45,11 +44,9 @@ class LearningPersistenceManager:
         self._ensure_directories()
         self._load_stats()
 
-
     def _ensure_directories(self) -> None:
         """Ensure learning directories exist."""
         self.learning_dir.mkdir(parents=True, exist_ok=True)
-
 
     def _load_stats(self) -> None:
         """Load learning statistics from disk."""
@@ -61,14 +58,12 @@ class LearningPersistenceManager:
             # Start with default stats if loading fails
             pass
 
-
     def _save_stats(self) -> None:
         """Save learning statistics to disk."""
         try:
             utils.write_json(self.learning_stats_file, self.stats)
         except Exception as e:
             print(f"Warning: Failed to save learning stats: {e}")
-
 
     def save_pattern_backup(self, pattern_system) -> bool:
         """
@@ -99,7 +94,7 @@ class LearningPersistenceManager:
                 }
 
             # Get CLI patterns
-            cli_patterns_data = {}
+            cli_patterns_data: dict[str, Any] = {}
             for pattern_id, pattern in pattern_system.cli_patterns.items():
                 cli_patterns_data[pattern_id] = {
                     "pattern_id": pattern.pattern_id,
@@ -113,7 +108,7 @@ class LearningPersistenceManager:
                 }
 
             # Get behavior patterns
-            behavior_patterns_data = {}
+            behavior_patterns_data: dict[str, Any] = {}
             for pattern_id, pattern in pattern_system.behavior_patterns.items():
                 behavior_patterns_data[pattern_id] = {
                     "pattern_id": pattern.pattern_id,
@@ -163,7 +158,6 @@ class LearningPersistenceManager:
         except Exception as e:
             print(f"Error saving pattern backup: {e}")
             return False
-
 
     def load_pattern_backup(self, pattern_system) -> bool:
         """
@@ -236,8 +230,9 @@ class LearningPersistenceManager:
                     self._save_stats()
 
             print(
-                f"Restored {patterns_restored} error patterns,
-                    {cli_patterns_restored} CLI patterns, {behavior_patterns_restored} behavior patterns, {command_history_restored} command history entries from backup"
+                f"Restored {patterns_restored} error patterns, "
+                f"{cli_patterns_restored} CLI patterns, {behavior_patterns_restored} behavior patterns, "
+                f"{command_history_restored} command history entries from backup"
             )
             track_tool_usage(
                 "learning_persistence",
@@ -256,7 +251,6 @@ class LearningPersistenceManager:
         except Exception as e:
             print(f"Error loading pattern backup: {e}")
             return False
-
 
     def record_learning_event(
         self, event_type: str, event_data: Dict[str, Any]
@@ -301,7 +295,6 @@ class LearningPersistenceManager:
         except Exception as e:
             print(f"Warning: Failed to record learning event: {e}")
 
-
     def get_learning_history(self, limit: int = 100) -> List[Dict[str, Any]]:
         """
         Get recent learning history.
@@ -328,7 +321,6 @@ class LearningPersistenceManager:
             print(f"Warning: Failed to load learning history: {e}")
             return []
 
-
     def record_pattern_applied(
         self, pattern_id: str, context: Dict[str, Any] = None
     ) -> None:
@@ -350,7 +342,6 @@ class LearningPersistenceManager:
         self.stats["patterns_applied"] += 1
         self.stats["total_learning_events"] += 1
         self._save_stats()
-
 
     def record_error_prevented(
         self, pattern_id: str, error_type: str, context: Dict[str, Any] = None
@@ -376,7 +367,6 @@ class LearningPersistenceManager:
         self.stats["total_learning_events"] += 1
         self._save_stats()
 
-
     def increment_learning_sessions(self) -> None:
         """
         Increment the learning sessions counter.
@@ -384,7 +374,6 @@ class LearningPersistenceManager:
         """
         self.stats["learning_sessions"] += 1
         self._save_stats()
-
 
     def get_learning_stats(self) -> Dict[str, Any]:
         """
@@ -412,7 +401,7 @@ class LearningPersistenceManager:
 
         # Add learning history summary
         history = self.get_learning_history(1000)  # Get last 1000 events
-        event_types = {}
+        event_types: dict[str, Any] = {}
         for event in history:
             event_type = event["event_type"]
             event_types[event_type] = event_types.get(event_type, 0) + 1
@@ -423,7 +412,6 @@ class LearningPersistenceManager:
         )  # Last 24h
 
         return stats
-
 
     def export_learning_data(self, export_path: Path) -> bool:
         """
@@ -456,7 +444,6 @@ class LearningPersistenceManager:
         except Exception as e:
             print(f"Error exporting learning data: {e}")
             return False
-
 
     def import_learning_data(self, import_path: Path) -> bool:
         """
@@ -496,7 +483,6 @@ class LearningPersistenceManager:
         except Exception as e:
             print(f"Error importing learning data: {e}")
             return False
-
 
     def cleanup_old_data(self, max_age_days: int = 90) -> int:
         """

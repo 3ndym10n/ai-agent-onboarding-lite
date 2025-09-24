@@ -77,8 +77,8 @@ class DevelopmentTool(Enum):
     DUPLICATE_DETECTION = "duplicate_detection"
     IMPLEMENTATION_PLANNING = "implementation_planning"
 
-@dataclass
 
+@dataclass
 class ToolApplicationTrigger:
     """Triggers for automatic tool application."""
 
@@ -91,8 +91,8 @@ class ToolApplicationTrigger:
     priority: int = 1  # 1-5, higher = more important
     cooldown_minutes: int = 30  # Don't reapply same tool too frequently
 
-@dataclass
 
+@dataclass
 class IntelligentToolOrchestrator:
     """
     Intelligent orchestrator that automatically applies development tools based on context.
@@ -110,11 +110,9 @@ class IntelligentToolOrchestrator:
         default_factory=dict
     )
 
-
     def __post_init__(self):
         self.tool_tracker = get_tool_tracker(self.root_path)
         self._initialize_tool_triggers()
-
 
     def _initialize_tool_triggers(self):
         """Initialize intelligent triggers for automatic tool application."""
@@ -202,7 +200,6 @@ class IntelligentToolOrchestrator:
             ),
         ]
 
-
     def analyze_conversation_for_tool_application(
         self,
         conversation_history: List[Dict[str, Any]],
@@ -280,7 +277,6 @@ class IntelligentToolOrchestrator:
 
         return recommendations
 
-
     def execute_automatic_tool_application(
         self, tool_name: str, context: Dict[str, Any]
     ) -> Dict[str, Any]:
@@ -353,8 +349,8 @@ class IntelligentToolOrchestrator:
 
         return result
 
-@dataclass
 
+@dataclass
 class ConversationContext:
     """Persistent context for AI agent conversations."""
 
@@ -388,7 +384,6 @@ class ConversationContext:
 
 class IntentResolver:
     """Novel intent resolution system that maps conversations to specific actions."""
-
 
     def __init__(self):
         self.intent_patterns = {
@@ -432,7 +427,8 @@ class IntentResolver:
                 "explain",
                 "clarify",
                 "help me understand",
-                "I don't understand", "confused",
+                "I don't understand",
+                "confused",
             ],
             "priority_adjustment": [
                 "priority",
@@ -444,7 +440,6 @@ class IntentResolver:
                 "after",
             ],
         }
-
 
     def resolve_intents(self, conversation_text: str) -> List[Tuple[str, float]]:
         """Resolve user intents from conversation with confidence scores."""
@@ -472,7 +467,6 @@ class IntentResolver:
 class SafetyMonitor:
     """Real - time safety monitoring system with intervention capabilities."""
 
-
     def __init__(self):
         self.danger_patterns = [
             "delete",
@@ -497,11 +491,9 @@ class SafetyMonitor:
         self.monitoring_active = False
         self.intervention_callbacks: List[Callable] = []
 
-
     def register_intervention_callback(self, callback: Callable):
         """Register callback for safety interventions."""
         self.intervention_callbacks.append(callback)
-
 
     def assess_risk(
         self, conversation_text: str, planned_commands: List[str]
@@ -534,7 +526,6 @@ class SafetyMonitor:
             "requires_intervention": risk_level > 20,
         }
 
-
     def trigger_intervention(self, context: ConversationContext, reason: str):
         """Trigger safety intervention."""
         context.state = ConversationState.FAILED
@@ -550,11 +541,9 @@ class SafetyMonitor:
 class CommandOrchestrator:
     """Advanced command orchestration with rollback capabilities."""
 
-
     def __init__(self, root: Path):
         self.root = root
         self.execution_history: List[Dict[str, Any]] = []
-
 
     def plan_execution(
         self, intents: List[str], context: ConversationContext
@@ -593,7 +582,6 @@ class CommandOrchestrator:
 
         return execution_plan
 
-
     def _prepare_rollback_plan(self, commands: List[str]) -> Dict[str, Any]:
         """Prepare rollback strategy for command sequence."""
         rollback_plan = {
@@ -615,7 +603,6 @@ class CommandOrchestrator:
                 rollback_plan["backup_paths"].append(str(full_path))
 
         return rollback_plan
-
 
     def execute_with_rollback(
         self, execution_plan: Dict[str, Any], context: ConversationContext
@@ -663,13 +650,11 @@ class CommandOrchestrator:
 
         return results
 
-
     def _create_checkpoint(self, context: ConversationContext) -> str:
         """Create a checkpoint for rollback."""
         checkpoint_id = f"checkpoint_{int(time.time())}_{uuid.uuid4().hex[:8]}"
         # Implementation would create actual file backups
         return checkpoint_id
-
 
     def _execute_single_command(
         self, command: str, context: ConversationContext
@@ -699,7 +684,6 @@ class CommandOrchestrator:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-
     def _perform_rollback(
         self, checkpoint_id: str, context: ConversationContext
     ) -> Dict[str, Any]:
@@ -711,7 +695,6 @@ class CommandOrchestrator:
 
 class AIAgentOrchestrationLayer:
     """Revolutionary AI Agent Orchestration Layer - the main orchestrator."""
-
 
     def __init__(self, root: Path):
         self.root = root
@@ -744,7 +727,6 @@ class AIAgentOrchestrationLayer:
         # Load existing sessions from storage
         self._load_existing_sessions()
 
-
     def _load_existing_sessions(self):
         """Load existing sessions from persistent storage."""
         try:
@@ -756,7 +738,6 @@ class AIAgentOrchestrationLayer:
                     self.sessions[session_id] = context
         except Exception as e:
             print(f"Warning: Could not load existing sessions: {e}")
-
 
     def create_session(self, user_id: str = "default") -> str:
         """Create a new conversation session."""
@@ -778,7 +759,6 @@ class AIAgentOrchestrationLayer:
             self.session_storage.save_session(context)
 
             return session_id
-
 
     def process_conversation(self, session_id: str, user_input: str) -> Dict[str, Any]:
         """Process user conversation through multi - stage decision pipeline."""
@@ -808,7 +788,6 @@ class AIAgentOrchestrationLayer:
         self.session_storage.save_session(context)
 
         return pipeline_result
-
 
     def _enhance_context_automatically(
         self, context: ConversationContext, user_input: str
@@ -881,12 +860,10 @@ class AIAgentOrchestrationLayer:
 
         except Exception as e:
             enhancement_result["error"] = str(e)
-            # Don't fail the pipeline if context enhancement fails - it's enhancement,
-                not requirement
+            # Don't fail the pipeline if context enhancement fails - it's enhancement, not requirement
 
         enhancement_result["enhancement_time"] = time.time() - start_time
         return enhancement_result
-
 
     def _extract_topic_from_input(self, user_input: str) -> str:
         """Extract topic from user input for context matching."""
@@ -912,7 +889,6 @@ class AIAgentOrchestrationLayer:
                 return topic
 
         return "general"  # Default topic
-
 
     def _enhance_conversation_context(
         self, context: ConversationContext, memories: List[Any], user_input: str
@@ -961,7 +937,6 @@ class AIAgentOrchestrationLayer:
                 }
             )
 
-
     def _track_context_continuity(
         self, context: ConversationContext, user_input: str, memories: List[Any]
     ) -> None:
@@ -989,7 +964,6 @@ class AIAgentOrchestrationLayer:
         except Exception:
             # Don't fail if continuity tracking fails
             pass
-
 
     def _run_decision_pipeline(
         self, context: ConversationContext, user_input: str
@@ -1166,7 +1140,6 @@ class AIAgentOrchestrationLayer:
 
         return pipeline_results
 
-
     def _calculate_confidence_scores(
         self, context: ConversationContext, user_input: str
     ) -> Dict[str, float]:
@@ -1198,7 +1171,6 @@ class AIAgentOrchestrationLayer:
             "risk_penalty": risk_penalty,
             "overall": overall_confidence,
         }
-
 
     def _generate_ai_agent_response(
         self, context: ConversationContext, pipeline_results: Dict[str, Any]
@@ -1237,8 +1209,10 @@ class AIAgentOrchestrationLayer:
         # Generate response based on confidence, but always include tool context
         if confidence > 0.8:
             response += f"🎯 **High Confidence Response**\n"
-            response += f"Based on the tool analysis above and our conversation,
-                I'll help you with:\n"
+            response += (
+                "Based on the tool analysis above and our conversation, "
+                "I'll help you with:\n"
+            )
             for intent, score in intents[:2]:
                 response += f"  • {intent.replace('_', ' ').title()} (confidence: {score:.1f})\n"
             response += f"\nPlanned commands: {', '.join(execution_plan['commands'])}\n"
@@ -1251,16 +1225,20 @@ class AIAgentOrchestrationLayer:
             )
             for intent, score in intents[:2]:
                 response += f"  • {intent.replace('_', ' ').title()} (confidence: {score:.1f})\n"
-            response += f"\nWith the insights from the tools above,
-                planned commands: {', '.join(execution_plan['commands'])}\n"
+            response += (
+                "\nWith the insights from the tools above, "
+                f"planned commands: {', '.join(execution_plan['commands'])}\n"
+            )
             response += (
                 "Does this tool-enhanced understanding match what you're looking for?"
             )
 
         else:
             response += f"❓ **Clarification Needed - Tools Provide Context**\n"
-            response += f"While the tools above give us some insights,
-                I need clarification on your main goal:\n"
+            response += (
+                "While the tools above give us some insights, "
+                "I need clarification on your main goal:\n"
+            )
             for intent, score in intents[:3]:
                 response += f"  • {intent.replace('_', ' ').title()} (confidence: {score:.1f})\n"
             response += "\nThe tool analysis will help me give you a better response once I understand your priority."
@@ -1269,7 +1247,6 @@ class AIAgentOrchestrationLayer:
         response += f"\n💡 *This response is enhanced by ai_onboard tool analysis to ensure quality development practices.*"
 
         return response
-
 
     def execute_plan(self, session_id: str) -> Dict[str, Any]:
         """Execute the planned commands for a session."""
@@ -1308,18 +1285,15 @@ class AIAgentOrchestrationLayer:
 
         return execution_result
 
-
     def list_sessions(self, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """List all available sessions."""
         return self.session_storage.list_sessions(user_id)
-
 
     def delete_session(self, session_id: str) -> bool:
         """Delete a session."""
         if session_id in self.sessions:
             del self.sessions[session_id]
         return self.session_storage.delete_session(session_id)
-
 
     def cleanup_expired_sessions(self, max_age_hours: int = 24) -> int:
         """Clean up expired sessions."""
@@ -1340,14 +1314,12 @@ class AIAgentOrchestrationLayer:
 
         return deleted_count
 
-
     def _handle_safety_intervention(self, context: ConversationContext, reason: str):
         """Handle safety intervention callback."""
         print(f"🚨 SAFETY INTERVENTION: {reason}")
         print(f"   Session: {context.session_id}")
         print(f"   User: {context.user_id}")
         # Could send alerts, log to security system, etc.
-
 
     def get_session_status(self, session_id: str) -> Dict[str, Any]:
         """Get comprehensive session status."""
@@ -1374,7 +1346,9 @@ class AIAgentOrchestrationLayer:
             "last_activity": context.last_activity,
         }
 
+
 # Factory function for easy instantiation
+
 
 def create_ai_agent_orchestrator(root: Path) -> AIAgentOrchestrationLayer:
     """Create an AI Agent Orchestration Layer instance."""

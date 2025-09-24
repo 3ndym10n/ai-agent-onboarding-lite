@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 from . import telemetry, utils
+import json
 
 
 def parse_budget(s: str) -> int:
@@ -438,10 +439,7 @@ def generate_optimization_proposals(
                 "target": "system",
                 "title": "Capture profiling baseline",
                 "description": "Run cProfile / py - spy to gather flame graphs and \
-                    identify real hotspots", "evidence": {"reason": "No recent test report with timings found"}, "estimated_gain": "TBD", "risk": "low",
-                "tech": "profiling",
-                "branch_required": False,
-                "confidence": 0.7,
+                    identify real hotspots", "evidence": {"reason": "No recent test report with timings found"}, "estimated_gain": "TBD", "risk": "low", "tech": "profiling", "branch_required": False, "confidence": 0.7,
             }
         )
 

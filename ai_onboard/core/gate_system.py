@@ -24,8 +24,8 @@ class GateType(Enum):
     CONFIRMATION_REQUIRED = "confirmation_required"
     VISION_MISSING = "vision_missing"
 
-@dataclass
 
+@dataclass
 class GateRequest:
     """Data structure for gate requests."""
 
@@ -52,7 +52,6 @@ def create_progress_bar(percentage: float, width: int = 20) -> str:
 class GateSystem:
     """Manages file - based communication between ai - onboard and AI agents."""
 
-
     def __init__(self, project_root: Path):
         self.project_root = project_root
         self.gates_dir = project_root / ".ai_onboard" / "gates"
@@ -65,7 +64,6 @@ class GateSystem:
         # Confirmation code removed (was previously used for strict approval)
         # Cursor rules file (best - effort, ignored if unsupported). Not committed.
         self.cursor_rules_file = self.project_root / ".cursorrules"
-
 
     def create_gate(self, gate_request: GateRequest) -> Dict[str, Any]:
         """Create a gate that requires AI agent collaboration.
@@ -108,7 +106,8 @@ class GateSystem:
         print("[CLOCK] Waiting for AI agent to ask user questions...")
         print(f"[INFO] If you're an AI agent, check: {self.current_gate_file}")
         print(
-            "[INFO] If you're a human, tell the AI agent: " "'Please read the gate file and ask me the questions'"
+            "[INFO] If you're a human, tell the AI agent: "
+            "'Please read the gate file and ask me the questions'"
         )
 
         # Wait for initial responses (step 1)
@@ -157,7 +156,6 @@ class GateSystem:
 
         return confirmation_response
 
-
     def _generate_gate_prompt(self, gate_request: GateRequest) -> str:
         """Generate a structured prompt for the AI agent."""
 
@@ -187,9 +185,9 @@ class GateSystem:
                 totals_line = None
                 if isinstance(exec_summary, dict):
                     if "total_tasks_completed" in exec_summary:
-                        totals_line =                             f"- **Total Tasks Completed**: {exec_summary.get('total_tasks_completed')}\n"
+                        totals_line = f"- **Total Tasks Completed**: {exec_summary.get('total_tasks_completed')}\n"
                     elif "total_proposals" in exec_summary:
-                        totals_line =                             f"- **Total Proposals**: {exec_summary.get('total_proposals')}\n"
+                        totals_line = f"- **Total Proposals**: {exec_summary.get('total_proposals')}\n"
                 if totals_line:
                     prompt += totals_line
 
@@ -336,7 +334,6 @@ Create a JSON file at `.ai_onboard / gates / gate_response.json` with this struc
 
         return prompt
 
-
     def _wait_for_response(
         self, timeout_seconds: int = 30, require_proceed: bool = False
     ) -> Dict[str, Any]:
@@ -398,7 +395,6 @@ Create a JSON file at `.ai_onboard / gates / gate_response.json` with this struc
             "timestamp": time.time(),
         }
 
-
     def _validate_response(self, response: Dict[str, Any]) -> bool:
         """Validate the structure of the AI agent response and detect fake responses."""
         required_fields = ["user_responses", "user_decision", "timestamp"]
@@ -422,7 +418,12 @@ Create a JSON file at `.ai_onboard / gates / gate_response.json` with this struc
         # Detect AI - generated responses
         fake_patterns = [
             "based on the context",
-            "i'll assume", "the user likely", "given the project", "i'll answer", "proceeding with", "assuming the user",
+            "i'll assume",
+            "the user likely",
+            "given the project",
+            "i'll answer",
+            "proceeding with",
+            "assuming the user",
         ]
 
         for response_text in user_responses:
@@ -442,7 +443,6 @@ Create a JSON file at `.ai_onboard / gates / gate_response.json` with this struc
 
         return True
 
-
     def _generate_confirmation_code(self) -> str:
         """Generate a short, hard - to - guess confirmation code."""
         import random
@@ -450,7 +450,6 @@ Create a JSON file at `.ai_onboard / gates / gate_response.json` with this struc
 
         alphabet = string.ascii_uppercase + string.digits
         return "".join(random.choice(alphabet) for _ in range(6))
-
 
     def _generate_confirmation_prompt(
         self, gate_request: GateRequest, initial_response: Dict[str, Any]
@@ -490,7 +489,6 @@ Create a JSON file at `.ai_onboard / gates / gate_response.json` with this struc
         )
         return "\n".join(lines)
 
-
     def _cleanup_gate(self):
         """Clean up gate files after successful collaboration."""
         files_to_clean = [self.current_gate_file, self.response_file, self.status_file]
@@ -505,7 +503,6 @@ Create a JSON file at `.ai_onboard / gates / gate_response.json` with this struc
         except Exception:
             pass
 
-
     def is_gate_active(self) -> bool:
         """Check if there's currently an active gate."""
         if not self.status_file.exists():
@@ -516,7 +513,6 @@ Create a JSON file at `.ai_onboard / gates / gate_response.json` with this struc
             return status.get("gate_active", False)
         except (json.JSONDecodeError, FileNotFoundError, OSError):
             return False
-
 
     def _finalize_gate_files(self) -> None:
         """Best - effort to make gate files immediately discoverable by external agents.
@@ -548,7 +544,6 @@ Create a JSON file at `.ai_onboard / gates / gate_response.json` with this struc
             # Best - effort only; do not fail gate creation
             pass
 
-
     def _cursor_rules_contract(self, code_hint: Optional[str]) -> str:
         """Return a Cursor rules contract that nudges chat agents to follow gates.
 
@@ -564,8 +559,12 @@ Create a JSON file at `.ai_onboard / gates / gate_response.json` with this struc
             "When a gate is active (.ai_onboard / gates / current_gate.md exists):",
             "1) Read the gate and extract the 'Questions for User'.",
             "2) Ask the user those questions in chat. Do NOT answer yourself.",
-            "3) Wait for the user's replies. Summarize them back to the user.", "4) Show: 'Proposed Answers → Please type: CONFIRM: <CODE> to approve, "
-            "or provide corrections.'", "5) Only after the user types CONFIRM with the exact code, call " "submit_gate_response(...).", "6) If corrections are provided, update and ask for CONFIRM again.",
+            "3) Wait for the user's replies. Summarize them back to the user.",
+            "4) Show: 'Proposed Answers → Please type: CONFIRM: <CODE> to approve, "
+            "or provide corrections.'",
+            "5) Only after the user types CONFIRM with the exact code, call "
+            "submit_gate_response(...).",
+            "6) If corrections are provided, update and ask for CONFIRM again.",
             "7) If no confirmation, STOP.",
             "",
             "Hard Rules:",
@@ -580,7 +579,6 @@ Create a JSON file at `.ai_onboard / gates / gate_response.json` with this struc
             )
         return "\n".join(header) + "\n"
 
-
     def _write_cursor_rules(self, content: str) -> None:
         try:
             self.cursor_rules_file.write_text(content, encoding="utf - 8")
@@ -588,7 +586,9 @@ Create a JSON file at `.ai_onboard / gates / gate_response.json` with this struc
             # Best - effort only
             pass
 
+
 # Convenience functions for common gate types
+
 
 def create_clarification_gate(
     project_root: Path, confidence: float, issues: List[str], context: Dict[str, Any]

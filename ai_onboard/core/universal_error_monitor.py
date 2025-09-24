@@ -22,7 +22,6 @@ from .tool_usage_tracker import track_tool_usage
 class UniversalErrorMonitor:
     """Monitors and processes errors from any agent interaction."""
 
-
     def __init__(self, root: Path):
         self.root = root
         self.debugger = smart_debugger.SmartDebugger(root)
@@ -37,12 +36,10 @@ class UniversalErrorMonitor:
         self.capability_usage_path = root / ".ai_onboard" / "capability_usage.json"
         self.ensure_directories()
 
-
     def ensure_directories(self):
         """Ensure required directories exist."""
         utils.ensure_dir(self.error_log_path.parent)
         utils.ensure_dir(self.capability_usage_path.parent)
-
 
     def intercept_error(
         self, error: Exception, context: Dict[str, Any] = None
@@ -83,8 +80,7 @@ class UniversalErrorMonitor:
         try:
             debug_result = self.debugger.analyze_error(error_data)
         except Exception as debug_error:
-            # If debugger fails,
-                log the debugging error but don't fail the error interception
+            # If debugger fails, log the debugging error but don't fail the error interception
             debug_error_data = {
                 "type": type(debug_error).__name__,
                 "message": str(debug_error),
@@ -153,12 +149,10 @@ class UniversalErrorMonitor:
             "handled": True,
         }
 
-
     def monitor_command_execution(
         self, command: str, agent_type: str = "foreground", session_id: str = None
     ) -> Callable:
         """Create a context manager to monitor command execution."""
-
 
         class CommandMonitor:
 
@@ -169,10 +163,8 @@ class UniversalErrorMonitor:
                 self.session_id = session_id
                 self.start_time = datetime.now()
 
-
             def __enter__(self):
                 return self
-
 
             def __exit__(self, exc_type, exc_val, exc_tb):
                 if exc_type is not None:
@@ -205,8 +197,7 @@ class UniversalErrorMonitor:
                             },
                         )
                     except Exception as usage_error:
-                        # If capability usage recording fails,
-                            log it but don't fail the command
+                        # If capability usage recording fails, log it but don't fail the command
                         print(
                             f"Warning: Capability usage recording failed: {usage_error}"
                         )
@@ -216,14 +207,12 @@ class UniversalErrorMonitor:
 
         return CommandMonitor(self, command, agent_type, session_id)
 
-
     def track_capability_usage(self, capability: str, context: Dict[str, Any] = None):
         """Track when system capabilities are used."""
         if context is None:
             context = {}
 
         self._record_capability_usage(capability, context)
-
 
     def get_usage_report(self) -> Dict[str, Any]:
         """Get a report of system capability usage."""
@@ -252,13 +241,11 @@ class UniversalErrorMonitor:
             "error_patterns": self.analyze_error_patterns(days_back=7),
         }
 
-
     def _log_error(self, error_data: Dict[str, Any]):
         """Log error to persistent storage."""
         with open(self.error_log_path, "a", encoding="utf-8") as f:
             json.dump(error_data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
-
 
     def _record_capability_usage(self, capability: str, context: Dict[str, Any]):
         """Record capability usage for tracking."""
@@ -288,7 +275,6 @@ class UniversalErrorMonitor:
 
         utils.write_json(self.capability_usage_path, usage_data)
 
-
     def _get_recent_errors(self, limit: int = 10) -> list:
         """Get recent errors from the log."""
         if not self.error_log_path.exists():
@@ -313,7 +299,6 @@ class UniversalErrorMonitor:
 
         return errors
 
-
     def _calculate_error_rate(self) -> float:
         """Calculate error rate over recent usage."""
         usage_data = utils.read_json(self.capability_usage_path, default={})
@@ -326,7 +311,6 @@ class UniversalErrorMonitor:
             1 for use in recent_usage if not use.get("context", {}).get("success", True)
         )
         return error_count / len(recent_usage)
-
 
     def analyze_error_patterns(self, days_back: int = 7) -> Dict[str, Any]:
         """Analyze error patterns from logged errors."""
@@ -368,7 +352,6 @@ class UniversalErrorMonitor:
             "analysis_period_days": days_back,
             "total_errors_analyzed": len(errors),
         }
-
 
     def _extract_error_patterns(self, errors: List[Dict[str, Any]]) -> Dict[str, Any]:
         """Extract error patterns from error logs."""
@@ -425,7 +408,6 @@ class UniversalErrorMonitor:
 
         return patterns
 
-
     def _generate_error_insights(
         self, patterns: Dict[str, Any], errors: List[Dict[str, Any]]
     ) -> List[str]:
@@ -479,7 +461,6 @@ class UniversalErrorMonitor:
             insights.append(f"Total errors in period: {total_errors}")
 
         return insights
-
 
     def _generate_error_recommendations(
         self, patterns: Dict[str, Any], insights: List[str]
@@ -540,7 +521,6 @@ class UniversalErrorMonitor:
 
         return recommendations
 
-
     def _enrich_error_context(
         self, error: Exception, context: Dict[str, Any]
     ) -> Dict[str, Any]:
@@ -581,7 +561,6 @@ class UniversalErrorMonitor:
 
         return enriched
 
-
     def _get_system_info(self) -> Dict[str, Any]:
         """Get comprehensive system information."""
         try:
@@ -599,7 +578,6 @@ class UniversalErrorMonitor:
             }
         except Exception as e:
             return {"system_info_error": str(e)}
-
 
     def _get_performance_metrics(self) -> Dict[str, Any]:
         """Get performance metrics at the time of error."""
@@ -619,7 +597,6 @@ class UniversalErrorMonitor:
         except Exception as e:
             return {"performance_metrics_error": str(e)}
 
-
     def _get_environment_info(self) -> Dict[str, Any]:
         """Get environment and configuration information."""
         try:
@@ -637,7 +614,6 @@ class UniversalErrorMonitor:
             }
         except Exception as e:
             return {"environment_info_error": str(e)}
-
 
     def _analyze_stack_frames(self, error: Exception) -> Dict[str, Any]:
         """Analyze stack frames for additional context."""
@@ -691,7 +667,6 @@ class UniversalErrorMonitor:
         except Exception as e:
             return {"stack_analysis_error": str(e)}
 
-
     def _get_recent_activity_context(self, context: Dict[str, Any]) -> Dict[str, Any]:
         """Get recent activity context around the error."""
         try:
@@ -720,7 +695,6 @@ class UniversalErrorMonitor:
             }
         except Exception as e:
             return {"recent_activity_error": str(e)}
-
 
     def _get_configuration_snapshot(self) -> Dict[str, Any]:
         """Get a snapshot of current configuration state."""
@@ -759,7 +733,6 @@ class UniversalErrorMonitor:
 
         except Exception as e:
             return {"configuration_snapshot_error": str(e)}
-
 
     def _find_related_error_patterns(
         self, error: Exception, context: Dict[str, Any]
@@ -805,7 +778,6 @@ class UniversalErrorMonitor:
         except Exception as e:
             return {"related_patterns_error": str(e)}
 
-
     def _get_resource_usage_snapshot(self) -> Dict[str, Any]:
         """Get a snapshot of resource usage at error time."""
         try:
@@ -846,10 +818,10 @@ def get_error_monitor(root: Path) -> UniversalErrorMonitor:
 
 # Global error handler for uncaught exceptions
 
+
 def setup_global_error_handler(root: Path):
     """Set up global error handler for uncaught exceptions."""
     monitor = get_error_monitor(root)
-
 
     def global_exception_handler(exc_type, exc_value, exc_traceback):
         if issubclass(exc_type, KeyboardInterrupt):

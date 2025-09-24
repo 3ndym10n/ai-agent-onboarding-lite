@@ -24,10 +24,12 @@ from ..core.continuous_improvement_validator import (
 def add_enhanced_testing_commands(subparsers):
     """Add enhanced testing commands to the CLI."""
     parser = subparsers.add_parser(
-        "enhanced - testing",
+        "enhanced-testing",
         help="Run enhanced tests with continuous improvement validation",
-        description="Execute comprehensive testing with validation,
-            performance tracking, and reporting",
+        description=(
+            "Execute comprehensive testing with validation, "
+            "performance tracking, and reporting"
+        ),
     )
 
     subcommands = parser.add_subparsers(
@@ -41,7 +43,7 @@ def add_enhanced_testing_commands(subparsers):
         description="Execute pytest with continuous improvement validation integration",
     )
     run_parser.add_argument(
-        "--test - path",
+        "--test-path",
         default="tests/",
         help="Path to test directory or specific test file",
     )
@@ -52,7 +54,7 @@ def add_enhanced_testing_commands(subparsers):
         "--coverage", action="store_true", help="Generate coverage report"
     )
     run_parser.add_argument(
-        "--ci - validation",
+        "--ci-validation",
         action="store_true",
         help="Generate continuous improvement validation report",
     )
@@ -272,8 +274,8 @@ def _handle_system_validation(args: argparse.Namespace, root: Path) -> None:
         print(f"\n⏱️ Validation completed in {execution_time:.2f} seconds")
         print(f"📊 System Health Score: {report.system_health_score:.1f}%")
         print(
-            f"🧪 Tests: {report.total_tests} total,
-                {report.passed_tests} passed, {report.failed_tests} failed"
+            f"🧪 Tests: {report.total_tests} total, "
+            f"{report.passed_tests} passed, {report.failed_tests} failed"
         )
 
         # Generate report in requested format

@@ -14,8 +14,8 @@ from typing import Any, Callable, Dict, List, Optional
 from .intelligent_tool_orchestrator import IntelligentToolOrchestrator
 from .tool_usage_tracker import get_tool_tracker
 
-@dataclass
 
+@dataclass
 class DevelopmentActivity:
     """Represents a detected development activity."""
 
@@ -27,8 +27,8 @@ class DevelopmentActivity:
     confidence: float
     triggered_tools: List[str] = field(default_factory=list)
 
-@dataclass
 
+@dataclass
 class ProactiveTriggerRule:
     """Rules for automatically triggering tool application."""
 
@@ -48,7 +48,6 @@ class IntelligentDevelopmentMonitor:
     This system runs continuously and automatically applies development tools
     based on detected activities, context, and patterns.
     """
-
 
     def __init__(self, root_path: Path):
         self.root_path = root_path
@@ -72,7 +71,6 @@ class IntelligentDevelopmentMonitor:
             "conversation": [],
             "command_execution": [],
         }
-
 
     def _initialize_trigger_rules(self) -> List[ProactiveTriggerRule]:
         """Initialize proactive trigger rules."""
@@ -140,7 +138,6 @@ class IntelligentDevelopmentMonitor:
             ),
         ]
 
-
     def start_monitoring(self):
         """Start the intelligent development monitoring."""
         if self.monitoring_active:
@@ -155,14 +152,12 @@ class IntelligentDevelopmentMonitor:
         print("🧠 Intelligent Development Monitor started")
         print("   📊 Monitoring for automatic tool application...")
 
-
     def stop_monitoring(self):
         """Stop the intelligent development monitoring."""
         self.monitoring_active = False
         if self.monitor_thread:
             self.monitor_thread.join(timeout=5.0)
         print("🧠 Intelligent Development Monitor stopped")
-
 
     def _monitoring_loop(self):
         """Main monitoring loop."""
@@ -186,7 +181,6 @@ class IntelligentDevelopmentMonitor:
             # Check every 30 seconds
             time.sleep(30)
 
-
     def _detect_activities(self) -> List[DevelopmentActivity]:
         """Detect new development activities."""
         activities = []
@@ -205,25 +199,21 @@ class IntelligentDevelopmentMonitor:
 
         return activities
 
-
     def _detect_file_changes(self) -> List[DevelopmentActivity]:
         """Detect recent file changes."""
         # This would integrate with file system monitoring
         # For now, return empty list as we need to implement file watching
         return []
 
-
     def _detect_git_operations(self) -> List[DevelopmentActivity]:
         """Detect git operations."""
         # This would check git status, recent commits, etc.
         return []
 
-
     def _detect_test_activities(self) -> List[DevelopmentActivity]:
         """Detect test execution activities."""
         # This would monitor test execution
         return []
-
 
     def _process_activity(self, activity: DevelopmentActivity):
         """Process a detected activity and apply tools if triggered."""
@@ -249,7 +239,6 @@ class IntelligentDevelopmentMonitor:
                 callback(activity)
             except Exception as e:
                 print(f"⚠️ Activity callback error: {e}")
-
 
     def _rule_matches_activity(
         self, rule: ProactiveTriggerRule, activity: DevelopmentActivity
@@ -288,7 +277,6 @@ class IntelligentDevelopmentMonitor:
 
         return True
 
-
     def _should_trigger_rule(self, rule: ProactiveTriggerRule) -> bool:
         """Check if a rule should be triggered based on cooldown."""
 
@@ -297,7 +285,6 @@ class IntelligentDevelopmentMonitor:
 
         time_since_last = time.time() - rule.last_triggered
         return time_since_last >= rule.cooldown_seconds
-
 
     def _execute_trigger_rule(
         self, rule: ProactiveTriggerRule, activity: DevelopmentActivity
@@ -342,12 +329,10 @@ class IntelligentDevelopmentMonitor:
             else:
                 print(f"❌ {tool_name} failed: {result.get('error', 'Unknown error')}")
 
-
     def register_activity_callback(self, activity_type: str, callback: Callable):
         """Register a callback for specific activity types."""
         if activity_type in self.activity_callbacks:
             self.activity_callbacks[activity_type].append(callback)
-
 
     def get_monitoring_status(self) -> Dict[str, Any]:
         """Get current monitoring status."""
@@ -364,7 +349,6 @@ class IntelligentDevelopmentMonitor:
                 for act in self.activity_history[-10:]  # Last 10 activities
             ],
         }
-
 
     def manually_trigger_analysis(
         self, analysis_type: str, context: Dict[str, Any] = None
@@ -406,6 +390,7 @@ class IntelligentDevelopmentMonitor:
                     print(f"❌ {tool} failed")
 
         print("🔍 Manual analysis trigger completed")
+
 
 # Global monitor instance
 _monitor_instance: Optional[IntelligentDevelopmentMonitor] = None

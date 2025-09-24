@@ -24,7 +24,6 @@ class WBSAutoUpdateEngine:
     automatically updates the WBS to reflect current project status.
     """
 
-
     def __init__(self, root: Path):
         self.root = root
         self.project_plan_path = root / ".ai_onboard" / "project_plan.json"
@@ -34,19 +33,21 @@ class WBSAutoUpdateEngine:
         # Ensure directories exist
         self.backup_dir.mkdir(parents=True, exist_ok=True)
 
-        # Completion detection sources
+        # Enhanced completion detection sources
         self.completion_sources = [
+            self._check_git_commits,  # NEW: Git commit analysis
+            self._check_code_quality_metrics,  # NEW: Quality metrics integration
             self._check_code_implementation,
             self._check_test_coverage,
             self._check_documentation,
             self._check_cli_commands,
             self._check_module_structure,
+            self._check_continuous_improvement,  # NEW: CI system integration
         ]
 
         # Track recently updated tasks to avoid redundant checks
         self.recent_updates: Set[str] = set()
         self.update_cooldown = 300  # 5 minutes cooldown between checks
-
 
     def auto_update_wbs(self, force: bool = False) -> Dict[str, Any]:
         """
@@ -145,7 +146,6 @@ class WBSAutoUpdateEngine:
             "duration": time.time() - start_time,
         }
 
-
     def _get_candidate_tasks(
         self, wbs_data: Dict[str, Any], force: bool = False
     ) -> Dict[str, Dict]:
@@ -173,7 +173,6 @@ class WBSAutoUpdateEngine:
                 candidates[task_id] = subtask_data
 
         return candidates
-
 
     def _assess_task_completion(
         self, task_id: str, task_data: Dict[str, Any]
@@ -217,7 +216,6 @@ class WBSAutoUpdateEngine:
             "reasons": completion_reasons,
         }
 
-
     def _check_code_implementation(
         self, task_id: str, task_name: str, description: str
     ) -> Dict[str, Any]:
@@ -251,7 +249,6 @@ class WBSAutoUpdateEngine:
             "reason": reason,
         }
 
-
     def _check_test_coverage(
         self, task_id: str, task_name: str, description: str
     ) -> Dict[str, Any]:
@@ -271,7 +268,6 @@ class WBSAutoUpdateEngine:
                 reason = "Test files found"
 
         return {"source": "test_coverage", "confidence": confidence, "reason": reason}
-
 
     def _check_documentation(
         self, task_id: str, task_name: str, description: str
@@ -293,7 +289,6 @@ class WBSAutoUpdateEngine:
 
         return {"source": "documentation", "confidence": confidence, "reason": reason}
 
-
     def _check_cli_commands(
         self, task_id: str, task_name: str, description: str
     ) -> Dict[str, Any]:
@@ -313,7 +308,6 @@ class WBSAutoUpdateEngine:
                 reason = "CLI implementation found"
 
         return {"source": "cli_commands", "confidence": confidence, "reason": reason}
-
 
     def _check_module_structure(
         self, task_id: str, task_name: str, description: str
@@ -339,6 +333,188 @@ class WBSAutoUpdateEngine:
             "reason": reason,
         }
 
+    def _check_git_commits(
+        self, task_id: str, task_name: str, description: str
+    ) -> Dict[str, Any]:
+        """Check git commits for task completion evidence."""
+        confidence = 0.0
+        reason = None
+
+        try:
+            import subprocess
+
+            # Extract key words from task name for commit message analysis
+            task_words = [word.lower() for word in task_name.split() if len(word) > 3]
+
+            if not task_words:
+                return {"source": "git_commits", "confidence": 0.0, "reason": None}
+
+            # Get recent commit messages (last 20 commits)
+            result = subprocess.run(
+                ["git", "log", "--oneline", "-20", "--no-merges"],
+                capture_output=True,
+                text=True,
+                cwd=self.root,
+                timeout=10,
+            )
+
+            if result.returncode == 0:
+                commit_messages = result.stdout.lower()
+
+                # Check if task keywords appear in recent commits
+                matching_commits = 0
+                for word in task_words:
+                    if word in commit_messages:
+                        matching_commits += 1
+
+                if matching_commits > 0:
+                    # Higher confidence for more matching words
+                    confidence = min(0.8, matching_commits * 0.3)
+                    reason = f"Found {matching_commits} related commits"
+
+                    # Bonus confidence for completion keywords in commits
+                    completion_keywords = [
+                        "complete",
+                        "finish",
+                        "done",
+                        "implement",
+                        "add",
+                        "fix",
+                    ]
+                    for keyword in completion_keywords:
+                        if keyword in commit_messages:
+                            confidence = min(0.9, confidence + 0.1)
+                            break
+
+        except Exception as e:
+            # Git not available or other error - don't fail the assessment
+            pass
+
+        return {"source": "git_commits", "confidence": confidence, "reason": reason}
+
+    def _check_code_quality_metrics(
+        self, task_id: str, task_name: str, description: str
+    ) -> Dict[str, Any]:
+        """Check code quality metrics for task completion evidence."""
+        confidence = 0.0
+        reason = None
+
+        try:
+            # Try to get quality metrics from continuous improvement system
+            from .continuous_improvement_system import get_continuous_improvement_system
+
+            ci_system = get_continuous_improvement_system(self.root)
+            quality_data = ci_system.get_latest_quality_metrics()
+
+            if quality_data and quality_data.get("success"):
+                metrics = quality_data.get("metrics", {})
+
+                # Check if quality metrics indicate task completion
+                code_quality_score = metrics.get("code_quality_score", 0)
+                test_coverage = metrics.get("test_coverage", 0)
+
+                # Higher quality scores suggest task completion
+                if code_quality_score > 0.7:
+                    confidence += 0.4
+                if test_coverage > 0.6:
+                    confidence += 0.3
+
+                if confidence > 0:
+                    reason = f"Quality metrics: {code_quality_score:.1f} quality, {test_coverage:.1f} coverage"
+
+        except Exception:
+            # CI system not available - try alternative quality checks
+            try:
+                # Check for recent quality improvements in validation reports
+                validation_path = self.root / ".ai_onboard" / "validation_report.json"
+                if validation_path.exists():
+                    validation_data = utils.read_json(validation_path, default={})
+
+                    issues = validation_data.get("issues", [])
+                    high_issues = [i for i in issues if i.get("severity") == "high"]
+
+                    # Fewer high-severity issues suggests task completion
+                    if len(issues) > 0:
+                        issue_ratio = len(high_issues) / len(issues)
+                        if issue_ratio < 0.2:  # Less than 20% high-severity issues
+                            confidence = 0.5
+                            reason = f"Low issue ratio: {len(high_issues)}/{len(issues)} high-severity"
+
+            except Exception:
+                pass
+
+        return {
+            "source": "code_quality_metrics",
+            "confidence": confidence,
+            "reason": reason,
+        }
+
+    def _check_continuous_improvement(
+        self, task_id: str, task_name: str, description: str
+    ) -> Dict[str, Any]:
+        """Check continuous improvement system for task completion evidence."""
+        confidence = 0.0
+        reason = None
+
+        try:
+            from .continuous_improvement_system import get_continuous_improvement_system
+
+            ci_system = get_continuous_improvement_system(self.root)
+
+            # Check if task appears in recent improvement cycles
+            improvement_data = ci_system.get_recent_improvements(limit=10)
+
+            if improvement_data:
+                task_words = [
+                    word.lower() for word in task_name.split() if len(word) > 3
+                ]
+
+                for improvement in improvement_data:
+                    improvement_text = str(improvement).lower()
+
+                    matching_words = sum(
+                        1 for word in task_words if word in improvement_text
+                    )
+                    if matching_words > 0:
+                        confidence += min(0.6, matching_words * 0.2)
+                        reason = f"Found in {matching_words} improvement entries"
+                        break
+
+        except Exception:
+            # CI system not available - check for kaizen logs
+            try:
+                kaizen_path = self.root / ".ai_onboard" / "kaizen_history.jsonl"
+                if kaizen_path.exists():
+                    with open(kaizen_path, "r", encoding="utf-8") as f:
+                        lines = f.readlines()[-10:]  # Check last 10 entries
+
+                    task_words = [
+                        word.lower() for word in task_name.split() if len(word) > 3
+                    ]
+
+                    for line in lines:
+                        try:
+                            entry = json.loads(line.strip())
+                            entry_text = str(entry).lower()
+
+                            matching_words = sum(
+                                1 for word in task_words if word in entry_text
+                            )
+                            if matching_words > 0:
+                                confidence = min(0.5, matching_words * 0.2)
+                                reason = f"Found in kaizen history"
+                                break
+                        except:
+                            pass
+
+            except Exception:
+                pass
+
+        return {
+            "source": "continuous_improvement",
+            "confidence": confidence,
+            "reason": reason,
+        }
 
     def _check_implementation_files(self, task_name: str) -> bool:
         """Check if implementation files exist for the given task."""
@@ -360,7 +536,6 @@ class WBSAutoUpdateEngine:
 
         return False
 
-
     def _check_test_files(self, task_name: str) -> bool:
         """Check if test files exist for the given task."""
         # Look for test files that might correspond to the task
@@ -376,7 +551,6 @@ class WBSAutoUpdateEngine:
             pass
 
         return False
-
 
     def _check_documentation_files(self, task_name: str) -> bool:
         """Check if documentation files exist for the given task."""
@@ -395,7 +569,6 @@ class WBSAutoUpdateEngine:
 
         return False
 
-
     def _check_cli_implementation(self, task_name: str) -> bool:
         """Check if CLI implementation exists for the given task."""
         # Look for CLI-related files and code
@@ -411,13 +584,11 @@ class WBSAutoUpdateEngine:
 
         return False
 
-
     def _check_structural_changes(self, task_name: str) -> bool:
         """Check if structural changes exist for the given task."""
         # This is a basic check - look for recent file changes
         # In a real implementation, this would check git history or file timestamps
         return True  # Placeholder - assume structural changes exist
-
 
     def _update_task_completion(
         self,
@@ -463,9 +634,15 @@ class WBSAutoUpdateEngine:
                     )
 
                     if sync_result["success"]:
+                        # NEW: Trigger dependency cascade updates
+                        cascade_result = self._trigger_dependency_cascade(task_id)
+
                         return {
                             "success": True,
                             "affected_views": sync_result.get("affected_views", []),
+                            "cascade_updates": cascade_result.get(
+                                "triggered_tasks", []
+                            ),
                         }
 
                     return {
@@ -478,7 +655,6 @@ class WBSAutoUpdateEngine:
         except Exception as e:
             return {"success": False, "error": f"Failed to update task: {str(e)}"}
 
-
     def _load_wbs(self) -> Optional[Dict[str, Any]]:
         """Load the current WBS data."""
         try:
@@ -487,7 +663,6 @@ class WBSAutoUpdateEngine:
         except Exception as e:
             print(f"Warning: Failed to load WBS: {e}")
         return None
-
 
     def _save_wbs(self, wbs_data: Dict[str, Any]) -> Dict[str, Any]:
         """Save updated WBS data with backup."""
@@ -507,7 +682,6 @@ class WBSAutoUpdateEngine:
         except Exception as e:
             return {"success": False, "error": f"Failed to save WBS: {str(e)}"}
 
-
     def _record_update_event(self, event_data: Dict[str, Any]) -> None:
         """Record an auto-update event to the log."""
         try:
@@ -515,7 +689,6 @@ class WBSAutoUpdateEngine:
                 f.write(json.dumps(event_data, ensure_ascii=False) + "\n")
         except Exception as e:
             print(f"Warning: Failed to record update event: {e}")
-
 
     def _is_recently_updated(self, task_id: str) -> bool:
         """Check if a task was recently updated to avoid redundant checks."""
@@ -545,6 +718,186 @@ class WBSAutoUpdateEngine:
 
         return False
 
+    def _trigger_dependency_cascade(self, completed_task_id: str) -> Dict[str, Any]:
+        """Trigger updates for tasks that depend on the completed task."""
+        triggered_tasks = []
+
+        try:
+            # Load current project plan to check dependencies
+            wbs_data = self._load_wbs()
+            if not wbs_data:
+                return {"triggered_tasks": []}
+
+            # Look for tasks that have this task as a dependency
+            dependencies = wbs_data.get("dependencies", [])
+            dependent_tasks = [
+                dep["to"]
+                for dep in dependencies
+                if dep.get("from") == completed_task_id
+            ]
+
+            # For each dependent task, check if all its dependencies are now complete
+            for task_id in dependent_tasks:
+                if self._all_dependencies_complete(task_id, wbs_data):
+                    # Mark task as ready to start
+                    self._update_task_status(task_id, "ready", wbs_data)
+                    triggered_tasks.append(
+                        {
+                            "task_id": task_id,
+                            "status": "ready",
+                            "reason": f"All dependencies complete (including {completed_task_id})",
+                        }
+                    )
+
+                    # Send notification through user experience system
+                    self._send_task_ready_notification(task_id)
+
+            return {"triggered_tasks": triggered_tasks}
+
+        except Exception as e:
+            print(f"Warning: Dependency cascade failed: {e}")
+            return {"triggered_tasks": []}
+
+    def _all_dependencies_complete(
+        self, task_id: str, wbs_data: Dict[str, Any]
+    ) -> bool:
+        """Check if all dependencies for a task are completed."""
+        try:
+            dependencies = wbs_data.get("dependencies", [])
+            task_deps = [
+                dep["from"] for dep in dependencies if dep.get("to") == task_id
+            ]
+
+            if not task_deps:
+                return True  # No dependencies
+
+            # Check each dependency
+            for dep_task_id in task_deps:
+                if not self._is_task_completed(dep_task_id, wbs_data):
+                    return False
+
+            return True
+
+        except Exception:
+            return False
+
+    def _is_task_completed(self, task_id: str, wbs_data: Dict[str, Any]) -> bool:
+        """Check if a specific task is completed."""
+        try:
+            phase_id = f"{task_id.split('.')[0]}.0"
+            phase = wbs_data.get("work_breakdown_structure", {}).get(phase_id, {})
+            subtasks = phase.get("subtasks", {})
+
+            if task_id in subtasks:
+                return subtasks[task_id].get("status") == "completed"
+
+        except Exception:
+            pass
+        return False
+
+    def _update_task_status(
+        self, task_id: str, status: str, wbs_data: Dict[str, Any]
+    ) -> None:
+        """Update a task's status in the WBS data."""
+        try:
+            phase_id = f"{task_id.split('.')[0]}.0"
+            if phase_id in wbs_data.get("work_breakdown_structure", {}):
+                phase = wbs_data["work_breakdown_structure"][phase_id]
+                if "subtasks" in phase and task_id in phase["subtasks"]:
+                    phase["subtasks"][task_id]["status"] = status
+                    if status == "ready":
+                        phase["subtasks"][task_id]["ready_at"] = time.time()
+        except Exception as e:
+            print(f"Warning: Failed to update task status: {e}")
+
+    def _send_task_ready_notification(self, task_id: str) -> None:
+        """Send notification that a task is ready to start."""
+        try:
+            from .user_experience_system import get_user_experience_system
+
+            ux_system = get_user_experience_system(self.root)
+
+            # Record this as a smart suggestion
+            suggestion_data = {
+                "type": "task_ready",
+                "task_id": task_id,
+                "message": f"Task {task_id} is ready to start - all dependencies completed",
+                "priority": "high",
+                "timestamp": time.time(),
+            }
+
+            # This would integrate with your UX system's notification mechanism
+            # For now, we'll log it for visibility
+            self._record_update_event(
+                {
+                    "action": "task_ready_notification",
+                    "task_id": task_id,
+                    "timestamp": time.time(),
+                }
+            )
+
+        except Exception as e:
+            print(f"Warning: Failed to send task ready notification: {e}")
+
+    def get_project_health_score(self) -> Dict[str, Any]:
+        """Calculate overall project health based on WBS status."""
+        try:
+            wbs_data = self._load_wbs()
+            if not wbs_data:
+                return {"health_score": 0.0, "status": "unknown"}
+
+            wbs = wbs_data.get("work_breakdown_structure", {})
+            total_tasks = 0
+            completed_tasks = 0
+            ready_tasks = 0
+            blocked_tasks = 0
+
+            for phase_key, phase_data in wbs.items():
+                if not phase_key.endswith(".0"):
+                    continue
+
+                subtasks = phase_data.get("subtasks", {})
+                for task_id, task_data in subtasks.items():
+                    total_tasks += 1
+                    status = task_data.get("status", "pending")
+
+                    if status == "completed":
+                        completed_tasks += 1
+                    elif status == "ready":
+                        ready_tasks += 1
+                    elif status == "blocked":
+                        blocked_tasks += 1
+
+            if total_tasks == 0:
+                return {"health_score": 1.0, "status": "no_tasks"}
+
+            completion_rate = completed_tasks / total_tasks
+            readiness_rate = ready_tasks / total_tasks
+            block_rate = blocked_tasks / total_tasks
+
+            # Calculate health score (0.0 to 1.0)
+            health_score = (
+                completion_rate * 0.6  # 60% weight for completion
+                + readiness_rate * 0.3  # 30% weight for readiness
+                + (1 - block_rate) * 0.1  # 10% weight for low blocks
+            )
+
+            return {
+                "health_score": round(health_score, 2),
+                "total_tasks": total_tasks,
+                "completed_tasks": completed_tasks,
+                "ready_tasks": ready_tasks,
+                "blocked_tasks": blocked_tasks,
+                "completion_rate": round(completion_rate, 2),
+                "status": (
+                    "healthy"
+                    if health_score > 0.7
+                    else "needs_attention" if health_score > 0.4 else "critical"
+                ),
+            }
+
+        except Exception as e:
+            return {"health_score": 0.0, "status": "error", "error": str(e)}
 
     def get_update_history(self, limit: int = 20) -> List[Dict[str, Any]]:
         """Get recent auto-update history."""

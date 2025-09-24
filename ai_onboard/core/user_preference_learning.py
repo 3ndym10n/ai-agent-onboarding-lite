@@ -958,8 +958,7 @@ class UserPreferenceLearningSystem:
             key,
             preferred_safety,
             confidence,
-            f"Based on error handling patterns: {auto_recovery_count} auto,
-                {manual_intervention_count} manual",
+            f"Based on error handling patterns: {auto_recovery_count} auto, {manual_intervention_count} manual",
             ["error_handling_analysis"],
         )
 
@@ -1189,8 +1188,7 @@ class UserPreferenceLearningSystem:
             key,
             communication_style,
             confidence,
-            f"User requested clarity {clarity_requests} times,
-                simple explanations {simple_requests} times",
+            f"User requested clarity {clarity_requests} times, simple explanations {simple_requests} times",
             ["communication_style_analysis"],
         )
 
@@ -1235,8 +1233,7 @@ class UserPreferenceLearningSystem:
             key,
             organization_level,
             confidence,
-            f"User focused on organization {organization_requests} times,
-                mentioned cleanup {cleanup_mentions} times",
+            f"User focused on organization {organization_requests} times, mentioned cleanup {cleanup_mentions} times",
             ["organization_preference_analysis"],
         )
 
@@ -1285,8 +1282,7 @@ class UserPreferenceLearningSystem:
             key,
             learning_style,
             confidence,
-            f"User requested feature explanations {explanation_requests} times,
-                simple explanations {simple_explanation_requests} times",
+            f"User requested feature explanations {explanation_requests} times, simple explanations {simple_explanation_requests} times",
             ["learning_style_analysis"],
         )
 
@@ -1793,3 +1789,7 @@ class UserPreferenceLearningSystem:
 def get_user_preference_learning_system(root: Path) -> UserPreferenceLearningSystem:
     """Get user preference learning system instance."""
     return UserPreferenceLearningSystem(root)
+
+
+
+

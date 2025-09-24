@@ -3,6 +3,7 @@ CLI commands for holistic tool orchestration system.
 """
 
 import argparse
+import json
 from pathlib import Path
 from typing import Any, Dict
 
@@ -275,8 +276,8 @@ def handle_orchestration_status(args, root: Path):
 
                 print(f"   {i+1}. {success} {request}")
                 print(
-                    f"      Tools: {tools_count},
-                        Time: {exec_time:.2f}s, Strategy: {execution['strategy']}"
+                    f"      Tools: {tools_count}, "
+                    f"Time: {exec_time:.2f}s, Strategy: {execution['strategy']}"
                 )
         else:
             print("   No execution history available")

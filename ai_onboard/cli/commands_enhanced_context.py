@@ -441,7 +441,7 @@ def _handle_analytics_commands(args: argparse.Namespace, context_manager) -> Non
 
         # Memory breakdown by importance
         if total_memories > 0:
-            importance_counts = {}
+            importance_counts: dict[str, Any] = {}
             for memory in context_manager.memories.values():
                 importance_counts[memory.importance_level] = (
                     importance_counts.get(memory.importance_level, 0) + 1

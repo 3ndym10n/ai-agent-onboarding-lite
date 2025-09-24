@@ -10,7 +10,7 @@ This module implements the Critical Path Method (CPM) to:
 
 from collections import defaultdict, deque
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional
 
 from . import utils
 from .tool_usage_tracker import track_tool_usage
@@ -19,14 +19,12 @@ from .tool_usage_tracker import track_tool_usage
 class CriticalPathEngine:
     """Engine for analyzing and updating project critical paths."""
 
-
     def __init__(self, root: Path):
         self.root = root
         self.project_plan_path = root / ".ai_onboard" / "project_plan.json"
         track_tool_usage(
             "critical_path_engine", "ai_system", {"action": "initialize"}, "success"
         )
-
 
     def analyze_critical_path(self) -> Dict[str, Any]:
         """
@@ -63,7 +61,16 @@ class CriticalPathEngine:
         # Calculate slack/float for all tasks
         slack_data = self._calculate_slack(timing_data)
 
-        # Generate analysis results
+        # NEW: Enhanced analysis with resource optimization
+        bottleneck_analysis = self._analyze_bottlenecks(
+            tasks, critical_path, timing_data
+        )
+        resource_analysis = self._analyze_resource_constraints(tasks, timing_data)
+        optimization_suggestions = self._generate_optimization_suggestions(
+            tasks, critical_path, bottleneck_analysis, resource_analysis
+        )
+
+        # Generate enhanced analysis results
         analysis_results = {
             "critical_path": critical_path,
             "timing_data": timing_data,
@@ -71,18 +78,20 @@ class CriticalPathEngine:
             "total_project_duration": self._calculate_project_duration(timing_data),
             "critical_tasks_count": len(critical_path),
             "total_tasks_analyzed": len(tasks),
+            "bottlenecks": bottleneck_analysis,
+            "resource_constraints": resource_analysis,
+            "optimization_suggestions": optimization_suggestions,
+            "project_health": self._calculate_project_health(tasks, timing_data),
             "analysis_timestamp": utils.now_iso(),
         }
 
         return analysis_results
-
 
     def _extract_tasks_with_dependencies(
         self, wbs: Dict[str, Any]
     ) -> Dict[str, Dict[str, Any]]:
         """Extract all tasks and normalize their dependency information."""
         tasks = {}
-
 
         def extract_from_phase(phase_id: str, phase_data: Dict[str, Any]):
             # Add the phase itself
@@ -124,7 +133,6 @@ class CriticalPathEngine:
 
         return tasks
 
-
     def _build_dependency_graph(
         self, tasks: Dict[str, Dict[str, Any]]
     ) -> Dict[str, List[str]]:
@@ -139,7 +147,6 @@ class CriticalPathEngine:
 
         return dict(graph)
 
-
     def _build_reverse_graph(
         self, dependency_graph: Dict[str, List[str]]
     ) -> Dict[str, List[str]]:
@@ -151,7 +158,6 @@ class CriticalPathEngine:
                 reverse_graph[successor].append(predecessor)
 
         return dict(reverse_graph)
-
 
     def _calculate_task_timing(
         self,
@@ -249,7 +255,6 @@ class CriticalPathEngine:
 
         return timing
 
-
     def _estimate_task_duration(self, task_data: Dict[str, Any]) -> int:
         """Estimate task duration based on effort level and status."""
         effort = task_data.get("estimated_effort", "medium").lower()
@@ -270,7 +275,6 @@ class CriticalPathEngine:
         else:
             return effort_duration
 
-
     def _identify_critical_path(
         self, tasks: Dict[str, Dict[str, Any]], timing_data: Dict[str, Dict[str, Any]]
     ) -> List[str]:
@@ -286,7 +290,6 @@ class CriticalPathEngine:
         critical_tasks.sort(key=lambda x: timing_data[x]["earliest_start"])
 
         return critical_tasks
-
 
     def _calculate_slack(
         self, timing_data: Dict[str, Dict[str, Any]]
@@ -306,7 +309,6 @@ class CriticalPathEngine:
 
         return slack_data
 
-
     def _calculate_project_duration(
         self, timing_data: Dict[str, Dict[str, Any]]
     ) -> int:
@@ -316,7 +318,6 @@ class CriticalPathEngine:
 
         max_finish = max(timing["earliest_finish"] for timing in timing_data.values())
         return int(max_finish)
-
 
     def update_critical_path_in_plan(
         self, analysis_results: Optional[Dict[str, Any]] = None
@@ -400,7 +401,6 @@ class CriticalPathEngine:
             "message": f"Updated {updated_count} tasks with critical path designations",
         }
 
-
     def get_critical_path_report(self) -> Dict[str, Any]:
         """Generate a comprehensive critical path report."""
         track_tool_usage(
@@ -413,6 +413,10 @@ class CriticalPathEngine:
         analysis = self.analyze_critical_path()
 
         # Build detailed report
+        critical_path_list: List[Dict[str, Any]] = []
+        bottlenecks_list: List[Dict[str, Any]] = []
+        recommendations_list: List[str] = []
+
         report = {
             "summary": {
                 "total_tasks": analysis["total_tasks_analyzed"],
@@ -427,9 +431,9 @@ class CriticalPathEngine:
                     1,
                 ),
             },
-            "critical_path": [],
-            "bottlenecks": [],
-            "recommendations": [],
+            "critical_path": critical_path_list,
+            "bottlenecks": bottlenecks_list,
+            "recommendations": recommendations_list,
         }
 
         # Build critical path details
@@ -480,6 +484,264 @@ class CriticalPathEngine:
             )
 
         return report
+
+    def _analyze_bottlenecks(
+        self, tasks: Dict[str, Dict], critical_path: List[str], timing_data: Dict
+    ) -> Dict[str, Any]:
+        """Analyze project bottlenecks and resource constraints."""
+        bottlenecks = []
+
+        try:
+            # Identify tasks with high resource requirements on critical path
+            for task_id in critical_path:
+                if task_id in tasks:
+                    task = tasks[task_id]
+                    effort = task.get("effort_days", 1)
+                    dependencies = task.get("dependencies", [])
+
+                    # High effort tasks on critical path are potential bottlenecks
+                    if effort > 3:  # More than 3 days
+                        bottlenecks.append(
+                            {
+                                "task_id": task_id,
+                                "type": "high_effort",
+                                "effort_days": effort,
+                                "impact": "critical_path",
+                                "suggestion": f"Consider breaking down task {task_id} (effort: {effort} days)",
+                            }
+                        )
+
+                    # Tasks with many dependencies
+                    if len(dependencies) > 2:
+                        bottlenecks.append(
+                            {
+                                "task_id": task_id,
+                                "type": "high_dependencies",
+                                "dependency_count": len(dependencies),
+                                "impact": "coordination_overhead",
+                                "suggestion": f"Review dependencies for task {task_id} - consider parallel execution",
+                            }
+                        )
+
+            return {
+                "bottlenecks": bottlenecks,
+                "bottleneck_count": len(bottlenecks),
+                "severity": (
+                    "high"
+                    if len(bottlenecks) > 3
+                    else "medium" if len(bottlenecks) > 1 else "low"
+                ),
+            }
+
+        except Exception as e:
+            return {"bottlenecks": [], "error": str(e)}
+
+    def _analyze_resource_constraints(
+        self, tasks: Dict[str, Dict], timing_data: Dict
+    ) -> Dict[str, Any]:
+        """Analyze resource allocation and constraints."""
+        try:
+            # Simple resource analysis based on task types and effort
+            resource_usage: Dict[str, Dict[str, Any]] = {}
+            peak_periods: List[Any] = []
+
+            # Group tasks by type to identify resource needs
+            task_types: Dict[str, List[Dict[str, Any]]] = {}
+            for task_id, task in tasks.items():
+                task_type = task.get("type", "general")
+                if task_type not in task_types:
+                    task_types[task_type] = []
+                task_types[task_type].append(
+                    {"id": task_id, "effort": task.get("effort_days", 1)}
+                )
+
+            # Calculate resource requirements by type
+            for task_type, type_tasks in task_types.items():
+                total_effort = sum(t["effort"] for t in type_tasks)
+                avg_effort = total_effort / len(type_tasks) if type_tasks else 0
+
+                resource_usage[task_type] = {
+                    "total_effort": total_effort,
+                    "task_count": len(type_tasks),
+                    "avg_effort_per_task": round(avg_effort, 1),
+                    "resource_intensity": (
+                        "high"
+                        if total_effort > 15
+                        else "medium" if total_effort > 5 else "low"
+                    ),
+                }
+
+            return {
+                "resource_usage": resource_usage,
+                "total_effort": sum(
+                    ru["total_effort"] for ru in resource_usage.values()
+                ),
+                "resource_types": len(resource_usage),
+                "recommendations": self._generate_resource_recommendations(
+                    resource_usage
+                ),
+            }
+
+        except Exception as e:
+            return {"resource_usage": {}, "error": str(e)}
+
+    def _generate_resource_recommendations(self, resource_usage: Dict) -> List[str]:
+        """Generate resource allocation recommendations."""
+        recommendations = []
+
+        try:
+            # Find high-intensity resource types
+            high_intensity = [
+                rtype
+                for rtype, data in resource_usage.items()
+                if data.get("resource_intensity") == "high"
+            ]
+
+            if high_intensity:
+                recommendations.append(
+                    f"Consider additional resources for: {', '.join(high_intensity)}"
+                )
+
+            # Check for imbalanced resource allocation
+            efforts = [data["total_effort"] for data in resource_usage.values()]
+            if efforts:
+                max_effort = max(efforts)
+                min_effort = min(efforts)
+                if max_effort > min_effort * 3:  # 3x imbalance
+                    recommendations.append(
+                        "Resource allocation is imbalanced - consider redistributing tasks"
+                    )
+
+            return recommendations
+
+        except Exception:
+            return ["Unable to generate resource recommendations"]
+
+    def _generate_optimization_suggestions(
+        self, tasks: Dict, critical_path: List[str], bottlenecks: Dict, resources: Dict
+    ) -> List[Dict[str, Any]]:
+        """Generate optimization suggestions for the project."""
+        suggestions = []
+
+        try:
+            # Critical path optimization
+            if len(critical_path) > 5:
+                suggestions.append(
+                    {
+                        "type": "critical_path",
+                        "priority": "high",
+                        "suggestion": (
+                            f"Critical path has {len(critical_path)} tasks - "
+                            "look for parallelization opportunities"
+                        ),
+                        "action": "review_dependencies",
+                    }
+                )
+
+            # Bottleneck mitigation
+            if bottlenecks.get("severity") == "high":
+                suggestions.append(
+                    {
+                        "type": "bottleneck",
+                        "priority": "high",
+                        "suggestion": f"Found {bottlenecks['bottleneck_count']} bottlenecks - prioritize resolution",
+                        "action": "address_bottlenecks",
+                    }
+                )
+
+            # Resource optimization
+            total_effort = resources.get("total_effort", 0)
+            if total_effort > 50:  # Large project
+                suggestions.append(
+                    {
+                        "type": "resource",
+                        "priority": "medium",
+                        "suggestion": f"Large project ({total_effort} days total) - consider phased delivery",
+                        "action": "phase_delivery",
+                    }
+                )
+
+            # Task breakdown suggestions
+            large_tasks = [
+                task_id
+                for task_id, task in tasks.items()
+                if task.get("effort_days", 1) > 5
+            ]
+
+            if large_tasks:
+                suggestions.append(
+                    {
+                        "type": "task_breakdown",
+                        "priority": "medium",
+                        "suggestion": f"Consider breaking down large tasks: {', '.join(large_tasks[:3])}",
+                        "action": "breakdown_tasks",
+                    }
+                )
+
+            return suggestions
+
+        except Exception as e:
+            return [
+                {"type": "error", "suggestion": f"Failed to generate suggestions: {e}"}
+            ]
+
+    def _calculate_project_health(
+        self, tasks: Dict, timing_data: Dict
+    ) -> Dict[str, Any]:
+        """Calculate overall project health metrics."""
+        try:
+            total_tasks = len(tasks)
+            if total_tasks == 0:
+                return {"score": 1.0, "status": "no_tasks"}
+
+            # Calculate various health metrics
+            total_effort = sum(task.get("effort_days", 1) for task in tasks.values())
+            avg_effort = total_effort / total_tasks
+
+            # Task size distribution
+            small_tasks = sum(
+                1 for task in tasks.values() if task.get("effort_days", 1) <= 2
+            )
+            large_tasks = sum(
+                1 for task in tasks.values() if task.get("effort_days", 1) > 5
+            )
+
+            # Dependency complexity
+            total_deps = sum(
+                len(task.get("dependencies", [])) for task in tasks.values()
+            )
+            avg_deps = total_deps / total_tasks
+
+            # Health score calculation (0.0 to 1.0)
+            size_score = 1.0 - (large_tasks / total_tasks)  # Prefer smaller tasks
+            complexity_score = 1.0 - min(
+                avg_deps / 3.0, 1.0
+            )  # Prefer fewer dependencies
+            balance_score = small_tasks / total_tasks  # Prefer more small tasks
+
+            health_score = (
+                size_score * 0.4 + complexity_score * 0.4 + balance_score * 0.2
+            )
+
+            return {
+                "score": round(health_score, 2),
+                "total_effort": total_effort,
+                "avg_effort_per_task": round(avg_effort, 1),
+                "task_size_distribution": {
+                    "small": small_tasks,
+                    "medium": total_tasks - small_tasks - large_tasks,
+                    "large": large_tasks,
+                },
+                "avg_dependencies": round(avg_deps, 1),
+                "status": (
+                    "healthy"
+                    if health_score > 0.7
+                    else "needs_attention" if health_score > 0.4 else "critical"
+                ),
+            }
+
+        except Exception as e:
+            return {"score": 0.0, "status": "error", "error": str(e)}
 
 
 def analyze_critical_path(root: Optional[Path] = None) -> Dict[str, Any]:

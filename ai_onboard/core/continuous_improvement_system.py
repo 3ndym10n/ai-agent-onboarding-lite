@@ -9,6 +9,7 @@ This system creates intelligent feedback loops that:
 - Evolve knowledge base and improve recommendations
 """
 
+import json
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
@@ -43,8 +44,8 @@ class ImprovementAction(Enum):
     PREVENT_ERRORS = "prevent_errors"
     ADAPT_WORKFLOW = "adapt_workflow"
 
-@dataclass
 
+@dataclass
 class LearningEvent:
     """A single learning event that contributes to system improvement."""
 
@@ -57,8 +58,8 @@ class LearningEvent:
     impact_score: float
     source: str  # Which system generated this learning event
 
-@dataclass
 
+@dataclass
 class ImprovementRecommendation:
     """A recommendation for system improvement."""
 
@@ -74,8 +75,8 @@ class ImprovementRecommendation:
     created_at: datetime = field(default_factory=datetime.now)
     status: str = "pending"  # pending, approved, implemented, rejected
 
-@dataclass
 
+@dataclass
 class UserProfile:
     """Profile of user preferences and patterns."""
 
@@ -87,8 +88,8 @@ class UserProfile:
     satisfaction_scores: List[float] = field(default_factory=list)
     last_updated: datetime = field(default_factory=datetime.now)
 
-@dataclass
 
+@dataclass
 class SystemHealthMetrics:
     """System health and performance metrics."""
 
@@ -106,7 +107,6 @@ class SystemHealthMetrics:
 class ContinuousImprovementSystem:
     """Main continuous improvement system that orchestrates learning and \
         optimization."""
-
 
     def __init__(self, root: Path):
         self.root = root
@@ -132,7 +132,6 @@ class ContinuousImprovementSystem:
         self.adaptive_config = self._load_adaptive_config()
         self.knowledge_base = self._load_knowledge_base()
 
-
     def _ensure_directories(self):
         """Ensure all required directories exist."""
         for path in [
@@ -144,7 +143,6 @@ class ContinuousImprovementSystem:
             self.knowledge_base_path,
         ]:
             utils.ensure_dir(path.parent)
-
 
     def _load_user_profiles(self) -> Dict[str, UserProfile]:
         """Load user profiles from storage."""
@@ -168,7 +166,6 @@ class ContinuousImprovementSystem:
             )
 
         return profiles
-
 
     def _load_improvement_recommendations(self) -> List[ImprovementRecommendation]:
         """Load improvement recommendations from storage."""
@@ -197,7 +194,6 @@ class ContinuousImprovementSystem:
 
         return recommendations
 
-
     def _load_adaptive_config(self) -> Dict[str, Any]:
         """Load adaptive configuration from storage."""
         return utils.read_json(
@@ -215,7 +211,6 @@ class ContinuousImprovementSystem:
             },
         )
 
-
     def _load_knowledge_base(self) -> Dict[str, Any]:
         """Load knowledge base from storage."""
         return utils.read_json(
@@ -229,7 +224,6 @@ class ContinuousImprovementSystem:
                 "performance_optimizations": {},
             },
         )
-
 
     def record_learning_event(
         self,
@@ -280,7 +274,6 @@ class ContinuousImprovementSystem:
 
         return event_id
 
-
     def _log_learning_event(self, event: LearningEvent):
         """Log a learning event to storage."""
         event_data = {
@@ -298,7 +291,6 @@ class ContinuousImprovementSystem:
             json.dump(event_data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 
-
     def _process_learning_event(self, event: LearningEvent):
         """Process a learning event and generate improvements."""
         if event.learning_type == LearningType.USER_PREFERENCE:
@@ -313,7 +305,6 @@ class ContinuousImprovementSystem:
             self._process_project_type_learning(event)
         elif event.learning_type == LearningType.SYSTEM_HEALTH:
             self._process_system_health_learning(event)
-
 
     def _process_user_preference_learning(self, event: LearningEvent):
         """Process user preference learning events."""
@@ -353,7 +344,6 @@ class ContinuousImprovementSystem:
         # Generate improvement recommendations
         self._generate_user_preference_recommendations(profile, event)
 
-
     def _process_performance_learning(self, event: LearningEvent):
         """Process performance optimization learning events."""
         performance_metrics = event.context.get("performance_metrics", {})
@@ -363,7 +353,7 @@ class ContinuousImprovementSystem:
         if "performance_optimizations" not in self.knowledge_base:
             self.knowledge_base["performance_optimizations"] = {}
 
-        optimization_key =             f"{event.context.get('operation_type', 'unknown')}_{event.context.get('project_type', 'generic')}"
+        optimization_key = f"{event.context.get('operation_type', 'unknown')}_{event.context.get('project_type', 'generic')}"
 
         if optimization_key not in self.knowledge_base["performance_optimizations"]:
             self.knowledge_base["performance_optimizations"][optimization_key] = {
@@ -395,7 +385,6 @@ class ContinuousImprovementSystem:
 
         # Generate performance improvement recommendations
         self._generate_performance_recommendations(event)
-
 
     def _process_error_pattern_learning(self, event: LearningEvent):
         """Process error pattern learning events."""
@@ -433,7 +422,6 @@ class ContinuousImprovementSystem:
         # Generate error prevention recommendations
         self._generate_error_prevention_recommendations(event)
 
-
     def _process_usage_pattern_learning(self, event: LearningEvent):
         """Process usage pattern learning events."""
         user_id = event.context.get("user_id", "default")
@@ -461,7 +449,6 @@ class ContinuousImprovementSystem:
         # Generate workflow adaptation recommendations
         self._generate_workflow_adaptation_recommendations(profile, event)
 
-
     def _process_project_type_learning(self, event: LearningEvent):
         """Process project type learning events."""
         project_type = event.context.get("project_type")
@@ -470,7 +457,7 @@ class ContinuousImprovementSystem:
 
         # Update knowledge base with project type insights
         if "project_types" not in self.knowledge_base:
-            self.knowledge_base["project_types"] = {}
+            self.knowledge_base["project_types"]: dict[str, Any] = {}
 
         if project_type not in self.knowledge_base["project_types"]:
             self.knowledge_base["project_types"][project_type] = {
@@ -493,7 +480,6 @@ class ContinuousImprovementSystem:
 
         # Generate project - specific recommendations
         self._generate_project_specific_recommendations(project_type, event)
-
 
     def _process_system_health_learning(self, event: LearningEvent):
         """Process system health learning events."""
@@ -518,7 +504,6 @@ class ContinuousImprovementSystem:
         # Generate system health improvement recommendations
         self._generate_system_health_recommendations(health_record)
 
-
     def _generate_user_preference_recommendations(
         self, profile: UserProfile, event: LearningEvent
     ):
@@ -535,8 +520,7 @@ class ContinuousImprovementSystem:
                 recommendation_id=f"user_pref_{int(time.time())}",
                 action_type=ImprovementAction.ENHANCE_UX,
                 description=f"Improve user experience for {profile.user_id}",
-                rationale=f"User satisfaction is {avg_satisfaction:.2f},
-                    below threshold of 0.6",
+                rationale=f"User satisfaction is {avg_satisfaction:.2f}, below threshold of 0.6",
                 expected_impact=0.3,
                 confidence=0.8,
                 priority=7,
@@ -544,7 +528,6 @@ class ContinuousImprovementSystem:
             )
 
             self.improvement_recommendations.append(recommendation)
-
 
     def _generate_performance_recommendations(self, event: LearningEvent):
         """Generate recommendations based on performance learning."""
@@ -567,7 +550,6 @@ class ContinuousImprovementSystem:
 
             self.improvement_recommendations.append(recommendation)
 
-
     def _generate_error_prevention_recommendations(self, event: LearningEvent):
         """Generate recommendations based on error pattern learning."""
         error_type = event.context.get("error_type")
@@ -578,8 +560,7 @@ class ContinuousImprovementSystem:
                 recommendation_id=f"error_prev_{int(time.time())}",
                 action_type=ImprovementAction.PREVENT_ERRORS,
                 description=f"Implement proactive prevention for {error_type}",
-                rationale=f"Solution effectiveness is {solution_effectiveness:.2f},
-                    suggesting proactive prevention",
+                rationale=f"Solution effectiveness is {solution_effectiveness:.2f}, suggesting proactive prevention",
                 expected_impact=0.4,
                 confidence=0.9,
                 priority=8,
@@ -587,7 +568,6 @@ class ContinuousImprovementSystem:
             )
 
             self.improvement_recommendations.append(recommendation)
-
 
     def _generate_workflow_adaptation_recommendations(
         self, profile: UserProfile, event: LearningEvent
@@ -610,7 +590,6 @@ class ContinuousImprovementSystem:
 
             self.improvement_recommendations.append(recommendation)
 
-
     def _generate_project_specific_recommendations(
         self, project_type: str, event: LearningEvent
     ):
@@ -632,7 +611,6 @@ class ContinuousImprovementSystem:
 
             self.improvement_recommendations.append(recommendation)
 
-
     def _generate_system_health_recommendations(
         self, health_record: SystemHealthMetrics
     ):
@@ -642,8 +620,7 @@ class ContinuousImprovementSystem:
                 recommendation_id=f"sys_health_{int(time.time())}",
                 action_type=ImprovementAction.OPTIMIZE_PERFORMANCE,
                 description="Improve system performance",
-                rationale=f"Performance score is {health_record.performance_score:.2f},
-                    below threshold of 0.7",
+                rationale=f"Performance score is {health_record.performance_score:.2f}, below threshold of 0.7",
                 expected_impact=0.4,
                 confidence=0.9,
                 priority=9,
@@ -651,7 +628,6 @@ class ContinuousImprovementSystem:
             )
 
             self.improvement_recommendations.append(recommendation)
-
 
     def _log_system_health(self, health_record: SystemHealthMetrics):
         """Log system health metrics to storage."""
@@ -671,7 +647,6 @@ class ContinuousImprovementSystem:
             json.dump(health_data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 
-
     def get_improvement_recommendations(
         self, limit: int = 10, priority_threshold: int = 5, status: str = "pending"
     ) -> List[ImprovementRecommendation]:
@@ -686,7 +661,6 @@ class ContinuousImprovementSystem:
         filtered.sort(key=lambda x: (x.priority, x.expected_impact), reverse=True)
 
         return filtered[:limit]
-
 
     def implement_recommendation(self, recommendation_id: str) -> Dict[str, Any]:
         """Implement a specific improvement recommendation."""
@@ -721,7 +695,6 @@ class ContinuousImprovementSystem:
 
         return implementation_result
 
-
     def _implement_recommendation_action(
         self, recommendation: ImprovementRecommendation
     ) -> Dict[str, Any]:
@@ -749,7 +722,6 @@ class ContinuousImprovementSystem:
         except Exception as e:
             return {"success": False, "message": f"Implementation failed: {str(e)}"}
 
-
     def _adjust_configuration(
         self, recommendation: ImprovementRecommendation
     ) -> Dict[str, Any]:
@@ -758,14 +730,12 @@ class ContinuousImprovementSystem:
         # For now, return success
         return {"success": True, "message": "Configuration adjusted"}
 
-
     def _update_recommendations(
         self, recommendation: ImprovementRecommendation
     ) -> Dict[str, Any]:
         """Update system recommendations based on learning."""
         # This would update recommendation algorithms
         return {"success": True, "message": "Recommendations updated"}
-
 
     def _optimize_performance(
         self, recommendation: ImprovementRecommendation
@@ -774,7 +744,6 @@ class ContinuousImprovementSystem:
         # This would implement performance optimizations
         return {"success": True, "message": "Performance optimized"}
 
-
     def _improve_accuracy(
         self, recommendation: ImprovementRecommendation
     ) -> Dict[str, Any]:
@@ -782,12 +751,10 @@ class ContinuousImprovementSystem:
         # This would implement accuracy improvements
         return {"success": True, "message": "Accuracy improved"}
 
-
     def _enhance_ux(self, recommendation: ImprovementRecommendation) -> Dict[str, Any]:
         """Enhance user experience based on recommendation."""
         # This would implement UX improvements
         return {"success": True, "message": "User experience enhanced"}
-
 
     def _prevent_errors(
         self, recommendation: ImprovementRecommendation
@@ -796,14 +763,12 @@ class ContinuousImprovementSystem:
         # This would implement error prevention
         return {"success": True, "message": "Error prevention implemented"}
 
-
     def _adapt_workflow(
         self, recommendation: ImprovementRecommendation
     ) -> Dict[str, Any]:
         """Adapt workflow based on recommendation."""
         # This would implement workflow adaptations
         return {"success": True, "message": "Workflow adapted"}
-
 
     def get_system_health_summary(self, days: int = 7) -> Dict[str, Any]:
         """Get system health summary for the last N days."""
@@ -860,7 +825,6 @@ class ContinuousImprovementSystem:
             "latest_record": health_records[-1] if health_records else None,
         }
 
-
     def get_learning_summary(self, days: int = 7) -> Dict[str, Any]:
         """Get learning activity summary for the last N days."""
         cutoff_date = datetime.now() - timedelta(days=days)
@@ -913,12 +877,11 @@ class ContinuousImprovementSystem:
             "recent_events": learning_events[-5:] if learning_events else [],
         }
 
-
     def _get_top_sources(
         self, learning_events: List[Dict[str, Any]]
     ) -> List[Dict[str, Any]]:
         """Get top sources of learning events."""
-        source_counts = {}
+        source_counts: dict[str, Any] = {}
         for event in learning_events:
             source = event.get("source", "unknown")
             if source not in source_counts:
@@ -931,7 +894,6 @@ class ContinuousImprovementSystem:
                 source_counts.items(), key=lambda x: x[1], reverse=True
             )
         ]
-
 
     def _save_user_profiles(self):
         """Save user profiles to storage."""
@@ -947,7 +909,6 @@ class ContinuousImprovementSystem:
             }
 
         utils.write_json(self.user_profiles_path, data)
-
 
     def _save_improvement_recommendations(self):
         """Save improvement recommendations to storage."""
@@ -971,16 +932,13 @@ class ContinuousImprovementSystem:
 
         utils.write_json(self.improvement_recommendations_path, data)
 
-
     def _save_adaptive_config(self):
         """Save adaptive configuration to storage."""
         utils.write_json(self.adaptive_config_path, self.adaptive_config)
 
-
     def _save_knowledge_base(self):
         """Save knowledge base to storage."""
         utils.write_json(self.knowledge_base_path, self.knowledge_base)
-
 
     def save_all_data(self):
         """Save all system data to storage."""

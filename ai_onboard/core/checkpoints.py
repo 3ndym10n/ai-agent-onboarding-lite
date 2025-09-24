@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List
 
 from . import utils
+import json
 
 INDEX = "index.jsonl"
 

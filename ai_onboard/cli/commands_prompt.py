@@ -131,7 +131,7 @@ def handle_prompt_commands(args, root: Path):
                 "status": "ok",
             }
             if current_gate.exists():
-                content = current_gate.read_text(encoding="utf - 8", errors="ignore")
+                content = current_gate.read_text(encoding="utf-8", errors="ignore")
                 # crude parse for a percentage line
                 for line in content.splitlines():
                     if "%" in line and (

@@ -8,9 +8,9 @@ support Unicode emojis in the console.
 
 import os
 import sys
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
-from ai_onboard.core.common_imports import Any, Dict, Optional, os, sys
+from ai_onboard.core.common_imports import Any, Dict, os, sys
 
 # Emoji fallbacks for systems that don't support Unicode
 EMOJI_FALLBACKS = {
@@ -23,10 +23,7 @@ EMOJI_FALLBACKS = {
     "🔴": "[BAD]",
     "🟡": "[PENDING]",
     "⭐": "[STAR]",
-    "🎯": "[TARGET]",
     "🚀": "[LAUNCH]",
-    "🔧": "[TOOL]",
-    "📊": "[CHART]",
     "📈": "[TREND]",
     "🔍": "[SEARCH]",
     "💡": "[IDEA]",
@@ -35,28 +32,20 @@ EMOJI_FALLBACKS = {
     "🔒": "[LOCK]",
     "🔓": "[UNLOCK]",
     "📝": "[NOTE]",
-    "📋": "[LIST]",
     "📦": "[PACKAGE]",
     "🗂️": "[FOLDER]",
-    "🎨": "[DESIGN]",
     "🧪": "[TEST]",
     "🔬": "[ANALYZE]",
-    "⚙️": "[SETTINGS]",
-    "🎲": "[RANDOM]",
     "🌟": "[FEATURE]",
     "🐛": "[BUG]",
     "🔥": "[HOT]",
     "❄️": "[COLD]",
     "💎": "[PREMIUM]",
     "🏆": "[WINNER]",
-    "📊": "[METRICS]",
-    "🎯": "[GOAL]",
     "🚨": "[ALERT]",
     "⏰": "[TIME]",
-    "💻": "[CODE]",
     "🌐": "[WEB]",
     "📱": "[MOBILE]",
-    "🖥️": "[DESKTOP]",
     "☁️": "[CLOUD]",
     "🔗": "[LINK]",
     "📡": "[SIGNAL]",
@@ -66,16 +55,9 @@ EMOJI_FALLBACKS = {
     "📷": "[PHOTO]",
     "🖼️": "[IMAGE]",
     "📄": "[DOC]",
-    "📊": "[DATA]",
-    "🗄️": "[DATABASE]",
     "🔐": "[SECURE]",
-    "🛠️": "[REPAIR]",
-    "⚖️": "[BALANCE]",
     "🎪": "[EVENT]",
     "🎭": "[THEATER]",
-    "🎨": "[ART]",
-    "🎯": "[PRECISION]",
-    "🎲": "[CHANCE]",
     "🎳": "[STRIKE]",
     "🎸": "[MUSIC]",
     "🎺": "[TRUMPET]",
@@ -260,7 +242,6 @@ def get_safe_formatter():
         callable: A formatter function that handles Unicode appropriately
     """
 
-
     def safe_formatter(text: str) -> str:
         return format_with_fallback(text)
 
@@ -410,7 +391,7 @@ def print_box(content: str, title: str = None, **kwargs: Any) -> None:
 
     # Print content lines
     for line in lines:
-        padded_line = f"{vertical} {line:<{width-4}} {vertical}"
+        padded_line = f"{vertical} {line:<{width - 4}} {vertical}"
         safe_print(padded_line, **kwargs)
 
     # Print bottom border

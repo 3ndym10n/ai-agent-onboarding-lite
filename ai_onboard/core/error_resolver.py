@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import List
 
 from . import utils
-from .issue import Issue
+from .utils import Issue
 
 
 def fingerprint(message: str, where: str) -> str:
@@ -48,7 +48,9 @@ def issue_from_fp(fp: str, rule_id: str, message: str) -> Issue:
         confidence=0.9,
     )
 
+
 # Very small rule→suggestion mapping (extendable)
+
 
 def suggest_move_from_rule(rule_id: str, message: str) -> dict:
     if "NODE_SCRIPTS_DEFINED" in rule_id:

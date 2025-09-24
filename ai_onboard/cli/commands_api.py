@@ -9,6 +9,7 @@ This module provides command - line interfaces for:
 """
 
 import argparse
+import json
 from pathlib import Path
 
 from ..core.unicode_utils import print_activity, print_content, print_status

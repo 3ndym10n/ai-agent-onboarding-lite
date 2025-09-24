@@ -6,6 +6,7 @@ user preferences,
     project history, and advanced reasoning capabilities to make intelligent
 decisions about AI agent actions.
 """
+
 #
 
 import time
@@ -16,9 +17,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 from . import alignment
-from .ai_agent_orchestration import (
-    ConversationContext,
-)
+from .ai_agent_orchestration import ConversationContext
 from .enhanced_conversation_context import get_enhanced_context_manager
 from .unified_metrics_collector import (
     MetricCategory,
@@ -61,8 +60,8 @@ class DecisionOutcome(Enum):
     REJECT = "reject"  # Reject the request
     DEFER = "defer"  # Defer to later
 
-@dataclass
 
+@dataclass
 class DecisionContext:
     """Enhanced context for decision - making."""
 
@@ -94,8 +93,8 @@ class DecisionContext:
     safety_constraints: List[str] = field(default_factory=list)
     user_constraints: List[str] = field(default_factory=list)
 
-@dataclass
 
+@dataclass
 class DecisionResult:
     """Result of a decision pipeline execution."""
 
@@ -125,13 +124,11 @@ class DecisionResult:
 class ContextualReasoningEngine:
     """Advanced reasoning engine that considers context, history, and patterns."""
 
-
     def __init__(self, root: Path):
         self.root = root
         self.enhanced_context = get_enhanced_context_manager(root)
         self.preference_system = get_user_preference_learning_system(root)
         self.metrics_collector = get_unified_metrics_collector(root)
-
 
     def analyze_decision_context(self, context: DecisionContext) -> Dict[str, Any]:
         """Analyze the full context for decision - making."""
@@ -144,7 +141,6 @@ class ContextualReasoningEngine:
         }
 
         return analysis
-
 
     def _analyze_user_behavior(self, context: DecisionContext) -> Dict[str, Any]:
         """Analyze user behavior patterns and preferences."""
@@ -199,7 +195,6 @@ class ContextualReasoningEngine:
         except Exception as e:
             return {"error": str(e)}
 
-
     def _analyze_project_context(self, context: DecisionContext) -> Dict[str, Any]:
         """Analyze current project context and state."""
         try:
@@ -230,7 +225,6 @@ class ContextualReasoningEngine:
 
         except Exception as e:
             return {"error": str(e)}
-
 
     def _analyze_historical_patterns(self, context: DecisionContext) -> Dict[str, Any]:
         """Analyze historical patterns and outcomes."""
@@ -271,7 +265,6 @@ class ContextualReasoningEngine:
         except Exception as e:
             return {"error": str(e)}
 
-
     def _assess_contextual_risks(self, context: DecisionContext) -> Dict[str, Any]:
         """Assess risks based on context and history."""
         risks = []
@@ -311,7 +304,6 @@ class ContextualReasoningEngine:
             ),
         }
 
-
     def _assess_complexity(self, context: DecisionContext) -> DecisionComplexity:
         """Assess the complexity of the decision."""
         complexity_score = 0
@@ -339,7 +331,6 @@ class ContextualReasoningEngine:
         else:
             return DecisionComplexity.SIMPLE
 
-
     def _assess_project_maturity(
         self, project_state: Dict[str, Any], metrics: Optional[Dict[str, Any]]
     ) -> str:
@@ -358,7 +349,6 @@ class ContextualReasoningEngine:
             return "early"
         else:
             return "new"
-
 
     def _calculate_historical_success_rate(self, user_id: str) -> float:
         """Calculate historical success rate for user."""
@@ -383,7 +373,6 @@ class ContextualReasoningEngine:
 class AdvancedDecisionPipeline:
     """Advanced decision pipeline for AI agents with sophisticated reasoning capabilities."""
 
-
     def __init__(self, root: Path):
         self.root = root
         self.reasoning_engine = ContextualReasoningEngine(root)
@@ -406,7 +395,6 @@ class AdvancedDecisionPipeline:
             DecisionComplexity.COMPLEX: self._complex_decision_strategy,
             DecisionComplexity.CRITICAL: self._critical_decision_strategy,
         }
-
 
     def process_decision(
         self,
@@ -531,7 +519,6 @@ class AdvancedDecisionPipeline:
             self._record_decision_metrics(decision_context, error_result)
             return error_result
 
-
     def _enhance_decision_context(self, context: DecisionContext) -> Dict[str, Any]:
         """Enhance decision context with additional information."""
         enhancement_result = {}
@@ -560,7 +547,6 @@ class AdvancedDecisionPipeline:
             enhancement_result["project_context_error"] = str(e)
 
         return enhancement_result
-
 
     def _calculate_advanced_confidence(
         self, context: DecisionContext, pipeline_stages: Dict[str, Any]
@@ -641,14 +627,12 @@ class AdvancedDecisionPipeline:
             },
         }
 
-
     def _apply_decision_strategy(
         self, context: DecisionContext, confidence: float
     ) -> Dict[str, Any]:
         """Apply appropriate decision strategy based on complexity and confidence."""
         strategy_func = self.decision_strategies[context.complexity_level]
         return strategy_func(context, confidence)
-
 
     def _simple_decision_strategy(
         self, context: DecisionContext, confidence: float
@@ -678,7 +662,6 @@ class AdvancedDecisionPipeline:
                     "Which specific aspect is most important to you?",
                 ],
             }
-
 
     def _moderate_decision_strategy(
         self, context: DecisionContext, confidence: float
@@ -712,7 +695,6 @@ class AdvancedDecisionPipeline:
                 ],
             }
 
-
     def _complex_decision_strategy(
         self, context: DecisionContext, confidence: float
     ) -> Dict[str, Any]:
@@ -745,7 +727,6 @@ class AdvancedDecisionPipeline:
                 "escalation_reason": "Complex operation with insufficient confidence for autonomous execution",
             }
 
-
     def _critical_decision_strategy(
         self, context: DecisionContext, confidence: float
     ) -> Dict[str, Any]:
@@ -755,8 +736,11 @@ class AdvancedDecisionPipeline:
         if confidence >= threshold:
             return {
                 "outcome": DecisionOutcome.ESCALATE,
-                "reasoning": f"Critical decision always requires human oversight,
-                    even with high confidence ({confidence:.2f}).", "escalation_reason": "Critical system operation requires human approval",
+                "reasoning": (
+                    f"Critical decision always requires human oversight, "
+                    f"even with high confidence ({confidence:.2f})."
+                ),
+                "escalation_reason": "Critical system operation requires human approval",
             }
         else:
             return {
@@ -764,7 +748,6 @@ class AdvancedDecisionPipeline:
                 "reasoning": f"Critical decision with insufficient confidence ({confidence:.2f}) requires human review.",
                 "escalation_reason": "Critical operation with low confidence requires expert review",
             }
-
 
     def _create_execution_plan(
         self, context: DecisionContext, intents: List[Tuple[str, float]]
@@ -802,7 +785,6 @@ class AdvancedDecisionPipeline:
             },
         }
 
-
     def _create_monitoring_plan(self, context: DecisionContext) -> Dict[str, Any]:
         """Create monitoring plan for execution."""
         return {
@@ -825,7 +807,6 @@ class AdvancedDecisionPipeline:
             ],
         }
 
-
     def _format_planned_actions(self, context: DecisionContext) -> str:
         """Format planned actions for user display."""
         actions = []
@@ -834,7 +815,6 @@ class AdvancedDecisionPipeline:
             actions.append(f"• {action_name} (confidence: {confidence:.1f})")
 
         return "\n".join(actions)
-
 
     def _get_confidence_level(self, confidence: float) -> DecisionConfidence:
         """Convert numeric confidence to confidence level."""
@@ -848,7 +828,6 @@ class AdvancedDecisionPipeline:
             return DecisionConfidence.LOW
         else:
             return DecisionConfidence.VERY_LOW
-
 
     def _record_decision_metrics(
         self, context: DecisionContext, result: DecisionResult
@@ -905,6 +884,7 @@ class AdvancedDecisionPipeline:
         except Exception as e:
             # Don't fail decision pipeline on metrics errors
             print(f"Warning: Failed to record decision metrics: {e}")
+
 
 # Global instance
 _advanced_decision_pipeline: Optional[AdvancedDecisionPipeline] = None

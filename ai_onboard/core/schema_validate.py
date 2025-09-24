@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
-from .errors import PolicyError
+from .utils import PolicyError
 
 ALLOWED_ACTIONS = {"allow", "warn", "require_approval", "block"}
 

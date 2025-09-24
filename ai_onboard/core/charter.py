@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from . import methodology, utils
+from . import utils
 
 TEMPLATE = {
     "version": 1,
@@ -24,7 +24,7 @@ def ensure(root: Path, interactive: bool = False) -> dict:
     ch = utils.read_json(path, default=TEMPLATE.copy())
     if ch["project_name"] == "TBD":
         ch["project_name"] = root.name
-    ch["methodology"] = methodology.pick(ch)
+    ch["methodology"] = utils.pick_methodology(ch)
     utils.write_json(path, ch)
     return ch
 

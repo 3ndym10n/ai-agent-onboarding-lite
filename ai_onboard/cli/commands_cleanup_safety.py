@@ -588,7 +588,7 @@ def _handle_ultra_scan(args, root: Path):
         safe_print("=" * 60)
 
         # Group by risk level
-        risk_groups = {}
+        risk_groups: dict[str, Any] = {}
         total_size = 0
 
         for target in targets:

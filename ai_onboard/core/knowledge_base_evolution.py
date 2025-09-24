@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 
 from . import continuous_improvement_system, telemetry, utils
+import json
 
 
 class KnowledgeType(Enum):
