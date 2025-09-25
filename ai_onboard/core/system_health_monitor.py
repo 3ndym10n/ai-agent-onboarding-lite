@@ -70,7 +70,7 @@ class HealthIssueType(Enum):
     SECURITY_THREAT = "security_threat"
 
 
-class SelfHealingAction(Enum):
+class SelfHealingActionType(Enum):
     """Types of self - healing actions."""
 
     RESTART_COMPONENT = "restart_component"
@@ -109,7 +109,7 @@ class HealthIssue:
     affected_components: List[str]
     detected_at: datetime
     resolved_at: Optional[datetime] = None
-    resolution_action: Optional[SelfHealingAction] = None
+    resolution_action: Optional["SelfHealingAction"] = None
     metrics: Dict[HealthMetric, float] = field(default_factory=dict)
     context: Dict[str, Any] = field(default_factory=dict)
 
@@ -119,7 +119,7 @@ class SelfHealingAction:
     """A self - healing action taken."""
 
     action_id: str
-    action_type: SelfHealingAction
+    action_type: SelfHealingActionType
     issue_id: str
     description: str
     executed_at: datetime
@@ -621,9 +621,25 @@ class SystemHealthMonitor:
         # Create new issue
         issue_id = f"issue_{int(time.time())}_{utils.random_string(8)}"
 
+        # Map metric to issue type
+        metric_to_issue_type = {
+            HealthMetric.CPU_USAGE: HealthIssueType.PERFORMANCE_DEGRADATION,
+            HealthMetric.MEMORY_USAGE: HealthIssueType.RESOURCE_EXHAUSTION,
+            HealthMetric.DISK_USAGE: HealthIssueType.DISK_FULL,
+            HealthMetric.DISK_IO: HealthIssueType.PERFORMANCE_DEGRADATION,
+            HealthMetric.NETWORK_IO: HealthIssueType.NETWORK_ISSUES,
+            HealthMetric.ERROR_RATE: HealthIssueType.HIGH_ERROR_RATE,
+            HealthMetric.RESPONSE_TIME: HealthIssueType.PERFORMANCE_DEGRADATION,
+            HealthMetric.THROUGHPUT: HealthIssueType.PERFORMANCE_DEGRADATION,
+        }
+
+        issue_type = metric_to_issue_type.get(
+            metric, HealthIssueType.PERFORMANCE_DEGRADATION
+        )
+
         issue = HealthIssue(
             issue_id=issue_id,
-            issue_type=HealthIssue(f"{metric.value}_issue"),
+            issue_type=issue_type,
             severity=severity,
             description=f"{metric.value} is {metric_value.value:.1f}{metric_value.unit}, "
             f"exceeding {severity.value} threshold",
@@ -685,7 +701,8 @@ class SystemHealthMonitor:
 
             if resolved:
                 issue.resolved_at = datetime.now()
-                issue.resolution_action = SelfHealingAction.AUTO_RESOLVED
+                # Issue was resolved automatically without specific action
+                issue.resolution_action = None
 
                 telemetry.log_event(
                     "health_issue_resolved",
@@ -744,15 +761,15 @@ class SystemHealthMonitor:
         result: Dict[str, Any] = {}
 
         try:
-            if action_type == SelfHealingAction.CLEAR_CACHE:
+            if action_type == SelfHealingActionType.CLEAR_CACHE:
                 success, result = self._clear_cache()
-            elif action_type == SelfHealingAction.FREE_MEMORY:
+            elif action_type == SelfHealingActionType.FREE_MEMORY:
                 success, result = self._free_memory()
-            elif action_type == SelfHealingAction.OPTIMIZE_PERFORMANCE:
+            elif action_type == SelfHealingActionType.OPTIMIZE_PERFORMANCE:
                 success, result = self._optimize_performance()
-            elif action_type == SelfHealingAction.ADJUST_CONFIGURATION:
+            elif action_type == SelfHealingActionType.ADJUST_CONFIGURATION:
                 success, result = self._adjust_configuration(issue)
-            elif action_type == SelfHealingAction.RESTART_COMPONENT:
+            elif action_type == SelfHealingActionType.RESTART_COMPONENT:
                 success, result = self._restart_component(issue)
             else:
                 result = {"error": f"Unknown action type: {action_type}"}
@@ -780,7 +797,7 @@ class SystemHealthMonitor:
         # Update issue if successful
         if success:
             issue.resolved_at = datetime.now()
-            issue.resolution_action = action_type
+            issue.resolution_action = action
             self._save_health_issues()
 
         telemetry.log_event(
@@ -792,22 +809,22 @@ class SystemHealthMonitor:
             duration=duration,
         )
 
-    def _determine_healing_action(self, issue: HealthIssue) -> SelfHealingAction:
+    def _determine_healing_action(self, issue: HealthIssue) -> SelfHealingActionType:
         """Determine the appropriate self - healing action for an issue."""
         issue_type = issue.issue_type.value
 
         if "memory" in issue_type:
-            return SelfHealingAction.FREE_MEMORY
+            return SelfHealingActionType.FREE_MEMORY
         elif "cpu" in issue_type:
-            return SelfHealingAction.OPTIMIZE_PERFORMANCE
+            return SelfHealingActionType.OPTIMIZE_PERFORMANCE
         elif "disk" in issue_type:
-            return SelfHealingAction.CLEAR_CACHE
+            return SelfHealingActionType.CLEAR_CACHE
         elif "error" in issue_type:
-            return SelfHealingAction.ADJUST_CONFIGURATION
+            return SelfHealingActionType.ADJUST_CONFIGURATION
         elif "component" in issue_type:
-            return SelfHealingAction.RESTART_COMPONENT
+            return SelfHealingActionType.RESTART_COMPONENT
         else:
-            return SelfHealingAction.OPTIMIZE_PERFORMANCE
+            return SelfHealingActionType.OPTIMIZE_PERFORMANCE
 
     def _clear_cache(self) -> Tuple[bool, Dict[str, Any]]:
         """Clear system caches."""

@@ -416,7 +416,11 @@ def main(argv=None):
         return
 
     # PRIME DIRECTIVE: MANDATORY TOOL CONSULTATION FOR ALL COMMANDS
-    print("🚀 AI-ONBOARD PRIME DIRECTIVE: Consulting tools for your request...")
+    from ai_onboard.core.unicode_utils import ensure_unicode_safe
+
+    ensure_unicode_safe(
+        "🚀 AI-ONBOARD PRIME DIRECTIVE: Consulting tools for your request..."
+    )
 
     # Build command description for tool consultation
     command_description = f"ai_onboard {args.cmd}"
@@ -498,7 +502,9 @@ def main(argv=None):
                 },
                 "success",
             )
-            print(
+            from ai_onboard.core.unicode_utils import ensure_unicode_safe
+
+            ensure_unicode_safe(
                 f"📋 WBS Auto-Update: {wbs_update_result['updated']} tasks integrated, "
                 f"{wbs_update_result['failed']} failed"
             )
@@ -547,7 +553,9 @@ def main(argv=None):
                 if confirm.upper() == "CONFIRM":
                     print("⚠️  Proceeding with critical operation despite warnings...")
                 else:
-                    print("✅ Operation cancelled by user.")
+                    from ai_onboard.core.unicode_utils import ensure_unicode_safe
+
+                    ensure_unicode_safe("✅ Operation cancelled by user.")
                     # Learn from blocked critical command
                     pattern_system.learn_from_cli_usage(
                         args.cmd,

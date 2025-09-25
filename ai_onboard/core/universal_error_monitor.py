@@ -481,7 +481,7 @@ class UniversalErrorMonitor:
         # Recommendations based on command failures
         if patterns["commands"]:
             failing_commands = [
-                cmd for cmd, count in patterns["commands"].items() if count > 3
+                cmd for cmd, count in patterns["commands"].items() if count >= 2
             ]
             for cmd in failing_commands:
                 recommendations.append(
@@ -793,9 +793,13 @@ class UniversalErrorMonitor:
                     else None
                 ),
                 "process_connections": (
-                    len(process.connections())
-                    if hasattr(process, "connections")
-                    else None
+                    len(process.net_connections(kind="all"))
+                    if hasattr(process, "net_connections")
+                    else (
+                        len(process.connections())
+                        if hasattr(process, "connections")
+                        else None
+                    )
                 ),
                 "system_memory": {
                     "total_gb": psutil.virtual_memory().total / (1024**3),

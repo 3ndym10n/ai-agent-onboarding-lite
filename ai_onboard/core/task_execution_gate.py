@@ -8,14 +8,15 @@ This module implements a comprehensive gate system that:
 4. Enforces safety protocols for task execution
 """
 
+import json
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
 
 from . import utils
+from .pm_compatibility import get_legacy_wbs_sync_engine
 from .task_integration_logic import integrate_task
 from .tool_usage_tracker import track_tool_usage
-from .wbs_synchronization_engine import get_wbs_sync_engine
 from .wbs_update_engine import update_wbs_for_task
 
 
@@ -27,7 +28,7 @@ class TaskExecutionGate:
         self.pending_tasks_path = root / ".ai_onboard" / "pending_tasks.json"
         self.execution_log_path = root / ".ai_onboard" / "task_execution_log.jsonl"
         self.gate_bypass_log_path = root / ".ai_onboard" / "gate_bypass_log.jsonl"
-        self.wbs_sync_engine = get_wbs_sync_engine(root)
+        self.wbs_sync_engine = get_legacy_wbs_sync_engine(root)
 
         utils.ensure_dir(self.pending_tasks_path.parent)
 

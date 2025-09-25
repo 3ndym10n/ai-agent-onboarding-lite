@@ -1,10 +1,6 @@
-"""
-CLI commands for dependency checking.
+"""CLI commands for dependency checking."""
 
-This module provides commands to check dependencies before cleanup operations
-or file modifications. Prevents accidental breakage of system dependencies.
-"""
-
+import json
 from pathlib import Path
 from typing import List
 
@@ -205,7 +201,6 @@ def _handle_validate_cleanup(args, root: Path):
     # Import cleanup module to get files that would be deleted
     try:
         from ..core.cleanup import scan_for_cleanup
-import json
 
         scan_result = scan_for_cleanup(root)
         non_critical_files = scan_result["non_critical"]
@@ -245,7 +240,9 @@ import json
     except ImportError as e:
         print_status(f"Could not import cleanup module: {e}", "error")
 
+
 # Convenience function for programmatic use
+
 
 def check_file_dependencies(
     root: Path, files: List[str], detailed: bool = False

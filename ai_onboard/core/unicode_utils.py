@@ -10,8 +10,6 @@ import os
 import sys
 from typing import Any, Dict
 
-from ai_onboard.core.common_imports import Any, Dict, os, sys
-
 # Emoji fallbacks for systems that don't support Unicode
 EMOJI_FALLBACKS = {
     # Status indicators
@@ -162,7 +160,36 @@ def is_unicode_supported() -> bool:
     return True
 
 
-def safe_print(text: str, **kwargs: Any) -> None:
+def _apply_emoji_fallbacks(text: str) -> str:
+    """Replace known emoji with ASCII fallbacks."""
+    safe_text = text
+    for unicode_char, ascii_fallback in EMOJI_FALLBACKS.items():
+        safe_text = safe_text.replace(unicode_char, ascii_fallback)
+    return safe_text
+
+def _prepare_text_for_output(text: str, encoding: str, *, force_ascii: bool = False) -> str:
+    """Ensure text can be safely written using the provided encoding."""
+    normalized_text = text
+
+    if force_ascii:
+        normalized_text = _apply_emoji_fallbacks(normalized_text)
+
+    target_encoding = encoding or sys.getdefaultencoding() or "utf-8"
+
+
+    try:
+        normalized_text.encode(target_encoding, errors="strict")
+        if not force_ascii:
+            return normalized_text
+    except (UnicodeEncodeError, LookupError):
+        normalized_text = _apply_emoji_fallbacks(normalized_text)
+
+    try:
+        return normalized_text.encode(target_encoding, errors="replace").decode(target_encoding, errors="replace")
+    except Exception:
+        return normalized_text.encode("ascii", errors="replace").decode("ascii")
+
+def safe_print(text: Any = "", **kwargs: Any) -> None:
     """
     Print text safely, falling back to ASCII alternatives for Unicode characters.
 
@@ -170,14 +197,33 @@ def safe_print(text: str, **kwargs: Any) -> None:
         text: The text to print, potentially containing Unicode characters
         **kwargs: Additional keyword arguments to pass to print()
     """
-    if is_unicode_supported():
-        print(text, **kwargs)
-    else:
-        # Replace Unicode characters with ASCII alternatives
-        safe_text = text
-        for unicode_char, ascii_fallback in EMOJI_FALLBACKS.items():
-            safe_text = safe_text.replace(unicode_char, ascii_fallback)
-        print(safe_text, **kwargs)
+    message = "" if text is None else str(text)
+    stream = kwargs.get("file", sys.stdout)
+    encoding = (
+        getattr(stream, "encoding", None)
+        or sys.stdout.encoding
+        or sys.getdefaultencoding()
+        or "utf-8"
+    )
+
+    should_force_ascii = os.name == "nt" and not is_unicode_supported()
+    printable_message = _prepare_text_for_output(
+        message, encoding, force_ascii=should_force_ascii
+    )
+
+    try:
+        print(printable_message, **kwargs)
+    except UnicodeEncodeError:
+        ascii_safe_message = _prepare_text_for_output(
+            printable_message, encoding, force_ascii=True
+        )
+        print(ascii_safe_message, **kwargs)
+
+
+def ensure_unicode_safe(text: str, **kwargs: Any) -> None:
+    """Compatibility alias for safe_print to align with legacy call sites."""
+
+    safe_print(text, **kwargs)
 
 
 def print_activity(message: str, **kwargs: Any) -> None:

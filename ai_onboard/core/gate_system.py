@@ -8,6 +8,7 @@ This system enables real collaboration by:
 4. Continuing execution with user input
 """
 
+import json
 import time
 from dataclasses import dataclass
 from enum import Enum
@@ -77,7 +78,7 @@ class GateSystem:
         gate_prompt = self._generate_gate_prompt(gate_request)
 
         # Write gate prompt file
-        self.current_gate_file.write_text(gate_prompt, encoding="utf - 8")
+        self.current_gate_file.write_text(gate_prompt, encoding="utf-8")
 
         # Write gate status
         status = {
@@ -87,7 +88,7 @@ class GateSystem:
             "phase": "collect",
             "waiting_for_response": True,
         }
-        self.status_file.write_text(json.dumps(status, indent=2), encoding="utf - 8")
+        self.status_file.write_text(json.dumps(status, indent=2), encoding="utf-8")
 
         # Ensure files are visible and non - empty before returning control
         self._finalize_gate_files()
@@ -124,7 +125,7 @@ class GateSystem:
         confirm_prompt = self._generate_confirmation_prompt(
             gate_request, initial_response
         )
-        self.current_gate_file.write_text(confirm_prompt, encoding="utf - 8")
+        self.current_gate_file.write_text(confirm_prompt, encoding="utf-8")
 
         status = {
             "gate_active": True,
@@ -134,7 +135,7 @@ class GateSystem:
             "waiting_for_response": True,
             "confirmation_required": True,
         }
-        self.status_file.write_text(json.dumps(status, indent=2), encoding="utf - 8")
+        self.status_file.write_text(json.dumps(status, indent=2), encoding="utf-8")
 
         # Ensure files are visible and non - empty before returning control
         self._finalize_gate_files()
@@ -348,7 +349,7 @@ Create a JSON file at `.ai_onboard / gates / gate_response.json` with this struc
         while time.time() - start_time < timeout_seconds:
             if self.response_file.exists():
                 try:
-                    response_text = self.response_file.read_text(encoding="utf - 8")
+                    response_text = self.response_file.read_text(encoding="utf-8")
                     response = json.loads(response_text)
 
                     # Validate response structure
@@ -539,7 +540,7 @@ Create a JSON file at `.ai_onboard / gates / gate_response.json` with this struc
                 time.sleep(0.05)
             # Write a readiness marker
             ready_file = self.gates_dir / "gate_ready.flag"
-            ready_file.write_text(str(time.time()), encoding="utf - 8")
+            ready_file.write_text(str(time.time()), encoding="utf-8")
         except Exception:
             # Best - effort only; do not fail gate creation
             pass
@@ -581,7 +582,7 @@ Create a JSON file at `.ai_onboard / gates / gate_response.json` with this struc
 
     def _write_cursor_rules(self, content: str) -> None:
         try:
-            self.cursor_rules_file.write_text(content, encoding="utf - 8")
+            self.cursor_rules_file.write_text(content, encoding="utf-8")
         except Exception:
             # Best - effort only
             pass

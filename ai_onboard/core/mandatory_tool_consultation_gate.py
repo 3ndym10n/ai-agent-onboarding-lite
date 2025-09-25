@@ -9,27 +9,18 @@ import time
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional
 
 from .code_quality_analyzer import CodeQualityAnalyzer
-from .comprehensive_tool_discovery import (
-    ComprehensiveToolDiscovery,
-    ToolCategory,
-    get_comprehensive_tool_discovery,
-)
+from .comprehensive_tool_discovery import ToolCategory, get_comprehensive_tool_discovery
 from .dependency_mapper import DependencyMapper
 from .duplicate_detector import DuplicateDetector
 from .file_organization_analyzer import FileOrganizationAnalyzer
-from .holistic_tool_orchestration import (
-    HolisticToolOrchestrator,
-    OrchestrationStrategy,
-    get_holistic_tool_orchestrator,
-)
-from .intelligent_tool_orchestrator import IntelligentToolOrchestrator
+from .orchestration_compatibility import HolisticToolOrchestrator, OrchestrationStrategy
 from .risk_assessment_framework import RiskAssessmentFramework
 from .structural_recommendation_engine import StructuralRecommendationEngine
 from .tool_usage_tracker import get_tool_tracker
-from .unicode_utils import safe_print
+from .unified_tool_orchestrator import UnifiedToolOrchestrator
 
 
 class ToolRelevanceLevel(Enum):
@@ -83,8 +74,8 @@ class MandatoryToolConsultationGate:
     def __init__(self, root_path: Path):
         self.root_path = root_path
         self.tool_tracker = get_tool_tracker(root_path)
-        self.tool_orchestrator = IntelligentToolOrchestrator(root_path)
-        self.holistic_orchestrator = get_holistic_tool_orchestrator(root_path)
+        self.tool_orchestrator = UnifiedToolOrchestrator(root_path)
+        self.holistic_orchestrator = HolisticToolOrchestrator(root_path)
 
         # Initialize available tools registry
         self.available_tools = self._initialize_available_tools()
@@ -114,14 +105,35 @@ class MandatoryToolConsultationGate:
         tool_discovery = get_comprehensive_tool_discovery(self.root_path)
         discovery_result = tool_discovery.discover_all_tools()
 
-        print(f"🔍 DISCOVERED {len(discovery_result.all_tools)} TOOLS:")
-        for category, tools in discovery_result.tools_by_category.items():
-            print(f"   📂 {category.value}: {len(tools)} tools")
+        from .unicode_utils import ensure_unicode_safe
+
+        ensure_unicode_safe(f"🔍 DISCOVERED {len(discovery_result.all_tools)} TOOLS:")
+        for category, category_tools in discovery_result.tools_by_category.items():
+            ensure_unicode_safe(f"   📂 {category.value}: {len(category_tools)} tools")
 
         # Convert discovered tools to AvailableTool format
-        tools = {}
+        tools: Dict[str, AvailableTool] = {}
 
-        # Core analysis tools (high priority)
+        # Automatically convert discovered tools to AvailableTool objects
+        for tool_name, tool_metadata in discovery_result.all_tools.items():
+            # Determine execution capability based on tool category and name
+            execution_capability = self._determine_execution_capability(tool_metadata)
+
+            # Create AvailableTool from discovered metadata
+            available_tool = AvailableTool(
+                name=tool_name,
+                description=tool_metadata.description or f"{tool_name} tool",
+                tool_class=None,  # Will be resolved dynamically during execution
+                keywords=tool_metadata.keywords,
+                contexts=tool_metadata.contexts,
+                patterns=tool_metadata.patterns,
+                execution_capability=execution_capability,
+                requires_parameters=False,  # Assume no parameters needed for auto-application
+                can_auto_apply=self._can_tool_auto_apply(tool_metadata),
+            )
+            tools[tool_name] = available_tool
+
+        # Add any manually defined core tools that may not be discovered
         core_tools = {
             "code_quality_analysis": AvailableTool(
                 name="code_quality_analysis",
@@ -533,12 +545,90 @@ class MandatoryToolConsultationGate:
             1 for tool in tools.values() if tool.execution_capability == "analysis_tool"
         )
 
-        print(f"✅ REGISTERED {len(tools)} TOOLS FOR CONSULTATION")
-        print(f"   🔧 Auto-applicable: {auto_applicable}")
-        print(f"   📋 CLI functions: {cli_functions}")
-        print(f"   🔍 Analysis tools: {analysis_tools}")
+        from .unicode_utils import ensure_unicode_safe
+
+        ensure_unicode_safe(f"✅ REGISTERED {len(tools)} TOOLS FOR CONSULTATION")
+        ensure_unicode_safe(f"   🔧 Auto-applicable: {auto_applicable}")
+        ensure_unicode_safe(f"   📋 CLI functions: {cli_functions}")
+        ensure_unicode_safe(f"   🔍 Analysis tools: {analysis_tools}")
 
         return tools
+
+    def _determine_execution_capability(self, tool_metadata) -> str:
+        """Determine execution capability based on tool metadata."""
+        tool_name = tool_metadata.name.lower()
+        category = (
+            tool_metadata.category.value.lower() if tool_metadata.category else ""
+        )
+
+        # CLI functions
+        if tool_name.startswith("cli_"):
+            return "cli_function"
+
+        # Analysis tools
+        if any(
+            keyword in category
+            for keyword in [
+                "quality",
+                "organization",
+                "analysis",
+                "detection",
+                "assessment",
+            ]
+        ):
+            return "analysis_tool"
+
+        # Executable tools
+        if any(
+            keyword in tool_name
+            for keyword in ["orchestrator", "engine", "analyzer", "detector", "mapper"]
+        ):
+            return "executable"
+
+        # Utility tools
+        return "utility"
+
+    def _can_tool_auto_apply(self, tool_metadata) -> bool:
+        """Determine if a tool can be auto-applied based on its metadata."""
+        tool_name = tool_metadata.name.lower()
+        category = (
+            tool_metadata.category.value.lower() if tool_metadata.category else ""
+        )
+
+        # Always allow core analysis tools
+        if any(
+            keyword in category
+            for keyword in [
+                "code_quality",
+                "file_organization",
+                "dependency_analysis",
+                "duplicate_detection",
+            ]
+        ):
+            return True
+
+        # Allow safety and vision tools
+        if any(
+            keyword in category
+            for keyword in [
+                "safety_checks",
+                "vision_alignment",
+                "gate_system",
+                "error_prevention",
+            ]
+        ):
+            return True
+
+        # CLI functions generally should not auto-apply (too many)
+        if tool_name.startswith("cli_"):
+            return False
+
+        # Be conservative with unknown tools
+        return (
+            tool_metadata.risk_level in ["low", "medium"]
+            if tool_metadata.risk_level
+            else False
+        )
 
     def consult_tools_for_request(
         self, user_request: str, context: Dict[str, Any] = None
@@ -554,9 +644,13 @@ class MandatoryToolConsultationGate:
         if context is None:
             context = {}
 
-        print("🔍 MANDATORY TOOL CONSULTATION")
+        from .unicode_utils import ensure_unicode_safe
+
+        ensure_unicode_safe("🔍 MANDATORY TOOL CONSULTATION")
         print("=" * 50)
-        print(
+        from .unicode_utils import ensure_unicode_safe
+
+        ensure_unicode_safe(
             f"📝 Request: {user_request[:100]}{'...' if len(user_request) > 100 else ''}"
         )
 
@@ -652,9 +746,9 @@ class MandatoryToolConsultationGate:
             )
 
             # Convert to ToolConsultationResult format
-            relevant_tools = {}
+            relevant_tools: Dict[str, ToolRelevanceLevel] = {}
             recommended_tools = orchestration_result.executed_tools
-            tool_analysis = {}
+            tool_analysis: Dict[str, Any] = {}
 
             # Build tool analysis from orchestration results
             for tool_name in orchestration_result.executed_tools:
@@ -675,8 +769,6 @@ class MandatoryToolConsultationGate:
                 consultation_time=consultation_time,
                 gate_passed=True,  # Holistic orchestration handles gates internally
                 blocking_reason=None,
-                insights=orchestration_result.insights,
-                recommendations=orchestration_result.recommendations,
             )
 
             # Track successful completion
@@ -715,8 +807,6 @@ class MandatoryToolConsultationGate:
                 consultation_time=consultation_time,
                 gate_passed=False,
                 blocking_reason=f"Holistic orchestration failed: {str(e)}",
-                insights=[],
-                recommendations=[],
             )
 
     def _analyze_tool_relevance(
@@ -725,9 +815,11 @@ class MandatoryToolConsultationGate:
         """Analyze which tools are relevant to the user request."""
 
         request_lower = user_request.lower()
-        relevant_tools = {}
+        relevant_tools: Dict[str, ToolRelevanceLevel] = {}
 
-        print("\n🔍 ANALYZING TOOL RELEVANCE:")
+        from .unicode_utils import ensure_unicode_safe
+
+        ensure_unicode_safe("\n🔍 ANALYZING TOOL RELEVANCE:")
 
         for tool_name, tool_info in self.available_tools.items():
             relevance_score = 0
@@ -769,7 +861,9 @@ class MandatoryToolConsultationGate:
 
             # Display relevance analysis
             if relevance != ToolRelevanceLevel.NONE:
-                print(
+                from .unicode_utils import ensure_unicode_safe
+
+                ensure_unicode_safe(
                     f"   🎯 {tool_name}: {relevance.value.upper()} ({relevance_score} points)"
                 )
                 for reason in relevance_reasons:
@@ -813,46 +907,73 @@ class MandatoryToolConsultationGate:
     ) -> Dict[str, Any]:
         """Apply the recommended tools and gather results."""
 
-        tool_analysis = {}
+        tool_analysis: Dict[str, Any] = {}
 
         if not recommended_tools:
-            print("\n📊 No tools recommended for this request")
+            from .unicode_utils import ensure_unicode_safe
+
+            ensure_unicode_safe("\n📊 No tools recommended for this request")
             return tool_analysis
 
-        print(f"\n🚀 APPLYING {len(recommended_tools)} RECOMMENDED TOOLS:")
+        from .unicode_utils import ensure_unicode_safe
+
+        ensure_unicode_safe(
+            f"\n🚀 APPLYING {len(recommended_tools)} RECOMMENDED TOOLS:"
+        )
 
         for tool_name in recommended_tools:
-            print(f"   🤖 Applying {tool_name}...")
+            ensure_unicode_safe(f"   🤖 Applying {tool_name}...")
 
             try:
                 # Use the intelligent tool orchestrator to apply the tool
-                result = self.tool_orchestrator.execute_automatic_tool_application(
-                    tool_name,
-                    {
-                        "user_request": user_request,
-                        "context": context,
+                from .unified_tool_orchestrator import ToolExecutionContext
+
+                tool_context = ToolExecutionContext(
+                    user_request=user_request,
+                    session_id=context.get("session_id", "consultation"),
+                    user_id=context.get("user_id", "system"),
+                    additional_context={
                         "mandatory_consultation": True,
                         "consultation_time": time.time(),
+                        "project_root": self.root_path,
+                        **context,
                     },
                 )
+                orchestration_result = self.tool_orchestrator.orchestrate_tools(
+                    user_request=user_request,
+                    context=tool_context,
+                )
+                result = {
+                    "executed": len(orchestration_result.executed_tools) > 0,
+                    "results": orchestration_result.tool_results.get(tool_name, {}),
+                    "error": None,
+                }
 
                 tool_analysis[tool_name] = result
 
                 if result["executed"]:
-                    print(f"      ✅ {tool_name} completed successfully")
+                    from .unicode_utils import ensure_unicode_safe
+
+                    ensure_unicode_safe(f"      ✅ {tool_name} completed successfully")
 
                     # Extract key insights from results
                     insights = self._extract_tool_insights(tool_name, result["results"])
                     if insights:
                         tool_analysis[tool_name]["insights"] = insights
-                        print(f"      💡 Key insights: {insights}")
+                        from .unicode_utils import ensure_unicode_safe
+
+                        ensure_unicode_safe(f"      💡 Key insights: {insights}")
                 else:
-                    print(
+                    from .unicode_utils import ensure_unicode_safe
+
+                    ensure_unicode_safe(
                         f"      ❌ {tool_name} failed: {result.get('error', 'Unknown error')}"
                     )
 
             except Exception as e:
-                print(f"      ❌ {tool_name} error: {str(e)}")
+                from .unicode_utils import ensure_unicode_safe
+
+                ensure_unicode_safe(f"      ❌ {tool_name} error: {str(e)}")
                 tool_analysis[tool_name] = {"executed": False, "error": str(e)}
 
         return tool_analysis
@@ -1128,7 +1249,10 @@ class MandatoryToolConsultationGate:
         if consultation_time < self.gate_config["minimum_consultation_time"]:
             return (
                 False,
-                f"Tools were recommended but consultation failed: {consultation_time:.2f}s < {self.gate_config['minimum_consultation_time']}s",
+                (
+                    f"Tools were recommended but consultation failed: "
+                    f"{consultation_time:.2f}s < {self.gate_config['minimum_consultation_time']}s"
+                ),
             )
 
         # Gate passes - tools were consulted
@@ -1137,10 +1261,12 @@ class MandatoryToolConsultationGate:
     def _display_consultation_results(self, result: ToolConsultationResult):
         """Display the consultation results to the user."""
 
-        print(f"\n📊 CONSULTATION SUMMARY:")
-        print(f"   ⏱️  Consultation time: {result.consultation_time:.2f}s")
-        print(f"   🎯 Tools analyzed: {len(result.relevant_tools)}")
-        print(f"   🚀 Tools applied: {len(result.recommended_tools)}")
+        from .unicode_utils import ensure_unicode_safe
+
+        ensure_unicode_safe(f"\n📊 CONSULTATION SUMMARY:")
+        ensure_unicode_safe(f"   ⏱️  Consultation time: {result.consultation_time:.2f}s")
+        ensure_unicode_safe(f"   🎯 Tools analyzed: {len(result.relevant_tools)}")
+        ensure_unicode_safe(f"   🚀 Tools applied: {len(result.recommended_tools)}")
 
         # Show applied tools and their insights
         successful_tools = []
@@ -1150,18 +1276,34 @@ class MandatoryToolConsultationGate:
             if analysis.get("executed"):
                 successful_tools.append(tool_name)
                 if "insights" in analysis:
-                    print(f"      ✅ {tool_name}: {analysis['insights']}")
+                    from .unicode_utils import ensure_unicode_safe
+
+                    ensure_unicode_safe(f"      ✅ {tool_name}: {analysis['insights']}")
                 else:
-                    print(f"      ✅ {tool_name}: completed")
+                    from .unicode_utils import ensure_unicode_safe
+
+                    ensure_unicode_safe(f"      ✅ {tool_name}: completed")
             else:
                 failed_tools.append(tool_name)
-                print(f"      ❌ {tool_name}: {analysis.get('error', 'failed')}")
+                from .unicode_utils import ensure_unicode_safe
+
+                ensure_unicode_safe(
+                    f"      ❌ {tool_name}: {analysis.get('error', 'failed')}"
+                )
 
         # Gate status
         if result.gate_passed:
-            print("   🟢 GATE STATUS: PASSED - Proceeding with AI response")
+            from .unicode_utils import ensure_unicode_safe
+
+            ensure_unicode_safe(
+                "   🟢 GATE STATUS: PASSED - Proceeding with AI response"
+            )
         else:
-            print(f"   🔴 GATE STATUS: BLOCKED - {result.blocking_reason}")
+            from .unicode_utils import ensure_unicode_safe
+
+            ensure_unicode_safe(
+                f"   🔴 GATE STATUS: BLOCKED - {result.blocking_reason}"
+            )
 
         print("=" * 50)
 

@@ -486,7 +486,10 @@ class CriticalPathEngine:
         return report
 
     def _analyze_bottlenecks(
-        self, tasks: Dict[str, Dict], critical_path: List[str], timing_data: Dict
+        self,
+        tasks: Dict[str, Dict[str, Any]],
+        critical_path: List[str],
+        timing_data: Dict[str, Dict[str, Any]],
     ) -> Dict[str, Any]:
         """Analyze project bottlenecks and resource constraints."""
         bottlenecks = []
@@ -537,7 +540,7 @@ class CriticalPathEngine:
             return {"bottlenecks": [], "error": str(e)}
 
     def _analyze_resource_constraints(
-        self, tasks: Dict[str, Dict], timing_data: Dict
+        self, tasks: Dict[str, Dict[str, Any]], timing_data: Dict[str, Dict[str, Any]]
     ) -> Dict[str, Any]:
         """Analyze resource allocation and constraints."""
         try:
@@ -618,7 +621,11 @@ class CriticalPathEngine:
             return ["Unable to generate resource recommendations"]
 
     def _generate_optimization_suggestions(
-        self, tasks: Dict, critical_path: List[str], bottlenecks: Dict, resources: Dict
+        self,
+        tasks: Dict[str, Dict[str, Any]],
+        critical_path: List[str],
+        bottlenecks: Dict[str, Any],
+        resources: Dict[str, Any],
     ) -> List[Dict[str, Any]]:
         """Generate optimization suggestions for the project."""
         suggestions = []
@@ -686,7 +693,7 @@ class CriticalPathEngine:
             ]
 
     def _calculate_project_health(
-        self, tasks: Dict, timing_data: Dict
+        self, tasks: Dict[str, Dict[str, Any]], timing_data: Dict[str, Dict[str, Any]]
     ) -> Dict[str, Any]:
         """Calculate overall project health metrics."""
         try:

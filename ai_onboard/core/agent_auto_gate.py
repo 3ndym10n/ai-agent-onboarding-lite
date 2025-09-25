@@ -1,10 +1,6 @@
-"""
-Auto Gate System - Automatically handles gates for AI agents.
+"""Auto Gate System - Automatically handles gates for AI agents."""
 
-This system provides a simple function that AI agents can call to
-automatically detect and handle any active gates.
-"""
-
+import json
 import time
 from pathlib import Path
 from typing import List, Optional
@@ -89,7 +85,7 @@ def submit_gate_response(
     if confirmation_code:
         response_data["confirmation_code"] = confirmation_code
 
-    response_file.write_text(json.dumps(response_data, indent=2), encoding="utf - 8")
+    response_file.write_text(json.dumps(response_data, indent=2), encoding="utf-8")
 
     print("[OK] Gate response submitted!")
     print(f"[FOLDER] Response saved to: {response_file}")
@@ -97,7 +93,6 @@ def submit_gate_response(
     # Integrate response into vision system
     try:
         from .gate_vision_integration import integrate_latest_gate_response
-import json
 
         if integrate_latest_gate_response(project_root):
             print("[TARGET] Gate responses integrated into vision system!")
@@ -127,7 +122,9 @@ def _extract_questions(gate_content: str) -> List[str]:
 
     return questions
 
+
 # Convenience function for quick gate handling
+
 
 def handle_gate_now(project_root: Path = None) -> bool:
     """Quick function to handle any active gates immediately."""

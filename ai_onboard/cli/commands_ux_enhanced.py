@@ -278,3 +278,4 @@ def _handle_status(args: argparse.Namespace, ux_system, user_id: str) -> None:
     if status["suggestions"]:
         print(f"Suggestions: {len(status['suggestions'])} available")
         print("Run 'python -m ai_onboard suggest' to see them")
+

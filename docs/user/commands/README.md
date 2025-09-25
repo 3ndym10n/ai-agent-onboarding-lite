@@ -11,6 +11,7 @@ Core commands for project setup, planning, and tracking:
 - [`align`](#align) - Verify alignment between vision and execution
 - [`validate`](#validate) - Comprehensive project health validation
 - [`dashboard`](#dashboard) - Visual project status and progress overview
+- [`project`](#project) - Unified project-management engine (critical path, WBS, prioritization)
 
 ### ⚡ Optimization & Improvement Commands
 Commands for continuous improvement and performance optimization:
@@ -201,6 +202,39 @@ python -m ai_onboard dashboard alerts \
   --quality-gate 0.9 \
   --timeline-risk 0.7
 ```
+
+---
+
+### `project`
+**Purpose**: Access the unified project-management engine for critical path analysis, WBS status, task prioritization, and completion detection.
+
+#### Basic Usage
+```bash
+# Analyze critical path
+python -m ai_onboard project critical-path
+
+# View progress dashboard (unified analytics)
+python -m ai_onboard project progress
+
+# Detect completed tasks using UPME
+python -m ai_onboard project task-completion
+
+# Prioritize tasks across the plan
+python -m ai_onboard project prioritize
+
+# Inspect WBS synchronization status
+python -m ai_onboard project wbs
+```
+
+#### Implementation Notes
+- Powered by `UnifiedProjectManagementEngine` (UPME)
+- Legacy modules (`task_completion_detector`, `task_prioritization_engine`, WBS engines) now route through compatibility shims
+- Deprecation warnings appear when using legacy APIs; migrate to unified engine calls where possible
+
+#### Best Practices
+- Run the critical path and prioritization commands after major plan updates
+- Use the WBS command to confirm consistency before validation
+- Rerun `task-completion` after committing code changes to keep the plan in sync
 
 ---
 

@@ -12,6 +12,7 @@ This module provides comprehensive testing and \
 """
 
 import json
+import os
 import time
 from dataclasses import dataclass
 from datetime import datetime, timedelta
@@ -1444,7 +1445,7 @@ class ContinuousImprovementValidator:
             "summary": report.summary,
         }
 
-        with open(self.validation_path, "a", encoding="utf - 8") as f:
+        with open(self.validation_path, "a", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 

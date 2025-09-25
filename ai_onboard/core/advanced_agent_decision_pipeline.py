@@ -17,8 +17,8 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 from . import alignment
-from .ai_agent_orchestration import ConversationContext
 from .enhanced_conversation_context import get_enhanced_context_manager
+from .orchestration_compatibility import ConversationContext
 from .unified_metrics_collector import (
     MetricCategory,
     MetricEvent,

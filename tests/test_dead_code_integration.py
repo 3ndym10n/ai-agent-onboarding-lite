@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 """Test dead code validation integration."""
 
+from pathlib import Path
+
+from ai_onboard.core.orchestration_compatibility import get_intelligent_orchestrator
 
 
 def test_dead_code_validation():
     """Test that dead code validation can be executed through the orchestrator."""
     print("Testing dead code validation integration...")
 
-    orchestrator = IntelligentToolOrchestrator(Path("."))
+    orchestrator = get_intelligent_orchestrator(Path("."))
     result = orchestrator.execute_automatic_tool_application("dead_code_validation", {})
 
     print(f"Executed: {result.get('executed', False)}")

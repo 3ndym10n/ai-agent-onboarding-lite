@@ -26,30 +26,30 @@ def _read_policy_file(path: Path) -> Dict[str, Any]:
             except ImportError:
                 # YAML not available - log warning and fall back to JSON if available
                 logger.warning(
-                    f"PyYAML not available,
-                        cannot load {path}. Consider installing PyYAML for YAML policy support."
+                    "PyYAML not available, cannot load %s. Consider installing PyYAML for YAML policy support.",
+                    path,
                 )
 
                 # Try to find a JSON equivalent
                 json_path = path.with_suffix(".json")
                 if json_path.exists():
-                    logger.info(f"Falling back to JSON equivalent: {json_path}")
+                    logger.info("Falling back to JSON equivalent: %s", json_path)
                     return utils.read_json(json_path, default={}) or {}
 
                 # Return empty policy but log the issue
                 logger.error(
-                    f"YAML policy {path} cannot be loaded and \
-                        no JSON fallback found. Policy enforcement may be weakened."
+                    "YAML policy %s cannot be loaded and no JSON fallback found. Policy enforcement may be weakened.",
+                    path,
                 )
                 return {}
 
-            with open(path, "r", encoding="utf - 8") as f:
+            with open(path, "r", encoding="utf-8") as f:
                 return yaml.safe_load(f) or {}
 
         # Default JSON handling
         return utils.read_json(path, default={}) or {}
     except Exception as e:
-        logger.error(f"Error loading policy file {path}: {e}")
+        logger.error("Error loading policy file %s: %s", path, e)
         return {}
 
 
@@ -57,14 +57,14 @@ def load(root: Path) -> dict:
     manifest = utils.read_json(root / "ai_onboard.json", default={"policies": {}}) or {
         "policies": {}
     }
-    base_default = "./ai_onboard / policies / base.yaml"
+    base_default = "./ai_onboard/policies/base.yaml"
     base_path = Path(manifest.get("policies", {}).get("base", base_default))
     base_full = root / base_path
-    # If configured base points to json but yaml exists,
-        prefer configured; otherwise if default and json missing, try yaml
+    # If configured base points to JSON but YAML exists, prefer configured;
+    # otherwise if default and JSON missing, try YAML
     policy = _read_policy_file(base_full)
 
-    # Load self - preservation policies
+    # Load self-preservation policies
     self_preservation_path = root / "ai_onboard" / "policies" / "self_preservation.yaml"
     if self_preservation_path.exists():
         self_preservation_policy = _read_policy_file(self_preservation_path)

@@ -9,7 +9,7 @@ import json
 import os
 import tempfile
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Optional
 
@@ -43,6 +43,36 @@ def test_root():
         (test_root / ".ai_onboard").mkdir(exist_ok=True)
         (test_root / ".ai_onboard" / "logs").mkdir(exist_ok=True)
         (test_root / ".ai_onboard" / "cache").mkdir(exist_ok=True)
+
+        # Provide fixture data expected by preference learning components
+        now = datetime.now(timezone.utc).isoformat()
+        user_profiles_path = test_root / ".ai_onboard" / "user_profiles.json"
+        sample_profile = {
+            "fixture_user": {
+                "experience_level": "beginner",
+                "preferences": {},
+                "behavior_patterns": [],
+                "interaction_history": [
+                    {
+                        "interaction_id": "interaction_fixture",
+                        "interaction_type": "command_execution",
+                        "timestamp": now,
+                        "context": {"source": "fixture"},
+                        "duration": None,
+                        "outcome": None,
+                        "satisfaction_score": None,
+                        "feedback": None,
+                    }
+                ],
+                "satisfaction_scores": [],
+                "feedback_history": [],
+                "last_activity": now,
+                "total_interactions": 1,
+                "average_satisfaction": 0.0,
+                "created_at": now,
+            }
+        }
+        user_profiles_path.write_text(json.dumps(sample_profile, indent=2), encoding="utf-8")
 
         # Set environment variables for testing
         os.environ["AI_ONBOARD_TEST_MODE"] = "true"

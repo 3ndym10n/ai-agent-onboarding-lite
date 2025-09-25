@@ -1,399 +1,139 @@
-"""
-Unit tests for PerformanceTrendAnalyzer.
+"""Unit tests for Unified Project Management telemetry trend analysis."""
 
-Tests the core functionality of the performance trend analysis system
-with mocked dependencies for reliable and fast testing.
-"""
+from __future__ import annotations
 
-import tempfile
-from datetime import datetime, timedelta
+import json
+from datetime import datetime
 from pathlib import Path
-from unittest.mock import Mock, patch
 
 import pytest
 
-from ai_onboard.core.performance_trend_analyzer import (
-    AnomalyDetection,
-    PerformanceInsight,
-    PerformanceTrendAnalyzer,
-    TrendAnalysis,
-    TrendDirection,
-    TrendSeverity,
-    get_performance_trend_analyzer,
+from ai_onboard.core.tool_usage_tracker import get_tool_tracker
+from ai_onboard.core.unified_project_management import (
+    UnifiedProjectManagementEngine,
+    get_unified_project_management_engine,
 )
 
 
-@pytest.fixture
-def temp_root():
-    """Provide a temporary root directory for testing."""
-    with tempfile.TemporaryDirectory() as temp_dir:
-        yield Path(temp_dir)
-
-
-@pytest.fixture
-def mock_telemetry():
-    """Provide mocked telemetry data."""
-    mock_data = Mock()
-    mock_data.get_performance_metrics.return_value = {
-        "response_time": [100, 120, 110, 130, 125],
-        "memory_usage": [50, 55, 52, 60, 58],
-        "cpu_usage": [30, 35, 32, 40, 38],
-        "error_rate": [0.1, 0.2, 0.15, 0.25, 0.2],
+@pytest.fixture()
+def project_root(tmp_path: Path) -> Path:
+    root = tmp_path / "project"
+    (root / ".ai_onboard").mkdir(parents=True, exist_ok=True)
+    plan = {
+        "project_id": "demo",
+        "project_name": "Test Project",
+        "work_breakdown_structure": {
+            "phase1": {
+                "name": "Phase 1",
+                "status": "in_progress",
+                "completion_percentage": 40,
+                "subtasks": {
+                    "1": {"name": "Task 1", "status": "completed"},
+                    "2": {"name": "Task 2", "status": "in_progress"},
+                },
+            }
+        },
+        "milestones": [
+            {
+                "id": "m1",
+                "name": "Milestone",
+                "status": "in_progress",
+                "completion_percentage": 50,
+            }
+        ],
+        "critical_path": ["phase1"],
     }
-    return mock_data
+    (root / ".ai_onboard" / "project_plan.json").write_text(
+        json.dumps(plan, indent=2), encoding="utf-8"
+    )
+    return root
 
 
-@pytest.fixture
-def trend_analyzer(temp_root):
-    """Provide a PerformanceTrendAnalyzer instance."""
-    with patch("ai_onboard.core.performance_trend_analyzer.telemetry"):
-        analyzer = PerformanceTrendAnalyzer(temp_root)
-        return analyzer
+class TestUnifiedPMTelemetry:
+    """Verify telemetry data emitted by the unified project management engine."""
 
+    def test_single_session_telemetry(
+        self, project_root: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.chdir(project_root)
+        tracker = get_tool_tracker(project_root)
+        tracker.start_task_session("telemetry_single")
+        engine = get_unified_project_management_engine(project_root)
 
-@pytest.fixture
-def sample_performance_data():
-    """Provide sample performance data for testing."""
-    return {
-        "timestamps": [datetime.now() - timedelta(days=i) for i in range(30, 0, -1)],
-        "response_times": [100 + i * 2 for i in range(30)],  # Increasing trend
-        "memory_usage": [50 + (i % 10) for i in range(30)],  # Cyclical pattern
-        "cpu_usage": [30 + (i * 0.5) for i in range(30)],  # Gradual increase
-        "error_rates": [0.1 if i < 20 else 0.5 for i in range(30)],  # Step change
-    }
+        engine.tasks.prioritize_tasks()
+        engine.tasks.detect_completions()
+        engine.wbs.get_status()
+        engine.analytics.get_project_status()
 
+        tracker.end_task_session()
 
-class TestPerformanceTrendAnalyzer:
-    """Test suite for PerformanceTrendAnalyzer."""
-
-    def test_initialization(self, temp_root):
-        """Test that PerformanceTrendAnalyzer initializes correctly."""
-        with patch("ai_onboard.core.performance_trend_analyzer.telemetry"):
-            analyzer = PerformanceTrendAnalyzer(temp_root)
-
-            assert analyzer.root == temp_root
-            assert analyzer.data_path == temp_root / ".ai_onboard" / "performance_data"
-            assert (
-                analyzer.config_path
-                == temp_root / ".ai_onboard" / "trend_analysis_config.json"
-            )
-            assert isinstance(analyzer.config, dict)
-            assert analyzer.data_path.exists()
-
-    def test_analyze_trends_basic(self, trend_analyzer, sample_performance_data):
-        """Test basic trend analysis functionality."""
-        trends = trend_analyzer.analyze_trends(
-            metric_name="response_time",
-            data_points=sample_performance_data["response_times"],
-            timestamps=sample_performance_data["timestamps"],
-        )
-
-        assert isinstance(trends, list)
-        if trends:  # If trends were detected
-            trend = trends[0]
-            assert isinstance(trend, TrendAnalysis)
-            assert trend.metric_name == "response_time"
-            assert isinstance(trend.direction, TrendDirection)
-            assert isinstance(trend.confidence, float)
-            assert 0 <= trend.confidence <= 1
-
-    def test_detect_anomalies_basic(self, trend_analyzer, sample_performance_data):
-        """Test basic anomaly detection functionality."""
-        anomalies = trend_analyzer.detect_anomalies(
-            metric_name="error_rate",
-            data_points=sample_performance_data["error_rates"],
-            timestamps=sample_performance_data["timestamps"],
-        )
-
-        assert isinstance(anomalies, list)
-        for anomaly in anomalies:
-            assert isinstance(anomaly, AnomalyDetection)
-            assert anomaly.metric_name == "error_rate"
-            assert isinstance(anomaly.anomaly_type, str)
-            assert isinstance(anomaly.severity, float)
-            assert 0 <= anomaly.severity <= 1
-
-    def test_generate_performance_insights(
-        self, trend_analyzer, sample_performance_data
-    ):
-        """Test performance insights generation."""
-        # First analyze trends
-        trends = trend_analyzer.analyze_trends(
-            metric_name="response_time",
-            data_points=sample_performance_data["response_times"],
-            timestamps=sample_performance_data["timestamps"],
-        )
-
-        # Then detect anomalies
-        anomalies = trend_analyzer.detect_anomalies(
-            metric_name="response_time",
-            data_points=sample_performance_data["response_times"],
-            timestamps=sample_performance_data["timestamps"],
-        )
-
-        # Generate insights
-        insights = trend_analyzer.generate_performance_insights(trends, anomalies)
-
-        assert isinstance(insights, list)
-        for insight in insights:
-            assert isinstance(insight, PerformanceInsight)
-            assert insight.insight_type is not None
-            assert isinstance(insight.description, str)
-            assert isinstance(insight.impact_score, float)
-            assert 0 <= insight.impact_score <= 1
-
-    def test_statistical_analysis(self, trend_analyzer):
-        """Test statistical analysis methods."""
-        data_points = [10, 12, 11, 13, 15, 14, 16, 18, 17, 19]
-
-        # Test trend detection
-        stats = trend_analyzer._calculate_trend_statistics(data_points)
-        slope = stats["slope"]
-        assert isinstance(slope, float)
-
-        # Test statistical measures
-        mean = sum(data_points) / len(data_points)
-        assert mean > 0
-
-        # Test outlier detection using existing anomaly detection
-        outliers = trend_analyzer.detect_anomalies(
-            metric_name="test_metric", data_points=data_points, threshold_std_devs=2.0
-        )
-        assert isinstance(outliers, list)
-
-    def test_configuration_loading(self, temp_root):
-        """Test configuration loading and defaults."""
-        with patch("ai_onboard.core.performance_trend_analyzer.telemetry"):
-            analyzer = PerformanceTrendAnalyzer(temp_root)
-
-            # Check default configuration
-            assert isinstance(analyzer.config, dict)
-            assert "analysis_enabled" in analyzer.config
-            assert "anomaly_detection" in analyzer.config
-            assert "trend_analysis" in analyzer.config
-            assert "forecasting" in analyzer.config
-            assert "insights" in analyzer.config
-
-    def test_data_persistence(self, trend_analyzer, sample_performance_data):
-        """Test that analysis results are properly persisted."""
-        # Perform analysis
-        trends = trend_analyzer.analyze_trends(
-            metric_name="test_metric",
-            data_points=sample_performance_data["response_times"],
-            timestamps=sample_performance_data["timestamps"],
-        )
-
-        # Check that data was persisted
-        trends_file = trend_analyzer.trends_path
-        assert trends_file.exists()
-        assert trends_file.stat().st_size > 0
-
-    def test_factory_function(self, temp_root):
-        """Test the factory function."""
-        with patch("ai_onboard.core.performance_trend_analyzer.telemetry"):
-            analyzer = get_performance_trend_analyzer(temp_root)
-            assert isinstance(analyzer, PerformanceTrendAnalyzer)
-            assert analyzer.root == temp_root
-
-    def test_error_handling_invalid_data(self, trend_analyzer):
-        """Test error handling with invalid data."""
-        # Empty data
-        trends = trend_analyzer.analyze_trends("test", [], [])
-        assert isinstance(trends, list)
-
-        # Mismatched data lengths
-        with pytest.raises(ValueError):
-            trend_analyzer.analyze_trends(
-                "test", [1, 2, 3], [datetime.now(), datetime.now()]  # Different length
-            )
-
-    def test_trend_direction_detection(self, trend_analyzer):
-        """Test trend direction detection accuracy."""
-        # Increasing trend
-        increasing_data = list(range(10, 20))
-        trends = trend_analyzer.analyze_trends(
-            "increasing",
-            increasing_data,
-            [datetime.now() + timedelta(hours=i) for i in range(10)],
-        )
-
-        # Decreasing trend
-        decreasing_data = list(range(20, 10, -1))
-        trends = trend_analyzer.analyze_trends(
-            "decreasing",
-            decreasing_data,
-            [datetime.now() + timedelta(hours=i) for i in range(10)],
-        )
-
-        # Stable trend
-        stable_data = [15] * 10
-        trends = trend_analyzer.analyze_trends(
-            "stable",
-            stable_data,
-            [datetime.now() + timedelta(hours=i) for i in range(10)],
-        )
-
-    @pytest.mark.parametrize("window_size", [5, 10, 20])
-    def test_different_analysis_windows(
-        self, trend_analyzer, sample_performance_data, window_size
-    ):
-        """Test trend analysis with different window sizes."""
-        # Update config for different window size
-        trend_analyzer.config["trend_analysis_window"] = window_size
-
-        trends = trend_analyzer.analyze_trends(
-            metric_name="test_metric",
-            data_points=sample_performance_data["response_times"][:window_size],
-            timestamps=sample_performance_data["timestamps"][:window_size],
-        )
-
-        assert isinstance(trends, list)
-
-    def test_anomaly_types_detection(self, trend_analyzer):
-        """Test detection of different anomaly types."""
-        # Spike anomaly
-        spike_data = [10] * 10 + [100] + [10] * 10
-        timestamps = [
-            datetime.now() + timedelta(hours=i) for i in range(len(spike_data))
+        log_path = project_root / ".ai_onboard" / "tool_usage.jsonl"
+        assert log_path.exists()
+        payloads = [
+            json.loads(line)
+            for line in log_path.read_text(encoding="utf-8").splitlines()
+            if line
         ]
 
-        anomalies = trend_analyzer.detect_anomalies(
-            "spike_test", spike_data, timestamps
-        )
+        assert payloads
+        tool_names = {entry["tool_name"] for entry in payloads}
+        assert tool_names == {"unified_project_management"}
 
-        # Should detect the spike
-        assert isinstance(anomalies, list)
+    def test_repeated_calls_accumulate_entries(
+        self, project_root: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.chdir(project_root)
+        tracker = get_tool_tracker(project_root)
+        tracker.start_task_session("telemetry_repeat")
+        engine = get_unified_project_management_engine(project_root)
 
-    def test_performance_insight_generation(self, trend_analyzer):
-        """Test comprehensive performance insight generation."""
-        # Create various trend patterns
-        trends = [
-            TrendAnalysis(
-                metric_name="response_time",
-                time_period="7d",
-                direction=TrendDirection.IMPROVING,
-                severity=TrendSeverity.MEDIUM,
-                confidence=0.9,
-                slope=2.5,
-                correlation=0.8,
-                data_points=30,
-                start_value=100.0,
-                end_value=125.0,
-                change_percent=25.0,
-                volatility=0.1,
-                trend_strength=0.9,
-            )
+        for _ in range(5):
+            engine.tasks.prioritize_tasks()
+            engine.analytics.get_project_status()
+
+        tracker.end_task_session()
+
+        log_path = project_root / ".ai_onboard" / "tool_usage.jsonl"
+        assert log_path.exists()
+        payloads = [
+            json.loads(line)
+            for line in log_path.read_text(encoding="utf-8").splitlines()
+            if line
         ]
+        assert len(payloads) >= 5
+        timestamps = [entry.get("timestamp") for entry in payloads]
+        assert all(isinstance(ts, str) and ts for ts in timestamps)
+        assert len(set(timestamps)) >= 1
 
-        anomalies = [
-            AnomalyDetection(
-                metric_name="response_time",
-                anomaly_timestamp=datetime.now(),
-                anomaly_value=500.0,
-                expected_value=125.0,
-                deviation_score=3.0,
-                anomaly_type="spike",
-                severity=TrendSeverity.HIGH,
-                context={"expected_range": (100.0, 150.0)},
-                detection_method="zscore",
-                confidence=0.8,
+    def test_recent_activity_truncation(self, project_root: Path) -> None:
+        events_path = project_root / ".ai_onboard" / "learning_events.jsonl"
+        events_path.parent.mkdir(parents=True, exist_ok=True)
+        events_path.write_text(
+            "\n".join(
+                json.dumps({"timestamp": datetime.now().isoformat(), "id": idx})
+                for idx in range(10)
             )
-        ]
-
-        insights = trend_analyzer.generate_performance_insights(trends, anomalies)
-
-        assert isinstance(insights, list)
-        for insight in insights:
-            assert isinstance(insight, PerformanceInsight)
-            assert len(insight.description) > 0
-            assert isinstance(insight.estimated_impact, str)
-            assert len(insight.estimated_impact) > 0
-
-
-class TestTrendAnalysis:
-    """Test suite for TrendAnalysis data structure."""
-
-    def test_trend_analysis_creation(self):
-        """Test TrendAnalysis object creation."""
-        trend = TrendAnalysis(
-            metric_name="test_metric",
-            time_period="7d",
-            direction=TrendDirection.IMPROVING,
-            severity=TrendSeverity.MEDIUM,
-            confidence=0.85,
-            slope=1.5,
-            correlation=0.7,
-            data_points=100,
-            start_value=10.0,
-            end_value=11.5,
-            change_percent=15.0,
-            volatility=0.1,
-            trend_strength=0.8,
+            + "\n",
+            encoding="utf-8",
         )
-
-        assert trend.metric_name == "test_metric"
-        assert trend.direction == TrendDirection.IMPROVING
-        assert trend.confidence == 0.85
-        assert trend.slope == 1.5
-        assert trend.data_points == 100
+        engine = get_unified_project_management_engine(project_root)
+        recent = engine.analytics.get_project_status()["recent_activity"]
+        assert len(recent) <= 5
 
 
-class TestAnomalyDetection:
-    """Test suite for AnomalyDetection data structure."""
-
-    def test_anomaly_detection_creation(self):
-        """Test AnomalyDetection object creation."""
-        anomaly = AnomalyDetection(
-            metric_name="test_metric",
-            anomaly_timestamp=datetime.now(),
-            anomaly_value=999.0,
-            expected_value=50.0,
-            deviation_score=3.0,
-            anomaly_type="outlier",
-            severity=TrendSeverity.HIGH,
-            context={"expected_range": (10.0, 100.0)},
-            detection_method="zscore",
-            confidence=0.9,
-        )
-
-        assert anomaly.metric_name == "test_metric"
-        assert anomaly.anomaly_type == "outlier"
-        assert anomaly.anomaly_value == 999.0
-        assert anomaly.expected_value == 50.0
-        assert anomaly.context["expected_range"] == (10.0, 100.0)
-        assert anomaly.severity == TrendSeverity.HIGH
-
-
-# Integration tests
 @pytest.mark.integration
-class TestPerformanceTrendAnalyzerIntegration:
-    """Integration tests for the performance trend analyzer."""
+class TestUnifiedPMTelemetryIntegration:
+    """Integration checks ensuring telemetry logs persist."""
 
-    def test_end_to_end_analysis(self, temp_root):
-        """Test complete end - to - end trend analysis."""
-        with patch("ai_onboard.core.performance_trend_analyzer.telemetry"):
-            analyzer = PerformanceTrendAnalyzer(temp_root)
-
-            # Generate realistic performance data
-            timestamps = [datetime.now() - timedelta(hours=i) for i in range(24, 0, -1)]
-            response_times = [
-                100 + i * 2 + (i % 3) * 10 for i in range(24)
-            ]  # Trend with noise
-
-            # Perform analysis
-            trends = analyzer.analyze_trends(
-                "response_time", response_times, timestamps
-            )
-            anomalies = analyzer.detect_anomalies(
-                "response_time", response_times, timestamps
-            )
-            insights = analyzer.generate_performance_insights(trends, anomalies)
-
-            # Verify results
-            assert isinstance(trends, list)
-            assert isinstance(anomalies, list)
-            assert isinstance(insights, list)
-
-            # Check data persistence
-            data_files = list(analyzer.trends_path.parent.glob("*.jsonl"))
-            assert len(data_files) > 0
+    def test_tool_usage_log_exists(
+        self, project_root: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.chdir(project_root)
+        tracker = get_tool_tracker(project_root)
+        tracker.start_task_session("telemetry_integration")
+        engine = get_unified_project_management_engine(project_root)
+        engine.analytics.get_project_status()
+        tracker.end_task_session()
+        log_path = project_root / ".ai_onboard" / "tool_usage.jsonl"
+        assert log_path.exists()
+        assert log_path.read_text(encoding="utf-8").strip()

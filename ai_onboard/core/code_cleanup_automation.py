@@ -5,6 +5,14 @@ Safely removes dead code and unused imports using risk-based approach
 with comprehensive validation and rollback capabilities.
 """
 
+import ast
+import re
+import subprocess
+import sys
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Dict, List, Optional
+
 from .code_quality_analyzer import (
     CodeQualityAnalysisResult,
     CodeQualityAnalyzer,
@@ -308,7 +316,6 @@ class AutomatedCodeCleanup:
 
         try:
             # Run a basic syntax check on modified Python files
-            import subprocess
 
             # Simple validation: try to import the main module
             result = subprocess.run(

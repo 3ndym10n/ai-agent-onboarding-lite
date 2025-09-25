@@ -4,12 +4,13 @@ import argparse
 from pathlib import Path
 
 from ..core.approval_workflow import get_approval_workflow
-from ..core.critical_path_engine import analyze_critical_path
-from ..core.progress_dashboard import generate_progress_report
-from ..core.task_completion_detector import run_task_completion_scan
-from ..core.task_prioritization_engine import prioritize_tasks
+from ..core.pm_compatibility import (
+    get_legacy_progress_dashboard,
+    get_legacy_task_completion_detector,
+    get_legacy_task_prioritization_engine,
+    get_legacy_wbs_sync_engine,
+)
 from ..core.unicode_utils import print_activity, print_header, print_status
-from ..core.wbs_synchronization_engine import get_wbs_sync_engine
 
 
 def add_project_management_commands(subparsers):
@@ -89,7 +90,8 @@ def handle_critical_path(args):
 
     try:
         print_activity("Analyzing project critical path...")
-        analysis = analyze_critical_path(Path("."))
+        engine = get_legacy_task_prioritization_engine(Path("."))
+        analysis = engine._engine.analytics.get_project_status()
 
         print_header("CRITICAL PATH RESULTS")
 
@@ -135,8 +137,8 @@ def handle_progress_dashboard(args):
 
     try:
         print_activity("Loading progress dashboard...")
-        dashboard = generate_progress_report(Path("."))
-        status = dashboard.get_project_status()
+        dashboard = get_legacy_progress_dashboard(Path("."))
+        status = dashboard.generate_dashboard()
 
         print_header("PROJECT STATUS OVERVIEW")
 
@@ -191,7 +193,8 @@ def handle_task_completion(args):
 
     try:
         print_activity("Scanning for completed tasks...")
-        scan_results = run_task_completion_scan(Path("."))
+        detector = get_legacy_task_completion_detector(Path("."))
+        scan_results = detector.detect_completed_tasks()
 
         print_header("COMPLETION SCAN RESULTS")
 
@@ -244,7 +247,8 @@ def handle_task_prioritization(args):
 
     try:
         print_activity("Analyzing task priorities...")
-        result = prioritize_tasks(Path("."))
+        engine = get_legacy_task_prioritization_engine(Path("."))
+        result = engine.prioritize_all_tasks()
         priorities = result
 
         print_header("PRIORITY ANALYSIS RESULTS")
@@ -294,7 +298,7 @@ def handle_wbs_management(args):
 
     try:
         print_activity("Loading WBS management system...")
-        wbs_engine = get_wbs_sync_engine(Path("."))
+        wbs_engine = get_legacy_wbs_sync_engine(Path("."))
 
         # Get WBS status
         status = wbs_engine.get_wbs_status()

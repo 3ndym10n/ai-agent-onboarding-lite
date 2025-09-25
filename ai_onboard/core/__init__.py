@@ -35,6 +35,9 @@ from .continuous_improvement_validator import (
 )
 from .cursor_ai_integration import CursorAIIntegration, get_cursor_integration
 
+# compatibility shim exports preserved for legacy CLI imports
+from . import progress_dashboard as progress_tracker
+
 __all__ = [
     # Validators
     "ContinuousImprovementValidator",

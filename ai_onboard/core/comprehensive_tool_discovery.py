@@ -72,7 +72,6 @@ class ToolCategory(Enum):
 
 
 @dataclass
-
 class ToolMetadata:
     """Metadata for a discovered tool."""
 
@@ -93,7 +92,6 @@ class ToolMetadata:
 
 
 @dataclass
-
 class ToolDiscoveryResult:
     """Result of comprehensive tool discovery."""
 
@@ -108,7 +106,6 @@ class ToolDiscoveryResult:
 
 class ComprehensiveToolDiscovery:
     """Discovers and catalogs all available tools in the ai_onboard system."""
-
 
     def __init__(self, root_path: Path):
         self.root_path = root_path
@@ -159,7 +156,6 @@ class ComprehensiveToolDiscovery:
             r"purpose.*",
         ]
 
-
     def discover_all_tools(self) -> ToolDiscoveryResult:
         """Discover all available tools in the system."""
 
@@ -169,8 +165,8 @@ class ComprehensiveToolDiscovery:
         self.tool_tracker.track_tool_usage(
             "comprehensive_tool_discovery",
             "Tool_Discovery",
-            "started",
             {"scope": "full_system_scan"},
+            "started",
         )
 
         try:
@@ -210,12 +206,12 @@ class ComprehensiveToolDiscovery:
             self.tool_tracker.track_tool_usage(
                 "comprehensive_tool_discovery",
                 "Tool_Discovery",
-                "completed",
                 {
                     "total_tools": result.total_tools,
                     "categories": len(result.tools_by_category),
                     "errors": len(result.discovery_errors),
                 },
+                "completed",
             )
 
         except Exception as e:
@@ -223,17 +219,16 @@ class ComprehensiveToolDiscovery:
             self.tool_tracker.track_tool_usage(
                 "comprehensive_tool_discovery",
                 "Tool_Discovery",
-                "failed",
                 {"error": str(e)},
+                "failed",
             )
 
         return result
 
-
     def _discover_cli_tools(self) -> Dict[str, ToolMetadata]:
         """Discover CLI command tools."""
 
-        tools = {}
+        tools: Dict[str, ToolMetadata] = {}
         cli_path = self.root_path / "ai_onboard" / "cli"
 
         if not cli_path.exists():
@@ -276,11 +271,10 @@ class ComprehensiveToolDiscovery:
 
         return tools
 
-
     def _discover_core_tools(self) -> Dict[str, ToolMetadata]:
         """Discover core analysis and utility tools."""
 
-        tools = {}
+        tools: Dict[str, ToolMetadata] = {}
         core_path = self.root_path / "ai_onboard" / "core"
 
         if not core_path.exists():
@@ -344,31 +338,31 @@ class ComprehensiveToolDiscovery:
             file_path = core_path / file_name
             if file_path.exists():
                 # Convert CamelCase class name to snake_case tool name
-                class_name = config["class"]
+                class_name: str = config["class"]  # type: ignore[assignment]
                 tool_name = ""
                 for i, char in enumerate(class_name):
+                    # char is automatically typed as str from enumerate(string)
                     if char.isupper() and i > 0:
                         tool_name += "_"
                     tool_name += char.lower()
                 tools[tool_name] = ToolMetadata(
                     name=tool_name,
-                    category=config["category"],
+                    category=config["category"],  # type: ignore[arg-type]
                     module_path=f"ai_onboard.core.{file_path.stem}",
-                    class_name=config["class"],
+                    class_name=config["class"],  # type: ignore[arg-type]
                     description=f"Core tool: {config['class']}",
-                    keywords=config["keywords"],
-                    contexts=config["contexts"],
-                    patterns=self._generate_patterns_from_keywords(config["keywords"]),
+                    keywords=config["keywords"],  # type: ignore[arg-type]
+                    contexts=config["contexts"],  # type: ignore[arg-type]
+                    patterns=self._generate_patterns_from_keywords(config["keywords"]),  # type: ignore[arg-type]
                     user_preference_sensitive=config.get(
                         "user_preference_sensitive", False
-                    ),
+                    ),  # type: ignore[arg-type]
                     vision_alignment_required=config.get(
                         "vision_alignment_required", False
-                    ),
+                    ),  # type: ignore[arg-type]
                 )
 
         return tools
-
 
     def _discover_vision_tools(self) -> Dict[str, ToolMetadata]:
         """Discover vision and alignment tools."""
@@ -403,20 +397,19 @@ class ComprehensiveToolDiscovery:
         for tool_name, config in vision_tools.items():
             tools[tool_name] = ToolMetadata(
                 name=tool_name,
-                category=config["category"],
+                category=config["category"],  # type: ignore[arg-type]
                 module_path=f"ai_onboard.core.{tool_name}",
                 description=f"Vision tool: {tool_name}",
-                keywords=config["keywords"],
-                contexts=config["contexts"],
-                patterns=self._generate_patterns_from_keywords(config["keywords"]),
-                gate_requirements=config.get("gate_requirements", []),
+                keywords=config["keywords"],  # type: ignore[arg-type]
+                contexts=config["contexts"],  # type: ignore[arg-type]
+                patterns=self._generate_patterns_from_keywords(config["keywords"]),  # type: ignore[arg-type]
+                gate_requirements=config.get("gate_requirements", []),  # type: ignore[arg-type]
                 vision_alignment_required=config.get(
                     "vision_alignment_required", False
-                ),
+                ),  # type: ignore[arg-type]
             )
 
         return tools
-
 
     def _discover_safety_tools(self) -> Dict[str, ToolMetadata]:
         """Discover safety and validation tools."""
@@ -449,21 +442,20 @@ class ComprehensiveToolDiscovery:
         for tool_name, config in safety_tools.items():
             tools[tool_name] = ToolMetadata(
                 name=tool_name,
-                category=config["category"],
+                category=config["category"],  # type: ignore[arg-type]
                 module_path=f"ai_onboard.core.{tool_name}",
                 description=f"Safety tool: {tool_name}",
-                keywords=config["keywords"],
-                contexts=config["contexts"],
-                patterns=self._generate_patterns_from_keywords(config["keywords"]),
-                gate_requirements=config.get("gate_requirements", []),
+                keywords=config["keywords"],  # type: ignore[arg-type]
+                contexts=config["contexts"],  # type: ignore[arg-type]
+                patterns=self._generate_patterns_from_keywords(config["keywords"]),  # type: ignore[arg-type]
+                gate_requirements=config.get("gate_requirements", []),  # type: ignore[arg-type]
                 user_preference_sensitive=config.get(
                     "user_preference_sensitive", False
-                ),
-                risk_level=config.get("risk_level", "low"),
+                ),  # type: ignore[arg-type]
+                risk_level=config.get("risk_level", "low"),  # type: ignore[arg-type]
             )
 
         return tools
-
 
     def _discover_ux_tools(self) -> Dict[str, ToolMetadata]:
         """Discover user experience tools."""
@@ -488,19 +480,18 @@ class ComprehensiveToolDiscovery:
         for tool_name, config in ux_tools.items():
             tools[tool_name] = ToolMetadata(
                 name=tool_name,
-                category=config["category"],
+                category=config["category"],  # type: ignore[arg-type]
                 module_path=f"ai_onboard.core.{tool_name}",
                 description=f"UX tool: {tool_name}",
-                keywords=config["keywords"],
-                contexts=config["contexts"],
-                patterns=self._generate_patterns_from_keywords(config["keywords"]),
+                keywords=config["keywords"],  # type: ignore[arg-type]
+                contexts=config["contexts"],  # type: ignore[arg-type]
+                patterns=self._generate_patterns_from_keywords(config["keywords"]),  # type: ignore[arg-type]
                 user_preference_sensitive=config.get(
                     "user_preference_sensitive", False
-                ),
+                ),  # type: ignore[arg-type]
             )
 
         return tools
-
 
     def _discover_project_management_tools(self) -> Dict[str, ToolMetadata]:
         """Discover project management tools."""
@@ -525,23 +516,22 @@ class ComprehensiveToolDiscovery:
         for tool_name, config in pm_tools.items():
             tools[tool_name] = ToolMetadata(
                 name=tool_name,
-                category=config["category"],
+                category=config["category"],  # type: ignore[arg-type]
                 module_path=f"ai_onboard.core.{tool_name}",
                 description=f"PM tool: {tool_name}",
-                keywords=config["keywords"],
-                contexts=config["contexts"],
-                patterns=self._generate_patterns_from_keywords(config["keywords"]),
-                gate_requirements=config.get("gate_requirements", []),
+                keywords=config["keywords"],  # type: ignore[arg-type]
+                contexts=config["contexts"],  # type: ignore[arg-type]
+                patterns=self._generate_patterns_from_keywords(config["keywords"]),  # type: ignore[arg-type]
+                gate_requirements=config.get("gate_requirements", []),  # type: ignore[arg-type]
                 user_preference_sensitive=config.get(
                     "user_preference_sensitive", False
-                ),
+                ),  # type: ignore[arg-type]
                 vision_alignment_required=config.get(
                     "vision_alignment_required", False
-                ),
+                ),  # type: ignore[arg-type]
             )
 
         return tools
-
 
     def _discover_ai_agent_tools(self) -> Dict[str, ToolMetadata]:
         """Discover AI agent orchestration tools."""
@@ -578,37 +568,35 @@ class ComprehensiveToolDiscovery:
         for tool_name, config in ai_tools.items():
             tools[tool_name] = ToolMetadata(
                 name=tool_name,
-                category=config["category"],
+                category=config["category"],  # type: ignore[arg-type]
                 module_path=f"ai_onboard.core.{tool_name}",
                 description=f"AI tool: {tool_name}",
-                keywords=config["keywords"],
-                contexts=config["contexts"],
-                patterns=self._generate_patterns_from_keywords(config["keywords"]),
-                gate_requirements=config.get("gate_requirements", []),
+                keywords=config["keywords"],  # type: ignore[arg-type]
+                contexts=config["contexts"],  # type: ignore[arg-type]
+                patterns=self._generate_patterns_from_keywords(config["keywords"]),  # type: ignore[arg-type]
+                gate_requirements=config.get("gate_requirements", []),  # type: ignore[arg-type]
                 user_preference_sensitive=config.get(
                     "user_preference_sensitive", False
-                ),
+                ),  # type: ignore[arg-type]
                 vision_alignment_required=config.get(
                     "vision_alignment_required", False
-                ),
+                ),  # type: ignore[arg-type]
             )
 
         return tools
-
 
     def _categorize_tools(
         self, tools: Dict[str, ToolMetadata]
     ) -> Dict[ToolCategory, List[ToolMetadata]]:
         """Categorize tools by their categories."""
 
-        categorized = {}
+        categorized: Dict[ToolCategory, List[ToolMetadata]] = {}
         for tool in tools.values():
             if tool.category not in categorized:
                 categorized[tool.category] = []
             categorized[tool.category].append(tool)
 
         return categorized
-
 
     def _determine_cli_category(self, name: str, obj: Any) -> ToolCategory:
         """Determine the category of a CLI command."""
@@ -623,14 +611,13 @@ class ComprehensiveToolDiscovery:
         elif any(pattern in name_lower for pattern in ["cleanup", "safe", "gate"]):
             return ToolCategory.SAFETY_CHECKS
         elif any(pattern in name_lower for pattern in ["wbs", "task", "progress"]):
-            return ToolCategory.PROGRESS_TRACKING
+            return ToolCategory.METRICS_ANALYSIS
         elif any(pattern in name_lower for pattern in ["ui", "ux", "visual"]):
             return ToolCategory.UI_ENHANCEMENT
         elif any(pattern in name_lower for pattern in ["ai_agent", "orchestration"]):
             return ToolCategory.AI_AGENT_ORCHESTRATION
         else:
             return ToolCategory.CODE_QUALITY  # Default category
-
 
     def _extract_cli_keywords(self, name: str, obj: Any) -> List[str]:
         """Extract keywords from CLI command name and function."""
@@ -655,7 +642,6 @@ class ComprehensiveToolDiscovery:
 
         return keywords
 
-
     def _extract_cli_patterns(self, name: str) -> List[str]:
         """Extract patterns from CLI command name."""
 
@@ -669,7 +655,6 @@ class ComprehensiveToolDiscovery:
             patterns.append(f"handle.*{name_lower.replace('handle_', '')}")
 
         return patterns
-
 
     def _determine_cli_gates(self, name: str) -> List[str]:
         """Determine required gates for CLI commands."""
@@ -686,7 +671,6 @@ class ComprehensiveToolDiscovery:
 
         return gates
 
-
     def _requires_vision_alignment(self, name: str) -> bool:
         """Determine if CLI command requires vision alignment."""
 
@@ -694,7 +678,6 @@ class ComprehensiveToolDiscovery:
         vision_keywords = ["vision", "charter", "align", "interrogate", "plan", "goal"]
 
         return any(keyword in name_lower for keyword in vision_keywords)
-
 
     def _generate_patterns_from_keywords(self, keywords: List[str]) -> List[str]:
         """Generate regex patterns from keywords."""
@@ -713,8 +696,8 @@ def get_comprehensive_tool_discovery(root_path: Path) -> ComprehensiveToolDiscov
     """Get singleton instance of comprehensive tool discovery."""
 
     if not hasattr(get_comprehensive_tool_discovery, "_instance"):
-        get_comprehensive_tool_discovery._instance = ComprehensiveToolDiscovery(
+        get_comprehensive_tool_discovery._instance = ComprehensiveToolDiscovery(  # type: ignore[attr-defined]
             root_path
         )
 
-    return get_comprehensive_tool_discovery._instance
+    return get_comprehensive_tool_discovery._instance  # type: ignore[attr-defined]

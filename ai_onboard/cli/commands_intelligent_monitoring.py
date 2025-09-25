@@ -134,7 +134,9 @@ def handle_intelligent_monitoring_commands(args, root: Path):
 
         print(f"Total activities in history: {len(activities)}")
 
+
 # Integration functions for automatic startup
+
 
 def initialize_intelligent_monitoring(root: Path):
     """
@@ -146,15 +148,23 @@ def initialize_intelligent_monitoring(root: Path):
     try:
         # Start intelligent monitoring automatically
         start_intelligent_monitoring(root)
-        print("🧠 Intelligent Development Monitor initialized")
+        from ai_onboard.core.unicode_utils import ensure_unicode_safe
+
+        ensure_unicode_safe("🧠 Intelligent Development Monitor initialized")
     except Exception as e:
-        print(f"⚠️ Failed to initialize intelligent monitoring: {e}")
+        from ai_onboard.core.unicode_utils import ensure_unicode_safe
+
+        ensure_unicode_safe(f"⚠️ Failed to initialize intelligent monitoring: {e}")
 
 
 def shutdown_intelligent_monitoring():
     """Shutdown intelligent monitoring on system exit."""
     try:
         stop_intelligent_monitoring()
-        print("🧠 Intelligent Development Monitor shutdown")
+        from ai_onboard.core.unicode_utils import ensure_unicode_safe
+
+        ensure_unicode_safe("🧠 Intelligent Development Monitor shutdown")
     except Exception as e:
-        print(f"⚠️ Error during intelligent monitoring shutdown: {e}")
+        from ai_onboard.core.unicode_utils import ensure_unicode_safe
+
+        ensure_unicode_safe(f"⚠️ Error during intelligent monitoring shutdown: {e}")

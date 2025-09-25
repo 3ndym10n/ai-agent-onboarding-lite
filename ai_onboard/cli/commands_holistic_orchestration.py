@@ -8,11 +8,11 @@ from pathlib import Path
 from typing import Any, Dict
 
 from ..core.comprehensive_tool_discovery import get_comprehensive_tool_discovery
-from ..core.holistic_tool_orchestration import (
-    OrchestrationStrategy,
-    get_holistic_tool_orchestrator,
-)
 from ..core.tool_usage_tracker import get_tool_tracker
+from ..core.unified_tool_orchestrator import (
+    UnifiedOrchestrationStrategy,
+    get_unified_tool_orchestrator,
+)
 
 
 def add_holistic_orchestration_commands(subparsers):
@@ -142,11 +142,11 @@ def handle_orchestrate_tools(args, root: Path):
 
     # Get orchestration strategy
     strategy_map = {
-        "vision_first": OrchestrationStrategy.VISION_FIRST,
-        "safety_first": OrchestrationStrategy.SAFETY_FIRST,
-        "user_preference_driven": OrchestrationStrategy.USER_PREFERENCE_DRIVEN,
-        "comprehensive_analysis": OrchestrationStrategy.COMPREHENSIVE_ANALYSIS,
-        "adaptive": OrchestrationStrategy.ADAPTIVE,
+        "vision_first": UnifiedOrchestrationStrategy.VISION_FIRST,
+        "safety_first": UnifiedOrchestrationStrategy.SAFETY_FIRST,
+        "user_preference_driven": UnifiedOrchestrationStrategy.USER_PREFERENCE_DRIVEN,
+        "comprehensive_analysis": UnifiedOrchestrationStrategy.COMPREHENSIVE_ANALYSIS,
+        "adaptive": UnifiedOrchestrationStrategy.ADAPTIVE,
     }
 
     strategy = strategy_map[args.strategy]
@@ -161,11 +161,11 @@ def handle_orchestrate_tools(args, root: Path):
             print(f"⚠️  Invalid JSON context, ignoring: {args.context}")
 
     # Get holistic orchestrator
-    orchestrator = get_holistic_tool_orchestrator(root)
+    orchestrator = get_unified_tool_orchestrator(root)
 
     # Execute orchestration
     print(f"\n🚀 Starting holistic orchestration...")
-    result = orchestrator.orchestrate_tools_for_request(args.request, context, strategy)
+    result = orchestrator.orchestrate_tools(args.request, context, strategy)
 
     # Display results
     print(f"\n📊 ORCHESTRATION RESULTS:")
@@ -210,7 +210,7 @@ def handle_orchestration_status(args, root: Path):
     print("=" * 50)
 
     # Get orchestrator
-    orchestrator = get_holistic_tool_orchestrator(root)
+    orchestrator = get_unified_tool_orchestrator(root)
 
     # Show discovery status
     discovery = get_comprehensive_tool_discovery(root)

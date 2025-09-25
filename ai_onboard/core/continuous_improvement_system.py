@@ -287,7 +287,7 @@ class ContinuousImprovementSystem:
             "source": event.source,
         }
 
-        with open(self.learning_events_path, "a", encoding="utf - 8") as f:
+        with open(self.learning_events_path, "a", encoding="utf-8") as f:
             json.dump(event_data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 
@@ -643,7 +643,7 @@ class ContinuousImprovementSystem:
             "recommendations": health_record.recommendations,
         }
 
-        with open(self.system_health_path, "a", encoding="utf - 8") as f:
+        with open(self.system_health_path, "a", encoding="utf-8") as f:
             json.dump(health_data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 
@@ -776,7 +776,7 @@ class ContinuousImprovementSystem:
 
         health_records = []
         if self.system_health_path.exists():
-            with open(self.system_health_path, "r", encoding="utf - 8") as f:
+            with open(self.system_health_path, "r", encoding="utf-8") as f:
                 for line in f:
                     line = line.strip()
                     if not line:
@@ -831,7 +831,7 @@ class ContinuousImprovementSystem:
 
         learning_events = []
         if self.learning_events_path.exists():
-            with open(self.learning_events_path, "r", encoding="utf - 8") as f:
+            with open(self.learning_events_path, "r", encoding="utf-8") as f:
                 for line in f:
                     line = line.strip()
                     if not line:

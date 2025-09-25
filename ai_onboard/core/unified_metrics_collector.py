@@ -9,6 +9,7 @@ This module provides a comprehensive, high - performance metrics collection syst
 - Scales efficiently with system growth
 """
 
+import json
 import threading
 import time
 from collections import defaultdict, deque

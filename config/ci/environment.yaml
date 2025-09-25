@@ -1,0 +1,16 @@
+﻿# CI/CD Environment Configuration
+# This file contains settings specific to CI/CD environment
+
+environment: ci
+debug: false
+log_level: INFO
+api_port: 8001
+database_url: sqlite:///ci.db
+features:
+  - ai_agent_collaboration
+  - basic_logging
+  - test_reporting
+test:
+  parallel: true
+  coverage: true
+  timeout: 300

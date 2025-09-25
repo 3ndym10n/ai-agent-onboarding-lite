@@ -17,10 +17,10 @@ sys.path.insert(0, str(project_root))
 scripts_dir = project_root / "scripts"
 sys.path.insert(0, str(scripts_dir))
 
-from import_consolidation_migrator import ImportConsolidationMigrator
-from integrated_import_consolidation import IntegratedImportConsolidation
-from monitor_import_changes import ImportChangeMonitor
-from validate_import_equivalence import ImportEquivalenceValidator
+from analysis.validate_import_equivalence import ImportEquivalenceValidator
+from maintenance.monitor_import_changes import ImportChangeMonitor
+from migration.import_consolidation_migrator import ImportConsolidationMigrator
+from migration.integrated_import_consolidation import IntegratedImportConsolidation
 
 from ai_onboard.core.utils import read_json, write_json
 

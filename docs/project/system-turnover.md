@@ -344,8 +344,6 @@ C.11 PR Template Cue (to include in description)
 - Risk and rollback plan
 - Docs updated: yes/no (files)
 
-```
-
 
 Appendix D: Overlay Merge Algorithm (Reference)
 
@@ -548,3 +546,5 @@ Agents and humans should read the same JSONL facts for decisions and audits.
 ```
 {"ts":"2025-08-29T10:22:11Z","agent":"cursor:gpt-4o","cmd":"guard","decision":"warn","rules":["big-change-requires-approval"],"files":12,"lines":680}
 ```
+
+Appendix I: Unified Project Management Engine Migration Guide

@@ -152,6 +152,26 @@ def append_jsonl(path: Path, data: Dict[str, Any]):
         f.write(json_line)
 
 
+def create_timestamped_backup(source: Path, backup_dir: Path) -> Path:
+    """Create a timestamped backup of a file."""
+    ensure_dir(backup_dir)
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    backup_path = backup_dir / f"{source.stem}_{timestamp}{source.suffix}"
+    backup_path.write_text(source.read_text(encoding="utf - 8"), encoding="utf - 8")
+    return backup_path
+
+
+def restore_backup(backup_path: Path, target_path: Path) -> bool:
+    """Restore a file from a backup path."""
+    if not backup_path.exists():
+        return False
+    ensure_dir(target_path.parent)
+    target_path.write_text(
+        backup_path.read_text(encoding="utf - 8"), encoding="utf - 8"
+    )
+    return True
+
+
 # =============================================================================
 # ERROR HANDLING CLASSES (consolidated from errors.py)
 # =============================================================================

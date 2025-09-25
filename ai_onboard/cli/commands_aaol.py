@@ -4,7 +4,9 @@ import json
 import time
 from pathlib import Path
 
-from ..core.ai_agent_orchestration import create_ai_agent_orchestrator
+from ..core.orchestration_compatibility import (
+    AIAgentOrchestrationLayer as create_ai_agent_orchestrator,
+)
 
 
 def add_aaol_commands(subparsers):

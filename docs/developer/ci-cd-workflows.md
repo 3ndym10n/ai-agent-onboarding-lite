@@ -93,8 +93,8 @@ The system includes protection for critical files:
 - **Reports**: XML and HTML coverage reports
 
 ### System Tests
-- **Integration tests**: `scripts/test_system.py`
-- **Environment validation**: `scripts/validate_dev_env.py`
+- **Integration tests**: `scripts/testing/test_system.py`
+- **Environment validation**: `scripts/maintenance/validate_dev_env.py`
 - **AI Agent tests**: `ai_onboard ai-collaboration test`
 - **Vision system tests**: `ai_onboard enhanced-vision status`
 
@@ -130,7 +130,7 @@ The system includes protection for critical files:
 - **Tagging**: Git tags for releases
 
 ### Changelog Generation
-- **Script**: `scripts/generate_changelog.py`
+- **Script**: `scripts/maintenance/generate_changelog.py`
 - **Format**: Conventional commit messages
 - **Categories**: Features, fixes, docs, refactoring, tests
 - **Automation**: Generated during release process
@@ -164,7 +164,7 @@ The system includes protection for critical files:
 1. **Setup**: Run `scripts/setup_dev_env.py`
 2. **Pre-commit**: Install pre-commit hooks
 3. **Development**: Work on feature branch
-4. **Testing**: Run `scripts/run_ci_tests.py`
+4. **Testing**: Run `scripts/ci/run_ci_tests.py`
 5. **Commit**: Pre-commit hooks run automatically
 6. **Push**: Push to feature branch
 
@@ -244,11 +244,11 @@ twine check dist/*
 #### Local CI Testing
 ```bash
 # Run all CI tests locally
-python scripts/run_ci_tests.py
+python scripts/ci/run_ci_tests.py
 
 # Run specific test categories
-python scripts/test_system.py
-python scripts/validate_dev_env.py
+python scripts/testing/test_system.py
+python scripts/maintenance/validate_dev_env.py
 ```
 
 #### Git Hooks

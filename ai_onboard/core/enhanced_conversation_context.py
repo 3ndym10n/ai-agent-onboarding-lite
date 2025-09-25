@@ -344,7 +344,7 @@ class EnhancedConversationContextManager:
                 return {"error": "Session not found"}
 
             # Filter context based on sharing permissions
-            shared_context = {}
+            shared_context: Dict[str, Any] = {}
 
             if (
                 "conversation_history" in context_types
@@ -380,7 +380,7 @@ class EnhancedConversationContextManager:
                     "project_root": str(session.project_root),
                     "resolved_intents": session.resolved_intents,
                     "current_stage": (
-                        session.current_stage.value if session.current_stage else None
+                        getattr(session.current_stage, "value", session.current_stage)
                     ),
                 }
 
@@ -650,7 +650,7 @@ class EnhancedConversationContextManager:
                 name=name,
                 value=value,
                 source=MetricSource.SYSTEM,
-                category=MetricCategory.PERFORMANCE,
+                category=MetricCategory.RESOURCE,
                 dimensions=dimensions or {},
                 unit="count",
             )

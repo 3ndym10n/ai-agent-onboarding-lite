@@ -10,44 +10,38 @@ import json
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
+from warnings import warn
 
 from . import utils
+from .pm_compatibility import get_legacy_wbs_sync_engine
 from .tool_usage_tracker import track_tool_usage
-from .wbs_synchronization_engine import get_wbs_sync_engine
 
 
 class WBSAutoUpdateEngine:
-    """
-    Engine for automatically updating WBS task completion status.
-
-    This engine monitors various sources of task completion evidence and
-    automatically updates the WBS to reflect current project status.
-    """
+    """Deprecated shim that preserves auto-update behaviour via UPME."""
 
     def __init__(self, root: Path):
+        warn(
+            "WBSAutoUpdateEngine is deprecated; use UnifiedProjectManagementEngine",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         self.root = root
         self.project_plan_path = root / ".ai_onboard" / "project_plan.json"
         self.completion_log_path = root / ".ai_onboard" / "wbs_auto_updates.jsonl"
         self.backup_dir = root / ".ai_onboard" / "wbs_backups"
-
-        # Ensure directories exist
         self.backup_dir.mkdir(parents=True, exist_ok=True)
-
-        # Enhanced completion detection sources
-        self.completion_sources = [
-            self._check_git_commits,  # NEW: Git commit analysis
-            self._check_code_quality_metrics,  # NEW: Quality metrics integration
-            self._check_code_implementation,
-            self._check_test_coverage,
-            self._check_documentation,
-            self._check_cli_commands,
-            self._check_module_structure,
-            self._check_continuous_improvement,  # NEW: CI system integration
-        ]
-
-        # Track recently updated tasks to avoid redundant checks
+        self.wbs_sync_engine = get_legacy_wbs_sync_engine(root)
         self.recent_updates: Set[str] = set()
-        self.update_cooldown = 300  # 5 minutes cooldown between checks
+        self.update_cooldown = 300
+
+    def synchronize(self) -> Dict[str, Any]:
+        warn(
+            "WBSAutoUpdateEngine.synchronize is deprecated",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self._apply_auto_updates()
 
     def auto_update_wbs(self, force: bool = False) -> Dict[str, Any]:
         """
@@ -600,7 +594,7 @@ class WBSAutoUpdateEngine:
         """Update a task's completion status in the WBS."""
         try:
             # Get synchronization engine
-            sync_engine = get_wbs_sync_engine(self.root)
+            sync_engine = get_legacy_wbs_sync_engine(self.root)
 
             # Find the task in WBS and prepare update
             phase_id = f"{task_id.split('.')[0]}.0"

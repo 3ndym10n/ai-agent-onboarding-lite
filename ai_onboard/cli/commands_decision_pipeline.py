@@ -172,7 +172,9 @@ def _handle_test_decision(args: argparse.Namespace, pipeline, root: Path) -> Non
         print(f"Using existing session: {session_id}")
     else:
         # Create a test session
-        from ..core.ai_agent_orchestration import create_ai_agent_orchestrator
+        from ..core.orchestration_compatibility import (
+            AIAgentOrchestrationLayer as create_ai_agent_orchestrator,
+        )
 
         orchestrator = create_ai_agent_orchestrator(root)
         session_id = orchestrator.create_session(args.user_id)
@@ -399,7 +401,10 @@ def _handle_benchmark(args: argparse.Namespace, pipeline, root: Path) -> None:
         test_input, intents = test_cases[i % len(test_cases)]
 
         # Create mock conversation context
-        from ..core.ai_agent_orchestration import ConversationContext, ConversationState
+        from ..core.orchestration_compatibility import (
+            ConversationContext,
+            ConversationState,
+        )
 
         mock_context = ConversationContext(
             session_id=f"benchmark_session_{i}",

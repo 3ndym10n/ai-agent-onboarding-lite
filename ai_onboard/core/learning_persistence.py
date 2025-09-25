@@ -10,6 +10,7 @@ This module provides persistent storage for learned patterns that:
 - Ensures learning continuity between AI agent sessions
 """
 
+import json
 import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List

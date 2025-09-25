@@ -823,12 +823,14 @@ def handle_core_commands(args, root: Path):
             print(f"Opened alignment checkpoint {args.checkpoint}.")
     elif args.cmd == "validate":
         # Run validation and write report
-        from ..core import (
-            alignment,
-            charter,
-            progress_tracker,
-            telemetry,
-            validation_runtime,
+        import importlib
+
+        from ..core import alignment, charter
+        from ..core import progress_dashboard as progress_tracker
+        from ..core import telemetry
+
+        validation_runtime = importlib.import_module(
+            "ai_onboard.core.validation_runtime"
         )
 
         alignment.require_state(root, "aligned")
@@ -1606,12 +1608,12 @@ def handle_core_commands(args, root: Path):
 
         elif wbs_cmd == "sync":
             # WBS sync
-            from ..core.wbs_synchronization_engine import get_wbs_sync_engine
+            from ..core.pm_compatibility import get_legacy_wbs_sync_engine
 
             force_sync = getattr(args, "force", False)
             run_validation = getattr(args, "validate", False)
 
-            engine = get_wbs_sync_engine(root)
+            engine = get_legacy_wbs_sync_engine(root)
 
             if run_validation:
                 print("🔍 Running WBS data consistency validation...")
@@ -1666,12 +1668,12 @@ def handle_core_commands(args, root: Path):
 
         elif wbs_cmd == "validate":
             # WBS validate
-            from ..core.wbs_synchronization_engine import get_wbs_sync_engine
+            from ..core.pm_compatibility import get_legacy_wbs_sync_engine
 
             should_fix = getattr(args, "fix", False)
             generate_report = getattr(args, "report", False)
 
-            engine = get_wbs_sync_engine(root)
+            engine = get_legacy_wbs_sync_engine(root)
 
             print("🔍 Validating WBS data consistency and integrity...")
 

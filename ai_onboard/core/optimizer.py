@@ -1,9 +1,8 @@
-
+import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 from . import telemetry, utils
-import json
 
 
 def parse_budget(s: str) -> int:
@@ -39,6 +38,7 @@ def nudge_from_metrics(root: Path) -> None:
         ]
     )
     print(f"Kaizen: last run pass={last.get('pass')} | components: {comps}")
+
 
 # ===== Optimization Strategist MVP: proposal generation =====
 
@@ -257,8 +257,7 @@ def generate_optimization_proposals(
     # Analyze hotspot patterns for targeted recommendations
     hotspot_patterns = _analyze_hotspot_patterns(hotspots)
 
-    # Heuristic: if we have hotspots,
-        target top 1 - 3 with pattern - matched optimizations
+    # Heuristic: if we have hotspots, target top 1-3 with pattern-matched optimizations
     for name, secs in hotspots[:3]:
         # Get pattern recommendations for this specific hotspot
         pattern_recs = []
@@ -269,7 +268,7 @@ def generate_optimization_proposals(
 
         # Enhanced idea bank with more sophisticated optimizations
         idea_bank: List[Tuple[str, str, str, str]] = [
-            # CPU - bound optimizations
+            # CPU-bound optimizations
             (
                 "numba_jit",
                 "Numba JIT hot loops",
@@ -279,7 +278,7 @@ def generate_optimization_proposals(
             (
                 "vectorize_numpy",
                 "NumPy vectorization",
-                "Replace Python loops with NumPy vector ops for 10 - 100x speedup",
+                "Replace Python loops with NumPy vector ops for 10-100x speedup",
                 "cpu_bound",
             ),
             (
@@ -291,13 +290,14 @@ def generate_optimization_proposals(
             (
                 "pypy_jit",
                 "PyPy JIT compilation",
-                "Use PyPy's tracing JIT for automatic optimization", "cpu_bound",
+                "Use PyPy's tracing JIT for automatic optimization",
+                "cpu_bound",
             ),
             # Memory optimizations
             (
                 "weakref_cache",
                 "Weak reference caching",
-                "Use weakref for memory - efficient caching without leaks",
+                "Use weakref for memory-efficient caching without leaks",
                 "memory_bound",
             ),
             (
@@ -309,7 +309,7 @@ def generate_optimization_proposals(
             (
                 "memoryview",
                 "Memory views",
-                "Use memoryview for zero - copy buffer access",
+                "Use memoryview for zero-copy buffer access",
                 "memory_bound",
             ),
             (
@@ -318,23 +318,23 @@ def generate_optimization_proposals(
                 "Use __slots__ to reduce memory footprint",
                 "memory_bound",
             ),
-            # I / O optimizations
+            # I/O optimizations
             (
                 "async_io",
-                "Async I / O refactoring",
-                "Convert blocking I / O to async / await patterns",
+                "Async I/O refactoring",
+                "Convert blocking I/O to async/await patterns",
                 "io_bound",
             ),
             (
                 "concurrent_futures",
                 "Thread pool execution",
-                "Use concurrent.futures for parallel I / O operations",
+                "Use concurrent.futures for parallel I/O operations",
                 "io_bound",
             ),
             (
                 "aiofiles",
                 "Async file operations",
-                "Replace sync file ops with aiofiles for non - blocking I / O",
+                "Replace sync file ops with aiofiles for non-blocking I/O",
                 "io_bound",
             ),
             (
@@ -373,7 +373,8 @@ def generate_optimization_proposals(
                 "rust_microkernel",
                 "Rust / WASM micro - kernel",
                 "Move tight numeric loop to Rust compiled to native / WASM and \
-                    call via FFI", "creative",
+                    call via FFI",
+                "creative",
             ),
             (
                 "c_extension",
@@ -439,7 +440,13 @@ def generate_optimization_proposals(
                 "target": "system",
                 "title": "Capture profiling baseline",
                 "description": "Run cProfile / py - spy to gather flame graphs and \
-                    identify real hotspots", "evidence": {"reason": "No recent test report with timings found"}, "estimated_gain": "TBD", "risk": "low", "tech": "profiling", "branch_required": False, "confidence": 0.7,
+                    identify real hotspots",
+                "evidence": {"reason": "No recent test report with timings found"},
+                "estimated_gain": "TBD",
+                "risk": "low",
+                "tech": "profiling",
+                "branch_required": False,
+                "confidence": 0.7,
             }
         )
 
@@ -481,7 +488,7 @@ def create_sandbox_plan(
     if selected is None:
         selected = proposals[0]
 
-    branch_name =         f"opt/{selected.get('tech', 'idea')}-{selected.get('target', 'unknown').replace(' ', '_')[:32]}"
+    branch_name = f"opt/{selected.get('tech', 'idea')}-{selected.get('target', 'unknown').replace(' ', '_')[:32]}"
     steps: List[str] = [
         f"Create branch {branch_name}",
         "Add micro - benchmark around target function / path",

@@ -4,10 +4,10 @@ from pathlib import Path
 
 sys.path.insert(0, ".")
 
-from ai_onboard.core.intelligent_tool_orchestrator import IntelligentToolOrchestrator
+from ai_onboard.core.unified_tool_orchestrator import UnifiedToolOrchestrator
 
 root_path = Path(".")
-orchestrator = IntelligentToolOrchestrator(root_path)
+orchestrator = UnifiedToolOrchestrator(root_path)
 
 # Test the new tools from phase 2
 tools_to_test = [
@@ -20,7 +20,7 @@ tools_to_test = [
 for tool_name in tools_to_test:
     print(f"\nTesting {tool_name}...")
     try:
-        result = orchestrator.execute_automatic_tool_application(
+        result = orchestrator._execute_tool_safely(
             tool_name, {"test_mode": True}
         )
         print(f"  Executed: {result['executed']}")

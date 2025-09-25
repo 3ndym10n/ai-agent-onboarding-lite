@@ -7,6 +7,9 @@ Learned from the README consolidation incident where 19 dependencies
 were nearly broken.
 """
 
+import ast
+import sys
+
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 

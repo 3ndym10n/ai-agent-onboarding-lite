@@ -1,6 +1,5 @@
 """
-User Preference Learning System - Advanced user behavior analysis and \
-    preference learning.
+User Preference Learning System - Advanced user behavior analysis and preference learning.
 
 This module provides intelligent user preference learning that:
 - Analyzes user interaction patterns and behaviors
@@ -94,8 +93,8 @@ class PreferenceConfidence(Enum):
     HIGH = "high"
     VERY_HIGH = "very_high"
 
-@dataclass
 
+@dataclass
 class UserInteraction:
     """A single user interaction event."""
 
@@ -109,8 +108,8 @@ class UserInteraction:
     satisfaction_score: Optional[float] = None
     feedback: Optional[str] = None
 
-@dataclass
 
+@dataclass
 class UserPreference:
     """A learned user preference."""
 
@@ -130,8 +129,8 @@ class UserPreference:
     sources: List[str] = field(default_factory=list)
     context_conditions: Dict[str, Any] = field(default_factory=dict)
 
-@dataclass
 
+@dataclass
 class UserBehaviorPattern:
     """A detected user behavior pattern."""
 
@@ -146,8 +145,8 @@ class UserBehaviorPattern:
     recommendations: List[str] = field(default_factory=list)
     detected_at: datetime = field(default_factory=datetime.now)
 
-@dataclass
 
+@dataclass
 class UserProfile:
     """Comprehensive user profile with learned preferences and patterns."""
 
@@ -166,7 +165,6 @@ class UserProfile:
 
 class UserPreferenceLearningSystem:
     """Advanced user preference learning and adaptation system."""
-
 
     def __init__(self, root: Path):
         self.root = root
@@ -213,7 +211,6 @@ class UserPreferenceLearningSystem:
             self._initialize_default_learning_rules()
 
     # Backward compatibility methods
-
     def _load_user_data(self, user_id: str) -> Optional[Dict[str, Any]]:
         """Alias for backward compatibility - return dict format."""
         profile = self.user_profiles.get(user_id)
@@ -255,12 +252,10 @@ class UserPreferenceLearningSystem:
             }
         return None
 
-
     def _store_user_data(self, user_id: str, profile: UserProfile):
         """Alias for backward compatibility."""
         self.user_profiles[user_id] = profile
         self._save_user_profiles()
-
 
     def learn_from_interactions(self, user_id: str):
         """Alias for backward compatibility."""
@@ -269,7 +264,6 @@ class UserPreferenceLearningSystem:
             if profile.interaction_history:
                 interaction = profile.interaction_history[-1]
                 self._trigger_preference_learning(profile, interaction)
-
 
     def learn_preferences_from_interactions(self, user_id: str):
         """Alias for backward compatibility."""
@@ -297,7 +291,6 @@ class UserPreferenceLearningSystem:
         return (
             list(profile.preferences.values()) if user_id in self.user_profiles else []
         )
-
 
     def predict_user_preference(
         self,
@@ -338,7 +331,6 @@ class UserPreferenceLearningSystem:
             "category": best_pref.category.value,
         }
 
-
     def _get_confidence_value(self, confidence) -> float:
         """Get numeric confidence value from enum or float."""
         if hasattr(confidence, "value"):
@@ -355,7 +347,6 @@ class UserPreferenceLearningSystem:
                 return 0.5
         else:
             return float(confidence)
-
 
     def _store_user_preference(self, preference: UserPreference):
         """Alias for backward compatibility."""
@@ -378,7 +369,6 @@ class UserPreferenceLearningSystem:
             sources=preference.sources,
             preference_type=preference.preference_type,
         )
-
 
     def update_preference_confidence(
         self, user_id: str, preference_key: str, positive_feedback: bool = True
@@ -426,7 +416,6 @@ class UserPreferenceLearningSystem:
                     pref.last_updated = datetime.now()
                     break
 
-
     def perform_adaptive_learning(self, user_id: str):
         """Alias for backward compatibility."""
         if user_id in self.user_profiles:
@@ -435,22 +424,18 @@ class UserPreferenceLearningSystem:
                 interaction = profile.interaction_history[-1]
                 self._trigger_preference_learning(profile, interaction)
 
-
     def personalization_engine(self):
         """Alias for backward compatibility."""
         return self  # Return self for method chaining
-
 
     def _load_config(self) -> Dict[str, Any]:
         """Alias for backward compatibility."""
         return self.config
 
-
     def _save_config(self):
         """Alias for backward compatibility."""
         # Config is stored in memory, no need to save
         pass
-
 
     def _ensure_directories(self):
         """Ensure all required directories exist."""
@@ -461,7 +446,6 @@ class UserPreferenceLearningSystem:
             self.behavior_patterns_path,
         ]:
             utils.ensure_dir(path.parent)
-
 
     def _initialize_default_learning_rules(self):
         """Initialize default preference learning rules."""
@@ -579,7 +563,6 @@ class UserPreferenceLearningSystem:
             },
         ]
 
-
     def _load_user_profiles(self):
         """Load user profiles from storage."""
         if not self.user_profiles_path.exists():
@@ -660,18 +643,15 @@ class UserPreferenceLearningSystem:
                 created_at=datetime.fromisoformat(profile_data["created_at"]),
             )
 
-
     def _load_preference_learning_rules(self):
         """Load preference learning rules from storage."""
         # This would load from a separate file if we had one
         # For now, we initialize with defaults
 
-
     def _load_behavior_pattern_detectors(self):
         """Load behavior pattern detectors from storage."""
         # This would load from a separate file if we had one
         # For now, we initialize with defaults
-
 
     def record_user_interaction(
         self,
@@ -771,7 +751,6 @@ class UserPreferenceLearningSystem:
 
         return interaction_id
 
-
     def _trigger_preference_learning(
         self, profile: UserProfile, interaction: UserInteraction
     ):
@@ -779,7 +758,6 @@ class UserPreferenceLearningSystem:
         for rule in self.preference_learning_rules:
             if self._evaluate_learning_rule_conditions(rule, profile, interaction):
                 self._apply_learning_rule(rule, profile, interaction)
-
 
     def _evaluate_learning_rule_conditions(
         self, rule: Dict[str, Any], profile: UserProfile, interaction: UserInteraction
@@ -806,7 +784,6 @@ class UserPreferenceLearningSystem:
                 return False
 
         return True
-
 
     def _apply_learning_rule(
         self, rule: Dict[str, Any], profile: UserProfile, interaction: UserInteraction
@@ -854,7 +831,6 @@ class UserPreferenceLearningSystem:
             self._analyze_learning_style_preference(
                 profile, interaction, preference_category, preference_key
             )
-
 
     def _analyze_response_time_preference(
         self,
@@ -908,7 +884,6 @@ class UserPreferenceLearningSystem:
             ["response_time_analysis"],
         )
 
-
     def _analyze_error_handling_preference(
         self,
         profile: UserProfile,
@@ -961,7 +936,6 @@ class UserPreferenceLearningSystem:
             f"Based on error handling patterns: {auto_recovery_count} auto, {manual_intervention_count} manual",
             ["error_handling_analysis"],
         )
-
 
     def _analyze_approval_pattern_preference(
         self,
@@ -1019,7 +993,6 @@ class UserPreferenceLearningSystem:
             ["approval_pattern_analysis"],
         )
 
-
     def _analyze_command_pattern_preference(
         self,
         profile: UserProfile,
@@ -1066,7 +1039,6 @@ class UserPreferenceLearningSystem:
             ["command_pattern_analysis"],
         )
 
-
     def _analyze_feedback_preference(
         self,
         profile: UserProfile,
@@ -1110,7 +1082,6 @@ class UserPreferenceLearningSystem:
         )
 
     # NEW: Conversational analysis methods
-
     def _analyze_transparency_preference(
         self,
         profile: UserProfile,
@@ -1147,7 +1118,6 @@ class UserPreferenceLearningSystem:
             f"User requested tool usage information {tool_usage_requests} times",
             ["transparency_preference_analysis"],
         )
-
 
     def _analyze_communication_style_preference(
         self,
@@ -1191,7 +1161,6 @@ class UserPreferenceLearningSystem:
             f"User requested clarity {clarity_requests} times, simple explanations {simple_requests} times",
             ["communication_style_analysis"],
         )
-
 
     def _analyze_organization_preference(
         self,
@@ -1237,7 +1206,6 @@ class UserPreferenceLearningSystem:
             ["organization_preference_analysis"],
         )
 
-
     def _analyze_learning_style_preference(
         self,
         profile: UserProfile,
@@ -1282,10 +1250,12 @@ class UserPreferenceLearningSystem:
             key,
             learning_style,
             confidence,
-            f"User requested feature explanations {explanation_requests} times, simple explanations {simple_explanation_requests} times",
+            (
+                f"User requested feature explanations {explanation_requests} times, "
+                f"simple explanations {simple_explanation_requests} times"
+            ),
             ["learning_style_analysis"],
         )
-
 
     def _update_user_preference(
         self,
@@ -1343,7 +1313,6 @@ class UserPreferenceLearningSystem:
             user_id, category, key, value, float(confidence_for_json), evidence
         )
 
-
     def _detect_behavior_patterns(self, profile: UserProfile):
         """Detect behavior patterns in user interactions."""
         if len(profile.interaction_history) < 10:
@@ -1354,7 +1323,6 @@ class UserPreferenceLearningSystem:
         self._detect_workflow_patterns(profile)
         self._detect_error_patterns(profile)
         self._detect_satisfaction_patterns(profile)
-
 
     def _detect_timing_patterns(self, profile: UserProfile):
         """Detect timing - related behavior patterns."""
@@ -1391,7 +1359,6 @@ class UserPreferenceLearningSystem:
                 recommendations=["Reduce gate timeout", "Enable quick mode"],
             )
             profile.behavior_patterns.append(pattern)
-
 
     def _detect_workflow_patterns(self, profile: UserProfile):
         """Detect workflow - related behavior patterns."""
@@ -1436,7 +1403,6 @@ class UserPreferenceLearningSystem:
                 )
                 profile.behavior_patterns.append(pattern)
 
-
     def _detect_error_patterns(self, profile: UserProfile):
         """Detect error - related behavior patterns."""
         error_interactions = [
@@ -1479,7 +1445,6 @@ class UserPreferenceLearningSystem:
             )
             profile.behavior_patterns.append(pattern)
 
-
     def _detect_satisfaction_patterns(self, profile: UserProfile):
         """Detect satisfaction - related behavior patterns."""
         if len(profile.satisfaction_scores) < 5:
@@ -1513,7 +1478,6 @@ class UserPreferenceLearningSystem:
                 )
                 profile.behavior_patterns.append(pattern)
 
-
     def _update_experience_level(self, profile: UserProfile):
         """Update user experience level based on interactions and patterns."""
         total_interactions = profile.total_interactions
@@ -1543,7 +1507,6 @@ class UserPreferenceLearningSystem:
                 avg_satisfaction=avg_satisfaction,
             )
 
-
     def _calculate_error_rate(self, profile: UserProfile) -> float:
         """Calculate user error rate."""
         error_interactions = sum(
@@ -1556,7 +1519,6 @@ class UserPreferenceLearningSystem:
             return 0.0
 
         return error_interactions / profile.total_interactions
-
 
     def get_user_preferences(
         self, user_id: str, category: Optional[PreferenceCategory] = None
@@ -1576,7 +1538,6 @@ class UserPreferenceLearningSystem:
 
         return preferences
 
-
     def get_user_preferences_list(self, user_id: str) -> List[UserPreference]:
         """Get user preferences as a list (backward compatibility)."""
         preferences = self.get_user_preferences(user_id)
@@ -1586,7 +1547,6 @@ class UserPreferenceLearningSystem:
             return list(preferences.values())
         else:
             return []
-
 
     def get_user_recommendations(self, user_id: str) -> List[Dict[str, Any]]:
         """Get personalized recommendations for a user."""
@@ -1627,7 +1587,6 @@ class UserPreferenceLearningSystem:
         recommendations.sort(key=lambda x: x["confidence"], reverse=True)
 
         return recommendations[:10]  # Return top 10
-
 
     def get_user_profile_summary(self, user_id: str) -> Dict[str, Any]:
         """Get comprehensive user profile summary."""
@@ -1673,7 +1632,6 @@ class UserPreferenceLearningSystem:
             ],
         }
 
-
     def _log_user_interaction(self, interaction: UserInteraction):
         """Log user interaction to storage."""
         interaction_data = {
@@ -1691,7 +1649,6 @@ class UserPreferenceLearningSystem:
         with open(self.interaction_log_path, "a", encoding="utf - 8") as f:
             json.dump(interaction_data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
-
 
     def _log_preference_learning(
         self,
@@ -1716,7 +1673,6 @@ class UserPreferenceLearningSystem:
         with open(self.preference_learning_path, "a", encoding="utf - 8") as f:
             json.dump(learning_data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
-
 
     def _save_user_profiles(self):
         """Save user profiles to storage."""
@@ -1789,7 +1745,3 @@ class UserPreferenceLearningSystem:
 def get_user_preference_learning_system(root: Path) -> UserPreferenceLearningSystem:
     """Get user preference learning system instance."""
     return UserPreferenceLearningSystem(root)
-
-
-
-

@@ -1,0 +1,12 @@
+﻿# Development Environment Configuration
+# This file contains settings specific to development environment
+
+environment: development
+debug: true
+log_level: DEBUG
+api_port: 8000
+database_url: sqlite:///dev.db
+features:
+  - ai_agent_collaboration
+  - enhanced_logging
+  - debug_tools

@@ -4,18 +4,18 @@ from pathlib import Path
 
 sys.path.insert(0, ".")
 
-from ai_onboard.core.intelligent_tool_orchestrator import IntelligentToolOrchestrator
+from ai_onboard.core.unified_tool_orchestrator import UnifiedToolOrchestrator
 from ai_onboard.core.mandatory_tool_consultation_gate import get_mandatory_gate
 
 root_path = Path(".")
-orchestrator = IntelligentToolOrchestrator(root_path)
+orchestrator = UnifiedToolOrchestrator(root_path)
 consultation_gate = get_mandatory_gate(root_path)
 
 # Test just dependency_mapper
 tool_name = "dependency_mapper"
 print(f"Testing {tool_name}...")
 
-result = orchestrator.execute_automatic_tool_application(tool_name, {"test_mode": True})
+result = orchestrator._execute_tool_safely(tool_name, {"test_mode": True})
 print(f'Executed: {result["executed"]}')
 
 if result["executed"]:

@@ -1,16 +1,15 @@
-#!/usr / bin / env python3
-"""
-Enhanced System Test Script for ai - onboard.
-
-Phase 1: Enhanced Testing Foundation
-Tests all major system capabilities with comprehensive metrics collection,
-performance monitoring, confidence scoring, and detailed reporting.
-"""
+#!/usr/bin/env python3
+"""Enhanced system test script for ai-onboard."""
 
 import json
 import sys
 import time
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List
+
+from ai_onboard.core.smart_debugger import SmartDebugger
+
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 

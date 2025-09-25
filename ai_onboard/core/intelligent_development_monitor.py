@@ -11,8 +11,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
-from .intelligent_tool_orchestrator import IntelligentToolOrchestrator
 from .tool_usage_tracker import get_tool_tracker
+from .unicode_utils import ensure_unicode_safe
+from .unified_tool_orchestrator import UnifiedToolOrchestrator
 
 
 @dataclass
@@ -51,7 +52,7 @@ class IntelligentDevelopmentMonitor:
 
     def __init__(self, root_path: Path):
         self.root_path = root_path
-        self.tool_orchestrator = IntelligentToolOrchestrator(root_path)
+        self.tool_orchestrator = UnifiedToolOrchestrator(root_path)
         self.tool_tracker = get_tool_tracker(root_path)
 
         # Activity monitoring
@@ -149,15 +150,15 @@ class IntelligentDevelopmentMonitor:
         )
         self.monitor_thread.start()
 
-        print("🧠 Intelligent Development Monitor started")
-        print("   📊 Monitoring for automatic tool application...")
+        ensure_unicode_safe("🧠 Intelligent Development Monitor started")
+        ensure_unicode_safe("   📊 Monitoring for automatic tool application...")
 
     def stop_monitoring(self):
         """Stop the intelligent development monitoring."""
         self.monitoring_active = False
         if self.monitor_thread:
             self.monitor_thread.join(timeout=5.0)
-        print("🧠 Intelligent Development Monitor stopped")
+        ensure_unicode_safe("🧠 Intelligent Development Monitor stopped")
 
     def _monitoring_loop(self):
         """Main monitoring loop."""

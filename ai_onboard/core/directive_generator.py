@@ -7,7 +7,7 @@ and current system state to ensure the cascade is always current and relevant.
 
 import time
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from .automatic_error_prevention import AutomaticErrorPrevention
 from .comprehensive_tool_discovery import get_comprehensive_tool_discovery
@@ -61,7 +61,9 @@ class DirectiveGenerator:
                 "cli_patterns": len(pattern_system.cli_patterns),
                 "prevention_rules": len(prevention_system.prevention_rules),
                 "tools_discovered": len(discovery_result.all_tools),
-                "tools_registered": len(discovery_result.registered_tools),
+                "tools_registered": len(
+                    discovery_result.all_tools
+                ),  # All discovered tools are registered
                 "last_updated": time.time(),
             }
         except Exception as e:
@@ -733,10 +735,15 @@ This is not optional. This is a **LEGAL REQUIREMENT** for AI agents working on t
         }
 
 
+# Global instance for singleton pattern
+_directive_generator_instance: Optional[DirectiveGenerator] = None
+
+
 def get_directive_generator(root_path: Path) -> DirectiveGenerator:
     """Get singleton instance of directive generator."""
+    global _directive_generator_instance
 
-    if not hasattr(get_directive_generator, "_instance"):
-        get_directive_generator._instance = DirectiveGenerator(root_path)
+    if _directive_generator_instance is None:
+        _directive_generator_instance = DirectiveGenerator(root_path)
 
-    return get_directive_generator._instance
+    return _directive_generator_instance

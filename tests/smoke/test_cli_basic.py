@@ -18,6 +18,7 @@ def test_prompt_state_smoke():
         capture_output=True,
         check=False,
         encoding="utf-8",
+        errors="replace",
     )
     print(f"DEBUG: returncode={cp.returncode}")
     print(f"DEBUG: stdout='{cp.stdout}'")
@@ -29,7 +30,12 @@ def test_prompt_state_smoke():
     json_start = cp.stdout.find("{")
     if json_start == -1:
         raise ValueError(f"No JSON found in output: {cp.stdout}")
+
+    # Find the end of the JSON object
     json_content = cp.stdout[json_start:]
+    json_end = json_content.find("}\n")
+    if json_end != -1:
+        json_content = json_content[: json_end + 1]  # Include the closing brace
 
     data = json.loads(json_content)
     assert isinstance(data, dict)
@@ -44,6 +50,7 @@ def test_prompt_summary_brief_smoke():
         capture_output=True,
         check=False,
         encoding="utf-8",
+        errors="replace",
     )
     assert cp.returncode == 0, f"Command failed: {cp.stderr}"
     assert len(cp.stdout) > 0, f"No stdout output: stderr={cp.stderr}"
@@ -52,7 +59,12 @@ def test_prompt_summary_brief_smoke():
     json_start = cp.stdout.find("{")
     if json_start == -1:
         raise ValueError(f"No JSON found in output: {cp.stdout}")
+
+    # Find the end of the JSON object
     json_content = cp.stdout[json_start:]
+    json_end = json_content.find("}\n")
+    if json_end != -1:
+        json_content = json_content[: json_end + 1]  # Include the closing brace
 
     data = json.loads(json_content)
     assert isinstance(data, dict)
@@ -75,6 +87,7 @@ def test_status_command_smoke():
         capture_output=True,
         check=False,
         encoding="utf-8",
+        errors="replace",
     )
     assert cp.returncode == 0, f"Status command failed: {cp.stderr}"
     assert len(cp.stdout) > 0, "Status command produced no output"
@@ -88,6 +101,7 @@ def test_help_command_smoke():
         capture_output=True,
         check=False,
         encoding="utf-8",
+        errors="replace",
     )
     assert cp.returncode == 0, f"Help command failed: {cp.stderr}"
     assert (

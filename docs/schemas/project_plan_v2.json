@@ -1,0 +1,196 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://ai-onboard.dev/schemas/project_plan_v2.json",
+    "title": "Project Plan v2",
+    "type": "object",
+    "required": [
+        "project_id",
+        "project_name",
+        "created_at",
+        "last_updated",
+        "status",
+        "work_breakdown_structure",
+        "milestones",
+        "critical_path"
+    ],
+    "properties": {
+        "project_id": {
+            "type": "string"
+        },
+        "project_name": {
+            "type": "string"
+        },
+        "created_at": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "last_updated": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "status": {
+            "type": "string"
+        },
+        "metadata": {
+            "type": "object",
+            "additionalProperties": true
+        },
+        "work_breakdown_structure": {
+            "type": "object",
+            "patternProperties": {
+                "^phase[0-9]+_[a-zA-Z]+$": {
+                    "type": "object",
+                    "required": [
+                        "name",
+                        "status",
+                        "completion_percentage",
+                        "subtasks"
+                    ],
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "status": {
+                            "type": "string"
+                        },
+                        "completion_percentage": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 100
+                        },
+                        "subtasks": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "type": "string"
+                                    },
+                                    "owner": {
+                                        "type": "string"
+                                    },
+                                    "due_date": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "notes": {
+                                        "type": "string"
+                                    },
+                                    "dependencies": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "required": [
+                                    "name",
+                                    "status"
+                                ],
+                                "additionalProperties": false
+                            }
+                        }
+                    },
+                    "additionalProperties": false
+                }
+            },
+            "additionalProperties": false
+        },
+        "milestones": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "name",
+                    "target_date",
+                    "status"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "target_date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "completion_percentage": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 100
+                    },
+                    "deliverables": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "notes": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false
+            }
+        },
+        "critical_path": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "risk_register": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "risk",
+                    "impact",
+                    "probability"
+                ],
+                "properties": {
+                    "risk": {
+                        "type": "string"
+                    },
+                    "impact": {
+                        "type": "string"
+                    },
+                    "probability": {
+                        "type": "string"
+                    },
+                    "mitigation": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false
+            }
+        },
+        "success_criteria": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "string"
+            }
+        },
+        "timeline": {
+            "type": "object",
+            "properties": {
+                "total_duration_weeks": {
+                    "type": "number"
+                },
+                "current_phase": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "additionalProperties": false
+}

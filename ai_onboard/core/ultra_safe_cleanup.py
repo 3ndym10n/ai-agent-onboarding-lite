@@ -17,6 +17,7 @@ CRITICAL SAFETY PRINCIPLES:
 """
 
 import hashlib
+import json
 import secrets
 import shutil
 from dataclasses import dataclass, field
@@ -271,7 +272,7 @@ class UltraSafeCleanupEngine:
         operation_id = f"cleanup_{secrets.token_hex(8)}"
 
         # Group by risk level
-        risk_summary = {}
+        risk_summary: Dict[str, Dict[str, Any]] = {}
         for target in targets:
             level = target.risk_level.value
             if level not in risk_summary:
@@ -515,7 +516,7 @@ class UltraSafeCleanupEngine:
         )
         backup_dir.mkdir(parents=True, exist_ok=True)
 
-        manifest = {
+        manifest: Dict[str, Any] = {
             "operation_id": operation.operation_id,
             "created_at": datetime.now().isoformat(),
             "targets": [],

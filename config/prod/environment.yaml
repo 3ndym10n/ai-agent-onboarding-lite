@@ -1,0 +1,20 @@
+﻿# Production Environment Configuration
+# This file contains settings specific to production environment
+
+environment: production
+debug: false
+log_level: WARNING
+api_port: 8080
+database_url: postgresql://user:pass@host:5432/prod_db
+features:
+  - ai_agent_collaboration
+  - production_logging
+  - performance_monitoring
+security:
+  enable_ssl: true
+  rate_limiting: true
+  audit_logging: true
+monitoring:
+  metrics_enabled: true
+  health_checks: true
+  error_reporting: true

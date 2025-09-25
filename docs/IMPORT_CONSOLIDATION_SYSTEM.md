@@ -16,22 +16,22 @@ The Import Consolidation System is a comprehensive solution for safely consolida
 
 ### Core Components
 
-1. **Import Consolidation Migrator** (`scripts/import_consolidation_migrator.py`)
+1. **Import Consolidation Migrator** (`scripts/migration/import_consolidation_migrator.py`)
    - Analyzes consolidation opportunities
    - Creates migration plans
    - Executes safe migrations with backup/rollback
 
-2. **Import Equivalence Validator** (`scripts/validate_import_equivalence.py`)
+2. **Import Equivalence Validator** (`scripts/analysis/validate_import_equivalence.py`)
    - Validates that consolidated imports are functionally equivalent
    - Tests import resolution and functionality
    - Detects circular dependencies and namespace conflicts
 
-3. **Import Change Monitor** (`scripts/monitor_import_changes.py`)
+3. **Import Change Monitor** (`scripts/maintenance/monitor_import_changes.py`)
    - Real-time monitoring of import changes
    - Progress tracking and metrics collection
    - Automated alerting for issues
 
-4. **Integrated Consolidation** (`scripts/integrated_import_consolidation.py`)
+4. **Integrated Consolidation** (`scripts/migration/integrated_import_consolidation.py`)
    - Complete workflow orchestration
    - Integration with existing safety framework
    - Comprehensive error handling and reporting

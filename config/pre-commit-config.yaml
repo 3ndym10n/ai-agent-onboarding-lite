@@ -15,12 +15,12 @@ repos:
         files: \.(toml)$
       - id: check-merge-conflict
       - id: check-added-large-files
-        args: ['--maxkb=1000']
+        args: ["--maxkb=1000"]
       - id: check-executables-have-shebangs
       - id: check-shebang-scripts-are-executable
       - id: debug-statements
       - id: mixed-line-ending
-        args: ['--fix=lf']
+        args: ["--fix=lf"]
       - id: requirements-txt-fixer
 
   # Black - Python code formatting
@@ -48,7 +48,7 @@ repos:
       - id: flake8
         files: \.(py)$
         exclude: ^ai_onboard/_version\.py$
-        args: [--max-line-length=88, --extend-ignore=E203,W503]
+        args: [--max-line-length=88, --extend-ignore=E203, W503]
 
   # mypy - Type checking
   - repo: https://github.com/pre-commit/mirrors-mypy
@@ -73,7 +73,7 @@ repos:
 
       - id: validate-dev-env
         name: Development Environment Validation
-        entry: python scripts/validate_dev_env.py
+        entry: python scripts/maintenance/validate_dev_env.py
         language: system
         files: ^(.*)$
         pass_filenames: false
@@ -89,7 +89,7 @@ repos:
 
       - id: check-requirements-consistency
         name: Requirements Consistency Check
-        entry: python scripts/check_requirements_consistency.py
+        entry: python scripts/analysis/check_requirements_consistency.py
         language: system
         files: (requirements\.txt|pyproject\.toml)$
         pass_filenames: false
@@ -97,7 +97,7 @@ repos:
 
       - id: validate-project-structure
         name: Project Structure Validation
-        entry: python scripts/validate_project_structure.py
+        entry: python scripts/analysis/validate_project_structure.py
         language: system
         files: ^(.*)$
         pass_filenames: false

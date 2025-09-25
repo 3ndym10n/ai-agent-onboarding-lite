@@ -194,8 +194,7 @@ def scan_for_cleanup(root: Path) -> Dict[str, List[Path]]:
             elif is_non_critical(path, root):
                 non_critical_files.append(path)
             else:
-                # For directories,
-                    check if they're empty or contain only non - critical files
+                # For directories, check if they're empty or only contain non-critical files
                 contents = list(path.rglob("*"))
                 if not contents or all(is_non_critical(p, root) for p in contents):
                     non_critical_files.append(path)

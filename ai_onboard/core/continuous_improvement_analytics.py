@@ -257,7 +257,7 @@ class ContinuousImprovementAnalytics:
             days=self.analytics_config["metrics_retention_days"]
         )
 
-        with open(self.metrics_path, "r", encoding="utf - 8") as f:
+        with open(self.metrics_path, "r", encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
                 if not line:
@@ -315,7 +315,7 @@ class ContinuousImprovementAnalytics:
         if not self.reports_path.exists():
             return
 
-        with open(self.reports_path, "r", encoding="utf - 8") as f:
+        with open(self.reports_path, "r", encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
                 if not line:
@@ -345,7 +345,7 @@ class ContinuousImprovementAnalytics:
         if not self.alerts_path.exists():
             return
 
-        with open(self.alerts_path, "r", encoding="utf - 8") as f:
+        with open(self.alerts_path, "r", encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
                 if not line:
@@ -425,7 +425,7 @@ class ContinuousImprovementAnalytics:
             "metadata": metric.metadata,
         }
 
-        with open(self.metrics_path, "a", encoding="utf - 8") as f:
+        with open(self.metrics_path, "a", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 
@@ -508,7 +508,7 @@ class ContinuousImprovementAnalytics:
             "metadata": alert.metadata,
         }
 
-        with open(self.alerts_path, "a", encoding="utf - 8") as f:
+        with open(self.alerts_path, "a", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 
@@ -891,7 +891,7 @@ class ContinuousImprovementAnalytics:
             "export_formats": report.export_formats,
         }
 
-        with open(self.reports_path, "a", encoding="utf - 8") as f:
+        with open(self.reports_path, "a", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
             f.write("\n")
 
