@@ -9,7 +9,7 @@ import time
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
-from ai_onboard.core.common_imports import sys
+from ai_onboard.core.base.common_imports import sys
 
 
 class LocalCIValidator:

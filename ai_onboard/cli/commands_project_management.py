@@ -1,16 +1,15 @@
 """CLI commands for project management tools."""
 
-import argparse
 from pathlib import Path
 
-from ..core.approval_workflow import get_approval_workflow
-from ..core.pm_compatibility import (
+from ..core.legacy_cleanup.pm_compatibility import (
     get_legacy_progress_dashboard,
     get_legacy_task_completion_detector,
     get_legacy_task_prioritization_engine,
     get_legacy_wbs_sync_engine,
 )
-from ..core.unicode_utils import print_activity, print_header, print_status
+from ..core.project_management.approval_workflow import get_approval_workflow
+from ..core.utilities.unicode_utils import print_activity, print_header, print_status
 
 
 def add_project_management_commands(subparsers):
@@ -106,7 +105,7 @@ def handle_critical_path(args):
         if critical_path:
             print_header("CRITICAL PATH TASKS")
             for i, task_id in enumerate(critical_path[:10]):  # Show first 10
-                print(f"{i+1}. {task_id}")
+                print(f"{i + 1}. {task_id}")
             if len(critical_path) > 10:
                 print(f"... and {len(critical_path) - 10} more critical tasks")
 
@@ -383,9 +382,12 @@ def handle_approval_workflow(args):
 
             # Display urgent first
             for req in urgent_requests[:3]:  # Show first 3 urgent
-                print(
-                    f"🚨 [{req.urgency.upper()}] {req.proposed_actions[0].description if req.proposed_actions else 'Unknown action'}"
+                action_desc = (
+                    req.proposed_actions[0].description
+                    if req.proposed_actions
+                    else "Unknown action"
                 )
+                print(f"🚨 [{req.urgency.upper()}] {action_desc}")
                 print(
                     f"    Context: {req.context[:100]}{'...' if len(req.context) > 100 else ''}"
                 )

@@ -57,4 +57,3 @@
 - Determine final location for fixtures (shared vs pm-specific)
 - Decide whether to integrate contract tests with external consumers (if any)
 - Evaluate using hypothesis/ property-based testing for data gateway
-

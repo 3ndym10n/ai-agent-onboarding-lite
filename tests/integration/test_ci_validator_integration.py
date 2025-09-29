@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pytest
 
-from ai_onboard.core.continuous_improvement_validator import (
+from ai_onboard.core.continuous_improvement import (
     ContinuousImprovementValidator,
     ValidationCategory,
     ValidationReport,
@@ -122,7 +122,7 @@ version = "0.1.0"
     def test_validation_report_persistence(self, real_validator, temp_project_root):
         """Test that validation reports are properly persisted."""
         # Create a mock report
-        from ai_onboard.core.continuous_improvement_validator import ValidationTestCase
+        from ai_onboard.core.continuous_improvement import ValidationTestCase
 
         test_results = [
             ValidationTestCase(

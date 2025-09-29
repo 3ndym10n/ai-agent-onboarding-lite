@@ -20,14 +20,14 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from ai_onboard.core.common_imports import json, sys
+from ai_onboard.core.base.common_imports import json, sys
 
 # Add project root to path for imports
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-# from ai_onboard.core.telemetry import TelemetryCollector  # Not available
-from ai_onboard.core.utils import ensure_dir, read_json, write_json
+# from ai_onboard.core.base.telemetry import TelemetryCollector  # Not available
+from ai_onboard.core.base.utils import ensure_dir, read_json, write_json
 
 
 class ChangeType(Enum):

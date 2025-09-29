@@ -1,11 +1,16 @@
+import os
+import re
+from typing import Any, Dict, List
+
+from ...base.utils import Issue, register
 
 TS_PATTERN = re.compile(r"^[a - z0 - 9\-]+\.tsx?$")  # kebab - case for ts / js files
+PY_PATTERN = re.compile(r"^[a-z0-9_]+\.py$")  # snake_case for python files
 IGNORE_DIRS = {".git", ".ai_onboard", "ai_onboard", "node_modules", "__pycache__"}
 
 
 class NamingConventionsPython:
     name = "conv.python_filenames_snake_case"
-
 
     def run(self, paths: List[str], ctx: Dict[str, Any]):
         root = ctx["root"]
@@ -31,7 +36,6 @@ class NamingConventionsPython:
 
 class NamingConventionsTS:
     name = "conv.ts_filenames_kebab_case"
-
 
     def run(self, paths: List[str], ctx: Dict[str, Any]):
         root = ctx["root"]
@@ -63,5 +67,6 @@ class NamingConventionsTS:
 def _register():
     register("library_module", "python", NamingConventionsPython())
     register("ui_frontend", "node_ts", NamingConventionsTS())
+
 
 _register()

@@ -1,9 +1,12 @@
 import json
+import os
+from typing import Any, Dict, List
+
+from ...base.utils import Issue, register
 
 
 class NodeScriptsPresent:
     name = "node.pkg_scripts_present"
-
 
     def run(self, paths: List[str], ctx: Dict[str, Any]):
         root = ctx["root"]
@@ -47,5 +50,6 @@ class NodeScriptsPresent:
 
 def _register():
     register("ui_frontend", "node_ts", NodeScriptsPresent())
+
 
 _register()

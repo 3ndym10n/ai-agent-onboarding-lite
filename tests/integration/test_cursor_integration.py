@@ -22,27 +22,16 @@ from typing import Any, Dict
 
 import pytest
 
-from ai_onboard.core.enhanced_conversation_context import (
-    EnhancedConversationContextManager,
-)
 
 @pytest.fixture
 def context_manager():
     """Get enhanced conversation context manager."""
-    from ai_onboard.core.enhanced_conversation_context import (
+    from ai_onboard.core.ai_integration.enhanced_conversation_context import (
         get_enhanced_context_manager,
     )
 
     root = Path.cwd()
     return get_enhanced_context_manager(root)
-
-from ai_onboard.core.orchestration_compatibility import (
-    ConversationContext,
-    ConversationState,
-    DecisionStage,
-    get_holistic_orchestrator,
-    get_intelligent_orchestrator,
-)
 
 
 class TestCursorIntegrationBasics:
@@ -51,7 +40,9 @@ class TestCursorIntegrationBasics:
     @pytest.fixture
     def cursor_integration(self):
         """Get Cursor integration instance for testing."""
-        from ai_onboard.core.cursor_ai_integration import get_cursor_integration
+        from ai_onboard.core.ai_integration.cursor_ai_integration import (
+            get_cursor_integration,
+        )
 
         root = Path.cwd()
         return get_cursor_integration(root)
@@ -193,12 +184,12 @@ class TestContextManagement:
         """Test creating and retrieving conversation contexts."""
         session_id = "test_conversation_001"
 
-        # First create a session in the session storage
-        from ai_onboard.core.orchestration_compatibility import ConversationState
-        from ai_onboard.core.session_storage import SessionStorageManager
+        # First create a session using the context manager's session storage
+        from ai_onboard.core.orchestration.orchestration_compatibility import (
+            ConversationState,
+        )
 
-        session_storage = SessionStorageManager(Path.cwd())
-        context = session_storage.create_session_context(
+        context = context_manager.session_storage.create_session_context(
             session_id=session_id,
             user_id=test_user_id,
             project_root=Path.cwd(),
@@ -207,7 +198,7 @@ class TestContextManagement:
             resolved_intents=[],
             user_corrections=[],
         )
-        session_storage.save_session(context)
+        context_manager.session_storage.save_session(context)
 
         # Create a context memory (this is how contexts are created)
         memory_id = context_manager.create_context_memory(
@@ -239,8 +230,10 @@ class TestContextManagement:
         session2_id = "test_session_002"
 
         # Create sessions in session storage
-        from ai_onboard.core.orchestration_compatibility import ConversationState
-        from ai_onboard.core.session_storage import SessionStorageManager
+        from ai_onboard.core.base.session_storage import SessionStorageManager
+        from ai_onboard.core.orchestration.orchestration_compatibility import (
+            ConversationState,
+        )
 
         session_storage = SessionStorageManager(Path.cwd())
         session1 = session_storage.create_session(
@@ -315,7 +308,7 @@ class TestDecisionPipeline:
     @pytest.fixture
     def decision_pipeline(self):
         """Get advanced decision pipeline."""
-        from ai_onboard.core.advanced_agent_decision_pipeline import (
+        from ai_onboard.core.ai_integration.advanced_agent_decision_pipeline import (
             get_advanced_decision_pipeline,
         )
 
@@ -327,7 +320,9 @@ class TestDecisionPipeline:
         """Provide test user ID."""
         return "test_cursor_user"
 
-    def test_decision_pipeline_processing(self, context_manager, decision_pipeline, test_user_id):
+    def test_decision_pipeline_processing(
+        self, context_manager, decision_pipeline, test_user_id
+    ):
         """Test multi - stage decision pipeline processing."""
         decision_request = {
             "request_id": "test_decision_001",
@@ -350,7 +345,7 @@ class TestDecisionPipeline:
         }
 
         # Process through decision pipeline using a stored conversation context
-        from ai_onboard.core.session_storage import SessionStorageManager
+        from ai_onboard.core.base.session_storage import SessionStorageManager
 
         session_storage = SessionStorageManager(Path.cwd())
         session_storage.create_session_context(
@@ -386,7 +381,9 @@ class TestDecisionPipeline:
         assert decision_result.confidence >= 0.0
         assert decision_result.confidence <= 1.0
 
-    def test_contextual_decision_making(self, context_manager, decision_pipeline, test_user_id):
+    def test_contextual_decision_making(
+        self, context_manager, decision_pipeline, test_user_id
+    ):
         """Test contextual reasoning in decision pipeline."""
         scenarios = [
             {
@@ -412,7 +409,7 @@ class TestDecisionPipeline:
         results = {}
         for scenario in scenarios:
             resolved_intents = [("test_intent", 0.8)]
-            from ai_onboard.core.session_storage import SessionStorageManager
+            from ai_onboard.core.base.session_storage import SessionStorageManager
 
             session_storage = SessionStorageManager(Path.cwd())
             session_storage.create_session_context(
@@ -529,7 +526,7 @@ class TestMetricsCollection:
     @pytest.fixture
     def metrics_collector(self):
         """Get unified metrics collector."""
-        from ai_onboard.core.unified_metrics_collector import (
+        from ai_onboard.core.monitoring_analytics.unified_metrics_collector import (
             get_unified_metrics_collector,
         )
 
@@ -556,7 +553,9 @@ class TestEndToEndWorkflows:
         systems = {}
 
         try:
-            from ai_onboard.core.cursor_ai_integration import get_cursor_integration
+            from ai_onboard.core.ai_integration.cursor_ai_integration import (
+                get_cursor_integration,
+            )
 
             systems["cursor_integration"] = get_cursor_integration(root)
         except ImportError:
@@ -620,7 +619,9 @@ class TestEndToEndWorkflows:
     def test_cursor_integration_basic_validation(self):
         """Test basic Cursor integration functionality - simplified version."""
         try:
-            from ai_onboard.core.cursor_ai_integration import get_cursor_integration
+            from ai_onboard.core.ai_integration.cursor_ai_integration import (
+                get_cursor_integration,
+            )
 
             root = Path.cwd()
 

@@ -5,7 +5,7 @@ from .cli.commands_intelligent_monitoring import (
     shutdown_intelligent_monitoring,
 )
 from .cli.commands_refactored import main
-from .core.universal_error_monitor import setup_global_error_handler
+from .core.orchestration.universal_error_monitor import setup_global_error_handler
 
 if __name__ == "__main__":
     # Set up global error monitoring

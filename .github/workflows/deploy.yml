@@ -1,0 +1,165 @@
+name: Deploy to Production
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Deployment environment"
+        required: true
+        default: "staging"
+        type: choice
+        options:
+          - staging
+          - production
+
+env:
+  PYTHONUNBUFFERED: 1
+  PYTHONDONTWRITEBYTECODE: 1
+
+jobs:
+  validate-release:
+    name: Validate Release
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get version from release
+        id: get_version
+        run: |
+          if [ "${{ github.event.release.tag_name }}" ]; then
+            VERSION=${{ github.event.release.tag_name }}
+          else
+            VERSION=$(python -c "import ai_onboard; print(ai_onboard.__version__)")
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Validate version format
+        run: |
+          VERSION="${{ steps.get_version.outputs.version }}"
+          if [[ ! $VERSION =~ ^v?[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+            echo "Invalid version format: $VERSION"
+            exit 1
+          fi
+
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: validate-release
+
+    environment:
+      name: staging
+      url: https://staging.ai-onboard.com
+
+    steps:
+      - name: Determine staging execution
+        id: gate
+        run: |
+          event="${{ github.event_name }}"
+          env_input="${{ github.event.inputs.environment || '' }}"
+          ref="${{ github.ref }}"
+
+          if [ "$event" = "release" ] || [ "$env_input" = "staging" ] || [ "$ref" = "refs/heads/develop" ]; then
+            echo "run=true" >> $GITHUB_OUTPUT
+          else
+            echo "run=false" >> $GITHUB_OUTPUT
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.run == 'true'
+
+      - name: Set up Python
+        if: steps.gate.outputs.run == 'true'
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        if: steps.gate.outputs.run == 'true'
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[prod]
+
+      - name: Run pre-deployment tests
+        if: steps.gate.outputs.run == 'true'
+        run: |
+          python -m pytest tests/smoke/ tests/integration/ -v --tb=short
+
+      - name: Build distribution
+        if: steps.gate.outputs.run == 'true'
+        run: |
+          python -m pip install build
+          python -m build
+
+      - name: Deploy to staging
+        if: steps.gate.outputs.run == 'true'
+        run: |
+          echo "Deploying version ${{ needs.validate-release.outputs.version }} to staging"
+          # Add your staging deployment commands here
+          # Example: rsync, docker push, etc.
+
+      - name: Skip staging deployment
+        if: steps.gate.outputs.run != 'true'
+        run: echo "Skipping staging deployment for this trigger."
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [validate-release, deploy-staging]
+    if: github.event.inputs.environment == 'production' || github.event_name == 'release'
+
+    environment:
+      name: production
+      url: https://ai-onboard.com
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[prod]
+
+      - name: Run full test suite
+        run: |
+          python -m pytest tests/ -v --tb=short --cov=ai_onboard --cov-report=term-missing
+
+      - name: Build and publish to PyPI
+        if: github.event_name == 'release'
+        run: |
+          python -m pip install build twine
+          python -m build
+          twine upload dist/* --skip-existing
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+
+      - name: Deploy to production
+        run: |
+          echo "Deploying version ${{ needs.validate-release.outputs.version }} to production"
+          # Add your production deployment commands here
+          # Example: rolling deployment, blue-green, etc.
+
+      - name: Create deployment notification
+        run: |
+          echo "Successfully deployed AI-Onboard v${{ needs.validate-release.outputs.version }} to production!" > deployment-notification.md
+          echo "" >> deployment-notification.md
+          echo "**Changes:**" >> deployment-notification.md
+          echo "${{ github.event.release.body || 'No release notes provided.' }}" >> deployment-notification.md
+
+      - name: Upload deployment notification
+        uses: actions/upload-artifact@v3
+        with:
+          name: deployment-notification
+          path: deployment-notification.md
+          retention-days: 30
+

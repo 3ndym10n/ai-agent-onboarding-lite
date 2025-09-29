@@ -10,7 +10,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from ai_onboard.core.universal_error_monitor import UniversalErrorMonitor
+from ai_onboard.core.orchestration.universal_error_monitor import UniversalErrorMonitor
 
 
 class TestErrorMonitoringIntegration:
@@ -404,7 +404,7 @@ class TestErrorMonitoringIntegration:
         ]
         assert len(background_insights) > 0
 
-    @patch("ai_onboard.core.universal_error_monitor.telemetry")
+    @patch("ai_onboard.core.orchestration.universal_error_monitor.telemetry")
     def test_error_monitor_telemetry_integration(self, mock_telemetry, error_monitor):
         """Test integration with telemetry system."""
         # Create an error that should trigger telemetry
@@ -427,7 +427,7 @@ class TestErrorMonitoringIntegration:
         assert call_kwargs["agent_type"] == "file_agent"
         assert "confidence" in call_kwargs
 
-    @patch("ai_onboard.core.universal_error_monitor.smart_debugger")
+    @patch("ai_onboard.core.orchestration.universal_error_monitor.SmartDebugger")
     def test_error_monitor_debugger_integration(self, mock_debugger, error_monitor):
         """Test integration with smart debugger."""
         # Mock the debugger

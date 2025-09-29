@@ -9,7 +9,7 @@ import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
-from ai_onboard.core.user_preference_learning import (
+from ai_onboard.core.ai_integration.user_preference_learning import (
     InteractionType,
     PreferenceCategory,
     UserPreference,
@@ -43,7 +43,7 @@ def test_system_initialization():
     """Test UserPreferenceLearningSystem initialization."""
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
-        with patch("ai_onboard.core.user_preference_learning.telemetry"):
+        with patch("ai_onboard.core.ai_integration.user_preference_learning.telemetry"):
             system = UserPreferenceLearningSystem(temp_path)
 
             assert hasattr(system, "root")
@@ -56,7 +56,7 @@ def test_record_user_interaction():
     """Test recording user interactions."""
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
-        with patch("ai_onboard.core.user_preference_learning.telemetry"):
+        with patch("ai_onboard.core.ai_integration.user_preference_learning.telemetry"):
             system = UserPreferenceLearningSystem(temp_path)
 
             # Record an interaction
@@ -77,7 +77,7 @@ def test_get_user_preferences():
     """Test retrieving user preferences."""
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
-        with patch("ai_onboard.core.user_preference_learning.telemetry"):
+        with patch("ai_onboard.core.ai_integration.user_preference_learning.telemetry"):
             system = UserPreferenceLearningSystem(temp_path)
 
             # Record some interactions to generate preferences
@@ -101,7 +101,7 @@ def test_user_profile_summary():
     """Test getting user profile summary."""
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
-        with patch("ai_onboard.core.user_preference_learning.telemetry"):
+        with patch("ai_onboard.core.ai_integration.user_preference_learning.telemetry"):
             system = UserPreferenceLearningSystem(temp_path)
 
             # Record multiple interactions

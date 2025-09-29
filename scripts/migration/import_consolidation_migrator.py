@@ -25,14 +25,14 @@ from typing import Any, Dict, List, Optional
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from ai_onboard.core.cleanup_safety_gates import (
+from ai_onboard.core.base.utils import ensure_dir, read_json, write_json
+from ai_onboard.core.continuous_improvement.continuous_improvement_validator import (
+    ContinuousImprovementValidator,
+)
+from ai_onboard.core.quality_safety.cleanup_safety_gates import (
     CleanupOperation,
     CleanupSafetyGateFramework,
 )
-from ai_onboard.core.continuous_improvement_validator import (
-    ContinuousImprovementValidator,
-)
-from ai_onboard.core.utils import ensure_dir, read_json, write_json
 
 
 class MigrationStatus(Enum):

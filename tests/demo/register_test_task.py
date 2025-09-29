@@ -17,4 +17,3 @@ print("Task registration result:")
 print(f'Registered: {result["registered"]}')
 print(f'Task ID: {result.get("task_id", "N/A")}')
 print(f'Message: {result["message"]}')
-

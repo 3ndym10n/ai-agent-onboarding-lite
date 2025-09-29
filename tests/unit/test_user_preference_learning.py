@@ -35,7 +35,7 @@ class PreferenceType(Enum):
     SELECTION = "selection"  # Add missing value for test compatibility
 
 
-from ai_onboard.core.user_preference_learning import (
+from ai_onboard.core.ai_integration.user_preference_learning import (
     PreferenceCategory,
     UserPreference,
     UserPreferenceLearningSystem,
@@ -53,7 +53,7 @@ def temp_root():
 @pytest.fixture
 def preference_system(temp_root):
     """Provide a UserPreferenceLearningSystem instance."""
-    with patch("ai_onboard.core.user_preference_learning.telemetry"):
+    with patch("ai_onboard.core.ai_integration.user_preference_learning.telemetry"):
         system = UserPreferenceLearningSystem(temp_root)
         return system
 
@@ -295,7 +295,7 @@ class TestUserPreferenceLearningSystem:
         # Store preference directly in user profile
         if user_id not in preference_system.user_profiles:
             # Create a basic profile if it doesn't exist
-            from ai_onboard.core.user_preference_learning import (
+            from ai_onboard.core.ai_integration.user_preference_learning import (
                 UserExperienceLevel,
                 UserProfile,
             )
@@ -313,7 +313,7 @@ class TestUserPreferenceLearningSystem:
 
         # Create new system instance to test persistence
 
-        with patch("ai_onboard.core.user_preference_learning.telemetry"):
+        with patch("ai_onboard.core.ai_integration.user_preference_learning.telemetry"):
             new_system = UserPreferenceLearningSystem(preference_system.root)
 
             # Retrieve preferences
@@ -327,7 +327,7 @@ class TestUserPreferenceLearningSystem:
     def test_factory_function(self, temp_root):
         """Test the factory function."""
 
-        with patch("ai_onboard.core.user_preference_learning.telemetry"):
+        with patch("ai_onboard.core.ai_integration.user_preference_learning.telemetry"):
             system = get_user_preference_learning_system(temp_root)
             assert isinstance(system, UserPreferenceLearningSystem)
             assert system.root == temp_root
@@ -347,7 +347,7 @@ class TestUserPreferenceLearningSystem:
         with open(config_path, "w") as f:
             json.dump(custom_config, f)
 
-        with patch("ai_onboard.core.user_preference_learning.telemetry"):
+        with patch("ai_onboard.core.ai_integration.user_preference_learning.telemetry"):
             system = UserPreferenceLearningSystem(temp_root)
 
             assert system.config["learning_enabled"] is True
@@ -485,7 +485,7 @@ class TestUserPreferenceLearningIntegration:
     def test_end_to_end_learning_cycle(self, temp_root):
         """Test complete end - to - end learning cycle."""
 
-        with patch("ai_onboard.core.user_preference_learning.telemetry"):
+        with patch("ai_onboard.core.ai_integration.user_preference_learning.telemetry"):
 
             system = UserPreferenceLearningSystem(temp_root)
             user_id = "integration_test_user"

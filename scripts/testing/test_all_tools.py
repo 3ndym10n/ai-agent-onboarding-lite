@@ -17,9 +17,9 @@ from typing import Any, Dict, List, Optional
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from ai_onboard.core.comprehensive_tool_discovery import ComprehensiveToolDiscovery
-from ai_onboard.core.mandatory_tool_consultation_gate import get_mandatory_gate
-from ai_onboard.core.unified_tool_orchestrator import UnifiedToolOrchestrator
+from ai_onboard.core.base.comprehensive_tool_discovery import ComprehensiveToolDiscovery
+from ai_onboard.core.base.mandatory_tool_consultation_gate import get_mandatory_gate
+from ai_onboard.core.base.unified_tool_orchestrator import UnifiedToolOrchestrator
 
 
 @dataclass

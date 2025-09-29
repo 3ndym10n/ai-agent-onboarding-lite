@@ -4,8 +4,11 @@ import json
 from pathlib import Path
 from typing import List
 
-from ..core.dependency_checker import DependencyChecker, check_cleanup_dependencies
-from ..core.unicode_utils import print_content, print_status, safe_print
+from ..core.quality_safety.dependency_checker import (
+    DependencyChecker,
+    check_cleanup_dependencies,
+)
+from ..core.utilities.unicode_utils import print_content, print_status, safe_print
 
 
 def add_dependency_check_commands(subparsers):
@@ -200,7 +203,7 @@ def _handle_validate_cleanup(args, root: Path):
 
     # Import cleanup module to get files that would be deleted
     try:
-        from ..core.cleanup import scan_for_cleanup
+        from ..core.legacy_cleanup.cleanup import scan_for_cleanup
 
         scan_result = scan_for_cleanup(root)
         non_critical_files = scan_result["non_critical"]
@@ -238,7 +241,10 @@ def _handle_validate_cleanup(args, root: Path):
             )
 
     except ImportError as e:
-        print_status(f"Could not import cleanup module: {e}", "error")
+        print_status(
+            f"Could not from .legacy_cleanup.cleanup import cleanup module: {e}",
+            "error",
+        )
 
 
 # Convenience function for programmatic use

@@ -13,42 +13,42 @@ services:
     volumes:
       # Mount the project directory
       - ..:/workspace:cached
-      
+
       # Persist command history
       - ai-onboard-bash-history:/home/vscode/.bash_history
-      
+
       # Persist VS Code extensions
       - ai-onboard-vscode-extensions:/home/vscode/.vscode-server/extensions
-      
+
       # Cache pip packages
       - ai-onboard-pip-cache:/home/vscode/.cache/pip
-      
+
       # Mount git config and SSH keys (if they exist)
       - ~/.gitconfig:/home/vscode/.gitconfig:ro
       - ~/.ssh:/home/vscode/.ssh:ro
-      
+
     environment:
       - AI_ONBOARD_ENV=development
       - AI_ONBOARD_DEBUG=true
       - PYTHONPATH=/workspace
       - PYTHONDONTWRITEBYTECODE=1
       - PYTHONUNBUFFERED=1
-    
+
     ports:
       - "8000:8000"  # AI Onboard API server
       - "8080:8080"  # Alternative API port
       - "3000:3000"  # Development server
       - "5000:5000"  # Debug server
-    
+
     command: sleep infinity
-    
+
     networks:
       - ai-onboard-dev-network
-    
+
     depends_on:
       - redis
       - postgres
-  
+
   # Redis for caching and message queuing (optional)
   redis:
     image: redis:7-alpine
@@ -59,7 +59,7 @@ services:
     networks:
       - ai-onboard-dev-network
     command: redis-server --appendonly yes
-    
+
   # PostgreSQL for data storage (optional)
   postgres:
     image: postgres:15-alpine
@@ -73,7 +73,7 @@ services:
       - ai-onboard-postgres-data:/var/lib/postgresql/data
     networks:
       - ai-onboard-dev-network
-  
+
   # Mock external services (for testing integrations)
   mock-services:
     image: wiremock/wiremock:2.35.0
@@ -89,20 +89,19 @@ volumes:
   # Persistent volumes for development data
   ai-onboard-bash-history:
     driver: local
-  
+
   ai-onboard-vscode-extensions:
     driver: local
-  
+
   ai-onboard-pip-cache:
     driver: local
-  
+
   ai-onboard-redis-data:
     driver: local
-  
+
   ai-onboard-postgres-data:
     driver: local
 
 networks:
   ai-onboard-dev-network:
     driver: bridge
-

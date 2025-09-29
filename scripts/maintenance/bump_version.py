@@ -1,6 +1,7 @@
-from ai_onboard.core.common_imports import sys
 import pathlib
 import re
+
+from ai_onboard.core.base.common_imports import sys
 
 
 def main() -> int:

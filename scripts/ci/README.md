@@ -5,7 +5,7 @@ This directory contains scripts related to Continuous Integration and Continuous
 ## Scripts
 
 - ci_summarize.py - Summarize recent CI logs into a single JSON report
-- local_ci_validation.py - Validate local development environment for CI compatibility  
+- local_ci_validation.py - Validate local development environment for CI compatibility
 - un_ci_tests.py - Execute CI test suite locally
 - setup_local_ci.py - Set up local CI environment and dependencies
 

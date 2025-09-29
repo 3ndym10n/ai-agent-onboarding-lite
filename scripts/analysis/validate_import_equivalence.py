@@ -14,20 +14,20 @@ Features:
 """
 import ast
 import importlib
+import json
 import subprocess
+import sys
 import time
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
-
-from ai_onboard.core.common_imports import json, sys
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 # Add project root to path for imports
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from ai_onboard.core.utils import ensure_dir, read_json, write_json
+from ai_onboard.core.base.utils import ensure_dir, read_json, write_json
 
 
 class ValidationStatus(Enum):
@@ -482,13 +482,13 @@ def test_import_equivalence():
     try:
         # Test original import
         {original}
-        
-        # Test consolidated import  
+
+        # Test consolidated import
         {consolidated}
-        
+
         # If we get here, both imports work
         return True, "Both imports work correctly"
-        
+
     except Exception as e:
         return False, f"Import test failed: {{str(e)}}"
 

@@ -12,7 +12,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import Mock, patch
 
-from ai_onboard.core.cleanup_safety_gates import (
+from ai_onboard.core.quality_safety.cleanup_safety_gates import (
     BackupExecuteGate,
     CleanupOperation,
     CleanupSafetyGateFramework,
@@ -182,7 +182,7 @@ class TestCleanupSafetyGatesIntegration(unittest.TestCase):
         )
 
         # Mock post - validation to fail with correct return format
-        from ai_onboard.core.cleanup_safety_gates import GateResult
+        from ai_onboard.core.quality_safety.cleanup_safety_gates import GateResult
 
         with patch.object(PostOperationGate, "validate") as mock_validate:
             mock_validate.return_value = (

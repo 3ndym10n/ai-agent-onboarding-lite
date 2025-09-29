@@ -102,4 +102,3 @@ legacy_adapter = get_wbs_sync_engine(root_path)  # returns compatibility wrapper
 - Prototype data gateway with read-only mode to verify consumers
 - Design compatibility wrapper interfaces & logging strategy
 - Author detailed testing matrix (unit + integration coverage)
-

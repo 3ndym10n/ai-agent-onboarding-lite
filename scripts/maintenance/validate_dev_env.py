@@ -6,12 +6,12 @@ Development Environment Validation Script
 This script validates that the development environment is properly set up
 and all tools are working correctly.
 """
-from ai_onboard.core.common_imports import json, sys
-
 import platform
 import subprocess
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
+
+from ai_onboard.core.base.common_imports import json, sys
 
 
 class DevEnvironmentValidator:

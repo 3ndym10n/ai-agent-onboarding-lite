@@ -8,10 +8,10 @@ Usage:
   python examples/cursor_prompt_loop.py --decide allow --why "docs are sufficient to proceed"
   python examples/cursor_prompt_loop.py --status
 """
-from ai_onboard.core.common_imports import json, sys
-
 import argparse
 from pathlib import Path
+
+from ai_onboard.core.common_imports import json, sys
 
 # Ensure local ai_onboard is preferred over any installed package
 project_root = Path(__file__).parent.parent

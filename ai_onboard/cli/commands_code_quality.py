@@ -1,12 +1,11 @@
 """CLI commands for code quality analysis tools."""
 
-import argparse
 from pathlib import Path
 
 # Removed: codebase_analysis (redundant with code_quality)
-from ..core.dependency_checker import check_cleanup_dependencies
-from ..core.syntax_validator import validate_python_syntax
-from ..core.unicode_utils import print_activity, print_header, print_status
+from ..core.quality_safety.dependency_checker import check_cleanup_dependencies
+from ..core.quality_safety.syntax_validator import validate_python_syntax
+from ..core.utilities.unicode_utils import print_activity, print_header, print_status
 
 
 def add_code_quality_commands(subparsers):
@@ -96,7 +95,7 @@ def handle_syntax_validation(args):
         print_activity("Validating syntax...")
         for i, filepath in enumerate(python_files):
             if (i + 1) % 50 == 0 or i + 1 == len(python_files):
-                print_activity(f"Validated {i+1}/{len(python_files)} files...")
+                print_activity(f"Validated {i + 1}/{len(python_files)} files...")
 
             try:
                 status = validate_python_syntax(filepath)

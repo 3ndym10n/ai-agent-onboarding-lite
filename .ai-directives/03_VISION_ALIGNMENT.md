@@ -56,5 +56,3 @@ Type **"VISION_ALIGNED"** to confirm you understand the vision alignment require
 ---
 
 *This directive is automatically generated and updated by the ai-onboard system.*
-
-

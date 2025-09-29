@@ -253,7 +253,7 @@ Create custom validation tests:
 def test_consolidated_imports():
     """Test that consolidated imports work correctly."""
     from ai_onboard.core.common_imports import Path, Dict, List
-    
+
     # Test functionality
     assert Path("/test").exists() == False
     assert Dict[str, int] == dict
@@ -296,7 +296,7 @@ jobs:
    ```bash
    # Check import resolution
    python -c "import ai_onboard; print('Imports OK')"
-   
+
    # Validate specific imports
    python -m ai_onboard consolidate validate --original "pathlib.Path" --consolidated "ai_onboard.core.common_imports.Path"
    ```
@@ -463,4 +463,3 @@ For issues, questions, or contributions:
 ---
 
 **Note**: This system is designed to work seamlessly with the existing ai_onboard safety framework. All operations are fully reversible and include comprehensive backup and rollback capabilities.
-

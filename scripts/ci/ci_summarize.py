@@ -13,7 +13,7 @@ import re
 from pathlib import Path
 from typing import Dict, List, Set
 
-from ai_onboard.core.common_imports import json
+from ai_onboard.core.base.common_imports import json
 
 LOG_DIR = Path(".ai_onboard / logs")
 SUMMARY_PATH = LOG_DIR / "summary.json"

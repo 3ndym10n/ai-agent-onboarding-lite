@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from ..core.continuous_improvement_validator import (
+from ..core.continuous_improvement.continuous_improvement_validator import (
     ContinuousImprovementValidator,
     ValidationReport,
 )
@@ -169,7 +169,7 @@ def handle_enhanced_testing_commands(args: argparse.Namespace, root: Path) -> No
         print(f"❌ Unknown enhanced testing command: {args.testing_cmd}")
 
 
-def _handle_run_enhanced_tests(args: argparse.Namespace, root: Path) -> None:
+def _handle_run_enhanced_tests(args: argparse.Namespace, root: Path) -> bool:
     """Handle running enhanced tests with pytest integration."""
     print("🧪 Running Enhanced Tests with Continuous Improvement Validation")
     print("=" * 70)
@@ -237,7 +237,7 @@ def _handle_run_enhanced_tests(args: argparse.Namespace, root: Path) -> None:
         return False
 
 
-def _handle_system_validation(args: argparse.Namespace, root: Path) -> None:
+def _handle_system_validation(args: argparse.Namespace, root: Path) -> bool:
     """Handle system validation using ContinuousImprovementValidator."""
     print("🔍 Running Continuous Improvement System Validation")
     print("=" * 60)
@@ -298,7 +298,7 @@ def _handle_system_validation(args: argparse.Namespace, root: Path) -> None:
         return False
 
 
-def _handle_performance_testing(args: argparse.Namespace, root: Path) -> None:
+def _handle_performance_testing(args: argparse.Namespace, root: Path) -> bool:
     """Handle performance testing with benchmarking."""
     print("⚡ Running Performance Tests with Benchmarking")
     print("=" * 50)
@@ -558,7 +558,10 @@ def _generate_html_report(
     <style>
         body {{ font - family: Arial, sans - serif; margin: 40px; }}
         .header {{ background - color: #f0f0f0; padding: 20px; border - radius: 5px; }}
-        .metric {{ display: inline - block; margin: 10px; padding: 10px; background - color: #e0e0e0; border - radius: 3px; }}
+        .metric {{
+            display: inline - block; margin: 10px; padding: 10px;
+            background - color: #e0e0e0; border - radius: 3px;
+        }}
         .report {{ margin: 20px 0; padding: 15px; border: 1px solid #ddd; border - radius: 5px; }}
     </style>
 </head>
@@ -580,11 +583,9 @@ def _generate_html_report(
     <div class="report">
         <h3 > Report {report.get('report_id', 'Unknown')}</h3>
         <p >< strong > Date:</strong> {report.get('generated_at', 'Unknown')}</p>
-        <p >< strong > Health Score:</strong> {report.get('system_health_score',
-            0):.1f}%</p>
+        <p >< strong > Health Score:</strong> {report.get('system_health_score', 0):.1f}%</p>
         <p >< strong > Tests:</strong> {report.get('total_tests', 0)} total,
-           {report.get('passed_tests',
-               0)} passed, {report.get('failed_tests', 0)} failed </ p>
+           {report.get('passed_tests', 0)} passed, {report.get('failed_tests', 0)} failed </ p>
         <p >< strong > Summary:</strong> {report.get('summary', 'No summary')}</p>
     </div>
 """
@@ -640,8 +641,7 @@ def _generate_markdown_report(
             )
             f.write(f"- **Tests:** {latest.get('total_tests', 0)} total, ")
             f.write(
-                f"{latest.get('passed_tests',
-                    0)} passed, {latest.get('failed_tests', 0)} failed\n\n"
+                f"{latest.get('passed_tests', 0)} passed, {latest.get('failed_tests', 0)} failed\n\n"
             )
 
             if latest.get("recommendations"):

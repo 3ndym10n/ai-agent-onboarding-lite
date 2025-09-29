@@ -4,7 +4,7 @@ import json
 import time
 from pathlib import Path
 
-from ..core.orchestration_compatibility import (
+from ..core.orchestration.orchestration_compatibility import (
     AIAgentOrchestrationLayer as create_ai_agent_orchestrator,
 )
 

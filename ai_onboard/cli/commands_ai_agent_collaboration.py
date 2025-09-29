@@ -10,14 +10,14 @@ including agent registration, session management, and guidance.
 import argparse
 from pathlib import Path
 
-from ..core.ai_agent_collaboration_protocol import (
+from ..core.ai_integration.ai_agent_collaboration_protocol import (
     AgentCapability,
     AgentProfile,
     CollaborationMode,
     SafetyLevel,
     get_collaboration_protocol,
 )
-from ..core.ai_agent_guidance import (
+from ..core.ai_integration.ai_agent_guidance import (
     GuidanceLevel,
     GuidanceType,
     get_ai_agent_guidance_system,

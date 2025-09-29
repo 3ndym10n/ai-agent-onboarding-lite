@@ -3,7 +3,7 @@ from __future__ import annotations
 import fnmatch
 import subprocess
 
-from ai_onboard.core.common_imports import json, os, sys
+from ai_onboard.core.base.common_imports import json, os, sys
 
 PROTECTED = [
     ".github/**",

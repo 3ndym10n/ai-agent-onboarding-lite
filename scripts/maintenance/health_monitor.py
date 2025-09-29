@@ -19,7 +19,7 @@ import psutil
 
 sys.path.insert(0, ".")
 
-from ai_onboard.core.unified_tool_orchestrator import UnifiedToolOrchestrator
+from ai_onboard.core.base.unified_tool_orchestrator import UnifiedToolOrchestrator
 
 
 class HealthStatus(Enum):

@@ -64,4 +64,3 @@ class LegacyWBSSynchronizationEngine:
 - Decide whether to keep constructor signatures identical or introduce kwargs for new options
 - Determine timeline for disabling `legacy_mode`
 - Ensure CLI command help text references UPME after rollout
-

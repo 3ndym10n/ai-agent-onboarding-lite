@@ -1,11 +1,12 @@
 """Prompt commands for ai - onboard CLI."""
 
+import json
 from pathlib import Path
 
-from ..core import prompt_bridge
+from ..core.legacy_cleanup import prompt_bridge
 
 
-def add_prompt_commands(subparsers):
+def add_prompt_commands(subparsers) -> None:
     """Add prompt command parsers."""
 
     s_prompt = subparsers.add_parser("prompt", help="Prompt management and generation")
@@ -51,7 +52,7 @@ def add_prompt_commands(subparsers):
     )
 
 
-def handle_prompt_commands(args, root: Path):
+def handle_prompt_commands(args, root: Path) -> bool:
     """Handle prompt command execution."""
 
     if args.cmd != "prompt":
@@ -170,12 +171,17 @@ def _generate_wbs_display(
             milestones = project_plan.get("milestones", [])
 
             if format_type == "json":
-                return {
-                    "wbs": wbs,
-                    "critical_path": critical_path,
-                    "milestones": milestones,
-                    "summary": _generate_wbs_summary(wbs),
-                }
+                import json
+
+                return json.dumps(
+                    {
+                        "wbs": wbs,
+                        "critical_path": critical_path,
+                        "milestones": milestones,
+                        "summary": _generate_wbs_summary(wbs),
+                    },
+                    indent=2,
+                )
             elif format_type == "table":
                 return _generate_wbs_table(wbs, critical_path, show_critical_path)
             else:  # tree format
@@ -314,11 +320,13 @@ def _generate_wbs_tree(wbs: dict, critical_path: list, show_critical_path: bool)
     # Summary
     summary = _generate_wbs_summary(wbs)
     output.append("📊 Summary:")
+    phase_pct = summary["phase_completion_pct"]
     output.append(
-        f"  Phases: {summary['completed_phases']}/{summary['total_phases']} completed ({summary['phase_completion_pct']:.1f}%)"
+        f"  Phases: {summary['completed_phases']}/{summary['total_phases']} completed ({phase_pct:.1f}%)"
     )
+    task_pct = summary["task_completion_pct"]
     output.append(
-        f"  Tasks: {summary['completed_tasks']}/{summary['total_tasks']} completed ({summary['task_completion_pct']:.1f}%)"
+        f"  Tasks: {summary['completed_tasks']}/{summary['total_tasks']} completed ({task_pct:.1f}%)"
     )
 
     return "\n".join(output)

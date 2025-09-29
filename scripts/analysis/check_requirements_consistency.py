@@ -2,11 +2,11 @@
 """
 Check consistency between requirements.txt and pyproject.toml dependencies.
 """
-from ai_onboard.core.common_imports import sys
-
 import tomllib
 from pathlib import Path
 from typing import Dict, Tuple
+
+from ai_onboard.core.base.common_imports import sys
 
 
 def parse_requirements_txt() -> Dict[str, str]:

@@ -15,7 +15,7 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from ai_onboard.core.unified_project_management import (
+from ai_onboard.core.base.unified_project_management import (
     get_unified_project_management_engine,
 )
 
@@ -55,9 +55,9 @@ def benchmark_upme_operations(root: Path, iterations: int = 5):
                 end_time = time.perf_counter()
                 duration = end_time - start_time
                 timings.append(duration)
-                print(f"    Iteration {i+1}: {duration:.4f}s")
+                print(f"    Iteration {i + 1}: {duration:.4f}s")
             except Exception as e:
-                print(f"    Iteration {i+1}: ERROR - {e}")
+                print(f"    Iteration {i + 1}: ERROR - {e}")
                 timings.append(None)
 
         # Calculate statistics
@@ -165,4 +165,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

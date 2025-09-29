@@ -11,12 +11,12 @@ from pathlib import Path
 
 import pytest
 
-from ai_onboard.core.continuous_improvement_validator import (
+from ai_onboard.core.continuous_improvement import (
     ContinuousImprovementValidator,
     ValidationCategory,
 )
-from ai_onboard.core.smart_debugger import get_smart_debugger
-from ai_onboard.core.universal_error_monitor import get_error_monitor
+from ai_onboard.core.legacy_cleanup.smart_debugger import get_smart_debugger
+from ai_onboard.core.orchestration.universal_error_monitor import get_error_monitor
 
 
 class TestSystemIntegration:

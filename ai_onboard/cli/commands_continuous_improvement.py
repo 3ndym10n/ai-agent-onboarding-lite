@@ -1,8 +1,8 @@
 """
-Continuous Improvement CLI Commands.
+Continuous Improvement CLI Commands - Main Entry Point.
 
-This module provides CLI commands for managing the continuous improvement system,
-including learning events, recommendations, and system health monitoring.
+This module provides the main CLI interface for continuous improvement commands,
+delegating to specialized sub-modules for specific functionality.
 """
 
 import argparse
@@ -10,40 +10,150 @@ import base64
 import json
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Union
 
-from ..core import utils
-from ..core.adaptive_config_manager import (
+from ai_onboard.core import utils
+from ai_onboard.core.ai_integration.user_preference_learning import (
+    InteractionType,
+    get_user_preference_learning_system,
+)
+from ai_onboard.core.continuous_improvement.adaptive_config_manager import (
     AdaptationTrigger,
     get_adaptive_config_manager,
 )
-from ..core.continuous_improvement_analytics import (
+from ai_onboard.core.continuous_improvement.continuous_improvement_analytics import (
     AlertLevel,
     MetricType,
     ReportType,
     get_continuous_improvement_analytics,
 )
-from ..core.continuous_improvement_system import (
+from ai_onboard.core.continuous_improvement.continuous_improvement_system import (
     LearningType,
     get_continuous_improvement_system,
 )
-from ..core.continuous_improvement_validator import get_continuous_improvement_validator
-from ..core.knowledge_base_evolution import (
+from ai_onboard.core.continuous_improvement.continuous_improvement_validator import (
+    get_continuous_improvement_validator,
+)
+from ai_onboard.core.continuous_improvement.knowledge_base_evolution import (
     KnowledgeQuality,
     KnowledgeSource,
     KnowledgeStatus,
     KnowledgeType,
     get_knowledge_base_evolution,
 )
-from ..core.performance_optimizer import get_performance_optimizer
-from ..core.system_health_monitor import get_system_health_monitor
-from ..core.user_preference_learning import (
-    InteractionType,
-    get_user_preference_learning_system,
+from ai_onboard.core.continuous_improvement.performance_optimizer import (
+    get_performance_optimizer,
+)
+from ai_onboard.core.continuous_improvement.system_health_monitor import (
+    get_system_health_monitor,
 )
 
+from .commands_continuous_improvement_implementation import add_implementation_commands
+from .commands_continuous_improvement_learning import add_learning_commands
+from .commands_continuous_improvement_performance import add_performance_commands
+from .commands_continuous_improvement_recommendations import (
+    add_recommendations_commands,
+)
+from .commands_continuous_improvement_status import add_status_commands
 
-def _coerce_scalar(value: str):
+
+def handle_continuous_improvement_commands(
+    args: argparse.Namespace, root: Path
+) -> None:
+    """Handle continuous improvement commands."""
+    # Handle user - prefs as top - level command (quick - path routing)
+    if args.cmd == "user - prefs":
+        _handle_user_preference_commands(args, root)
+        return
+
+    # Delegate to modular sub-modules
+    if args.improvement_cmd == "learning":
+        from .commands_continuous_improvement_learning import _handle_learning_commands
+
+        _handle_learning_commands(args, root)
+    elif args.improvement_cmd == "recommendations":
+        from .commands_continuous_improvement_recommendations import (
+            _handle_recommendations_commands,
+        )
+
+        _handle_recommendations_commands(args, root)
+    elif args.improvement_cmd == "performance":
+        from .commands_continuous_improvement_performance import (
+            _handle_performance_commands,
+        )
+
+        _handle_performance_commands(args, root)
+    elif args.improvement_cmd == "status":
+        from .commands_continuous_improvement_status import _handle_status_commands
+
+        _handle_status_commands(args, root)
+    elif args.improvement_cmd == "implementation":
+        from .commands_continuous_improvement_implementation import (
+            _handle_implementation_commands,
+        )
+
+        _handle_implementation_commands(args, root)
+    else:
+        print(f"Error: Unknown continuous improvement command: {args.improvement_cmd}")
+
+
+def _handle_user_preference_commands(args: argparse.Namespace, root: Path) -> None:
+    """Handle user preference commands."""
+    from ..core.ai_integration.user_preference_learning import (
+        user_preference_learning as upl,
+    )
+
+    psys = upl.get_user_preference_learning_system(root)
+    pcmd = getattr(args, "prefs_cmd", None)
+
+    if pcmd == "record":
+        try:
+            context = json.loads(getattr(args, "context", "") or "{}")
+        except Exception:
+            print('{"error":"invalid context JSON"}')
+            return
+
+        try:
+            outcome = json.loads(getattr(args, "outcome", "") or "{}")
+        except Exception:
+            print('{"error":"invalid outcome JSON"}')
+            return
+
+        interaction_id = psys.record_user_interaction(
+            user_id=args.user,
+            interaction_type=args.type,
+            context=context,
+            duration=getattr(args, "duration", None),
+            outcome=outcome,
+            satisfaction_score=getattr(args, "satisfaction", None),
+            feedback=getattr(args, "feedback", None),
+        )
+        print(json.dumps({"interaction_id": interaction_id}))
+    elif pcmd == "summary":
+        print(json.dumps(psys.get_user_profile_summary(args.user)))
+    else:
+        print('{"error":"unknown user - prefs subcommand"}')
+
+
+def add_continuous_improvement_parser(subparsers) -> None:
+    """Add continuous improvement commands to the argument parser."""
+    improvement_parser = subparsers.add_parser(
+        "continuous - improvement", help="Continuous improvement system management"
+    )
+
+    improvement_subparsers = improvement_parser.add_subparsers(
+        dest="improvement_cmd", help="Improvement commands"
+    )
+
+    # Add sub-command parsers
+    add_learning_commands(improvement_subparsers)
+    add_recommendations_commands(improvement_subparsers)
+    add_performance_commands(improvement_subparsers)
+    add_status_commands(improvement_subparsers)
+    add_implementation_commands(improvement_subparsers)
+
+
+def _coerce_scalar(value: str) -> Union[bool, int, float, str]:
     """Coerce a string scalar to bool / int / float when possible,
     else return as - is.
     """
@@ -107,8 +217,8 @@ def _parse_json_source(
     except json.JSONDecodeError as e:
         print(f"❌ Invalid JSON: {e}")
         return {}
-    except Exception as e:
-        print(f"❌ Failed to parse structured input: {e}")
+    except (ValueError, TypeError, AttributeError) as e:
+        print(f"Error: {e}")
         return {}
 
 
@@ -121,74 +231,39 @@ def handle_continuous_improvement_commands(
         _handle_user_preference_commands(args, root)
         return
 
-    if args.improvement_cmd == "learn":
+    # Delegate to modular sub-modules
+    if args.improvement_cmd == "learning":
+        from .commands_continuous_improvement_learning import _handle_learning_commands
+
         _handle_learning_commands(args, root)
     elif args.improvement_cmd == "recommendations":
-        _handle_recommendations_commands(args, root)
-    elif args.improvement_cmd == "health":
-        _handle_health_monitor_commands(args, root)
-    elif args.improvement_cmd == "implement":
-        _handle_implement_commands(args, root)
-    elif args.improvement_cmd == "status":
-        _handle_status_commands(args, root)
-    elif args.improvement_cmd == "performance":
-        _handle_performance_commands(args, root)
-    elif args.improvement_cmd == "config":
-        _handle_config_commands(args, root)
-    elif args.improvement_cmd == "user - preferences":
-        _handle_user_preference_commands(args, root)
-    elif args.improvement_cmd == "health":
-        _handle_health_monitor_commands(args, root)
-    elif args.improvement_cmd == "knowledge":
-        _handle_knowledge_base_commands(args, root)
-    elif args.improvement_cmd == "analytics":
-        _handle_analytics_commands(args, root)
-    elif args.improvement_cmd == "test":
-        _handle_test_commands(args, root)
-    elif args.improvement_cmd == "validate":
-        _handle_validation_commands(args, root)
-    elif args.cmd == "user - prefs":
-        # Quick - path handler for user preference learning
-        from ..core import user_preference_learning as upl
+        from .commands_continuous_improvement_recommendations import (
+            _handle_recommendations_commands,
+        )
 
-        psys = upl.get_user_preference_learning_system(root)
-        pcmd = getattr(args, "prefs_cmd", None)
-        if pcmd == "record":
-            try:
-                context = json.loads(getattr(args, "context", "") or "{}")
-            except Exception:
-                print('{"error":"invalid context JSON"}')
-                return
-            try:
-                outcome = json.loads(getattr(args, "outcome", "") or "{}")
-            except Exception:
-                print('{"error":"invalid outcome JSON"}')
-                return
-            interaction_id = psys.record_user_interaction(
-                user_id=args.user,
-                interaction_type=args.type,
-                context=context,
-                duration=getattr(args, "duration", None),
-                outcome=outcome,
-                satisfaction_score=getattr(args, "satisfaction", None),
-                feedback=getattr(args, "feedback", None),
-            )
-            print(json.dumps({"interaction_id": interaction_id}))
-            return
-        if pcmd == "summary":
-            print(json.dumps(psys.get_user_profile_summary(args.user)))
-            return
-        if pcmd == "recommend":
-            print(
-                json.dumps(
-                    {"recommendations": psys.get_user_recommendations(args.user)}
-                )
-            )
-            return
-        print('{"error":"unknown user - prefs subcommand"}')
-        return
+        _handle_recommendations_commands(args, root)
+    elif args.improvement_cmd == "performance":
+        from .commands_continuous_improvement_performance import (
+            _handle_performance_commands,
+        )
+
+        _handle_performance_commands(args, root)
+    elif args.improvement_cmd == "status":
+        from .commands_continuous_improvement_status import _handle_status_commands
+
+        _handle_status_commands(args, root)
+    elif args.improvement_cmd == "implementation":
+        from .commands_continuous_improvement_implementation import (
+            _handle_implementation_commands,
+        )
+
+        _handle_implementation_commands(args, root)
     else:
-        print(f"Unknown improvement command: {args.improvement_cmd}")
+        print(f"Error: Unknown continuous improvement command: {args.improvement_cmd}")
+        # Get user preference system for recommendations
+        psys = get_user_preference_learning_system(root)
+        print(json.dumps({"recommendations": psys.get_user_recommendations(args.user)}))
+        return
 
 
 def _handle_learning_commands(args: argparse.Namespace, root: Path) -> None:
@@ -873,8 +948,8 @@ def _handle_user_summary(args: argparse.Namespace, preference_system) -> None:
         print(f"📊 User Profile Summary for {user_id}")
         print("=" * 50)
         print(summary)
-    except Exception as e:
-        print(f"❌ Failed to generate user summary: {e}")
+    except (ValueError, TypeError, AttributeError) as e:
+        print(f"Error: {e}")
 
 
 def _handle_user_recommendations(args: argparse.Namespace, preference_system) -> None:
@@ -893,8 +968,8 @@ def _handle_user_recommendations(args: argparse.Namespace, preference_system) ->
             print(
                 "No recommendations available yet. Record more interactions to get personalized suggestions."
             )
-    except Exception as e:
-        print(f"❌ Failed to generate recommendations: {e}")
+    except (ValueError, TypeError, AttributeError) as e:
+        print(f"Error: {e}")
 
 
 def _handle_user_preferences(args: argparse.Namespace, preference_system) -> None:
@@ -2841,8 +2916,8 @@ def _handle_run_validation(args: argparse.Namespace, validator) -> None:
         else:
             print(f"\n🎉 All tests passed! System is healthy.")
 
-    except Exception as e:
-        print(f"❌ Validation failed: {e}")
+    except (ValueError, TypeError, AttributeError) as e:
+        print(f"Error: {e}")
 
 
 def _handle_validation_reports(args: argparse.Namespace, validator) -> None:
@@ -2882,8 +2957,8 @@ def _handle_list_validation_reports(args: argparse.Namespace, validator) -> None
                     print(f"   Line {line_num}: Invalid JSON format")
                     continue
 
-    except Exception as e:
-        print(f"❌ Failed to list validation reports: {e}")
+    except (ValueError, TypeError, AttributeError) as e:
+        print(f"Error: {e}")
 
 
 def _handle_view_validation_report(args: argparse.Namespace, validator) -> None:
@@ -2946,8 +3021,8 @@ def _handle_view_validation_report(args: argparse.Namespace, validator) -> None:
 
         print(f"\n📝 Summary: {found_report['summary']}")
 
-    except Exception as e:
-        print(f"❌ Failed to view validation report: {e}")
+    except (ValueError, TypeError, AttributeError) as e:
+        print(f"Error: {e}")
 
 
 def _handle_validation_config(args: argparse.Namespace, validator) -> None:
@@ -2976,8 +3051,8 @@ def _handle_show_validation_config(args: argparse.Namespace, validator) -> None:
             else:
                 print(f"{key}: {value}")
 
-    except Exception as e:
-        print(f"❌ Failed to show test configuration: {e}")
+    except (ValueError, TypeError, AttributeError) as e:
+        print(f"Error: {e}")
 
 
 def _handle_set_validation_config(args: argparse.Namespace, validator) -> None:
@@ -3002,5 +3077,5 @@ def _handle_set_validation_config(args: argparse.Namespace, validator) -> None:
 
         print(f"✅ Set {key} = {value}")
 
-    except Exception as e:
-        print(f"❌ Failed to set test configuration: {e}")
+    except (ValueError, TypeError, AttributeError) as e:
+        print(f"Error: {e}")

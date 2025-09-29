@@ -8,7 +8,7 @@ the Prime Directive Cascade files that control AI agent behavior.
 import argparse
 from pathlib import Path
 
-from ..core.directive_generator import get_directive_generator
+from ..core.project_management.directive_generator import get_directive_generator
 
 
 def add_directive_commands(subparsers):

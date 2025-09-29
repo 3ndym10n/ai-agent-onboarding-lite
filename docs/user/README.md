@@ -9,7 +9,7 @@ Welcome to AI Onboard - your intelligent project coach that helps you build bett
 - [Core Workflows](workflows/README.md) - Essential workflows every user should know
 - [Command Reference](commands/README.md) - Complete command documentation
 
-### For Experienced Users  
+### For Experienced Users
 - [Advanced Features](advanced/README.md) - Power user capabilities
 - [AI Collaboration](ai-collaboration/README.md) - Working with AI agents
 - [Optimization & Automation](optimization/README.md) - Continuous improvement features
@@ -54,7 +54,7 @@ python -m ai_onboard suggest
 ### 🎯 Project Management
 Essential commands for project setup and tracking:
 - `charter` - Define your project vision and goals
-- `plan` - Create detailed project roadmaps  
+- `plan` - Create detailed project roadmaps
 - `align` - Ensure alignment with project vision
 - `validate` - Check project health and quality
 - `dashboard` - Visual project status overview
@@ -75,7 +75,6 @@ Advanced AI integration features:
 
 ### 🛠️ Development Integration
 Tools for development workflow integration:
-- `api` - REST API server for integrations
 - `debug` - Smart debugging and error analysis
 - `cleanup` - Safe project cleanup
 - `checkpoint` - Project state management
@@ -103,7 +102,7 @@ Perfect for setting up project foundations with clear vision and planning:
 - [Vision Definition Guide](workflows/vision-definition.md)
 - [Team Collaboration Setup](workflows/team-collaboration.md)
 
-### 🔄 Optimizing Existing Projects  
+### 🔄 Optimizing Existing Projects
 Ideal for improving ongoing projects and development processes:
 - [Project Health Assessment](workflows/health-assessment.md)
 - [Performance Optimization](workflows/performance-optimization.md)
@@ -150,7 +149,7 @@ AI Onboard learns from your usage patterns and provides:
 # Context-aware help
 python -m ai_onboard help
 
-# Command-specific help  
+# Command-specific help
 python -m ai_onboard help <command>
 
 # Interactive tutorials
@@ -190,4 +189,3 @@ python -m ai_onboard discover
 **Need specific help?** → [Command Reference](commands/README.md)
 
 **Want to dive deep?** → [Advanced Features](advanced/README.md)
-

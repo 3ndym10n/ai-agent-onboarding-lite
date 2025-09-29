@@ -5,10 +5,12 @@ All components should import from this module to compute project progress
 and render progress bars to ensure consistency across CLI, gates, and reports.
 """
 
-
 import importlib.util
-_utils_path = Path(__file__).parent / 'utils.py'
-_utils_spec = importlib.util.spec_from_file_location('utils_module', _utils_path)
+from pathlib import Path
+from typing import Any, Dict, List
+
+_utils_path = Path(__file__).parent / "utils.py"
+_utils_spec = importlib.util.spec_from_file_location("utils_module", _utils_path)
 _utils_module = importlib.util.module_from_spec(_utils_spec)
 _utils_spec.loader.exec_module(_utils_module)
 utils = _utils_module

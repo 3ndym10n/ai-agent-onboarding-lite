@@ -52,5 +52,3 @@ Only after confirming all directives, you may proceed with the user's request, f
 ---
 
 *This directive is automatically generated and updated by the ai-onboard system.*
-
-

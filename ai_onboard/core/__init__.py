@@ -1,44 +1,51 @@
 # Core modules for ai-onboard
 
+# Import base infrastructure first (needed by other modules)
+from .base import utils
+
 # Essential core modules
-from . import (
-    ai_agent_collaboration_protocol,
-    alignment,
-    charter,
-    cleanup_safety_gates,
-    continuous_improvement_validator,
-    cursor_ai_integration,
-    dynamic_planner,
-    planning,
-    progress_utils,
-    smart_debugger,
-    state,
-    telemetry,
-    utils,
-    vision_guardian,
-    vision_interrogator,
-)
-from .ai_agent_collaboration_protocol import (
+# Import AI integration systems
+from .ai_integration import (
     AgentCapability,
     AgentProfile,
     CollaborationMode,
+    CursorAIIntegration,
     SafetyLevel,
 )
+from .ai_integration.cursor_ai_integration import (
+    CursorAIIntegration,
+    get_cursor_integration,
+)
+
+# Import continuous improvement systems
 
 # Export commonly used classes and functions
-from .continuous_improvement_validator import (
+from .continuous_improvement.continuous_improvement_validator import (
     ContinuousImprovementValidator,
     ValidationCategory,
     ValidationReport,
     ValidationResult,
     ValidationTestCase,
 )
-from .cursor_ai_integration import CursorAIIntegration, get_cursor_integration
+
+# Import legacy cleanup systems
+
+# Import monitoring and analytics systems
+
+# Import orchestration systems
+
+# Import project management systems
+
+# Import quality and safety systems
+
+# Import vision systems
 
 # compatibility shim exports preserved for legacy CLI imports
-from . import progress_dashboard as progress_tracker
+# progress_dashboard removed - was deprecated shim
 
 __all__ = [
+    # Base utilities
+    "utils",
     # Validators
     "ContinuousImprovementValidator",
     "ValidationResult",

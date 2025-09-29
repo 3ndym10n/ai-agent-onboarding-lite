@@ -4,14 +4,14 @@ Tests error interception, pattern recognition, and context enrichment.
 """
 
 import json
+import sys
 import tempfile
 from pathlib import Path
-import sys
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-from ai_onboard.core.universal_error_monitor import (
+from ai_onboard.core.orchestration.universal_error_monitor import (
     UniversalErrorMonitor,
     get_error_monitor,
     setup_global_error_handler,
@@ -295,7 +295,7 @@ class TestUniversalErrorMonitor:
         }
 
         # Mock the usage data
-        import ai_onboard.core.utils as utils
+        from ai_onboard.core.base import utils
 
         with patch.object(utils, "read_json", return_value=usage_data):
             rate = error_monitor._calculate_error_rate()
@@ -305,7 +305,7 @@ class TestUniversalErrorMonitor:
     def test_global_error_handler_setup(self, temp_root):
         """Test global error handler setup."""
         with patch(
-            "ai_onboard.core.universal_error_monitor.get_error_monitor"
+            "ai_onboard.core.orchestration.universal_error_monitor.get_error_monitor"
         ) as mock_get_monitor:
             mock_monitor = MagicMock()
             mock_get_monitor.return_value = mock_monitor
@@ -347,7 +347,7 @@ class TestUniversalErrorMonitor:
 
         # Mock telemetry
         with patch(
-            "ai_onboard.core.universal_error_monitor.telemetry"
+            "ai_onboard.core.orchestration.universal_error_monitor.telemetry"
         ) as mock_telemetry:
             result = error_monitor.intercept_error(test_error, context)
 

@@ -13,7 +13,10 @@ import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from ..core.user_experience_system import get_user_experience_system
+from ..core.ai_integration.user_experience_system import (
+    UserExperienceSystem,
+    get_user_experience_system,
+)
 
 
 class ProgressBar:
@@ -25,7 +28,7 @@ class ProgressBar:
         self.current = 0
         self.user_id = user_id
         self.start_time = time.time()
-        self.ui_system = None
+        self.ui_system: Optional[UserExperienceSystem] = None
 
     def _get_ui_system(self, root: Path):
         """Lazy load UI system to avoid circular imports."""

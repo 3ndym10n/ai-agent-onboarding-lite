@@ -61,7 +61,7 @@ This interactive process will guide you through:
 #### Vision Core Questions
 - **What problem does your project solve?**
   - Example: "Create a user-friendly task management app for remote teams"
-  
+
 - **What is your ideal outcome?**
   - Example: "Teams can collaborate 50% more effectively with intuitive task tracking"
 
@@ -208,7 +208,7 @@ Based on your usage patterns, here are personalized recommendations:
    • Try: python -m ai_onboard wizard project-setup
    • Saves: ~10 minutes per project setup
 
-2. ⚡ Development Acceleration  
+2. ⚡ Development Acceleration
    • Consider enabling Cursor AI integration
    • Try: python -m ai_onboard cursor init
    • Benefit: 40% faster code development
@@ -226,7 +226,7 @@ Based on your usage patterns, here are personalized recommendations:
 1. 🤖 AI Agent Collaboration
    • Multi-agent development workflows
    • Command: python -m ai_onboard ai-agent
-   
+
 2. ⚡ Optimization Experiments
    • A/B testing for development processes
    • Command: python -m ai_onboard opt-experiments
@@ -272,7 +272,7 @@ python -m ai_onboard discover
 # 1. Define your vision
 python -m ai_onboard charter
 
-# 2. Generate your plan  
+# 2. Generate your plan
 python -m ai_onboard plan
 
 # 3. Validate alignment
@@ -397,4 +397,3 @@ You'll know you're successful when:
 **❓ Need help with specific commands?** → [Command Reference](commands/README.md)
 
 **🚀 Want to explore advanced features?** → [Advanced Features](advanced/README.md)
-

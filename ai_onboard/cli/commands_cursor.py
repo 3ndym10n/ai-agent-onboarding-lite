@@ -13,7 +13,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from ..core.cursor_ai_integration import (
+from ..core.ai_integration.cursor_ai_integration import (
     get_cursor_integration,
     get_cursor_project_context,
     initialize_cursor_integration,
@@ -121,7 +121,7 @@ def _handle_cursor_init(args: argparse.Namespace, root: Path) -> None:
         if args.force:
             # Force re-initialization by resetting the global instance
             # Import the module and reset the global variable
-            import ai_onboard.core.cursor_ai_integration as cai
+            from ai_onboard.core.ai_integration import cursor_ai_integration as cai
 
             cai._cursor_integration = None
 

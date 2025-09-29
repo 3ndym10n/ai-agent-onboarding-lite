@@ -9,14 +9,15 @@ This module provides command - line interfaces for:
 """
 
 import argparse
+import json
 import time
 from pathlib import Path
+from typing import Any
 
-from ..core.kaizen_automation import get_kaizen_automation
-import json
+from ..core.ai_integration.kaizen_automation import get_kaizen_automation
 
 
-def add_kaizen_commands(subparsers):
+def add_kaizen_commands(subparsers) -> None:
     """Add Kaizen automation commands to the CLI."""
 
     # Main Kaizen command
@@ -164,7 +165,7 @@ def handle_kaizen_commands(args: argparse.Namespace, root: Path) -> None:
         print(f"Unknown Kaizen command: {args.kaizen_cmd}")
 
 
-def _handle_start_automation(args: argparse.Namespace, kaizen_engine) -> None:
+def _handle_start_automation(args: argparse.Namespace, kaizen_engine: Any) -> None:
     """Handle start automation command."""
     print("🔄 Starting Kaizen Automation")
 
@@ -201,7 +202,7 @@ def _handle_start_automation(args: argparse.Namespace, kaizen_engine) -> None:
             print("✅ Automation stopped")
 
 
-def _handle_stop_automation(args: argparse.Namespace, kaizen_engine) -> None:
+def _handle_stop_automation(args: argparse.Namespace, kaizen_engine: Any) -> None:
     """Handle stop automation command."""
     print("⏹️ Stopping Kaizen Automation")
 
@@ -215,7 +216,7 @@ def _handle_stop_automation(args: argparse.Namespace, kaizen_engine) -> None:
     print("✅ Kaizen automation stopped successfully")
 
 
-def _handle_status(args: argparse.Namespace, kaizen_engine) -> None:
+def _handle_status(args: argparse.Namespace, kaizen_engine: Any) -> None:
     """Handle status command."""
     print("📊 Kaizen Automation Status")
     print("=" * 40)
@@ -261,7 +262,7 @@ def _handle_status(args: argparse.Namespace, kaizen_engine) -> None:
             )
 
 
-def _handle_run_cycle(args: argparse.Namespace, kaizen_engine) -> None:
+def _handle_run_cycle(args: argparse.Namespace, kaizen_engine: Any) -> None:
     """Handle manual cycle execution."""
     print("🔄 Running Manual Kaizen Cycle")
     print("=" * 40)
@@ -301,8 +302,7 @@ def _handle_run_cycle(args: argparse.Namespace, kaizen_engine) -> None:
         for action in cycle.actions_taken:
             status_icon = "✅" if action.get("status") == "completed" else "❌"
             print(
-                f"   {status_icon} {action.get('opportunity',
-                    action.get('decision', 'Unknown'))}"
+                f"   {status_icon} {action.get('opportunity', action.get('decision', 'Unknown'))}"
             )
 
         # Learning
@@ -319,7 +319,9 @@ def _handle_run_cycle(args: argparse.Namespace, kaizen_engine) -> None:
                     print(f"   • {rec}")
 
 
-def _handle_opportunities_commands(args: argparse.Namespace, kaizen_engine) -> None:
+def _handle_opportunities_commands(
+    args: argparse.Namespace, kaizen_engine: Any
+) -> None:
     """Handle opportunities management commands."""
 
     if args.opp_action == "list":
@@ -465,7 +467,7 @@ def _handle_opportunities_commands(args: argparse.Namespace, kaizen_engine) -> N
                 print(f"Error: {result['error']}")
 
 
-def _handle_history(args: argparse.Namespace, kaizen_engine) -> None:
+def _handle_history(args: argparse.Namespace, kaizen_engine: Any) -> None:
     """Handle cycle history display."""
     print(f"📊 Kaizen Cycle History (Last {args.limit})")
     print("=" * 50)
@@ -497,7 +499,7 @@ def _handle_history(args: argparse.Namespace, kaizen_engine) -> None:
             print(f"   Status: Completed")
 
 
-def _handle_analytics_commands(args: argparse.Namespace, kaizen_engine) -> None:
+def _handle_analytics_commands(args: argparse.Namespace, kaizen_engine: Any) -> None:
     """Handle analytics commands."""
 
     if args.analytics_action == "success":
@@ -592,7 +594,7 @@ def _handle_analytics_commands(args: argparse.Namespace, kaizen_engine) -> None:
         print("   • Automation becoming more effective")
 
 
-def _handle_config_commands(args: argparse.Namespace, kaizen_engine) -> None:
+def _handle_config_commands(args: argparse.Namespace, kaizen_engine: Any) -> None:
     """Handle configuration commands."""
 
     if args.config_action == "show":

@@ -1,6 +1,6 @@
 from typing import Any
 
-from ai_onboard.core.common_imports import Dict, List, os
+from ai_onboard.core.common_imports import Dict, List
 
 
 class PythonPkgBasicsPlugin:

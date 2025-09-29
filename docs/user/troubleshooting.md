@@ -255,8 +255,7 @@ python -m ai_onboard cleanup --aggressive
 python -m ai_onboard unified-metrics query --stream
 
 # Restart AI Onboard services
-python -m ai_onboard api stop
-python -m ai_onboard api start
+python -m ai_onboard validate --reset-cache
 ```
 
 ### Integration Issues
@@ -279,27 +278,6 @@ python -m ai_onboard cursor status --test-connection
 # Update Cursor configuration
 python -m ai_onboard cursor config --reset
 python -m ai_onboard cursor config --agent-profile "developer"
-```
-
-#### Issue: API server won't start
-**Symptoms**: API commands fail, port conflicts
-**Cause**: Port already in use or permission issues
-
-**Solutions**:
-```bash
-# Check port availability
-netstat -an | grep 8000
-lsof -i :8000
-
-# Use different port
-python -m ai_onboard api start --port 8001
-
-# Kill existing processes on port
-sudo kill -9 $(lsof -t -i:8000)
-
-# Check API configuration
-python -m ai_onboard api config show
-python -m ai_onboard api test --local
 ```
 
 #### Issue: Metrics collection not working
@@ -552,7 +530,6 @@ python -m ai_onboard config alerts \
 - **E003**: Plan generation failed due to insufficient context
 - **E004**: Alignment check failed with low score
 - **E005**: Validation errors in project structure
-- **E010**: API server startup failed
 - **E011**: Cursor integration connection failed
 - **E012**: Metrics collection system error
 - **E020**: UX system initialization failed
@@ -625,4 +602,3 @@ If you're still experiencing issues:
 ---
 
 **💡 Remember**: AI Onboard's intelligent error handling learns from issues to provide better guidance over time. Your troubleshooting experiences help improve the system for everyone!
-

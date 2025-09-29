@@ -5,11 +5,20 @@ import json
 import os
 import time
 from pathlib import Path
-from typing import Any, Dict, List, cast
+from typing import Any, Dict, List, Optional, cast
 
-from ..core import alignment, telemetry, versioning
-from ..core.gate_system import create_clarification_gate, create_confirmation_gate
-from ..core.pattern_recognition_system import PatternRecognitionSystem
+# alignment module moved to vision package
+from ..core.base import telemetry, utils, versioning
+from ..core.legacy_cleanup.charter import load_charter
+from ..core.legacy_cleanup.gate_system import (
+    create_clarification_gate,
+    create_confirmation_gate,
+)
+from ..core.legacy_cleanup.prompt_bridge import dumps_json as prompt_bridge_dumps_json
+from ..core.orchestration.pattern_recognition_system import PatternRecognitionSystem
+from ..core.vision.alignment import open_checkpoint
+from ..core.vision.alignment import preview as alignment_preview
+from ..core.vision.alignment import record_decision
 
 
 def add_core_commands(subparsers):
@@ -155,22 +164,6 @@ def add_core_commands(subparsers):
         type=int,
         default=30,
         help="Maximum age in days for completed tasks to keep (default: 30)",
-    )
-
-    # WBS prioritize
-    s_wbs_prioritize = wbs_subparsers.add_parser(
-        "prioritize", help="Analyze and prioritize tasks automatically"
-    )
-    s_wbs_prioritize.add_argument(
-        "--apply",
-        action="store_true",
-        help="Actually apply the priority changes to the project plan",
-    )
-    s_wbs_prioritize.add_argument(
-        "--top",
-        type=int,
-        default=10,
-        help="Show top N priority tasks (default: 10)",
     )
 
     # WBS critical-path
@@ -323,7 +316,7 @@ def add_core_commands(subparsers):
 
 
 def _check_command_prevention(
-    root: Path, command: str, args: List[str] = None
+    root: Path, command: str, args: Optional[List[str]] = None
 ) -> Dict[str, Any]:
     """
     Check if a command should be prevented from execution.
@@ -337,8 +330,12 @@ def _check_command_prevention(
         Prevention analysis result
     """
     try:
-        from ..core.automatic_error_prevention import AutomaticErrorPrevention
-        from ..core.pattern_recognition_system import PatternRecognitionSystem
+        from ..core.orchestration.automatic_error_prevention import (
+            AutomaticErrorPrevention,
+        )
+        from ..core.orchestration.pattern_recognition_system import (
+            PatternRecognitionSystem,
+        )
 
         pattern_system = PatternRecognitionSystem(root)
         prevention_system = AutomaticErrorPrevention(root, pattern_system)
@@ -357,7 +354,7 @@ def _check_command_prevention(
 
 
 def _learn_from_command_execution(
-    root: Path, command: str, success: bool, context: Dict[str, Any] = None
+    root: Path, command: str, success: bool, context: Optional[Dict[str, Any]] = None
 ) -> None:
     """
     Learn from CLI command execution for pattern recognition.
@@ -407,7 +404,7 @@ def _ias_gate(args, root: Path) -> bool:
     # Check for active gates first - prevent gate loops
     import time
 
-    from ..core.gate_system import GateSystem
+    from ..core.legacy_cleanup.gate_system import GateSystem
 
     gate_system = GateSystem(root)
     if gate_system.is_gate_active():
@@ -447,7 +444,7 @@ def _ias_gate(args, root: Path) -> bool:
             gate_system._cleanup_gate()
 
     # Compute preview (no user - bypass flags honored)
-    report = alignment.preview(root)
+    report = alignment_preview(root)
     decision = report.get("decision", "clarify")
 
     if decision == "proceed":
@@ -485,7 +482,6 @@ def _ias_gate(args, root: Path) -> bool:
 
 def _handle_gate_commands(args, root: Path):
     """Handle gate management commands."""
-    from ..core import utils
 
     gates_dir = root / ".ai_onboard" / "gates"
     current_gate_file = gates_dir / "current_gate.md"
@@ -538,7 +534,7 @@ def handle_core_commands(args, root: Path):
     if args.cmd == "task-gate":
         # Task execution gate management
         try:
-            from ..core.task_execution_gate import TaskExecutionGate
+            from ..core.orchestration.task_execution_gate import TaskExecutionGate
 
             gate = TaskExecutionGate(root)
             gate_action = getattr(args, "gate_action", None)
@@ -668,9 +664,8 @@ def handle_core_commands(args, root: Path):
                         if filter_command:
                             print(f"Filter: {filter_command}")
 
-                except Exception as e:
-                    print(f"❌ Error reading violations: {e}")
-
+                except (ValueError, TypeError, AttributeError) as e:
+                    print(f"Error: {e}")
             elif gate_action == "update":
                 # Force WBS update for pending tasks
                 task_id = getattr(args, "task_id", None)
@@ -714,19 +709,20 @@ def handle_core_commands(args, root: Path):
             else:
                 print("❌ Unknown gate action. Use --help for available actions.")
 
-        except Exception as e:
-            print(f"❌ Error in task-gate handler: {e}")
+        except (ValueError, TypeError, AttributeError) as e:
+            print(f"Error: {e}")
             import traceback
 
             traceback.print_exc()
-        return
+            return
 
     # Allow a safe, read - only preview to bypass the IAS gate so users can
     # inspect the recommendation before deciding to proceed.
     if args.cmd == "align" and getattr(args, "preview", False):
-        from ..core import alignment, utils
+        # alignment module moved to vision package
+        from ..core.base import utils
 
-        out = alignment.preview(root)
+        out = alignment_preview(root)
         print(utils.dumps_json(out))
         return
 
@@ -748,7 +744,8 @@ def handle_core_commands(args, root: Path):
 
     if args.cmd == "analyze":
         # Scan repository and create manifest
-        from ..core import discovery, utils
+        from ..core.base import utils
+        from ..core.legacy_cleanup import discovery
 
         manifest = discovery.run(root, allow_exec=args.allowExec)
         utils.write_json(root / "ai_onboard.json", manifest)
@@ -758,15 +755,16 @@ def handle_core_commands(args, root: Path):
         _learn_from_command_execution(root, "analyze", True, {"command": "analyze"})
     elif args.cmd == "charter":
         # Create or update project charter
-        from ..core import charter, state
+        from ..core.base import state
+        from ..core.legacy_cleanup import charter
 
         charter.ensure(root, interactive=args.interactive)
 
         # Mark vision as confirmed if run interactively
         if args.interactive:
-            charter_data = charter.load_charter(root)
+            charter_data = load_charter(root)
             charter_data["vision_confirmed"] = True
-            from ..core import utils
+            from ..core.base import utils
 
             utils.write_json(root / ".ai_onboard" / "charter.json", charter_data)
             print("✅ Vision confirmed in charter")
@@ -775,14 +773,15 @@ def handle_core_commands(args, root: Path):
         print("Charter ready at .ai_onboard / charter.json")
     elif args.cmd == "plan":
         # Build project plan from charter
-        from ..core import planning, state
+        from ..core.base import state
+        from ..core.vision.planning import planning
 
         planning.build(root)
         state.advance(root, state.load(root), "planned")
         print("Plan ready at .ai_onboard / plan.json")
     elif args.cmd == "roadmap":
         # Build lightweight roadmap from analysis
-        from ..core import roadmap_lite
+        from ..core.utilities.roadmap_lite import roadmap_lite
 
         goal = ""
         rm = roadmap_lite.build(root, goal)
@@ -790,7 +789,7 @@ def handle_core_commands(args, root: Path):
     elif args.cmd == "work":
         # Show next task and log it
 
-        from ..core import runlog
+        from ..core.base import runlog
 
         rm_path = root / ".ai_onboard" / "roadmap.json"
         if not rm_path.exists():
@@ -809,34 +808,37 @@ def handle_core_commands(args, root: Path):
         print(utils.dumps_json({"next_task": next_task}))
     elif args.cmd == "align":
         # Open or approve an alignment checkpoint
-        from ..core import alignment, prompt_bridge, state
+        # alignment module moved to vision package, prompt_bridge
+        from ..core.base import state
 
         if args.preview:
-            res = alignment.preview(root)
-            print(prompt_bridge.dumps_json(res))
+            res = alignment_preview(root)
+            print(prompt_bridge_dumps_json(res))
         elif args.approve:
-            alignment.record_decision(root, "ALIGN", args.checkpoint, True, args.note)
+            record_decision(root, "ALIGN", args.checkpoint, True, args.note)
             state.advance(root, state.load(root), "aligned")
             print(f"Alignment approved for {args.checkpoint}.")
         else:
-            alignment.open_checkpoint(root, args.checkpoint)
+            open_checkpoint(root, args.checkpoint)
             print(f"Opened alignment checkpoint {args.checkpoint}.")
     elif args.cmd == "validate":
         # Run validation and write report
         import importlib
 
-        from ..core import alignment, charter
-        from ..core import progress_dashboard as progress_tracker
-        from ..core import telemetry
+        # progress_dashboard removed - was deprecated shim
+        # alignment module moved to vision package, charter
+        from ..core.base import telemetry
 
         validation_runtime = importlib.import_module(
             "ai_onboard.core.validation_runtime"
         )
 
-        alignment.require_state(root, "aligned")
+        from ..core.vision.alignment import require_state
+
+        require_state(root, "aligned")
 
         # Check if vision is confirmed before allowing validation
-        charter_data = charter.load_charter(root)
+        charter_data = load_charter(root)
         if not charter_data.get("vision_confirmed", False):
             print(
                 "❌ Vision not confirmed. Please confirm the project vision before running validation."
@@ -848,8 +850,8 @@ def handle_core_commands(args, root: Path):
 
         res = validation_runtime.run(root)
         if args.report:
-            progress_tracker.write_report(root, res)
-            print("Wrote .ai_onboard / report.md (+ versioned copy).")
+            # progress_tracker.write_report removed - was deprecated functionality
+            print("Report generation temporarily disabled (progress_dashboard removed)")
         telemetry.record_run(root, res)
         print("Validation complete.")
 
@@ -857,19 +859,19 @@ def handle_core_commands(args, root: Path):
         _learn_from_command_execution(root, "validate", True, {"command": "validate"})
     elif args.cmd == "kaizen":
         # Run a kaizen cycle (metrics - driven nudges)
-        from ..core import optimizer
+        from ..core.continuous_improvement.optimizer import optimizer
 
         optimizer.nudge_from_metrics(root)
         print("Kaizen cycle complete.")
     elif args.cmd == "optimize":
         # Run quick optimization experiments
-        from ..core import optimizer
+        from ..core.continuous_improvement.optimizer import optimizer
 
         optimizer.quick_optimize(root)
         print("Optimization complete.")
     elif args.cmd == "version":
         # Show the actual package version, not project version
-        from ..core.tool_usage_tracker import get_tool_tracker
+        from ..core.orchestration.tool_usage_tracker import get_tool_tracker
 
         tool_tracker = get_tool_tracker(root)
         session_id = tool_tracker.start_task_session("version", "core_command")
@@ -940,7 +942,7 @@ def handle_core_commands(args, root: Path):
         return
     elif args.cmd == "metrics":
         # Show project metrics
-        from ..core import telemetry
+        from ..core.base import telemetry
 
         items = telemetry.read_metrics(root)
         if not items:
@@ -955,7 +957,7 @@ def handle_core_commands(args, root: Path):
         print("Metrics display complete.")
     elif args.cmd == "cleanup":
         # Safe cleanup functionality
-        from ..core import cleanup
+        from ..core.legacy_cleanup import cleanup
 
         if args.dry_run:
             cleanup.safe_cleanup(root, dry_run=True)
@@ -970,8 +972,8 @@ def handle_core_commands(args, root: Path):
         print("Cleanup complete.")
     elif args.cmd == "tools":
         # System tools usage information
-        from ..core import utils
-        from ..core.tool_usage_tracker import get_tool_tracker
+        from ..core.base import utils
+        from ..core.orchestration.tool_usage_tracker import get_tool_tracker
 
         tool_tracker = get_tool_tracker(root)
 
@@ -1076,8 +1078,8 @@ def handle_core_commands(args, root: Path):
                 print("💡 Use --history to see recent tool usage history")
     elif args.cmd == "wbs":
         # WBS management commands
-        from ..core.task_execution_gate import TaskExecutionGate
-        from ..core.wbs_update_engine import WBSUpdateEngine
+        from ..core.orchestration.task_execution_gate import TaskExecutionGate
+        from ..core.project_management.wbs_update_engine import WBSUpdateEngine
 
         gate = TaskExecutionGate(root)
         wbs_engine = WBSUpdateEngine(root)
@@ -1143,7 +1145,9 @@ def handle_core_commands(args, root: Path):
 
         elif wbs_cmd == "auto-update":
             # Enhanced intelligent auto-update
-            from ..core.wbs_auto_update_engine import WBSAutoUpdateEngine
+            from ..core.project_management.wbs_auto_update_engine import (
+                WBSAutoUpdateEngine,
+            )
 
             print("🧠 Running intelligent WBS auto-update...")
             auto_engine = WBSAutoUpdateEngine(root)
@@ -1176,7 +1180,9 @@ def handle_core_commands(args, root: Path):
 
         elif wbs_cmd == "health":
             # Project health metrics
-            from ..core.wbs_auto_update_engine import WBSAutoUpdateEngine
+            from ..core.project_management.wbs_auto_update_engine import (
+                WBSAutoUpdateEngine,
+            )
 
             print("🏥 Project Health Analysis")
             print("=" * 50)
@@ -1213,7 +1219,9 @@ def handle_core_commands(args, root: Path):
 
         elif wbs_cmd == "analyze":
             # Enhanced critical path analysis
-            from ..core.critical_path_engine import CriticalPathEngine
+            from ..core.project_management.critical_path_engine import (
+                CriticalPathEngine,
+            )
 
             print("🛤️  Critical Path Analysis")
             print("=" * 50)
@@ -1256,8 +1264,12 @@ def handle_core_commands(args, root: Path):
 
         elif wbs_cmd == "optimize":
             # Project optimization recommendations
-            from ..core.critical_path_engine import CriticalPathEngine
-            from ..core.wbs_auto_update_engine import WBSAutoUpdateEngine
+            from ..core.project_management.critical_path_engine import (
+                CriticalPathEngine,
+            )
+            from ..core.project_management.wbs_auto_update_engine import (
+                WBSAutoUpdateEngine,
+            )
 
             print("⚡ Project Optimization Analysis")
             print("=" * 50)
@@ -1308,7 +1320,7 @@ def handle_core_commands(args, root: Path):
 
         elif wbs_cmd == "pending":
             # Show detailed pending tasks
-            from ..core import utils
+            from ..core.base import utils
 
             pending_data = utils.read_json(
                 gate.pending_tasks_path, default={"pending_tasks": []}
@@ -1381,97 +1393,9 @@ def handle_core_commands(args, root: Path):
             removed_count = gate.cleanup_completed_tasks(max_age)
             print(f"✅ Removed {removed_count} old completed tasks.")
 
-        elif wbs_cmd == "prioritize":
-            # Prioritize tasks
-            from ..core.task_prioritization_engine import prioritize_tasks
-
-            apply_changes = getattr(args, "apply", False)
-            top_n = getattr(args, "top", 10)
-
-            if apply_changes:
-                print("⚠️  Applying priority changes to project plan...")
-            else:
-                print("🔍 Analyzing task priorities (preview mode)...")
-
-            result = prioritize_tasks(root, apply_changes)
-
-            if result["success"]:
-                if result["mode"] == "applied":
-                    print(f"✅ Applied {result['changes_applied']} priority changes")
-                    if result["changes_failed"] > 0:
-                        print(f"❌ Failed to apply {result['changes_failed']} changes")
-
-                # Show top priority tasks
-                priorities = result["results"]["task_priorities"]
-                sorted_tasks = sorted(
-                    priorities.items(),
-                    key=lambda x: x[1]["priority_score"],
-                    reverse=True,
-                )
-
-                print(f"\n🎯 TOP {top_n} PRIORITY TASKS:")
-                print("=" * 80)
-
-                for i, (task_id, data) in enumerate(sorted_tasks[:top_n], 1):
-                    priority_icon = {
-                        "critical": "🚨",
-                        "high": "🔴",
-                        "medium": "🟡",
-                        "low": "🟢",
-                        "lowest": "⚪",
-                    }.get(data["calculated_priority"], "⚪")
-
-                    current = data["current_priority"]
-                    calculated = data["calculated_priority"]
-                    change_indicator = " ⬆️" if calculated != current else ""
-
-                    print(
-                        f"{i}. {priority_icon} {task_id}: {data['priority_score']} pts"
-                    )
-                    print(f"   Task: {data.get('task_name', 'Unknown')}")
-                    print(f"   Priority: {current} → {calculated}{change_indicator}")
-
-                    # Show key factors
-                    factors = data["priority_factors"]
-                    critical_path = factors["critical_path_impact"]["assessment"]
-                    dependencies = factors["dependency_impact"]["assessment"]
-                    effort_value = factors["effort_value_ratio"]["assessment"]
-
-                    print(
-                        f"   Key Factors: Critical Path: {critical_path}, "
-                        f"Dependencies: {dependencies}, Value: {effort_value}"
-                    )
-
-                    # Show recommendations
-                    if data["recommendations"]:
-                        print(f"   💡 {data['recommendations'][0]}")
-
-                    print()
-
-                # Show summary recommendations
-                recommendations = result["results"]["recommendations"]
-                if recommendations["priority_changes"]:
-                    print(
-                        f"📋 PRIORITY CHANGES NEEDED: {len(recommendations['priority_changes'])}"
-                    )
-                    for change in recommendations["priority_changes"][:5]:
-                        print(
-                            f"   • {change['task_id']}: {change['current']} → {change['recommended']}"
-                        )
-
-                if recommendations["immediate_actions"]:
-                    print("\n🚀 IMMEDIATE ACTIONS:")
-                    for action in recommendations["immediate_actions"]:
-                        print(f"   • {action}")
-
-            else:
-                print(
-                    f"❌ Failed to prioritize tasks: {result.get('error', 'Unknown error')}"
-                )
-
         elif wbs_cmd == "critical-path":
             # Critical path analysis
-            from ..core.critical_path_engine import (
+            from ..core.project_management.critical_path_engine import (
                 CriticalPathEngine,
                 analyze_critical_path,
                 update_critical_path,
@@ -1573,7 +1497,9 @@ def handle_core_commands(args, root: Path):
 
         elif wbs_cmd == "auto-update":
             # WBS auto-update
-            from ..core.wbs_auto_update_engine import WBSAutoUpdateEngine
+            from ..core.project_management.wbs_auto_update_engine import (
+                WBSAutoUpdateEngine,
+            )
 
             force_update = getattr(args, "force", False)
             dry_run = getattr(args, "dry_run", False)
@@ -1585,8 +1511,8 @@ def handle_core_commands(args, root: Path):
                 return
 
             print("🔄 Running WBS auto-update...")
-            engine = WBSAutoUpdateEngine(root)
-            result = engine.auto_update_wbs(force=force_update)
+            update_engine = WBSAutoUpdateEngine(root)
+            result = update_engine.auto_update_wbs(force=force_update)
 
             if result["success"]:
                 print(f"✅ Auto-update completed successfully!")
@@ -1608,16 +1534,18 @@ def handle_core_commands(args, root: Path):
 
         elif wbs_cmd == "sync":
             # WBS sync
-            from ..core.pm_compatibility import get_legacy_wbs_sync_engine
+            from ..core.legacy_cleanup.pm_compatibility import (
+                get_legacy_wbs_sync_engine,
+            )
 
             force_sync = getattr(args, "force", False)
             run_validation = getattr(args, "validate", False)
 
-            engine = get_legacy_wbs_sync_engine(root)
+            sync_engine = get_legacy_wbs_sync_engine(root)
 
             if run_validation:
                 print("🔍 Running WBS data consistency validation...")
-                validation_result = engine.get_data_consistency_report()
+                validation_result = sync_engine.get_data_consistency_report()
 
                 if validation_result["valid"]:
                     print("✅ WBS data is consistent")
@@ -1668,7 +1596,9 @@ def handle_core_commands(args, root: Path):
 
         elif wbs_cmd == "validate":
             # WBS validate
-            from ..core.pm_compatibility import get_legacy_wbs_sync_engine
+            from ..core.legacy_cleanup.pm_compatibility import (
+                get_legacy_wbs_sync_engine,
+            )
 
             should_fix = getattr(args, "fix", False)
             generate_report = getattr(args, "report", False)

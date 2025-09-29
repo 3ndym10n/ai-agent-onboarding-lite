@@ -8,9 +8,8 @@ from pathlib import Path
 
 import pytest
 
-from ai_onboard.core.tool_usage_tracker import get_tool_tracker
-from ai_onboard.core.unified_project_management import (
-    UnifiedProjectManagementEngine,
+from ai_onboard.core.orchestration.tool_usage_tracker import get_tool_tracker
+from ai_onboard.core.project_management.unified_project_management import (
     get_unified_project_management_engine,
 )
 

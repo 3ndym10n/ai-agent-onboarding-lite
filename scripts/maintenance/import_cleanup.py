@@ -12,9 +12,11 @@ Usage:
 
 If no files are specified, it will check all Python files in ai_onboard/core/
 """
-from ai_onboard.core.common_imports import sys
-
 import subprocess
+from pathlib import Path
+from typing import List
+
+from ai_onboard.core.base.common_imports import sys
 
 
 def run_command(cmd: List[str], cwd: Path = None) -> tuple[int, str, str]:
@@ -77,7 +79,9 @@ def main():
         core_dir = Path("ai_onboard/core")
         files = list(core_dir.rglob("*.py"))
 
-    print(f"🧹 Starting import cleanup for {len(files)} files...")
+    print(
+        f"🧹 Starting from .legacy_cleanup.cleanup import cleanup for {len(files)} files..."
+    )
 
     total_processed = 0
     total_with_unused = 0

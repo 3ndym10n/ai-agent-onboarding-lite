@@ -57,8 +57,17 @@ repos:
       - id: mypy
         files: \.(py)$
         exclude: ^ai_onboard/_version\.py$
-        additional_dependencies: [types-PyYAML==6.0.12.20241016]
+        additional_dependencies: [types-PyYAML==6.0.12.20240917]
         args: [--config-file=config/mypy.ini, --show-error-codes]
+
+  # pylint - Advanced code analysis
+  - repo: https://github.com/pycqa/pylint
+    rev: v3.3.4
+    hooks:
+      - id: pylint
+        files: \.(py)$
+        exclude: ^(ai_onboard/_version\.py|tests/|examples/|scripts/)$
+        args: [--rcfile=config/pylint.ini]
 
   # Custom hooks for protected paths validation
   - repo: local

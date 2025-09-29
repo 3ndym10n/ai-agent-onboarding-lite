@@ -13,7 +13,7 @@ import shutil
 from pathlib import Path
 from typing import List, Optional
 
-from ..core.user_experience_system import (
+from ..core.ai_integration.user_experience_system import (
     CommandCategory,
     InterfaceMode,
     UserExpertiseLevel,
@@ -51,9 +51,9 @@ class HelpSystem:
             elif mode == "expert":
                 interface_mode = InterfaceMode.EXPERT
             else:
-                interface_mode = profile.preferred_mode
+                interface_mode = profile.get("preferred_mode", InterfaceMode.COMPLETE)
         else:
-            interface_mode = profile.preferred_mode
+            interface_mode = profile.get("preferred_mode", InterfaceMode.COMPLETE)
 
         help_text = []
 
@@ -66,9 +66,8 @@ class HelpSystem:
         help_text.append("=" * min(50, self.terminal_width))
 
         # User context
-        help_text.append(
-            f"Mode: {interface_mode.value} | Expertise: {profile.expertise_level.value}"
-        )
+        expertise_level = profile.get("expertise_level", "intermediate")
+        help_text.append(f"Mode: {interface_mode.value} | Expertise: {expertise_level}")
         help_text.append("")
 
         # Quick actions (always shown)
@@ -92,8 +91,8 @@ class HelpSystem:
         )
 
         # Get commands for current interface mode
-        temp_profile = profile
-        temp_profile.preferred_mode = interface_mode
+        temp_profile = dict(profile)  # Create a copy
+        temp_profile["preferred_mode"] = interface_mode
 
         categories_shown = set()
         for category in CommandCategory:
@@ -107,11 +106,21 @@ class HelpSystem:
             for cmd in commands[: self._get_max_commands_for_mode(interface_mode)]:
                 # Show usage count if user has used it
                 usage_indicator = ""
-                usage_count = profile.command_usage_count.get(cmd.name, 0)
+                command_usage_count = profile.get("command_usage_count", {})
+                usage_count = (
+                    command_usage_count.get(cmd.name, 0)
+                    if isinstance(command_usage_count, dict)
+                    else 0
+                )
                 if usage_count > 0:
                     usage_indicator = f" ({usage_count}x)"
-                elif cmd.name in profile.last_used_commands[:5]:
-                    usage_indicator = " (recent)"
+                else:
+                    last_used_commands = profile.get("last_used_commands", [])
+                    if (
+                        isinstance(last_used_commands, list)
+                        and cmd.name in last_used_commands[:5]
+                    ):
+                        usage_indicator = " (recent)"
 
                 help_text.append(f"  {cmd.name:<20} {cmd.description}{usage_indicator}")
 
@@ -129,7 +138,7 @@ class HelpSystem:
                 f"\n  • Use 'help --mode complete' to see all {len(self.ui_system.command_registry)} commands"
             )
 
-        if profile.expertise_level == UserExpertiseLevel.BEGINNER:
+        if profile.get("expertise_level") == UserExpertiseLevel.BEGINNER.value:
             help_text.append("  • Try 'help --tutorial' for guided learning")
 
         return "\n".join(help_text)
@@ -196,7 +205,6 @@ class HelpSystem:
             tips.extend(
                 [
                     "Create custom workflows with 'decision - pipeline'",
-                    "Use 'api start' to integrate with external tools",
                     "Explore 'enhanced - context' for advanced AI features",
                 ]
             )
@@ -280,17 +288,33 @@ class HelpSystem:
             help_text.append(f"  Example: {cmd.usage_example}")
 
             # Usage info
-            usage_count = profile.command_usage_count.get(cmd.name, 0)
+            command_usage_count = profile.get("command_usage_count", {})
+            usage_count = (
+                command_usage_count.get(cmd.name, 0)
+                if isinstance(command_usage_count, dict)
+                else 0
+            )
             if usage_count > 0:
                 help_text.append(f"  Your usage: {usage_count} times")
-            elif cmd.name in profile.last_used_commands:
-                help_text.append("  Recently used")
+            else:
+                last_used_commands = profile.get("last_used_commands", [])
+                if (
+                    isinstance(last_used_commands, list)
+                    and cmd.name in last_used_commands
+                ):
+                    help_text.append("  Recently used")
 
             # Prerequisites
             if cmd.prerequisites:
                 prereq_status = []
                 for prereq in cmd.prerequisites:
-                    if profile.command_usage_count.get(prereq, 0) > 0:
+                    command_usage_count = profile.get("command_usage_count", {})
+                    prereq_usage = (
+                        command_usage_count.get(prereq, 0)
+                        if isinstance(command_usage_count, dict)
+                        else 0
+                    )
+                    if prereq_usage > 0:
                         prereq_status.append(f"✓ {prereq}")
                     else:
                         prereq_status.append(f"○ {prereq}")
@@ -321,7 +345,12 @@ class HelpSystem:
         profile = self.ui_system.get_user_profile(user_id)
 
         # Personalized welcome
-        total_usage = sum(profile.command_usage_count.values())
+        command_usage_count = profile.get("command_usage_count", {})
+        total_usage = (
+            sum(command_usage_count.values())
+            if isinstance(command_usage_count, dict)
+            else 0
+        )
         if total_usage == 0:
             help_text.append("Welcome to AI Onboard! Let's get you started.")
         elif total_usage < 10:
@@ -546,7 +575,8 @@ class HelpSystem:
             help_text.append(
                 f"   Confidence: {confidence_bar} {suggestion.confidence:.0%}"
             )
-            help_text.append(f"   Example: {suggestion.example}")
+            if suggestion.next_steps:
+                help_text.append(f"   Next: {suggestion.next_steps[0]}")
             help_text.append("")
 
         help_text.append(

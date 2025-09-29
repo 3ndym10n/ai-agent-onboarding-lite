@@ -71,5 +71,3 @@ Type **"PATTERNS_APPLIED"** to confirm you understand the pattern application re
 ---
 
 *This directive is automatically generated and updated by the ai-onboard system.*
-
-

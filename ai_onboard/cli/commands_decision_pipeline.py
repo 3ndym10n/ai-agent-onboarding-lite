@@ -12,7 +12,7 @@ import argparse
 import time
 from pathlib import Path
 
-from ..core.advanced_agent_decision_pipeline import (
+from ..core.ai_integration.advanced_agent_decision_pipeline import (
     DecisionComplexity,
     get_advanced_decision_pipeline,
 )
@@ -172,7 +172,7 @@ def _handle_test_decision(args: argparse.Namespace, pipeline, root: Path) -> Non
         print(f"Using existing session: {session_id}")
     else:
         # Create a test session
-        from ..core.orchestration_compatibility import (
+        from ..core.orchestration.orchestration_compatibility import (
             AIAgentOrchestrationLayer as create_ai_agent_orchestrator,
         )
 
@@ -392,7 +392,7 @@ def _handle_benchmark(args: argparse.Namespace, pipeline, root: Path) -> None:
         ("optimize the system", [("optimization", 0.6)]),
     ]
 
-    total_time = 0
+    total_time = 0.0
     successful_runs = 0
 
     print("🔄 Running benchmark...")
@@ -401,7 +401,7 @@ def _handle_benchmark(args: argparse.Namespace, pipeline, root: Path) -> None:
         test_input, intents = test_cases[i % len(test_cases)]
 
         # Create mock conversation context
-        from ..core.orchestration_compatibility import (
+        from ..core.orchestration.orchestration_compatibility import (
             ConversationContext,
             ConversationState,
         )
@@ -440,7 +440,7 @@ def _handle_benchmark(args: argparse.Namespace, pipeline, root: Path) -> None:
     print(f"\n📊 Benchmark Results:")
     print(f"  Total Runs: {min(args.iterations, 20)}")
     print(f"  Successful: {successful_runs}")
-    print(f"  Success Rate: {successful_runs / min(args.iterations, 20)*100:.1f}%")
+    print(f"  Success Rate: {successful_runs / min(args.iterations, 20) * 100:.1f}%")
     if successful_runs > 0:
         print(f"  Average Time: {total_time / successful_runs:.1f}ms")
         print(f"  Total Time: {total_time:.1f}ms")

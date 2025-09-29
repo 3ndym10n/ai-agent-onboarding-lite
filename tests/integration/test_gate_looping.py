@@ -34,9 +34,9 @@ def test_gate_lifecycle():
 
     # Test 1: Run alignment preview to see decision
     print("\n--- Test 1: Alignment Preview ---")
-    from ai_onboard.core import alignment
+    from ai_onboard.core.vision.alignment import preview
 
-    preview_result = alignment.preview(root)
+    preview_result = preview(root)
     print(f"Confidence: {preview_result['confidence']}")
     print(f"Decision: {preview_result['decision']}")
     print(f"Components: {preview_result['components']}")
@@ -52,7 +52,7 @@ def test_gate_lifecycle():
     args.cmd = "validate"
 
     # Debug: Check gate status before calling _ias_gate
-    from ai_onboard.core.gate_system import GateSystem
+    from ai_onboard.core.legacy_cleanup.gate_system import GateSystem
 
     gate_system = GateSystem(root)
     is_active_before = gate_system.is_gate_active()

@@ -10,7 +10,7 @@ Essential workflows for setting up strong project foundations:
 - [Vision Definition Workflow](vision-definition.md) - Defining clear project vision (10-15 min)
 - [Planning & Roadmapping](planning-roadmapping.md) - Intelligent project planning (15-25 min)
 
-### 🔄 Development & Optimization Workflows  
+### 🔄 Development & Optimization Workflows
 Workflows for ongoing development and continuous improvement:
 - [Progress Monitoring](progress-monitoring.md) - Tracking and visualizing progress (2-5 min daily)
 - [Optimization Cycle](optimization.md) - Continuous improvement automation (30-60 min weekly)
@@ -37,7 +37,7 @@ Workflows for understanding and optimizing your project patterns:
 # Quick project status
 python -m ai_onboard dashboard
 
-# Today's smart suggestions  
+# Today's smart suggestions
 python -m ai_onboard suggest
 
 # Any urgent issues?
@@ -299,4 +299,3 @@ python -m ai_onboard wizard workflow-builder
 ---
 
 **🚀 Ready to dive deeper?** Choose a workflow that matches your current needs and start building better projects with intelligent automation!
-

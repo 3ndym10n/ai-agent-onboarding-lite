@@ -3,7 +3,7 @@
 Test the Task Integration Logic system.
 """
 
-from ai_onboard.core.task_integration_logic import integrate_task
+from ai_onboard.core.orchestration.task_integration_logic import integrate_task
 
 
 def test_task_integration():

@@ -46,4 +46,3 @@ The `project` command family (`python -m ai_onboard project ...`) routes through
 - Run `pytest tests/integration/test_project_management.py` for regression coverage.
 - Summaries via `python -m ai_onboard prompt summary --level brief`.
 - Full validation via `python -m ai_onboard validate --report` (requires aligned project state).
-

@@ -70,4 +70,3 @@ Type **"TOOLS_CONSULTED"** to confirm you understand the tool consultation requi
 ---
 
 *This directive is automatically generated and updated by the ai-onboard system.*
-

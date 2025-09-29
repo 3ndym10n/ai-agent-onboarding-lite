@@ -47,5 +47,3 @@ Type **"SYSTEM_INTEGRATED"** to confirm you understand the integration requireme
 ---
 
 *This directive is automatically generated and updated by the ai-onboard system.*
-
-

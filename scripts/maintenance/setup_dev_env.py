@@ -9,12 +9,12 @@ This script sets up a complete development environment including:
 - Git configuration
 - IDE configuration files
 """
-from ai_onboard.core.common_imports import json, sys
-
 import platform
 import subprocess
 from pathlib import Path
 from typing import List
+
+from ai_onboard.core.base.common_imports import json, sys
 
 # mypy: ignore - errors
 
@@ -208,7 +208,6 @@ python scripts / protected_paths_diff.py
                     "venv/": True,
                 },
             }
-
 
             (vscode_dir / "settings.json").write_text(
                 json.dumps(vscode_settings, indent=2)

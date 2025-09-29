@@ -5,13 +5,14 @@ This module provides simplified UX enhancements that integrate with the
 unified user experience system without complex intervention logic.
 """
 
-import time
 from contextlib import contextmanager
-from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-from ..core.user_experience_system import get_user_experience_system
+from ..core.ai_integration.user_experience_system import (
+    UserExperienceSystem,
+    get_user_experience_system,
+)
 from .visual_components import create_status_indicator
 
 
@@ -20,7 +21,7 @@ class UXMiddleware:
 
     def __init__(self, root: Path):
         self.root = root
-        self.ux_system = None  # Lazy loaded
+        self.ux_system: Optional[UserExperienceSystem] = None  # Lazy loaded
         self.status = None  # Lazy loaded
 
     def _get_systems(self, user_id: str = "default"):

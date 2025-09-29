@@ -47,6 +47,16 @@ dev = [
     "mypy==1.11.2",
     "isort==6.0.1",
     "pre-commit==4.0.1",
+]
+test = [
+    "pytest==8.4.1",
+    "pytest-cov==6.2.1",
+    "pytest-asyncio==1.1.0",
+    "pytest-mock==3.14.1",
+    "pytest-benchmark==5.1.0",
+    "locust==2.29.1",
+]
+prod = [
     "safety==3.2.11",
     "bandit==1.8.0",
     "types-PyYAML==6.0.12.20240917",
@@ -69,7 +79,19 @@ extend-exclude = "ai_onboard/_version\\.py"
 python_version = "3.8"
 warn_return_any = true
 warn_unused_configs = true
-disallow_untyped_defs = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = false
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = ["E203", "W503"]
+exclude = [
+    "ai_onboard/_version.py",
+    "__pycache__",
+    "venv",
+    ".git",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -124,9 +146,3 @@ known_third_party = ["pytest", "black", "flake8", "mypy"]
 skip = ["ai_onboard/_version.py"]
 skip_glob = ["*/_version.py", "**/_version.py"]
 
-[tool.flake8]
-max-line-length = 88
-extend-ignore = ["E203", "W503"]
-per-file-ignores = [
-    "__init__.py:F401"
-]

@@ -5,23 +5,31 @@ This module provides commands to manage cleanup safety gates,
 view backups, perform rollbacks, and configure safety settings.
 """
 
+import json
 from pathlib import Path
+from typing import Any
 
-from ..core.cleanup_safety_gates import (
+from ..core.quality_safety.cleanup_safety_gates import (
     CleanupOperation,
     CleanupSafetyGateFramework,
     safe_cleanup_operation,
 )
-from ..core.ultra_safe_cleanup import CleanupOperation as UltraCleanupOperation
-from ..core.ultra_safe_cleanup import (
-    CleanupTarget,
+from ..core.quality_safety.ultra_safe_cleanup import (
+    CleanupOperation as UltraCleanupOperation,
+)
+from ..core.quality_safety.ultra_safe_cleanup import (
     UltraSafeCleanupEngine,
     execute_ultra_safe_cleanup,
     present_cleanup_proposal,
     propose_cleanup_operation,
     scan_cleanup_targets,
 )
-from ..core.unicode_utils import print_activity, print_content, print_status, safe_print
+from ..core.utilities.unicode_utils import (
+    print_activity,
+    print_content,
+    print_status,
+    safe_print,
+)
 
 
 def add_cleanup_safety_commands(subparsers):
@@ -401,7 +409,7 @@ def _handle_clean_backups(args, root: Path):
             age_days = (datetime.datetime.now() - backup_date).days
             safe_print(
                 f"  - {backup_dir.name} ({age_days} days old, "
-                f"{size/(1024 * 1024):.1f} MB)"
+                f"{size / (1024 * 1024):.1f} MB)"
             )
 
         safe_print(f"\n💡 Remove --dry - run to actually delete these backups")
@@ -436,7 +444,7 @@ def _handle_clean_backups(args, root: Path):
 
     print_status(
         f"Cleanup completed: {deleted_count} backups deleted, "
-        f"{deleted_size/(1024 * 1024):.1f} MB freed",
+        f"{deleted_size / (1024 * 1024):.1f} MB freed",
         "success",
     )
 
@@ -508,9 +516,12 @@ def _handle_config(args, root: Path):
             f"Auto rollback: {'✅ Enabled' if config['auto_rollback_on_failure'] else '❌ Disabled'}"
         )
         safe_print(f"Backup retention: {config['backup_retention_days']} days")
-        safe_print(
-            f"Medium risk confirmation: {'✅ Required' if config['require_confirmation_for_medium_risk'] else '❌ Not required'}"
+        confirmation = (
+            "✅ Required"
+            if config["require_confirmation_for_medium_risk"]
+            else "❌ Not required"
         )
+        safe_print(f"Medium risk confirmation: {confirmation}")
 
         safe_print(f"\nEnabled safety gates:")
         for gate in config["enabled_gates"]:
@@ -601,7 +612,7 @@ def _handle_ultra_scan(args, root: Path):
         # Show summary
         safe_print(f"\n📊 SUMMARY:")
         safe_print(f"   Total files: {len(targets)}")
-        safe_print(f"   Total size: {total_size / (1024*1024):.1f} MB")
+        safe_print(f"   Total size: {total_size / (1024 * 1024):.1f} MB")
 
         for level in ["safe", "low", "medium"]:
             if level in risk_groups:
@@ -614,7 +625,7 @@ def _handle_ultra_scan(args, root: Path):
         for i, target in enumerate(targets[: args.max_files]):
             rel_path = target.path.relative_to(root)
             size_kb = target.size_bytes / 1024
-            safe_print(f"   {i+1}. {rel_path}")
+            safe_print(f"   {i + 1}. {rel_path}")
             safe_print(f"      Risk: {target.risk_level.value.upper()}")
             safe_print(f"      Size: {size_kb:.1f} KB")
             safe_print(f"      Reason: {target.reason}")
@@ -630,8 +641,8 @@ def _handle_ultra_scan(args, root: Path):
             f"   • Safe only: ai_onboard cleanup-safety ultra-cleanup propose --risk-level safe"
         )
 
-    except Exception as e:
-        print_status(f"Scan failed: {str(e)}", "error")
+    except (ValueError, TypeError, AttributeError) as e:
+        print(f"Error: {e}")
 
 
 def _handle_ultra_propose(args, root: Path):
@@ -672,7 +683,7 @@ def _handle_ultra_propose(args, root: Path):
         if total_size_mb > args.max_size_mb:
             # Sort by size descending and keep largest files until limit
             filtered_targets.sort(key=lambda t: t.size_bytes, reverse=True)
-            cumulative_size = 0
+            cumulative_size = 0.0
             size_limited_targets = []
 
             for target in filtered_targets:
@@ -725,8 +736,8 @@ def _handle_ultra_propose(args, root: Path):
             engine = UltraSafeCleanupEngine(root)
             engine._log_operation(operation, "user_rejected")
 
-    except Exception as e:
-        print_status(f"Proposal creation failed: {str(e)}", "error")
+    except (ValueError, TypeError, AttributeError) as e:
+        print(f"Error: {e}")
 
 
 def _handle_ultra_execute(args, root: Path):
@@ -754,9 +765,11 @@ def _handle_ultra_execute(args, root: Path):
                         op = json.loads(line.strip())
                         if op.get("operation_id") == args.operation_id:
                             recent_operations.append(op)
-                    except:
-                        continue
+                    except (OSError, IOError, FileNotFoundError):
 
+                        # Handle file system errors
+
+                        continue
             approved_ops = [
                 op for op in recent_operations if op.get("event") == "user_approved"
             ]
@@ -771,8 +784,7 @@ def _handle_ultra_execute(args, root: Path):
                     f"   Approved at: {latest_approval.get('timestamp', 'unknown')}"
                 )
                 safe_print(
-                    f"   Risk assessment: {latest_approval.get('risk_assessment',
-                        {}).get('max_risk_level', 'unknown')}"
+                    f"   Risk assessment: {latest_approval.get('risk_assessment', {}).get('max_risk_level', 'unknown')}"
                 )
 
                 # Create minimal operation for execution
@@ -799,8 +811,8 @@ def _handle_ultra_execute(args, root: Path):
         else:
             print_status("No operation log found. Run 'propose' first.", "error")
 
-    except Exception as e:
-        print_status(f"Execution failed: {str(e)}", "error")
+    except (ValueError, TypeError, AttributeError) as e:
+        print(f"Error: {e}")
 
 
 # Convenience function for other modules

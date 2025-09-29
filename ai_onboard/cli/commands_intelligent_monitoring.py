@@ -7,14 +7,13 @@ that automatically applies development tools based on activities and context.
 
 import time
 from pathlib import Path
-from typing import Any, Dict, Optional
 
-from ..core.intelligent_development_monitor import (
+from ..core.ai_integration.intelligent_development_monitor import (
     get_development_monitor,
     start_intelligent_monitoring,
     stop_intelligent_monitoring,
 )
-from ..core.unicode_utils import print_activity, print_content, print_status
+from ..core.utilities.unicode_utils import print_status
 
 
 def add_intelligent_monitoring_commands(subparsers):
@@ -148,11 +147,11 @@ def initialize_intelligent_monitoring(root: Path):
     try:
         # Start intelligent monitoring automatically
         start_intelligent_monitoring(root)
-        from ai_onboard.core.unicode_utils import ensure_unicode_safe
+        from ..core.utilities.unicode_utils import ensure_unicode_safe
 
         ensure_unicode_safe("🧠 Intelligent Development Monitor initialized")
     except Exception as e:
-        from ai_onboard.core.unicode_utils import ensure_unicode_safe
+        from ..core.utilities.unicode_utils import ensure_unicode_safe
 
         ensure_unicode_safe(f"⚠️ Failed to initialize intelligent monitoring: {e}")
 
@@ -161,10 +160,10 @@ def shutdown_intelligent_monitoring():
     """Shutdown intelligent monitoring on system exit."""
     try:
         stop_intelligent_monitoring()
-        from ai_onboard.core.unicode_utils import ensure_unicode_safe
+        from ..core.utilities.unicode_utils import ensure_unicode_safe
 
         ensure_unicode_safe("🧠 Intelligent Development Monitor shutdown")
     except Exception as e:
-        from ai_onboard.core.unicode_utils import ensure_unicode_safe
+        from ..core.utilities.unicode_utils import ensure_unicode_safe
 
         ensure_unicode_safe(f"⚠️ Error during intelligent monitoring shutdown: {e}")

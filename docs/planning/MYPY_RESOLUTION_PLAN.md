@@ -11,7 +11,7 @@
 
 ### **Error Categories (480 total)**:
 1. **Missing Imports** (~80 errors) - `[name-defined]`
-2. **Type Annotations** (~120 errors) - `[var-annotated]`, `[arg-type]` 
+2. **Type Annotations** (~120 errors) - `[var-annotated]`, `[arg-type]`
 3. **Attribute Errors** (~90 errors) - `[attr-defined]`
 4. **Assignment Issues** (~70 errors) - `[assignment]`
 5. **Function Signatures** (~50 errors) - `[call-arg]`, `[call-overload]`
@@ -20,7 +20,7 @@
 
 ### **Most Problematic Files**:
 1. `unified_tool_orchestrator.py` - 45+ errors
-2. `code_cleanup_automation.py` - 35+ errors  
+2. `code_cleanup_automation.py` - 35+ errors
 3. `mandatory_tool_consultation_gate.py` - 25+ errors
 4. `kaizen_automation.py` - 20+ errors
 5. `advanced_agent_decision_pipeline.py` - 15+ errors
@@ -50,7 +50,7 @@ from dataclasses import dataclass, field
 **Focus**: Fix type assignment and conditional function variants
 **Solution**:
 - Fix optional dependency handling patterns
-- Resolve type assignment conflicts  
+- Resolve type assignment conflicts
 - Add proper type annotations for core classes
 
 ### **1.3 Data Structure Fixes**
@@ -75,7 +75,7 @@ from dataclasses import dataclass, field
 categorized = {}
 tool_analysis = {}
 
-# After  
+# After
 categorized: Dict[str, List[Any]] = {}
 tool_analysis: Dict[str, Any] = {}
 ```
@@ -159,7 +159,7 @@ def get_status(self) -> Dict[str, Any]:
 
 ### **Session Structure**:
 1. **Pre-Analysis** (5 min): Run mypy, categorize current errors
-2. **Batch Fixes** (20 min): Systematic error resolution by category  
+2. **Batch Fixes** (20 min): Systematic error resolution by category
 3. **Validation** (10 min): Re-run mypy, verify progress
 4. **Documentation** (5 min): Update plan with results
 
@@ -174,7 +174,7 @@ def get_status(self) -> Dict[str, Any]:
 # Error analysis
 python -m mypy ai_onboard/ --show-error-codes --no-error-summary
 
-# Specific file checking  
+# Specific file checking
 python -m mypy ai_onboard/core/unified_tool_orchestrator.py
 
 # Error counting
@@ -185,7 +185,7 @@ python -c "import subprocess; result = subprocess.run(['python', '-m', 'mypy', '
 
 ### **Phase Targets**:
 - **Phase 1**: 480 → 330 errors (-150)
-- **Phase 2**: 330 → 210 errors (-120) 
+- **Phase 2**: 330 → 210 errors (-120)
 - **Phase 3**: 210 → 120 errors (-90)
 - **Phase 4**: 120 → 0 errors (-120)
 
@@ -211,7 +211,7 @@ python -c "import subprocess; result = subprocess.run(['python', '-m', 'mypy', '
 
 ### **Immediate Actions**:
 - [ ] Create feature branch
-- [ ] Run baseline mypy analysis  
+- [ ] Run baseline mypy analysis
 - [ ] Fix missing imports in top 5 problematic files
 - [ ] Resolve critical type infrastructure issues
 - [ ] Validate with test suite
@@ -220,4 +220,3 @@ python -c "import subprocess; result = subprocess.run(['python', '-m', 'mypy', '
 ### **Ready to Execute**: ✅
 **Estimated Time**: 40 minutes
 **Expected Reduction**: 150 errors (480 → 330)
-

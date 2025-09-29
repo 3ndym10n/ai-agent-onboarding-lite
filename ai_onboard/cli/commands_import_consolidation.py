@@ -5,9 +5,8 @@ Import Consolidation CLI Commands - Integration with existing CLI system.
 This module provides CLI commands for the import consolidation system,
 integrating with the existing ai_onboard CLI framework.
 """
+import sys
 from pathlib import Path
-
-from ai_onboard.core.common_imports import sys
 
 # Add project root to path for imports
 project_root = Path(__file__).parent.parent.parent
@@ -17,12 +16,10 @@ sys.path.insert(0, str(project_root))
 scripts_dir = project_root / "scripts"
 sys.path.insert(0, str(scripts_dir))
 
-from analysis.validate_import_equivalence import ImportEquivalenceValidator
-from maintenance.monitor_import_changes import ImportChangeMonitor
-from migration.import_consolidation_migrator import ImportConsolidationMigrator
-from migration.integrated_import_consolidation import IntegratedImportConsolidation
+# Import after path setup
+from migration.integrated_import_consolidation import IntegratedImportConsolidation  # type: ignore  # noqa: E402
 
-from ai_onboard.core.utils import read_json, write_json
+from ..core.base.utils import read_json, write_json  # noqa: E402
 
 
 def consolidate_imports_command(args):
@@ -141,8 +138,7 @@ def _handle_execute_command(consolidation: IntegratedImportConsolidation, args):
             report = result["final_report"]
             print(f"\n📊 Final Report:")
             print(
-                f"  Successful steps: {report.get('successful_steps',
-                    0)}/{report.get('total_steps', 0)}"
+                f"  Successful steps: {report.get('successful_steps', 0)}/{report.get('total_steps', 0)}"
             )
             print(f"  Success rate: {report.get('success_rate', 0):.1%}")
 

@@ -18,7 +18,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from ai_onboard.core.common_imports import json, sys
+from ai_onboard.core.base.common_imports import json, sys
 
 # Add project root to path for imports
 project_root = Path(__file__).parent.parent
@@ -30,11 +30,13 @@ from maintenance.monitor_import_changes import ImportChangeMonitor
 # Import our new tools
 from migration.import_consolidation_migrator import ImportConsolidationMigrator
 
-from ai_onboard.core.cleanup_safety_gates import CleanupSafetyGateFramework
-from ai_onboard.core.continuous_improvement_validator import (
+from ai_onboard.core.base.utils import ensure_dir, read_json, write_json
+from ai_onboard.core.continuous_improvement.continuous_improvement_validator import (
     ContinuousImprovementValidator,
 )
-from ai_onboard.core.utils import ensure_dir, read_json, write_json
+from ai_onboard.core.quality_safety.cleanup_safety_gates import (
+    CleanupSafetyGateFramework,
+)
 
 
 class IntegratedImportConsolidation:

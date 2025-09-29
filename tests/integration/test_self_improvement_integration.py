@@ -15,7 +15,6 @@ Tests include:
 """
 
 import json
-import os
 import sys
 from pathlib import Path
 
@@ -23,9 +22,15 @@ from pathlib import Path
 project_root = Path(__file__).parent
 sys.path.insert(0, str(project_root))
 
-from ai_onboard.core.automatic_error_prevention import AutomaticErrorPrevention
-from ai_onboard.core.learning_persistence import LearningPersistenceManager
-from ai_onboard.core.pattern_recognition_system import PatternRecognitionSystem
+from ai_onboard.core.continuous_improvement.learning_persistence import (
+    LearningPersistenceManager,
+)
+from ai_onboard.core.orchestration.automatic_error_prevention import (
+    AutomaticErrorPrevention,
+)
+from ai_onboard.core.orchestration.pattern_recognition_system import (
+    PatternRecognitionSystem,
+)
 
 
 def test_pattern_recognition():
@@ -75,7 +80,6 @@ def test_pattern_recognition():
     print(f"✅ Pattern learning: {stats['total_patterns']} patterns learned")
 
 
-
 def test_learning_persistence():
     """Test 4.9: Learning Persistence"""
     print("\n🧪 Testing Learning Persistence (4.9)")
@@ -120,7 +124,6 @@ def test_learning_persistence():
     assert stats["patterns_learned"] >= 1, "Should have learned patterns"
     assert stats["errors_prevented"] >= 1, "Should have prevented errors"
     print(f"✅ Learning statistics: {stats['total_learning_events']} events recorded")
-
 
 
 def test_automatic_prevention():
@@ -173,14 +176,13 @@ def test_automatic_prevention():
     )
 
 
-
 def test_integration_validation():
     """Test integration with validation system"""
     print("\n🧪 Testing Validation System Integration")
     print("=" * 50)
 
     # Test that validation runtime includes prevention
-    from ai_onboard.core.validation_runtime import run
+    from ai_onboard.core.monitoring_analytics.validation_runtime import run
 
     # Create a simple test manifest
     test_manifest = {
@@ -222,7 +224,6 @@ def test_integration_validation():
             f"   📊 Prevention analysis included for {len(prevention_analysis)} files"
         )
 
-    
     finally:
         # Restore original manifest
         if original_content:
@@ -267,7 +268,6 @@ def test_end_to_end_workflow():
     history = persistence.get_learning_history()
     assert len(history) > 0, "Should have learning history"
     print(f"✅ Learning history: {len(history)} events recorded")
-
 
 
 def main():

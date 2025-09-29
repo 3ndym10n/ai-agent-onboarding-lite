@@ -8,7 +8,7 @@ This document outlines the comprehensive design for the T11 Metrics Collection S
 
 ### Existing Metrics Infrastructure
 - **Analytics Metrics** (`.ai_onboard/analytics_metrics.jsonl`) - Performance and learning metrics
-- **System Metrics** (`.ai_onboard/metrics.jsonl`) - Component health and validation scores  
+- **System Metrics** (`.ai_onboard/metrics.jsonl`) - Component health and validation scores
 - **Capability Usage** (`.ai_onboard/capability_usage.json`) - Feature utilization tracking
 - **User Interactions** (`.ai_onboard/user_interactions.jsonl`) - User preference learning data
 - **Debug Learning** (`.ai_onboard/debug_learning.json`) - Error patterns and solutions
@@ -45,13 +45,13 @@ This document outlines the comprehensive design for the T11 Metrics Collection S
 ```python
 class UnifiedMetricsCollector:
     """Central hub for all metrics collection"""
-    
+
     def collect_metric(self, metric: MetricEvent) -> str:
         """Collect any type of metric with automatic routing"""
-        
+
     def batch_collect(self, metrics: List[MetricEvent]) -> List[str]:
         """High-performance batch collection"""
-        
+
     def query_metrics(self, query: MetricQuery) -> MetricResult:
         """Query collected metrics with filtering/aggregation"""
 ```
@@ -73,7 +73,7 @@ Metric Source → Collector → Validator → Enricher → Router → Storage
 
 #### 4. Storage Strategy
 - **Hot Storage**: Last 7 days in memory (Redis-like)
-- **Warm Storage**: Last 30 days in JSONL files  
+- **Warm Storage**: Last 30 days in JSONL files
 - **Cold Storage**: Historical data in compressed archives
 - **Indexes**: Time-series and dimensional indexing
 
@@ -97,7 +97,7 @@ Metric Source → Collector → Validator → Enricher → Router → Storage
   "unit": "%|ms|count|score|...",
   "dimensions": {
     "component": "gate_system",
-    "user_id": "u123", 
+    "user_id": "u123",
     "session_id": "session_abc",
     "command": "user-prefs"
   },
@@ -188,7 +188,7 @@ def process_user_command(command: str) -> Result:
     """Automatically tracked for execution time and success rate"""
     pass
 
-@metrics.track_user_satisfaction  
+@metrics.track_user_satisfaction
 def handle_user_interaction(interaction: UserInteraction) -> None:
     """Automatically captures satisfaction and feedback"""
     pass
@@ -228,7 +228,7 @@ ai_onboard metrics query --metric cpu_usage --last 24h
 ai_onboard metrics trend --metric user_satisfaction --days 7
 ai_onboard metrics alert --threshold "error_rate > 0.05"
 
-# Generate reports  
+# Generate reports
 ai_onboard metrics report --type performance --format json
 ai_onboard metrics dashboard --refresh 30s
 
@@ -244,7 +244,7 @@ ai_onboard metrics export --start 2025-09-01 --format csv
 - **Reliability**: 99.9% collection success
 - **Storage Efficiency**: <1MB per 10k metrics
 
-### Business Metrics  
+### Business Metrics
 - **Coverage**: 95% of operations instrumented
 - **Actionability**: 5+ recommendations per week
 - **User Adoption**: 80%+ of features use metrics
@@ -293,4 +293,3 @@ The design balances comprehensive coverage with performance efficiency, ensuring
 ---
 
 **Next Steps**: Proceed with Phase 1 implementation, focusing on the core infrastructure and basic integration points.
-

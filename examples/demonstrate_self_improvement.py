@@ -5,14 +5,15 @@ Demonstration: Self-Improvement System Preventing Errors Before Code Creation
 This script demonstrates that the self-improvement system (4.8, 4.9, 4.10) is working
 and will prevent errors before any code is created.
 """
-from ai_onboard.core.common_imports import ai_onboard, sys
-
 from pathlib import Path
+
+from ai_onboard.core.common_imports import sys
 
 project_root = Path(__file__).parent
 sys.path.insert(0, str(project_root))
 
 from ai_onboard.core.automatic_error_prevention import AutomaticErrorPrevention
+from ai_onboard.core.orchestration.pattern_recognition_system import PatternRecognitionSystem
 from ai_onboard.core.learning_persistence import LearningPersistenceManager
 
 
@@ -219,7 +220,7 @@ class badClass:  # Wrong naming
     print()
     print("📊 COMPREHENSIVE TEST RESULTS:")
     print(f"   Tests Passed: {tests_passed}/{total_tests}")
-    print(f"   Success Rate: {(tests_passed/total_tests)*100:.1f}%")
+    print(f"   Success Rate: {(tests_passed / total_tests) * 100:.1f}%")
     if tests_passed == total_tests:
         print("\n🎉 SUCCESS! SELF-IMPROVEMENT SYSTEM IS FULLY OPERATIONAL")
         print("✨ The system WILL prevent errors before any code creation!")

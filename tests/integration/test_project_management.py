@@ -5,14 +5,13 @@ from pathlib import Path
 
 import pytest
 
-from ai_onboard.core.pm_compatibility import (
+from ai_onboard.core.legacy_cleanup.pm_compatibility import (
     get_legacy_progress_dashboard,
     get_legacy_task_completion_detector,
     get_legacy_task_prioritization_engine,
     get_legacy_wbs_sync_engine,
 )
-from ai_onboard.core.unified_project_management import (
-    UnifiedProjectManagementEngine,
+from ai_onboard.core.project_management.unified_project_management import (
     get_unified_project_management_engine,
 )
 

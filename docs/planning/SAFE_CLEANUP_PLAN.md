@@ -17,7 +17,7 @@
 - **Files affected:** 3 test files with unused `time` imports
 - **Action:** Remove unused imports from:
   - `demonstrate_self_improvement.py`
-  - `test_gate_looping.py` 
+  - `test_gate_looping.py`
   - `test_self_improvement_integration.py`
 - **Safety:** ✅ No functional impact, only cleanup
 - **Validation:** Run tests after each removal

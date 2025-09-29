@@ -3,12 +3,11 @@
 Import Analysis Script for ai-onboard-lite
 Analyzes Python files to identify unused imports and consolidation opportunities.
 """
-from ai_onboard.core.common_imports import os, sys
-
 import ast
 from collections import defaultdict
 from pathlib import Path
 from typing import Dict, List
+
 
 
 class ImportAnalyzer:

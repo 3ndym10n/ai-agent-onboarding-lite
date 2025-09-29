@@ -6,7 +6,6 @@ This script automatically migrates files from legacy orchestrators to the unifie
 It handles import statements, class instantiations, and method calls.
 """
 
-import os
 import re
 import sys
 from pathlib import Path
@@ -32,39 +31,39 @@ class OrchestrationMigrator:
             "imports": [
                 (
                     r"from\s+\.\.?core\.intelligent_tool_orchestrator\s+import\s+IntelligentToolOrchestrator",
-                    "from ..core.unified_tool_orchestrator import UnifiedToolOrchestrator",
+                    "from ..core.orchestration.unified_tool_orchestrator import UnifiedToolOrchestrator",
                 ),
                 (
                     r"from\s+\.core\.intelligent_tool_orchestrator\s+import\s+IntelligentToolOrchestrator",
-                    "from .unified_tool_orchestrator import UnifiedToolOrchestrator",
+                    "from .orchestration.unified_tool_orchestrator import UnifiedToolOrchestrator",
                 ),
                 (
                     r"from\s+ai_onboard\.core\.intelligent_tool_orchestrator\s+import\s+IntelligentToolOrchestrator",
-                    "from ai_onboard.core.unified_tool_orchestrator import UnifiedToolOrchestrator",
+                    "from ai_onboard.core.base.unified_tool_orchestrator import UnifiedToolOrchestrator",
                 ),
                 (
                     r"from\s+\.\.?core\.holistic_tool_orchestration\s+import\s+.*HolisticToolOrchestrator",
-                    "from ..core.unified_tool_orchestrator import UnifiedToolOrchestrator",
+                    "from ..core.orchestration.unified_tool_orchestrator import UnifiedToolOrchestrator",
                 ),
                 (
                     r"from\s+\.core\.holistic_tool_orchestration\s+import\s+.*HolisticToolOrchestrator",
-                    "from .unified_tool_orchestrator import UnifiedToolOrchestrator",
+                    "from .orchestration.unified_tool_orchestrator import UnifiedToolOrchestrator",
                 ),
                 (
                     r"from\s+ai_onboard\.core\.holistic_tool_orchestration\s+import\s+.*HolisticToolOrchestrator",
-                    "from ai_onboard.core.unified_tool_orchestrator import UnifiedToolOrchestrator",
+                    "from ai_onboard.core.base.unified_tool_orchestrator import UnifiedToolOrchestrator",
                 ),
                 (
                     r"from\s+\.\.?core\.ai_agent_orchestration\s+import\s+AIAgentOrchestrationLayer",
-                    "from ..core.unified_tool_orchestrator import UnifiedToolOrchestrator",
+                    "from ..core.orchestration.unified_tool_orchestrator import UnifiedToolOrchestrator",
                 ),
                 (
                     r"from\s+\.core\.ai_agent_orchestration\s+import\s+AIAgentOrchestrationLayer",
-                    "from .unified_tool_orchestrator import UnifiedToolOrchestrator",
+                    "from .orchestration.unified_tool_orchestrator import UnifiedToolOrchestrator",
                 ),
                 (
                     r"from\s+ai_onboard\.core\.ai_agent_orchestration\s+import\s+AIAgentOrchestrationLayer",
-                    "from ai_onboard.core.unified_tool_orchestrator import UnifiedToolOrchestrator",
+                    "from ai_onboard.core.base.unified_tool_orchestrator import UnifiedToolOrchestrator",
                 ),
             ],
             # Class instantiation migrations

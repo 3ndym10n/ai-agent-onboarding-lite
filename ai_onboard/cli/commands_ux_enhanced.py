@@ -12,8 +12,8 @@ import argparse
 import json
 from pathlib import Path
 
-from ..core.unicode_utils import print_content, safe_print
-from ..core.user_experience_system import get_user_experience_system
+from ..core.ai_integration.user_experience_system import get_user_experience_system
+from ..core.utilities.unicode_utils import ensure_unicode_safe
 
 
 def add_ux_enhanced_commands(subparsers):
@@ -100,7 +100,7 @@ def _handle_smart_help(args: argparse.Namespace, ux_system, user_id: str) -> Non
         # Get adaptive help for specific command
         help_info = ux_system.get_adaptive_help(args.command, user_id)
 
-        print(f"\n📋 Command: {args.command}")
+        ensure_unicode_safe(f"\n📋 Command: {args.command}")
         print(
             f"Description: {help_info.get('description', 'No description available')}"
         )
@@ -125,14 +125,14 @@ def _handle_smart_help(args: argparse.Namespace, ux_system, user_id: str) -> Non
 
     else:
         # Show general help with suggestions
-        print("\n🎯 Available Commands by Category:")
-        print("\n📋 Project Management:")
+        ensure_unicode_safe("\n🎯 Available Commands by Category:")
+        ensure_unicode_safe("\n📋 Project Management:")
         print("  • charter    - Create project charter and vision")
         print("  • plan       - Generate project plan")
         print("  • align      - Check alignment with vision")
         print("  • validate   - Validate project progress")
 
-        print("\n🔧 Development:")
+        ensure_unicode_safe("\n🔧 Development:")
         print("  • cleanup    - Safe file cleanup")
         print("  • code-quality - Code analysis")
 
@@ -153,17 +153,17 @@ def _handle_smart_help(args: argparse.Namespace, ux_system, user_id: str) -> Non
 
 def _handle_dashboard(args: argparse.Namespace, ux_system, user_id: str) -> None:
     """Handle project dashboard."""
-    print("📊 Project Dashboard")
+    ensure_unicode_safe("📊 Project Dashboard")
     print("=" * 50)
 
     status = ux_system.get_project_status(user_id)
 
-    print("\n🏗️  Project Setup:")
+    ensure_unicode_safe("\n🏗️  Project Setup:")
     print(f"  Charter: {status['project_setup']['charter']}")
     print(f"  Plan: {status['project_setup']['plan']}")
 
     if status["recent_activity"]:
-        print(f"\n📈 Recent Activity:")
+        ensure_unicode_safe(f"\n📈 Recent Activity:")
         for cmd in status["recent_activity"]:
             print(f"  • {cmd}")
 
@@ -177,7 +177,7 @@ def _handle_dashboard(args: argparse.Namespace, ux_system, user_id: str) -> None
             print(f"    Confidence: {confidence_bar} ({suggestion.confidence:.1f})")
 
     if not args.compact:
-        print(f"\n🎯 Next Steps:")
+        ensure_unicode_safe(f"\n🎯 Next Steps:")
         if not status["project_setup"]["charter"] == "✅":
             print("  1. Create a project charter: python -m ai_onboard charter")
         elif not status["project_setup"]["plan"] == "✅":
@@ -203,7 +203,7 @@ def _handle_suggestions(args: argparse.Namespace, ux_system, user_id: str) -> No
     print(f"\nBased on your usage patterns, here are some suggestions:")
 
     for i, suggestion in enumerate(suggestions, 1):
-        print(f"\n{i}. 🎯 {suggestion.command}")
+        ensure_unicode_safe(f"\n{i}. 🎯 {suggestion.command}")
         print(f"   Reason: {suggestion.reason}")
         print(f"   Category: {suggestion.category.value}")
         print(
@@ -236,7 +236,7 @@ def _handle_design_validation(
         )
 
         if validation.issues:
-            print(f"\n⚠️  Issues Found:")
+            ensure_unicode_safe(f"\n⚠️  Issues Found:")
             for issue in validation.issues:
                 print(f"  • {issue}")
 
@@ -246,7 +246,7 @@ def _handle_design_validation(
                 print(f"  • {rec}")
 
         if validation.score >= 0.8:
-            print(f"\n✅ Great design! Your approach looks solid.")
+            ensure_unicode_safe(f"\n✅ Great design! Your approach looks solid.")
         elif validation.score >= 0.6:
             print(f"\n👍 Good design with room for improvement.")
         else:
@@ -265,11 +265,11 @@ def _handle_status(args: argparse.Namespace, ux_system, user_id: str) -> None:
         print(json.dumps(status, indent=2))
         return
 
-    print("📋 Project Status")
+    ensure_unicode_safe("📋 Project Status")
     print("=" * 20)
 
     setup = status["project_setup"]
-    print(f"Charter: {setup['charter']}  Plan: {setup['plan']}")
+    ensure_unicode_safe(f"Charter: {setup['charter']}  Plan: {setup['plan']}")
 
     if status["recent_activity"]:
         recent = ", ".join(status["recent_activity"][-3:])
@@ -278,4 +278,3 @@ def _handle_status(args: argparse.Namespace, ux_system, user_id: str) -> None:
     if status["suggestions"]:
         print(f"Suggestions: {len(status['suggestions'])} available")
         print("Run 'python -m ai_onboard suggest' to see them")
-

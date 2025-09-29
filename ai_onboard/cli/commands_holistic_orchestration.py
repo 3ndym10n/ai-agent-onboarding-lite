@@ -2,14 +2,14 @@
 CLI commands for holistic tool orchestration system.
 """
 
-import argparse
 import json
 from pathlib import Path
-from typing import Any, Dict
 
-from ..core.comprehensive_tool_discovery import get_comprehensive_tool_discovery
-from ..core.tool_usage_tracker import get_tool_tracker
-from ..core.unified_tool_orchestrator import (
+from ..core.orchestration.comprehensive_tool_discovery import (
+    get_comprehensive_tool_discovery,
+)
+from ..core.orchestration.unified_tool_orchestrator import (
+    ToolExecutionContext,
     UnifiedOrchestrationStrategy,
     get_unified_tool_orchestrator,
 )
@@ -165,7 +165,21 @@ def handle_orchestrate_tools(args, root: Path):
 
     # Execute orchestration
     print(f"\n🚀 Starting holistic orchestration...")
-    result = orchestrator.orchestrate_tools(args.request, context, strategy)
+
+    # Create ToolExecutionContext
+    execution_context = ToolExecutionContext(
+        user_request=args.request,
+        conversation_history=[],
+        trigger_matches=[],
+        strategy=strategy,
+        vision_context=context if isinstance(context, dict) else {},
+        user_preferences={},
+        safety_requirements={},
+    )
+
+    result = orchestrator.orchestrate_tools(
+        execution_context.user_request, execution_context
+    )
 
     # Display results
     print(f"\n📊 ORCHESTRATION RESULTS:")
@@ -227,22 +241,20 @@ def handle_orchestration_status(args, root: Path):
         f"   • Communication style: {orchestrator.user_preferences.get('communication_style', 'unknown')}"
     )
     print(
-        f"   • Tool preferences: {len(orchestrator.user_preferences.get('tool_preferences',
-            []))} tools"
+        f"   • Tool preferences: {len(orchestrator.user_preferences.get('tool_preferences', []))} tools"
     )
     print(
         f"   • Safety level: {orchestrator.user_preferences.get('safety_level', 'unknown')}"
     )
     print(
-        f"   • Vision alignment required: {orchestrator.user_preferences.get('vision_alignment_required',
-            False)}"
+        f"   • Vision alignment required: {orchestrator.user_preferences.get('vision_alignment_required', False)}"
     )
 
     # Show vision context
     print(f"\n🎯 Vision Context:")
     print(
         f"   • Project goals: {len(orchestrator.vision_context.get('project_goals',
-            []))}"
+                               []))}"
     )
     print(f"   • Non-goals: {len(orchestrator.vision_context.get('non_goals', []))}")
     print(
@@ -274,7 +286,7 @@ def handle_orchestration_status(args, root: Path):
                 success = "✅" if execution["success"] else "❌"
                 exec_time = execution["execution_time"]
 
-                print(f"   {i+1}. {success} {request}")
+                print(f"   {i + 1}. {success} {request}")
                 print(
                     f"      Tools: {tools_count}, "
                     f"Time: {exec_time:.2f}s, Strategy: {execution['strategy']}"
@@ -300,12 +312,12 @@ def handle_orchestration_status(args, root: Path):
 
             print(f"   • Total executions: {total_executions}")
             print(
-                f"   • Success rate: {successful_executions/total_executions*100:.1f}%"
+                f"   • Success rate: {successful_executions / total_executions * 100:.1f}%"
             )
             print(f"   • Average execution time: {avg_execution_time:.2f}s")
             print(f"   • Total tools executed: {total_tools_executed}")
             print(
-                f"   • Average tools per execution: {total_tools_executed/total_executions:.1f}"
+                f"   • Average tools per execution: {total_tools_executed / total_executions:.1f}"
             )
         else:
             print("   No statistics available (no execution history)")

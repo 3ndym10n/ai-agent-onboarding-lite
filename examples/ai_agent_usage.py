@@ -5,9 +5,9 @@ Example: How AI Agents Use the IAS Wrapper for Collaborative Conversations
 This script demonstrates how AI agents (like Cursor AI) would use the wrapper
 to have natural conversations with users instead of just running CLI commands.
 """
-from ai_onboard.core.common_imports import sys
-
 from pathlib import Path
+
+from ai_onboard.core.common_imports import sys
 
 # Add the project root to the path so we can import ai_onboard
 project_root = Path(__file__).parent.parent

@@ -15,7 +15,7 @@ from typing import List, Optional
 
 import pytest
 
-from ai_onboard.core.continuous_improvement_validator import (
+from ai_onboard.core.continuous_improvement import (
     ContinuousImprovementValidator,
     ValidationCategory,
     ValidationReport,
@@ -72,7 +72,9 @@ def test_root():
                 "created_at": now,
             }
         }
-        user_profiles_path.write_text(json.dumps(sample_profile, indent=2), encoding="utf-8")
+        user_profiles_path.write_text(
+            json.dumps(sample_profile, indent=2), encoding="utf-8"
+        )
 
         # Set environment variables for testing
         os.environ["AI_ONBOARD_TEST_MODE"] = "true"

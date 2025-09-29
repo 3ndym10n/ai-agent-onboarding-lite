@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ai_onboard.core.common_imports import sys
+from ai_onboard.core.base.common_imports import sys
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 

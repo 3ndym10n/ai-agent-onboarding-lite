@@ -10,11 +10,12 @@ from pathlib import Path
 from typing import Any, Dict
 
 from ..core import utils
-from ..core.enhanced_vision_interrogator import (
+from ..core.utilities.unicode_utils import ensure_unicode_safe
+from ..core.vision.enhanced_vision_interrogator import (
     ProjectType,
     get_enhanced_vision_interrogator,
 )
-from ..core.vision_web_interface import start_vision_web_interface
+from ..core.vision.vision_web_interface import start_vision_web_interface
 
 
 def handle_enhanced_vision_commands(args: argparse.Namespace, root: Path) -> None:
@@ -53,7 +54,7 @@ def _handle_start_enhanced_interrogation(args: argparse.Namespace, root: Path) -
     result = interrogator.start_enhanced_interrogation(project_type)
 
     if result["status"] == "enhanced_interrogation_started":
-        print("🎯 Enhanced Vision Interrogation Started!")
+        ensure_unicode_safe("🎯 Enhanced Vision Interrogation Started!")
         print(f"Project Type: {result['project_type']}")
         print(f"Current Phase: {result['current_phase']}")
         print(f"Session ID: {result['session_id']}")
@@ -76,7 +77,7 @@ def _handle_web_interface(args: argparse.Namespace, root: Path) -> None:
     result = start_vision_web_interface(root, port)
 
     if result["status"] == "success":
-        print(f"✅ Web interface started successfully!")
+        ensure_unicode_safe(f"✅ Web interface started successfully!")
         print(f"URL: {result['url']}")
         print()
         print("The web interface should open automatically in your browser.")
@@ -93,7 +94,7 @@ def _handle_web_interface(args: argparse.Namespace, root: Path) -> None:
         except KeyboardInterrupt:
             print("\n🛑 Web interface stopped.")
     else:
-        print(f"❌ Failed to start web interface: {result['message']}")
+        ensure_unicode_safe(f"❌ Failed to start web interface: {result['message']}")
 
 
 def _handle_enhanced_status(args: argparse.Namespace, root: Path) -> None:
@@ -107,7 +108,7 @@ def _handle_enhanced_status(args: argparse.Namespace, root: Path) -> None:
         print("Run 'ai_onboard enhanced - vision start' to begin.")
         return
 
-    print("📊 Enhanced Vision Interrogation Status")
+    ensure_unicode_safe("📊 Enhanced Vision Interrogation Status")
     print("=" * 50)
     print(f"Status: {status['status']}")
     print(f"Project Type: {status['project_type']}")
@@ -157,7 +158,7 @@ def _handle_analyze_responses(args: argparse.Namespace, root: Path) -> None:
     interrogation_data = utils.read_json(interrogator.interrogation_path, default={})
 
     if not interrogation_data:
-        print("❌ No interrogation data found.")
+        ensure_unicode_safe("❌ No interrogation data found.")
         return
 
     print("🔍 Response Analysis")
@@ -218,7 +219,7 @@ def _handle_analyze_responses(args: argparse.Namespace, root: Path) -> None:
 
     # Show ambiguities summary
     if ambiguities:
-        print("\n⚠️ Ambiguities Summary")
+        ensure_unicode_safe("\n⚠️ Ambiguities Summary")
         print("-" * 20)
 
         ambiguity_priorities = {"critical": 0, "high": 0, "medium": 0, "low": 0}
@@ -239,7 +240,7 @@ def _handle_export_results(args: argparse.Namespace, root: Path) -> None:
     interrogation_data = utils.read_json(interrogator.interrogation_path, default={})
 
     if not interrogation_data:
-        print("❌ No interrogation data found.")
+        ensure_unicode_safe("❌ No interrogation data found.")
         return
 
     # Determine output format
@@ -253,10 +254,10 @@ def _handle_export_results(args: argparse.Namespace, root: Path) -> None:
     elif output_format == "html":
         _export_to_html(interrogation_data, Path(output_file))
     else:
-        print(f"❌ Unsupported format: {output_format}")
+        ensure_unicode_safe(f"❌ Unsupported format: {output_format}")
         return
 
-    print(f"✅ Results exported to: {output_file}")
+    ensure_unicode_safe(f"✅ Results exported to: {output_file}")
 
 
 def _handle_manage_templates(args: argparse.Namespace, root: Path) -> None:
@@ -276,7 +277,7 @@ def _list_templates():
     print("📋 Available Question Templates")
     print("=" * 35)
 
-    from ..core.enhanced_vision_interrogator import ProjectType
+    from ..core.vision.enhanced_vision_interrogator import ProjectType
 
     for project_type in ProjectType:
         print(f"• {project_type.value.replace('_', ' ').title()}")
@@ -312,7 +313,7 @@ def _show_template(template_name: str):
                 print()
 
     except ValueError:
-        print(f"❌ Invalid template name: {template_name}")
+        ensure_unicode_safe(f"❌ Invalid template name: {template_name}")
         print(
             "Use 'ai_onboard enhanced - vision templates list' to see available templates."
         )
@@ -339,8 +340,7 @@ def _export_to_markdown(interrogation_data: Dict[str, Any], output_file: Path) -
         f"**Status:** {interrogation_data.get('status', 'Unknown')}"
     )
     markdown_content.append(
-        f"**Vision Quality Score:** {interrogation_data.get('vision_quality_score',
-            0):.1%}"
+        f"**Vision Quality Score:** {interrogation_data.get('vision_quality_score', 0):.1%}"
     )
     markdown_content.append("")
 
@@ -403,9 +403,15 @@ def _export_to_html(interrogation_data: Dict[str, Any], output_file: Path) -> No
         h2 { color: #1e293b; border - bottom: 2px solid #e2e8f0; padding - bottom: 10px; }
         h3 { color: #374151; }
         .metadata { background: #f8fafc; padding: 15px; border - radius: 8px; margin - bottom: 20px; }
-        .response { background: #f8fafc; padding: 15px; border - radius: 8px; margin - bottom: 15px; }
+        .response {
+            background: #f8fafc; padding: 15px; border - radius: 8px;
+            margin - bottom: 15px;
+        }
         .confidence { font - weight: bold; color: #059669; }
-        .insight { background: #ecfdf5; padding: 15px; border - radius: 8px; margin - bottom: 10px; border - left: 4px solid #10b981; }
+        .insight {
+            background: #ecfdf5; padding: 15px; border - radius: 8px;
+            margin - bottom: 10px; border - left: 4px solid #10b981;
+        }
     </style>
 </head>
 <body>
@@ -422,8 +428,7 @@ def _export_to_html(interrogation_data: Dict[str, Any], output_file: Path) -> No
         f"<p >< strong > Status:</strong> {interrogation_data.get('status', 'Unknown')}</p>"
     )
     html_content.append(
-        f"<p >< strong > Vision Quality Score:</strong> {interrogation_data.get('vision_quality_score',
-            0):.1%}</p>"
+        f"<p >< strong > Vision Quality Score:</strong> {interrogation_data.get('vision_quality_score', 0):.1%}</p>"
     )
     html_content.append("</div>")
 
@@ -457,8 +462,7 @@ def _export_to_html(interrogation_data: Dict[str, Any], output_file: Path) -> No
                 f"<p >< strong > Category:</strong> {insight.get('category', 'Unknown')}</p>"
             )
             html_content.append(
-                f"<p >< strong > Confidence:</strong> {insight.get('confidence',
-                    0):.1%}</p>"
+                f"<p >< strong > Confidence:</strong> {insight.get('confidence', 0):.1%}</p>"
             )
             html_content.append(f"<p>{insight.get('description', '')}</p>")
             html_content.append("</div>")

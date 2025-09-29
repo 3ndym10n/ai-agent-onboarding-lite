@@ -1,7 +1,8 @@
 # mypy: ignore - errors
-from ai_onboard.core.common_imports import json, sys
 from pathlib import Path
 from typing import Any, Dict
+
+from ai_onboard.core.base.common_imports import json, sys
 
 
 def load_json(path: Path, default=None):
@@ -24,7 +25,7 @@ def check_acceptance(root: Path) -> Dict[str, Any]:
     }
     try:
         # Defer import to avoid package dependency issues when run standalone
-        from ai_onboard.core.vision_interrogator import VisionInterrogator
+        from ai_onboard.core.base.vision_interrogator import VisionInterrogator
 
         vi = VisionInterrogator(root)
         readiness = vi.check_vision_readiness()

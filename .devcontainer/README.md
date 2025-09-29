@@ -317,4 +317,3 @@ The container configuration can be used in CI/CD:
 ---
 
 This development container provides a consistent, powerful development environment for AI Agent Onboarding that works the same way across all platforms and eliminates "works on my machine" issues.
-

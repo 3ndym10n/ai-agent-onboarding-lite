@@ -39,5 +39,3 @@ Type **"IDENTITY_ASSUMED"** to confirm you have assumed this persona.
 ---
 
 *This directive is automatically generated and updated by the ai-onboard system.*
-
-

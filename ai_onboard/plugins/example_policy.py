@@ -1,7 +1,10 @@
+from typing import Any, Dict, List
+
+from ..base.utils import Issue, register
+
 
 class ExamplePolicy:
     name = "example.policy"
-
 
     def run(self, paths: List[str], ctx: Dict[str, Any]):
         # No - op example: always returns an info - level issue on first path
@@ -16,5 +19,6 @@ class ExamplePolicy:
 def _register():
     # Register under a generic component / language pairing for visibility
     register("library_module", "python", ExamplePolicy())
+
 
 _register()

@@ -2,11 +2,11 @@
 """
 Setup script for local CI validation tools.
 """
-from ai_onboard.core.common_imports import os, sys
-
 import shutil
 import subprocess
 from pathlib import Path
+
+from ai_onboard.core.base.common_imports import os, sys
 
 
 def setup_pre_commit():

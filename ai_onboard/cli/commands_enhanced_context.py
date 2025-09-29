@@ -11,8 +11,11 @@ This module provides command - line interfaces for:
 import argparse
 import time
 from pathlib import Path
+from typing import Any
 
-from ..core.enhanced_conversation_context import get_enhanced_context_manager
+from ..core.ai_integration.enhanced_conversation_context import (
+    get_enhanced_context_manager,
+)
 
 
 def add_enhanced_context_commands(subparsers):
@@ -180,9 +183,12 @@ def _handle_enhance_session(args: argparse.Namespace, context_manager) -> None:
     insights = result["cross_session_insights"]
     print(f"\n🧠 Cross - Session Insights:")
     print(f"Communication Style: {insights['communication_style']}")
-    print(
-        f"Expertise Areas: {', '.join(insights['expertise_areas']) if insights['expertise_areas'] else 'None identified'}"
+    expertise = (
+        ", ".join(insights["expertise_areas"])
+        if insights["expertise_areas"]
+        else "None identified"
     )
+    print(f"Expertise Areas: {expertise}")
 
     if insights["preferred_commands"]:
         print(

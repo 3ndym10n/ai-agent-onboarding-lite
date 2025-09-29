@@ -1,14 +1,16 @@
 """Interrogate commands for ai - onboard CLI."""
 
 import json
+import os
 from pathlib import Path
 
-from ..core import prompt_bridge, vision_interrogator
-from ..core.gate_system import GateRequest, GateSystem, GateType
-from ..core.lean_approval import request_approval
+from ..core.legacy_cleanup import prompt_bridge
+from ..core.legacy_cleanup.gate_system import GateRequest, GateSystem, GateType
+from ..core.project_management.lean_approval import request_approval
+from ..core.vision.enhanced_vision_interrogator import get_enhanced_vision_interrogator
 
 
-def add_interrogate_commands(subparsers):
+def add_interrogate_commands(subparsers) -> None:
     """Add interrogate command parsers."""
 
     s_interrogate = subparsers.add_parser(
@@ -37,7 +39,7 @@ def add_interrogate_commands(subparsers):
     )
 
 
-def handle_interrogate_commands(args, root: Path):
+def handle_interrogate_commands(args, root: Path) -> bool:
     """Handle interrogate command execution."""
 
     if args.cmd != "interrogate":
@@ -49,16 +51,16 @@ def handle_interrogate_commands(args, root: Path):
         return True
 
     # Initialize interrogator
-    interrogator = vision_interrogator.VisionInterrogator(root)
+    interrogator = get_enhanced_vision_interrogator(root)
 
     if icmd == "check":
         # Check if vision is ready
-        result = interrogator.check_vision_readiness()
+        result = interrogator.get_enhanced_interrogation_status()
         print(prompt_bridge.dumps_json(result))
         return True
     elif icmd == "start":
         # Start interrogation and immediately open a gate to collect answers from the human
-        result = interrogator.start_interrogation()
+        result = interrogator.start_enhanced_interrogation()
         # Try to fetch questions for the gate prompt
         try:
             qres = interrogator.get_current_questions()
@@ -86,10 +88,11 @@ def handle_interrogate_commands(args, root: Path):
                     for i, q in enumerate(qlist):
                         if i < len(answers):
                             payload = {"answer": answers[i]}
-                            interrogator.submit_response(
+                            interrogator.submit_enhanced_response(
                                 q.get("phase") or "vision_core", q.get("id"), payload
                             )
-                except Exception:
+                except (ValueError, TypeError, AttributeError):
+                    # Handle common runtime errors
                     pass
         print(prompt_bridge.dumps_json(result))
         return True
@@ -106,6 +109,10 @@ def handle_interrogate_commands(args, root: Path):
             )
             return True
 
+        # Type assertions for mypy
+        assert phase is not None
+        assert question_id is not None
+
         # CI - only bypass maintains previous behavior
         if (
             os.getenv("GITHUB_ACTIONS", "").lower() == "true"
@@ -117,11 +124,11 @@ def handle_interrogate_commands(args, root: Path):
                     response = json.loads(provided_response)
                 except json.JSONDecodeError:
                     response = {"answer": provided_response}
-                result = interrogator.submit_response(phase, question_id, response)
+                result = interrogator.submit_enhanced_response(phase, question_id, response)  # type: ignore[arg-type]
                 print(prompt_bridge.dumps_json(result))
-            except Exception as e:
-                print(f'{{"error":"failed to submit response: {str(e)}"}}')
-            return True
+            except (ValueError, TypeError, AttributeError) as e:
+                print(f"Error: {e}")
+                return True
 
         # Gate - enforced path: always ask the human in chat to answer
         # Find the question text for better UX
@@ -132,7 +139,8 @@ def handle_interrogate_commands(args, root: Path):
                 if q.get("id") == question_id or str(q.get("id")) == str(question_id):
                     question_text = q.get("text") or q.get("question")
                     break
-        except Exception:
+        except (ValueError, TypeError, AttributeError):
+            # Handle common runtime errors
             pass
         if not question_text:
             question_text = "Please provide your answer to the interrogation question."
@@ -156,11 +164,11 @@ def handle_interrogate_commands(args, root: Path):
         payload = {"answer": answer_text}
 
         try:
-            result = interrogator.submit_response(phase, question_id, payload)
+            result = interrogator.submit_enhanced_response(phase, question_id, payload)  # type: ignore[arg-type]
             print(prompt_bridge.dumps_json(result))
-        except Exception as e:
-            print(f'{{"error":"failed to submit response: {str(e)}"}}')
-        return True
+        except (ValueError, TypeError, AttributeError) as e:
+            print(f"Error: {e}")
+            return True
     elif icmd == "questions":
         # Get current questions and open a gate to collect answers
         result = interrogator.get_current_questions()
@@ -180,7 +188,8 @@ def handle_interrogate_commands(args, root: Path):
                     questions=questions,
                     timeout_seconds=600,
                 )
-        except Exception:
+        except (ValueError, TypeError, AttributeError):
+            # Handle common runtime errors
             pass
         return True
     elif icmd == "summary":

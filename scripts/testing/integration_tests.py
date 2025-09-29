@@ -9,11 +9,11 @@ together effectively as a cohesive system.
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 sys.path.insert(0, ".")
 
-from ai_onboard.core.unified_tool_orchestrator import UnifiedToolOrchestrator
+from ai_onboard.core.base.unified_tool_orchestrator import UnifiedToolOrchestrator
 
 
 class IntegrationTestSuite:

@@ -6,7 +6,6 @@ This script safely removes the legacy orchestration files after verifying
 that all migrations have been completed successfully.
 """
 
-import os
 import shutil
 import sys
 from pathlib import Path
@@ -115,7 +114,7 @@ class LegacyFileRemover:
         try:
             from pathlib import Path
 
-            from ai_onboard.core.unified_tool_orchestrator import (
+            from ai_onboard.core.base.unified_tool_orchestrator import (
                 UnifiedToolOrchestrator,
             )
 
@@ -128,7 +127,7 @@ class LegacyFileRemover:
 
             warnings.simplefilter("always")
 
-            from ai_onboard.core.orchestration_compatibility import (
+            from ai_onboard.core.base.orchestration_compatibility import (
                 IntelligentToolOrchestrator,
             )
 
@@ -320,4 +319,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

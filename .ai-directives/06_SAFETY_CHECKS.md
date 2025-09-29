@@ -83,5 +83,3 @@ Type **"SAFETY_VALIDATED"** to confirm you understand the safety validation requ
 ---
 
 *This directive is automatically generated and updated by the ai-onboard system.*
-
-

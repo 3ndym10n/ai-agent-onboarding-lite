@@ -14,7 +14,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from ai_onboard.core.continuous_improvement_validator import (
+from ai_onboard.core.continuous_improvement import (
     ContinuousImprovementValidator,
     ValidationCategory,
     ValidationReport,

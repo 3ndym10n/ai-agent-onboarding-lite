@@ -2,14 +2,17 @@
 
 import argparse
 from pathlib import Path
+from typing import Optional
 
-from ..core.automatic_error_prevention import AutomaticErrorPrevention
-from ..core.mandatory_tool_consultation_gate import enforce_tool_consultation
-from ..core.pattern_recognition_system import PatternRecognitionSystem
-from ..core.syntax_validator import validate_python_syntax
-from ..core.task_execution_gate import TaskExecutionGate
-from ..core.tool_usage_tracker import get_tool_tracker
-from ..core.universal_error_monitor import get_error_monitor
+from ..core.orchestration.automatic_error_prevention import AutomaticErrorPrevention
+from ..core.orchestration.mandatory_tool_consultation_gate import (
+    enforce_tool_consultation,
+)
+from ..core.orchestration.pattern_recognition_system import PatternRecognitionSystem
+from ..core.orchestration.task_execution_gate import TaskExecutionGate
+from ..core.orchestration.tool_usage_tracker import get_tool_tracker
+from ..core.orchestration.universal_error_monitor import get_error_monitor
+from ..core.quality_safety.syntax_validator import validate_python_syntax
 
 # from ..plugins import example_policy  # ensure example plugin registers on import
 from .commands_aaol import add_aaol_commands, handle_aaol_commands
@@ -20,7 +23,6 @@ from .commands_ai_agent_collaboration import (
     add_ai_agent_collaboration_parser,
     handle_ai_agent_collaboration_commands,
 )
-from .commands_api import add_api_commands, handle_api_commands
 
 # Removed: commands_automatic_prevention (redundant with cleanup_safety)
 # Removed: commands_background_agents (redundant with ai_agent_collaboration)
@@ -87,7 +89,7 @@ from .ux_middleware import get_ux_middleware
 
 
 def validate_and_execute_python(
-    command: str, cwd: str = None, is_background: bool = False
+    command: str, cwd: Optional[str] = None, is_background: bool = False
 ) -> dict:
     """
     # Direct import will be added below
@@ -185,7 +187,7 @@ def is_critical_operation(command: str, args: dict) -> bool:
 
 
 def safe_run_terminal_cmd(
-    command: str, is_background: bool = False, root: Path = None
+    command: str, is_background: bool = False, root: Optional[Path] = None
 ) -> dict:
     """
     Safely execute terminal command with error prevention and learning.
@@ -333,9 +335,6 @@ def main(argv=None):
     # Add import consolidation commands
     add_consolidation_parser(sub)
 
-    # Add API server commands
-    add_api_commands(sub)
-
     # Add enhanced conversation context commands
     add_enhanced_context_commands(sub)
 
@@ -416,7 +415,7 @@ def main(argv=None):
         return
 
     # PRIME DIRECTIVE: MANDATORY TOOL CONSULTATION FOR ALL COMMANDS
-    from ai_onboard.core.unicode_utils import ensure_unicode_safe
+    from ..core.utilities.unicode_utils import ensure_unicode_safe
 
     ensure_unicode_safe(
         "🚀 AI-ONBOARD PRIME DIRECTIVE: Consulting tools for your request..."
@@ -502,7 +501,7 @@ def main(argv=None):
                 },
                 "success",
             )
-            from ai_onboard.core.unicode_utils import ensure_unicode_safe
+            from ..core.utilities.unicode_utils import ensure_unicode_safe
 
             ensure_unicode_safe(
                 f"📋 WBS Auto-Update: {wbs_update_result['updated']} tasks integrated, "
@@ -553,7 +552,7 @@ def main(argv=None):
                 if confirm.upper() == "CONFIRM":
                     print("⚠️  Proceeding with critical operation despite warnings...")
                 else:
-                    from ai_onboard.core.unicode_utils import ensure_unicode_safe
+                    from ..core.utilities.unicode_utils import ensure_unicode_safe
 
                     ensure_unicode_safe("✅ Operation cancelled by user.")
                     # Learn from blocked critical command
@@ -727,14 +726,6 @@ def main(argv=None):
             "consolidate", "foreground", "cli_session"
         ):
             consolidate_imports_command(args)
-            return
-
-    # Handle API server commands with error monitoring
-    if args.cmd == "api":
-        with error_monitor.monitor_command_execution(
-            "api", "foreground", "cli_session"
-        ):
-            handle_api_commands(args, root)
             return
 
     # Handle enhanced conversation context commands with error monitoring

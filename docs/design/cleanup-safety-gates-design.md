@@ -85,13 +85,13 @@ class PreFlightGate:
         for target in targets:
             if not target.exists():
                 return GateResult.fail(f"Path does not exist: {target}")
-            
+
             if target in PROTECTED_PATHS:
                 return GateResult.fail(f"Protected path cannot be modified: {target}")
-            
+
             if not self._check_permissions(target):
                 return GateResult.fail(f"Insufficient permissions: {target}")
-        
+
         return GateResult.pass_()
 ```
 
@@ -124,18 +124,18 @@ class DependencyAnalysisGate:
             BuildSystemChecker(),
             GenericTextChecker()
         ]
-    
+
     def analyze(self, targets: List[Path]) -> DependencyReport:
         all_dependencies = []
-        
+
         for target in targets:
             target_deps = []
             for checker in self.checkers:
                 deps = checker.find_dependencies(target)
                 target_deps.extend(deps)
-            
+
             all_dependencies.append(TargetDependencies(target, target_deps))
-        
+
         return DependencyReport(all_dependencies)
 ```
 
@@ -160,13 +160,13 @@ class DependencyAnalysisGate:
 class RiskAssessmentGate:
     def assess_risk(self, dependency_report: DependencyReport) -> RiskAssessment:
         risk_scores = []
-        
+
         for target_deps in dependency_report.targets:
             score = 0
-            
+
             # Dependency count factor
             score += min(len(target_deps.dependencies) * 2, 50)
-            
+
             # Dependency type factor
             for dep in target_deps.dependencies:
                 if dep.type == DependencyType.PYTHON_IMPORT:
@@ -175,13 +175,13 @@ class RiskAssessmentGate:
                     score += 15
                 elif dep.type == DependencyType.DOCUMENTATION_LINK:
                     score += 5
-            
+
             # File criticality factor
             if target_deps.target.name in CRITICAL_FILES:
                 score += 100
-            
+
             risk_scores.append(score)
-        
+
         max_score = max(risk_scores) if risk_scores else 0
         return RiskAssessment.from_score(max_score)
 ```
@@ -206,25 +206,25 @@ class RiskAssessmentGate:
 **Implementation**:
 ```python
 class HumanConfirmationGate:
-    def request_confirmation(self, operation: CleanupOperation, 
-                           risk: RiskAssessment, 
+    def request_confirmation(self, operation: CleanupOperation,
+                           risk: RiskAssessment,
                            dependencies: DependencyReport) -> ConfirmationResult:
-        
+
         # Generate detailed report
         report = self._generate_report(operation, risk, dependencies)
-        
+
         # Generate confirmation code based on risk level
         if risk.level == RiskLevel.CRITICAL:
             return ConfirmationResult.require_manual_review()
-        
+
         confirmation_code = self._generate_confirmation_code(risk.level)
-        
+
         # Display report and request confirmation
         self._display_report(report)
         self._display_confirmation_request(confirmation_code)
-        
+
         user_input = input("Please confirm: ")
-        
+
         if user_input.strip() == f"CONFIRM: {confirmation_code}":
             return ConfirmationResult.approved()
         else:
@@ -253,26 +253,26 @@ class BackupExecuteGate:
     def execute_with_backup(self, operation: CleanupOperation) -> ExecutionResult:
         # Create backup
         backup_id = self._create_backup(operation.affected_files)
-        
+
         # Log operation start
         self._log_operation_start(operation, backup_id)
-        
+
         try:
             # Execute operation with detailed logging
             for step in operation.steps:
                 self._log_step_start(step)
                 result = self._execute_step(step)
                 self._log_step_result(step, result)
-                
+
                 if not result.success:
                     # Immediate rollback on failure
                     self._rollback(backup_id)
                     return ExecutionResult.failed(result.error)
-            
+
             # Log successful completion
             self._log_operation_success(operation, backup_id)
             return ExecutionResult.success(backup_id)
-            
+
         except Exception as e:
             # Emergency rollback
             self._emergency_rollback(backup_id)
@@ -301,23 +301,23 @@ class PostOperationGate:
     def validate_and_offer_rollback(self, execution_result: ExecutionResult) -> ValidationResult:
         # Run validation checks
         validation_results = []
-        
+
         for validator in self.validators:
             result = validator.validate()
             validation_results.append(result)
-        
+
         # Check for failures
         failures = [r for r in validation_results if not r.success]
-        
+
         if failures:
             # Offer rollback options
             self._display_validation_failures(failures)
             rollback_choice = self._prompt_rollback_options(execution_result.backup_id)
-            
+
             if rollback_choice == RollbackChoice.AUTO:
                 self._perform_rollback(execution_result.backup_id)
                 return ValidationResult.rolled_back()
-            
+
         return ValidationResult.success()
 ```
 
@@ -347,7 +347,7 @@ class PostOperationGate:
 ```yaml
 cleanup_safety:
   level: "strict"  # strict, moderate, permissive
-  
+
   gates:
     pre_flight: true
     dependency_analysis: true
@@ -355,13 +355,13 @@ cleanup_safety:
     human_confirmation: true
     backup_execution: true
     post_validation: true
-  
+
   confirmation:
     low_risk_auto_approve: false
     medium_risk_require_code: true
     high_risk_require_complex_code: true
     critical_risk_require_manual_review: true
-  
+
   backup:
     create_git_checkpoint: true
     create_file_backup: true
@@ -376,13 +376,13 @@ dependency_detection:
   documentation_links: true
   build_system_refs: true
   generic_text_refs: true
-  
+
   exclusions:
     - "**/.git/**"
     - "**/__pycache__/**"
     - "**/*.pyc"
     - "**/node_modules/**"
-  
+
   cache_files:
     - "**/*cache*.json"
     - "**/SOURCES.txt"

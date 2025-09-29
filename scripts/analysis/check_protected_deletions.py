@@ -4,7 +4,7 @@ import subprocess
 from pathlib import Path
 from typing import List
 
-from ai_onboard.core.common_imports import os, sys
+from ai_onboard.core.base.common_imports import os, sys
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
