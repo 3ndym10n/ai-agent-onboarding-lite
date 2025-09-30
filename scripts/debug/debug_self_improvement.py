@@ -2,18 +2,21 @@
 """
 Debug Self-Improvement System Issues
 """
+import sys
 from pathlib import Path
 
-from ai_onboard.core.base.common_imports import sys
-
-project_root = Path(__file__).parent
-sys.path.insert(0, str(project_root))
-
-from ai_onboard.core.base.automatic_error_prevention import AutomaticErrorPrevention
-from ai_onboard.core.base.learning_persistence import LearningPersistenceManager
+from ai_onboard.core.continuous_improvement.learning_persistence import (
+    LearningPersistenceManager,
+)
+from ai_onboard.core.orchestration.automatic_error_prevention import (
+    AutomaticErrorPrevention,
+)
 from ai_onboard.core.orchestration.pattern_recognition_system import (
     PatternRecognitionSystem,
 )
+
+project_root = Path(__file__).parent
+sys.path.insert(0, str(project_root))
 
 
 def debug_pattern_recognition():

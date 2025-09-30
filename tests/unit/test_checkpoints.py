@@ -169,7 +169,7 @@ class TestListCheckpoints:
         for i in range(3):
             ckpt_data = {
                 "id": f"ckpt-{i}",
-                "ts": f"2024-01-{i+1:02d}T12:00:00",
+                "ts": f"2024-01-{i + 1:02d}T12:00:00",
                 "reason": f"checkpoint {i}",
                 "scope": [],
             }

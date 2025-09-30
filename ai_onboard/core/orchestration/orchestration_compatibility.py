@@ -272,8 +272,8 @@ class _EnumAdapter:
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, _EnumAdapter):
-            return self.value == other.value
-        return self.value == other
+            return bool(self.value == other.value)
+        return bool(self.value == other)
 
     def __hash__(self) -> int:
         return hash(self.value)

@@ -10,10 +10,10 @@ The core question these tests answer:
 """
 
 import json
+import tempfile
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List
-from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -37,7 +37,7 @@ class AntiDriftTestSuite:
 
     def __init__(self, root_path: Path):
         self.root_path = root_path
-        self.test_results = {
+        self.test_results: Dict[str, List[Dict[str, Any]]] = {
             "vision_preservation": [],
             "context_drift_prevention": [],
             "multi_agent_alignment": [],
@@ -160,7 +160,7 @@ class TestVisionPreservation:
 
         assert (
             success
-        ), f"Vision drift too high: {vision_drift*100:.1f}% (should be < 20%)"
+        ), f"Vision drift too high: {vision_drift * 100:.1f}% (should be < 20%)"
         ensure_unicode_safe(
             f"✅ Vision preservation: {metrics['vision_drift_percent']:.1f}% drift over 10 sessions"
         )
@@ -230,7 +230,7 @@ class TestVisionPreservation:
 
         assert (
             success
-        ), f"Scope creep detection too low: {detection_rate*100:.1f}% (should be >80%)"
+        ), f"Scope creep detection too low: {detection_rate * 100:.1f}% (should be >80%)"
         ensure_unicode_safe(
             f"✅ Scope creep prevention: {metrics['creep_prevention_score']:.1f}% detection rate"
         )
@@ -475,9 +475,10 @@ class TestContextWindowDriftPrevention:
 
         assert (
             success
-        ), f"Context retention too low: {context_retention_rate*100:.1f}% (should be >80%)"
+        ), f"Context retention too low: {context_retention_rate * 100:.1f}% (should be >80%)"
         ensure_unicode_safe(
-            f"✅ Context drift prevention: {metrics['context_retention_rate']*100:.1f}% retention over {conversation_length} messages"
+            f"✅ Context drift prevention: {metrics['context_retention_rate'] * 100:.1f}% "
+            f"retention over {conversation_length} messages"
         )
 
     def _test_state_memory_effectiveness(
@@ -577,7 +578,7 @@ class TestMultiAgentAlignment:
             success
         ), f"Multi-agent consistency too low: avg={avg_consistency:.2f}, min={min_consistency:.2f}"
         ensure_unicode_safe(
-            f"✅ Multi-agent alignment: {avg_consistency*100:.1f}% average consistency across {len(agents)} agents"
+            f"✅ Multi-agent alignment: {avg_consistency * 100:.1f}% average consistency across {len(agents)} agents"
         )
 
     def _simulate_agent_decisions(self, agent_id: str, charter: Dict) -> Dict[str, Any]:
@@ -729,9 +730,10 @@ class TestUserIntentUnderstanding:
 
         assert (
             success
-        ), f"User intent understanding too low: {avg_accuracy*100:.1f}% (should be >70%)"
+        ), f"User intent understanding too low: {avg_accuracy * 100:.1f}% (should be >70%)"
         ensure_unicode_safe(
-            f"✅ User intent understanding: {avg_accuracy*100:.1f}% average accuracy across {len(vague_requests)} requests"
+            f"✅ User intent understanding: {avg_accuracy * 100:.1f}% "
+            f"average accuracy across {len(vague_requests)} requests"
         )
 
     def _interpret_user_request(self, request: str) -> Dict[str, Any]:
@@ -1007,7 +1009,7 @@ def generate_anti_drift_report(test_results: Dict[str, List]) -> Dict[str, Any]:
             category_rate = (category_successful / category_total) * 100
 
             # Calculate average metrics for the category
-            avg_metrics = {}
+            avg_metrics: Dict[str, Any] = {}
             for result in results:
                 if result["success"]:  # Only include successful tests in averages
                     for metric_name, metric_value in result["metrics"].items():

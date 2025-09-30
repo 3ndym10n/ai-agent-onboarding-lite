@@ -12,11 +12,10 @@ simplified system that provides:
 
 import json
 import time
-from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Set, Union
 
 from ..base.shared_types import (
     CommandInfo,
@@ -57,17 +56,6 @@ class CommandCategory(Enum):
     CORE = "core"
 
 
-@dataclass
-class DesignValidation:
-    """Design validation result."""
-
-    score: float  # 0.0-1.0
-    issues: List[str] = field(default_factory=list)
-    recommendations: List[str] = field(default_factory=list)
-    accessibility_score: float = 0.0
-    consistency_score: float = 0.0
-
-
 class UserExperienceSystem:
     """Unified system for user experience enhancements."""
 
@@ -96,7 +84,7 @@ class UserExperienceSystem:
         # Initialize
         self._initialize_command_registry()
 
-    def _load_config(self) -> Dict[str, Any]:
+    def _load_config(self) -> Any:
         """Load simplified UX configuration."""
         config_file = self.data_dir / "ux_config.json"
 
@@ -246,7 +234,7 @@ class UserExperienceSystem:
                     command="plan",
                     reason="You've created a charter - next step is generating a plan",
                     confidence=0.9,
-                    category=CommandCategory.PROJECT,
+                    category=CommandCategory.PROJECT.value,
                     next_steps=["python -m ai_onboard plan"],
                 )
             )
@@ -257,7 +245,7 @@ class UserExperienceSystem:
                     command="align",
                     reason="Check if your plan aligns with your charter",
                     confidence=0.8,
-                    category=CommandCategory.PROJECT,
+                    category=CommandCategory.PROJECT.value,
                     next_steps=["python -m ai_onboard align"],
                 )
             )
@@ -269,7 +257,7 @@ class UserExperienceSystem:
                     command="validate",
                     reason="Run validation to ensure quality standards",
                     confidence=0.7,
-                    category=CommandCategory.QUALITY,
+                    category=CommandCategory.QUALITY.value,
                     next_steps=["python -m ai_onboard validate"],
                 )
             )
@@ -284,7 +272,7 @@ class UserExperienceSystem:
                     command="simple_validate",
                     reason="Consider simpler validation approaches after complex command failures",
                     confidence=0.8,
-                    category=CommandCategory.QUALITY,
+                    category=CommandCategory.QUALITY.value,
                     next_steps=["python -m ai_onboard validate --simple"],
                 )
             )
@@ -311,7 +299,7 @@ class UserExperienceSystem:
         help_content = {
             "description": cmd_info.description,
             "usage": cmd_info.usage_example,
-            "category": cmd_info.category.value,
+            "category": cmd_info.category,
             "expertise_required": cmd_info.expertise_level.value,
         }
 
@@ -373,7 +361,12 @@ class UserExperienceSystem:
             return UserExpertiseLevel.INTERMEDIATE
 
         user_prefs = self.preference_system.get_user_preferences(user_id)
-        recent_commands = user_prefs.get("recent_commands", [])
+        recent_commands_raw: Union[List[str], Any] = user_prefs.get(
+            "recent_commands", []
+        )
+        recent_commands: List[str] = (
+            recent_commands_raw if isinstance(recent_commands_raw, list) else []
+        )
         command_count = len(recent_commands) if isinstance(recent_commands, list) else 0  # type: ignore[arg-type]
         advanced_commands = user_prefs.get("advanced_commands_used", 0)
 
@@ -494,7 +487,12 @@ class UserExperienceSystem:
 
         # Sort by user preferences/recent usage
         user_prefs = self.preference_system.get_user_preferences(user_id)
-        recent_commands: set[str] = set(user_prefs.get("recent_commands", []))  # type: ignore[arg-type]
+        recent_commands_raw: Union[List[str], Any] = user_prefs.get(
+            "recent_commands", []
+        )
+        recent_commands: Set[str] = (
+            set(recent_commands_raw) if isinstance(recent_commands_raw, list) else set()
+        )
 
         # Boost recently used commands
         def sort_key(cmd):
@@ -577,7 +575,7 @@ class UserExperienceSystem:
             }
 
     def get_clarification_questions(
-        self, user_request: str, user_id: str, context: Dict[str, Any] = None
+        self, user_request: str, user_id: str, context: Optional[Dict[str, Any]] = None
     ) -> List[str]:
         """Get clarification questions for ambiguous requests."""
         try:

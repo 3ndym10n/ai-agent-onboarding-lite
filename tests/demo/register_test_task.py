@@ -6,7 +6,11 @@ from ai_onboard.core.task_execution_gate import register_task_for_execution
 # Register a test task to demonstrate the system
 task_data = {
     "name": "Implement Advanced Logging System",
-    "description": "Create a comprehensive logging system with structured logs, log levels, and external log aggregation support. This is critical for production monitoring and debugging.",
+    "description": (
+        "Create a comprehensive logging system with structured logs, log levels, "
+        "and external log aggregation support. This is critical for production "
+        "monitoring and debugging."
+    ),
     "priority": "high",
 }
 

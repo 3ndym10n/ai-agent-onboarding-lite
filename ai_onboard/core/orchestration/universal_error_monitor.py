@@ -12,7 +12,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
-import psutil
+import psutil  # type: ignore[import-untyped]
 
 from ..base import telemetry, utils
 from ..legacy_cleanup.smart_debugger import SmartDebugger

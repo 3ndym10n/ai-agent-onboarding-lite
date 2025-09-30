@@ -19,7 +19,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, cast
 
 # psutil is optional to avoid hard dependency in minimal environments / Windows gates
 try:  # pragma: no cover - environment - dependent
@@ -195,28 +195,31 @@ class SystemHealthMonitor:
 
     def _load_health_config(self) -> Dict[str, Any]:
         """Load health monitoring configuration."""
-        return utils.read_json(
-            self.health_config_path,
-            default={
-                "monitoring_enabled": True,
-                "monitoring_interval": 10.0,  # seconds
-                "health_check_interval": 30.0,  # seconds
-                "self_healing_enabled": True,
-                "auto_healing_enabled": True,
-                "alert_threshold": 0.8,  # Health score threshold for alerts
-                "critical_threshold": 0.5,  # Health score threshold for critical issues
-                "component_timeout": 60.0,  # seconds
-                "max_concurrent_issues": 10,
-                "health_history_days": 7,
-                "metrics_to_monitor": [
-                    "cpu_usage",
-                    "memory_usage",
-                    "disk_usage",
-                    "error_rate",
-                    "response_time",
-                    "availability",
-                ],
-            },
+        return cast(
+            Dict[str, Any],
+            utils.read_json(
+                self.health_config_path,
+                default={
+                    "monitoring_enabled": True,
+                    "monitoring_interval": 10.0,  # seconds
+                    "health_check_interval": 30.0,  # seconds
+                    "self_healing_enabled": True,
+                    "auto_healing_enabled": True,
+                    "alert_threshold": 0.8,  # Health score threshold for alerts
+                    "critical_threshold": 0.5,  # Health score threshold for critical issues
+                    "component_timeout": 60.0,  # seconds
+                    "max_concurrent_issues": 10,
+                    "health_history_days": 7,
+                    "metrics_to_monitor": [
+                        "cpu_usage",
+                        "memory_usage",
+                        "disk_usage",
+                        "error_rate",
+                        "response_time",
+                        "availability",
+                    ],
+                },
+            ),
         )
 
     def _get_health_thresholds(self) -> Dict[HealthMetric, Tuple[float, float]]:

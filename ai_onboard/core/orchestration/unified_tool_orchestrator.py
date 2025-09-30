@@ -1752,8 +1752,10 @@ class UnifiedToolOrchestrator:
         alignment_score = self._check_vision_alignment(context)
 
         # Get project charter and objectives
-        charter = self._load_project_charter()
-        objectives = charter.get("objectives", [])
+        from ..legacy_cleanup import charter
+
+        charter_data = charter.load_charter(self.root_path)
+        objectives = charter_data.get("objectives", [])
 
         return {
             "vision": vision_context.get("project_goals", []),
@@ -2336,7 +2338,7 @@ class UnifiedToolOrchestrator:
                 }
 
             # Execute the orchestration
-            result = self.orchestrate_tools(context)
+            result = self.orchestrate_tools(context.user_request, context)
 
             return {
                 "executed": True,

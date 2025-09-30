@@ -562,7 +562,7 @@ class PatternRecognitionSystem:
 
     def get_all_patterns(self) -> List[Any]:
         """Get all patterns from all categories."""
-        all_patterns = []
+        all_patterns: List[Any] = []
         all_patterns.extend(self.patterns.values())
         all_patterns.extend(self.cli_patterns.values())
         all_patterns.extend(self.behavior_patterns.values())
@@ -606,20 +606,21 @@ class PatternRecognitionSystem:
                             "message": f"Line too long ({len(line)} characters)",
                         }
                         match = self.analyze_error(error_data)
-                        if match.confidence > 0.3:
-                            analysis_results["patterns_found"] += 1
+                        if hasattr(match, "confidence") and match.confidence > 0.3:
+                            patterns_found = analysis_results.get("patterns_found", 0)
+                            if isinstance(patterns_found, int):
+                                analysis_results["patterns_found"] = patterns_found + 1  # type: ignore[assignment]
 
             except Exception as e:
                 continue  # Skip files that can't be read
 
         # Generate recommendations based on findings
-        if analysis_results["patterns_found"] > 0:
-            analysis_results["recommendations"].append(
-                "Consider running code formatting tools"
-            )
-            analysis_results["recommendations"].append(
-                "Review coding standards compliance"
-            )
+        patterns_found = analysis_results.get("patterns_found", 0)
+        if isinstance(patterns_found, int) and patterns_found > 0:
+            recommendations = analysis_results.get("recommendations", [])
+            if isinstance(recommendations, list):
+                recommendations.append("Consider running code formatting tools")
+                recommendations.append("Review coding standards compliance")
 
         return analysis_results
 

@@ -8,15 +8,13 @@ delegating to specialized sub-modules for specific functionality.
 import argparse
 import base64
 import json
+import sys
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, List, Optional, Union, cast
 
 from ai_onboard.core import utils
-from ai_onboard.core.ai_integration.user_preference_learning import (
-    InteractionType,
-    get_user_preference_learning_system,
-)
+from ai_onboard.core.ai_integration.user_preference_learning import InteractionType
 from ai_onboard.core.continuous_improvement.adaptive_config_manager import (
     AdaptationTrigger,
     get_adaptive_config_manager,
@@ -48,23 +46,149 @@ from ai_onboard.core.continuous_improvement.system_health_monitor import (
     get_system_health_monitor,
 )
 
-from .commands_continuous_improvement_implementation import add_implementation_commands
-from .commands_continuous_improvement_learning import add_learning_commands
-from .commands_continuous_improvement_performance import add_performance_commands
-from .commands_continuous_improvement_recommendations import (
-    add_recommendations_commands,
-)
-from .commands_continuous_improvement_status import add_status_commands
+# These imports are used by the main CLI parser but not in this function
 
 
 def handle_continuous_improvement_commands(
-    args: argparse.Namespace, root: Path
+    args: argparse.Namespace, root: Path, unknown: Optional[List[str]] = None
 ) -> None:
     """Handle continuous improvement commands."""
     # Handle user - prefs as top - level command (quick - path routing)
     if args.cmd == "user - prefs":
         _handle_user_preference_commands(args, root)
         return
+
+    # Check for approval responses in the command line
+    if len(sys.argv) >= 4 and sys.argv[2] in ["approve", "reject", "show"]:
+        _handle_approval_response(sys.argv[3:], root)
+        return
+
+    # Check for review command
+    if len(sys.argv) >= 3 and sys.argv[2] == "review":
+        _handle_review_command(root)
+        return
+
+
+def _handle_approval_response(args_list: List[str], root: Path) -> None:
+    """Handle approval/rejection responses from the chat."""
+    system = get_continuous_improvement_system(root)
+    action = args_list[0] if args_list else None
+    recommendation_id = args_list[1] if len(args_list) > 1 else None
+
+    if action == "approve":
+        if recommendation_id == "all":
+            # Implement all pending recommendations
+            for rec in system.get_improvement_recommendations(
+                status="pending", limit=1000
+            ):
+                result = system.implement_recommendation(rec.recommendation_id)
+                if result.get("success", False):
+                    print(f"[OK] Approved and implemented: {rec.description}")
+                else:
+                    print(
+                        f"[ERROR] Failed to approve {rec.description}: {result.get('message', 'Unknown error')}"
+                    )
+        elif recommendation_id:
+            result = system.implement_recommendation(recommendation_id)
+            if result.get("success", False):
+                print(
+                    f"[OK] Approved and implemented recommendation '{recommendation_id}'"
+                )
+            else:
+                print(
+                    f"[ERROR] Failed to approve recommendation '{recommendation_id}': {result.get('message', 'Unknown error')}"
+                )
+        else:
+            print("Error: Missing recommendation ID for 'approve' command.")
+    elif action == "reject":
+        if recommendation_id:
+            # Find and mark the recommendation as rejected
+            found = False
+            for rec in system.improvement_recommendations:
+                if rec.recommendation_id == recommendation_id:
+                    rec.status = "rejected"
+                    system._save_improvement_recommendations()
+                    print(f"[OK] Rejected recommendation '{recommendation_id}'")
+                    found = True
+                    break
+            if not found:
+                print(f"Error: Recommendation '{recommendation_id}' not found.")
+        else:
+            print("Error: Missing recommendation ID for 'reject' command.")
+    elif action == "show":
+        if recommendation_id:
+            from .commands_continuous_improvement_recommendations import (
+                _handle_show_recommendation,
+            )
+
+            # Create a dummy args object for _handle_show_recommendation
+            temp_args = argparse.Namespace(recommendation_id=recommendation_id)
+            _handle_show_recommendation(temp_args, system)
+        else:
+            print("Error: Missing recommendation ID for 'show' command.")
+    else:
+        print(f"Error: Unknown approval action: {action}")
+
+
+def _handle_review_command(root: Path) -> None:
+    """Handle the 'review' command to list pending recommendations."""
+    system = get_continuous_improvement_system(root)
+    pending_recs = system.get_improvement_recommendations(status="pending", limit=1000)
+
+    if not pending_recs:
+        print("[INFO] No pending recommendations to review.")
+        return
+
+    print("\n=== PENDING IMPROVEMENT RECOMMENDATIONS FOR REVIEW ===")
+    for i, rec in enumerate(pending_recs):
+        print(f"\n[{i + 1}/{len(pending_recs)}] ID: {rec.recommendation_id}")
+        print(f"  Description: {rec.description}")
+        print(f"  Rationale: {rec.rationale}")
+        print(
+            f"  Priority: {rec.priority}/10, Impact: {rec.expected_impact:.1%}, Confidence: {rec.confidence:.1%}"
+        )
+        print(f"  Action Type: {rec.action_type.value}")
+        print(f"  Status: {rec.status}")
+    print("\n--- To approve/reject ---")
+    print("  Approve: ai_onboard continuous-improvement approve <ID>")
+    print("  Reject:  ai_onboard continuous-improvement reject <ID> [--reason '...']")
+    print("  Approve All: ai_onboard continuous-improvement approve all")
+
+    # For continuous improvement commands, parse arguments manually from sys.argv
+    # This is more reliable than relying on the complex argparse subparser logic
+    full_args = sys.argv[1:]  # Skip script name
+
+    if len(full_args) < 2:
+        print("Error: No continuous improvement subcommand provided")
+        return
+
+    improvement_cmd = full_args[1]  # The subcommand (recommendations, status, etc.)
+
+    args = argparse.Namespace()
+    args.improvement_cmd = improvement_cmd
+
+    # Parse the arguments based on the subcommand
+    if improvement_cmd == "recommendations":
+        if len(full_args) > 2:
+            sub_cmd = full_args[2]
+            if sub_cmd in ["list", "show", "approve", "reject"]:
+                setattr(args, "recommendations_cmd", sub_cmd)
+                if len(full_args) > 3:
+                    setattr(args, "recommendation_id", full_args[3])
+            else:
+                # Treat as recommendation_id for show command
+                setattr(args, "recommendation_id", sub_cmd)
+                setattr(args, "recommendations_cmd", "show")
+        else:
+            setattr(args, "recommendations_cmd", "list")
+
+    elif improvement_cmd == "status":
+        if len(full_args) > 2:
+            status_cmd = full_args[2]
+            if status_cmd in ["system", "health", "analytics", "validate"]:
+                setattr(args, "status_cmd", status_cmd)
+            else:
+                setattr(args, "status_cmd", "system")  # Default
 
     # Delegate to modular sub-modules
     if args.improvement_cmd == "learning":
@@ -95,15 +219,55 @@ def handle_continuous_improvement_commands(
         _handle_implementation_commands(args, root)
     else:
         print(f"Error: Unknown continuous improvement command: {args.improvement_cmd}")
+        return
 
 
-def _handle_user_preference_commands(args: argparse.Namespace, root: Path) -> None:
+def _handle_simple_status(root: Path) -> None:
+    """Simple status check that shows the current state of continuous improvement data."""
+
+    print("AI Onboard Continuous Improvement Status")
+    print("=" * 50)
+
+    ci_data_dir = root / ".ai_onboard"
+
+    if ci_data_dir.exists():
+        print("Continuous Improvement Data Directory: Found")
+
+        # Check for various data files
+        files_to_check = [
+            "learning_events.jsonl",
+            "improvement_recommendations.json",
+            "user_profiles.json",
+            "system_health.jsonl",
+            "performance_data.jsonl",
+        ]
+
+        for file_name in files_to_check:
+            file_path = ci_data_dir / file_name
+            if file_path.exists():
+                size = file_path.stat().st_size
+                print(f"  {file_name}: {size:,}", "bytes")
+            else:
+                print(f"  {file_name}: Missing")
+    else:
+        print("Continuous Improvement Data Directory: Missing")
+        print("   Run 'python -m ai_onboard validate' to initialize")
+
+    print("\nSystem Information:")
+    print(f"  Root Directory: {root}")
+    print(f"  Python Version: {__import__('sys').version}")
+    print(f"  Platform: {__import__('sys').platform}")
+
+
+def _handle_user_preference_commands(
+    args: argparse.Namespace, root: Path
+) -> Dict[str, Any]:
     """Handle user preference commands."""
     from ..core.ai_integration.user_preference_learning import (
-        user_preference_learning as upl,
+        get_user_preference_learning_system,
     )
 
-    psys = upl.get_user_preference_learning_system(root)
+    psys = get_user_preference_learning_system(root)
     pcmd = getattr(args, "prefs_cmd", None)
 
     if pcmd == "record":
@@ -111,13 +275,13 @@ def _handle_user_preference_commands(args: argparse.Namespace, root: Path) -> No
             context = json.loads(getattr(args, "context", "") or "{}")
         except Exception:
             print('{"error":"invalid context JSON"}')
-            return
+            return {"error": "invalid context JSON"}
 
         try:
             outcome = json.loads(getattr(args, "outcome", "") or "{}")
         except Exception:
             print('{"error":"invalid outcome JSON"}')
-            return
+            return {}
 
         interaction_id = psys.record_user_interaction(
             user_id=args.user,
@@ -129,28 +293,13 @@ def _handle_user_preference_commands(args: argparse.Namespace, root: Path) -> No
             feedback=getattr(args, "feedback", None),
         )
         print(json.dumps({"interaction_id": interaction_id}))
+        return {"interaction_id": interaction_id}
     elif pcmd == "summary":
         print(json.dumps(psys.get_user_profile_summary(args.user)))
+        return psys.get_user_profile_summary(args.user)
     else:
         print('{"error":"unknown user - prefs subcommand"}')
-
-
-def add_continuous_improvement_parser(subparsers) -> None:
-    """Add continuous improvement commands to the argument parser."""
-    improvement_parser = subparsers.add_parser(
-        "continuous - improvement", help="Continuous improvement system management"
-    )
-
-    improvement_subparsers = improvement_parser.add_subparsers(
-        dest="improvement_cmd", help="Improvement commands"
-    )
-
-    # Add sub-command parsers
-    add_learning_commands(improvement_subparsers)
-    add_recommendations_commands(improvement_subparsers)
-    add_performance_commands(improvement_subparsers)
-    add_status_commands(improvement_subparsers)
-    add_implementation_commands(improvement_subparsers)
+        return {"error": "unknown user - prefs subcommand"}
 
 
 def _coerce_scalar(value: str) -> Union[bool, int, float, str]:
@@ -201,16 +350,16 @@ def _parse_json_source(
             if not p.exists():
                 print(f"❌ File not found: {file}")
                 return {}
-            return json.loads(p.read_text(encoding="utf - 8"))
+            return cast(Dict[str, Any], json.loads(p.read_text(encoding="utf - 8")))
 
         if b64:
             decoded = base64.b64decode(b64).decode("utf - 8")
-            return json.loads(decoded)
+            return cast(Dict[str, Any], json.loads(decoded))
 
         if raw:
             raw = raw.strip()
             if raw.startswith("{") and raw.endswith("}"):
-                return json.loads(raw)
+                return cast(Dict[str, Any], json.loads(raw))
             if allow_kv:
                 return _parse_kv_pairs(raw)
         return {}
@@ -220,50 +369,6 @@ def _parse_json_source(
     except (ValueError, TypeError, AttributeError) as e:
         print(f"Error: {e}")
         return {}
-
-
-def handle_continuous_improvement_commands(
-    args: argparse.Namespace, root: Path
-) -> None:
-    """Handle continuous improvement commands."""
-    # Handle user - prefs as top - level command (quick - path routing)
-    if args.cmd == "user - prefs":
-        _handle_user_preference_commands(args, root)
-        return
-
-    # Delegate to modular sub-modules
-    if args.improvement_cmd == "learning":
-        from .commands_continuous_improvement_learning import _handle_learning_commands
-
-        _handle_learning_commands(args, root)
-    elif args.improvement_cmd == "recommendations":
-        from .commands_continuous_improvement_recommendations import (
-            _handle_recommendations_commands,
-        )
-
-        _handle_recommendations_commands(args, root)
-    elif args.improvement_cmd == "performance":
-        from .commands_continuous_improvement_performance import (
-            _handle_performance_commands,
-        )
-
-        _handle_performance_commands(args, root)
-    elif args.improvement_cmd == "status":
-        from .commands_continuous_improvement_status import _handle_status_commands
-
-        _handle_status_commands(args, root)
-    elif args.improvement_cmd == "implementation":
-        from .commands_continuous_improvement_implementation import (
-            _handle_implementation_commands,
-        )
-
-        _handle_implementation_commands(args, root)
-    else:
-        print(f"Error: Unknown continuous improvement command: {args.improvement_cmd}")
-        # Get user preference system for recommendations
-        psys = get_user_preference_learning_system(root)
-        print(json.dumps({"recommendations": psys.get_user_recommendations(args.user)}))
-        return
 
 
 def _handle_learning_commands(args: argparse.Namespace, root: Path) -> None:
@@ -882,20 +987,6 @@ def _handle_config_analytics(args: argparse.Namespace, config_manager) -> None:
         print(f"  {setting}: {count} changes")
 
 
-def _handle_user_preference_commands(args: argparse.Namespace, root: Path) -> None:
-    """Handle user preference learning commands."""
-    preference_system = get_user_preference_learning_system(root)
-
-    if args.prefs_cmd == "record":
-        _handle_record_interaction(args, preference_system)
-    elif args.prefs_cmd == "summary":
-        _handle_user_summary(args, preference_system)
-    elif args.prefs_cmd == "recommend":
-        _handle_user_recommendations(args, preference_system)
-    else:
-        print(f"Unknown user preference action: {args.prefs_cmd}")
-
-
 def _handle_record_interaction(args: argparse.Namespace, preference_system) -> None:
     """Handle recording user interactions."""
     try:
@@ -1315,7 +1406,7 @@ def _handle_healing_stats(health_monitor) -> None:
     )
 
     # Action type statistics
-    action_types: dict[str, Any] = {}
+    action_types: Dict[str, Any] = {}
     for action in history:
         action_type = action["action_type"]
         if action_type not in action_types:

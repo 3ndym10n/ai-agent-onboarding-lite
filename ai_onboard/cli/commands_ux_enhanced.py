@@ -74,6 +74,12 @@ def handle_ux_enhanced_commands(args: argparse.Namespace, root: Path) -> None:
     ux_system = get_user_experience_system(root)
     user_id = "default"  # Could be extracted from environment or config
 
+    # Get user preferences for personalized responses
+    user_profile = ux_system.get_user_profile(user_id)
+    experience_level = (
+        user_profile.get("experience_level", "BEGINNER") if user_profile else "BEGINNER"
+    )
+
     # Record command usage for learning
     ux_system.record_command_usage(user_id, args.cmd, True)
 
@@ -86,7 +92,7 @@ def handle_ux_enhanced_commands(args: argparse.Namespace, root: Path) -> None:
     elif args.cmd == "design":
         _handle_design_validation(args, ux_system, user_id)
     elif args.cmd == "status":
-        _handle_status(args, ux_system, user_id)
+        _handle_status(args, ux_system, user_id, experience_level)
     else:
         print(f"Unknown UX command: {args.cmd}")
 
@@ -257,24 +263,36 @@ def _handle_design_validation(
         print("  validate --description 'your design description'")
 
 
-def _handle_status(args: argparse.Namespace, ux_system, user_id: str) -> None:
-    """Handle enhanced status display."""
+def _handle_status(
+    args: argparse.Namespace, ux_system, user_id: str, experience_level: str
+) -> None:
+    """Handle enhanced status display with personalized responses."""
     status = ux_system.get_project_status(user_id)
 
     if args.json:
         print(json.dumps(status, indent=2))
         return
 
-    ensure_unicode_safe("📋 Project Status")
-    print("=" * 20)
+    # Personalized response based on experience level
+    if experience_level in ["EXPERT", "ADVANCED"]:
+        # Concise response for experienced users
+        setup = status["project_setup"]
+        print(f"Charter: {setup['charter']} | Plan: {setup['plan']}")
+        if status["recent_activity"]:
+            recent = ", ".join(status["recent_activity"][-2:])
+            print(f"Recent: {recent}")
+    else:
+        # Verbose response for beginners
+        ensure_unicode_safe("📋 Project Status")
+        print("=" * 20)
 
-    setup = status["project_setup"]
-    ensure_unicode_safe(f"Charter: {setup['charter']}  Plan: {setup['plan']}")
+        setup = status["project_setup"]
+        ensure_unicode_safe(f"Charter: {setup['charter']}  Plan: {setup['plan']}")
 
-    if status["recent_activity"]:
-        recent = ", ".join(status["recent_activity"][-3:])
-        print(f"Recent: {recent}")
+        if status["recent_activity"]:
+            recent = ", ".join(status["recent_activity"][-3:])
+            print(f"Recent: {recent}")
 
-    if status["suggestions"]:
-        print(f"Suggestions: {len(status['suggestions'])} available")
+        if status["suggestions"]:
+            print(f"Suggestions: {len(status['suggestions'])} available")
         print("Run 'python -m ai_onboard suggest' to see them")

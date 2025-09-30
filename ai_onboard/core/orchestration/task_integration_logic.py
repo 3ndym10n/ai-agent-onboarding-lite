@@ -8,7 +8,7 @@ dependencies, and project context.
 
 import re
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, cast
 
 from ..base import utils
 
@@ -578,7 +578,7 @@ class TaskIntegrationLogic:
 
         if placement_type == "new_subtask":
             # Use the subtask ID as the task ID
-            return placement["placement_details"]["subtask_id"]
+            return cast(str, placement["placement_details"]["subtask_id"])
         elif placement_type == "modify_existing":
             # Generate a task ID within the existing subtask
             existing_subtask = placement["placement_details"]["existing_subtask"]
@@ -714,7 +714,7 @@ class TaskIntegrationLogic:
         self, task_analysis: Dict[str, Any], placement: Dict[str, Any]
     ) -> float:
         """Calculate overall confidence score for the integration recommendation."""
-        base_confidence = placement["confidence"]
+        base_confidence = cast(float, placement["confidence"])
 
         # Boost confidence for well-matched tasks
         if placement["placement_type"] == "modify_existing":

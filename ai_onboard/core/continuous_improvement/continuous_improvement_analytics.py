@@ -21,7 +21,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union, cast
 
 from ..base import telemetry, utils
 from . import continuous_improvement_system
@@ -171,28 +171,37 @@ class ContinuousImprovementAnalytics:
 
     def _load_analytics_config(self) -> Dict[str, Any]:
         """Load analytics configuration."""
-        return utils.read_json(
-            self.analytics_config_path,
-            default={
-                "metrics_retention_days": 90,
-                "kpi_update_interval_minutes": 15,
-                "report_generation_enabled": True,
-                "alerting_enabled": True,
-                "dashboard_refresh_interval_seconds": 30,
-                "export_formats": ["json", "csv", "html"],
-                "kpi_thresholds": {
-                    "learning_rate": {"warning": 0.1, "critical": 0.05},
-                    "recommendation_acceptance_rate": {"warning": 0.6, "critical": 0.4},
-                    "system_health_score": {"warning": 0.7, "critical": 0.5},
-                    "user_satisfaction": {"warning": 0.7, "critical": 0.5},
-                    "knowledge_growth_rate": {"warning": 0.05, "critical": 0.02},
+        return cast(
+            Dict[str, Any],
+            utils.read_json(
+                self.analytics_config_path,
+                default={
+                    "metrics_retention_days": 90,
+                    "kpi_update_interval_minutes": 15,
+                    "report_generation_enabled": True,
+                    "alerting_enabled": True,
+                    "dashboard_refresh_interval_seconds": 30,
+                    "export_formats": ["json", "csv", "html"],
+                    "kpi_thresholds": {
+                        "learning_rate": {"warning": 0.1, "critical": 0.05},
+                        "recommendation_acceptance_rate": {
+                            "warning": 0.6,
+                            "critical": 0.4,
+                        },
+                        "system_health_score": {"warning": 0.7, "critical": 0.5},
+                        "user_satisfaction": {"warning": 0.7, "critical": 0.5},
+                        "knowledge_growth_rate": {"warning": 0.05, "critical": 0.02},
+                    },
+                    "report_schedules": {
+                        "daily": ["performance_summary", "system_health"],
+                        "weekly": [
+                            "learning_analytics",
+                            "recommendation_effectiveness",
+                        ],
+                        "monthly": ["knowledge_base_growth", "trend_analysis"],
+                    },
                 },
-                "report_schedules": {
-                    "daily": ["performance_summary", "system_health"],
-                    "weekly": ["learning_analytics", "recommendation_effectiveness"],
-                    "monthly": ["knowledge_base_growth", "trend_analysis"],
-                },
-            },
+            ),
         )
 
     def _get_kpi_definitions(self) -> Dict[str, Dict[str, Any]]:

@@ -10,7 +10,7 @@ import inspect
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, cast
 
 from .tool_usage_tracker import get_tool_tracker
 
@@ -699,4 +699,4 @@ def get_comprehensive_tool_discovery(root_path: Path) -> ComprehensiveToolDiscov
             root_path
         )
 
-    return get_comprehensive_tool_discovery._instance  # type: ignore[attr-defined]
+    return cast(ComprehensiveToolDiscovery, get_comprehensive_tool_discovery._instance)

@@ -269,7 +269,11 @@ class ValidationTestCollector:
             recommendations.append("All tests passed successfully!")
 
         # Generate summary
-        summary = f"Executed {total_tests} tests: {passed_tests} passed, {failed_tests} failed, {warning_tests} warnings, {skipped_tests} skipped. Health score: {health_score:.1f}%"
+        summary = (
+            f"Executed {total_tests} tests: {passed_tests} passed, {failed_tests} "
+            f"failed, {warning_tests} warnings, {skipped_tests} skipped. "
+            f"Health score: {health_score:.1f}%"
+        )
 
         return ValidationReport(
             report_id=f"pytest_validation_{int(time.time())}",

@@ -6,9 +6,7 @@ automated fix application → validation → learning. This represents the core
 self-improvement capability of the ai-onboard system.
 """
 
-import json
 import tempfile
-import time
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
