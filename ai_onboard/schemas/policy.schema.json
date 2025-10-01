@@ -38,11 +38,6 @@
         "additionalProperties": true
       }
     },
-    "terms": {
-      "type": "object",
-      "description": "Policy terms and definitions",
-      "additionalProperties": true
-    },
     "approvals": {
       "type": "object",
       "additionalProperties": true

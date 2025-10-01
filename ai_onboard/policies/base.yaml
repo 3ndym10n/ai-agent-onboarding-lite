@@ -1,10 +1,9 @@
-terms: {}
-
 rules:
   - id: risky-env-delete
     conditions:
       any:
-        - deletes_globs: ["**/.env", "**/*.env", "**/secrets/**", "**/*.pem", "**/id_rsa*"]
+        - deletes_globs:
+            ["**/.env", "**/*.env", "**/secrets/**", "**/*.pem", "**/id_rsa*"]
     action: block
     message: "Deleting env/secret/credential files is blocked."
 
