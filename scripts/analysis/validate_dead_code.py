@@ -13,7 +13,7 @@ Performs comprehensive validation to ensure reported "dead code" is truly unused
 import ast
 import re
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Set
 
 from ai_onboard.core.base.common_imports import os
 
@@ -23,13 +23,13 @@ class DeadCodeValidator:
 
     def __init__(self, root_path: str = "."):
         self.root_path = Path(root_path)
-        self.all_files = self._collect_python_files()
-        self.function_definitions = {}
-        self.function_calls = set()
-        self.dynamic_imports = set()
-        self.test_files = set()
-        self.config_files = set()
-        self.doc_files = set()
+        self.all_files: List[Path] = self._collect_python_files()
+        self.function_definitions: Dict[str, Dict[str, object]] = {}
+        self.function_calls: Set[str] = set()
+        self.dynamic_imports: Set[str] = set()
+        self.test_files: Set[str] = set()
+        self.config_files: Set[str] = set()
+        self.doc_files: Set[str] = set()
 
     def _collect_python_files(self) -> List[Path]:
         """Collect all Python files in the project."""
@@ -48,21 +48,22 @@ class DeadCodeValidator:
                     files.append(Path(root) / file)
         return files
 
-    def analyze_codebase(self) -> Dict:
+    def analyze_codebase(self) -> Dict[str, object]:
         """Perform comprehensive codebase analysis."""
         print("Analyzing codebase for dead code validation...")
 
         # Categorize files
         for file_path in self.all_files:
-            if "test" in str(file_path).lower() or "spec" in str(file_path).lower():
-                self.test_files.add(file_path)
+            file_path_str = str(file_path)
+            if "test" in file_path_str.lower() or "spec" in file_path_str.lower():
+                self.test_files.add(file_path_str)
             elif any(
-                ext in str(file_path)
+                ext in file_path_str
                 for ext in [".json", ".yaml", ".yml", ".toml", ".ini", ".cfg"]
             ):
-                self.config_files.add(file_path)
-            elif any(ext in str(file_path) for ext in [".md", ".rst", ".txt"]):
-                self.doc_files.add(file_path)
+                self.config_files.add(file_path_str)
+            elif any(ext in file_path_str for ext in [".md", ".rst", ".txt"]):
+                self.doc_files.add(file_path_str)
 
         # Analyze each Python file
         for file_path in self.all_files:
@@ -151,47 +152,45 @@ class DeadCodeValidator:
 
         return validation_results
 
-    def _validate_single_function(self, func_name: str, file_path: str) -> Dict:
+    def _validate_single_function(
+        self, func_name: str, file_path: str
+    ) -> Dict[str, object]:
         """Validate a single function for potential usage."""
-        result = {
+        risk_factors: List[str] = []
+        evidence: List[str] = []
+        result: Dict[str, object] = {
             "function": func_name,
             "file": file_path,
             "safe_to_remove": True,
-            "risk_factors": [],
-            "evidence": [],
+            "risk_factors": risk_factors,
+            "evidence": evidence,
         }
 
         # Check 1: Direct function calls
         if func_name in self.function_calls:
             result["safe_to_remove"] = False
-            result["evidence"].append(f"Direct call to '{func_name}' found")
+            evidence.append(f"Direct call to '{func_name}' found")
 
         # Check 2: Dynamic imports in file
         if "dynamic_import_detected" in self.dynamic_imports:
             result["safe_to_remove"] = False
-            result["risk_factors"].append(
-                "Dynamic imports detected - cannot verify usage"
-            )
+            risk_factors.append("Dynamic imports detected - cannot verify usage")
 
         # Check 3: String-based references
         if func_name in [call for call in self.function_calls if isinstance(call, str)]:
             result["safe_to_remove"] = False
-            result["evidence"].append(f"String reference to '{func_name}' found")
+            evidence.append(f"String reference to '{func_name}' found")
 
         # Check 4: Test files might use private functions
         if any("test" in str(test_file) for test_file in self.test_files):
-            result["risk_factors"].append(
-                "Test files present - may use internal functions"
-            )
+            risk_factors.append("Test files present - may use internal functions")
 
         # Check 5: CLI command pattern (common false positive)
         if (
             func_name.startswith(("add_", "handle_", "cli_"))
             and "commands" in file_path
         ):
-            result["risk_factors"].append(
-                "CLI command function - may be registered dynamically"
-            )
+            risk_factors.append("CLI command function - may be registered dynamically")
             result["safe_to_remove"] = False
 
         # Check 6: Plugin/extension pattern
@@ -199,9 +198,7 @@ class DeadCodeValidator:
             keyword in func_name.lower()
             for keyword in ["plugin", "extension", "hook", "callback"]
         ):
-            result["risk_factors"].append(
-                "Plugin/extension function - may be called dynamically"
-            )
+            risk_factors.append("Plugin/extension function - may be called dynamically")
             result["safe_to_remove"] = False
 
         return result

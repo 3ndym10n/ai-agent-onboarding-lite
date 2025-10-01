@@ -59,6 +59,11 @@ def add_core_commands(subparsers):
         action="store_true",
         help="Analyze existing codebase structure for intelligent planning",
     )
+    s_plan.add_argument(
+        "--no-analyze-codebase",
+        action="store_true",
+        help="Skip codebase analysis (use charter-only planning)",
+    )
 
     # Align
     s_al = subparsers.add_parser(
@@ -796,7 +801,13 @@ def handle_core_commands(args, root: Path):
         from ..core.base import state
         from ..core.vision.planning import planning
 
-        analyze_codebase = getattr(args, "analyze_codebase", False)
+        # Handle intelligent defaults: None = auto-detect
+        analyze_codebase = None  # Let the function auto-detect
+        if hasattr(args, 'analyze_codebase') and args.analyze_codebase:
+            analyze_codebase = True
+        elif hasattr(args, 'no_analyze_codebase') and args.no_analyze_codebase:
+            analyze_codebase = False
+
         planning.build(root, analyze_codebase)
         state.advance(root, state.load(root), "planned")
         print("Plan ready at .ai_onboard / plan.json")

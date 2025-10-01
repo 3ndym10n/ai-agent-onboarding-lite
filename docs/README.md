@@ -37,6 +37,12 @@ Deep technical analysis and system design:
 - **[Enhanced System Testing Analysis](design/system-analysis/enhanced-system-testing-analysis.md)** - Testing strategies
 - **[Metrics Collection System Design](design/system-analysis/metrics_collection_system_design.md)** - Data collection architecture
 
+### 📋 **Planning & Optimization** (`planning/`)
+Planning, optimization, and system improvement documents:
+
+- **[System Optimization Plan](planning/SYSTEM_OPTIMIZATION_PLAN.md)** - Comprehensive optimization roadmap
+- **[Safe Cleanup Plan](planning/SAFE_CLEANUP_PLAN.md)** - Safe cleanup procedures
+
 ### 📋 **Project Management** (`project/`)
 Project status, handover, and management documents:
 
@@ -47,28 +53,34 @@ Project status, handover, and management documents:
 
 ```
 docs/
-├── user/                    # 👤 User Documentation
-│   ├── getting-started.md   # 🚀 Start here!
-│   ├── cli-reference.md     # 📋 Command reference
-│   ├── commands/            # 💻 Command examples
-│   ├── workflows/           # 🔄 Usage patterns
-│   └── troubleshooting.md   # 🔧 Problem solving
+├── README.md                     # 📖 This documentation index
+├── user/                         # 👤 User Documentation
+│   ├── getting-started.md        # 🚀 Start here!
+│   ├── cli-reference.md          # 📋 Command reference
+│   ├── commands/                 # 💻 Command examples
+│   ├── workflows/                # 🔄 Usage patterns
+│   └── troubleshooting.md        # 🔧 Problem solving
 │
-├── developer/               # 👨‍💻 Developer Documentation
-│   ├── agent-integration.md # 🤖 Agent integration
+├── developer/                    # 👨‍💻 Developer Documentation
+│   ├── agent-integration.md      # 🤖 Agent integration
 │   ├── ai-agent-collaboration-protocol.md # 🤝 Agent communication
-│   ├── ci-cd-workflows.md   # 🚀 Development workflows
-│   └── implementation-plan.md # 📅 Technical roadmap
+│   ├── ci-cd-workflows.md        # 🚀 Development workflows
+│   └── implementation-plan.md    # 📅 Technical roadmap
 │
-├── design/                  # 🎨 Design & Research
-│   ├── system-analysis/     # 🔬 Deep technical analysis
+├── design/                       # 🎨 Design & Research
+│   ├── system-analysis/          # 🔬 Deep technical analysis
 │   ├── background-agent-integration-design.md
 │   ├── cursor-ai-integration-research.md
 │   ├── ui-ux-enhancement-plan.md
 │   ├── vision-interrogation-system.md
 │   └── intelligent-alignment-system-plan.md
 │
-└── project/                 # 📋 Project Management
+├── planning/                     # 📋 Planning & Optimization
+│   ├── SYSTEM_OPTIMIZATION_PLAN.md # 🚀 System optimization roadmap
+│   ├── SAFE_CLEANUP_PLAN.md      # 🧹 Safe cleanup procedures
+│   └── [other planning docs]     # 📝 Additional planning documents
+│
+└── project/                      # 📋 Project Management
     ├── current-state-turnover.md
     └── system-turnover.md
 ```
@@ -92,6 +104,9 @@ docs/
 2. **[Intelligent Alignment System](design/intelligent-alignment-system-plan.md)** - AI alignment approach
 3. **[System Analysis](design/system-analysis/)** - Technical deep dives
 4. **[UI/UX Enhancement Plan](design/ui-ux-enhancement-plan.md)** - User experience
+
+### System Optimization Journey
+1. **[System Optimization Plan](planning/SYSTEM_OPTIMIZATION_PLAN.md)** - Comprehensive optimization roadmap
 
 ## 📞 **Need Help?**
 

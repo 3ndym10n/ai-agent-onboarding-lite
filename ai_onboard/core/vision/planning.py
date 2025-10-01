@@ -4,10 +4,113 @@ from typing import Any, Dict, List, Optional
 from ..base import utils
 
 
-def build(root: Path, analyze_codebase: bool = False) -> dict:
+def _should_use_codebase_analysis(root: Path) -> bool:
+    """
+    Determine if codebase analysis should be used based on project characteristics.
+
+    Returns True if the project appears to be an existing codebase that would benefit
+    from intelligent planning.
+    """
+    source_extensions = {
+        ".py",
+        ".js",
+        ".ts",
+        ".tsx",
+        ".jsx",
+        ".java",
+        ".cpp",
+        ".c",
+        ".cs",
+        ".php",
+        ".rb",
+        ".go",
+        ".rs",
+        ".swift",
+        ".kt",
+        ".scala",
+        ".clj",
+    }
+
+    source_files = 0
+
+    # Check for source files
+    for file_path in root.rglob("*"):
+        if file_path.is_file() and file_path.suffix.lower() in source_extensions:
+            # Skip common directories
+            if not any(
+                skip in str(file_path)
+                for skip in [
+                    "__pycache__",
+                    "node_modules",
+                    ".git",
+                    "dist",
+                    "build",
+                    ".vscode",
+                    ".idea",
+                    "target",
+                    "out",
+                ]
+            ):
+                source_files += 1
+
+    # Use analysis if significant codebase exists
+    if source_files > 10:
+        return True
+
+    # Check for package files that indicate existing project
+    package_indicators = [
+        "requirements.txt",
+        "package.json",
+        "pyproject.toml",
+        "Cargo.toml",
+        "composer.json",
+        "Gemfile",
+        "go.mod",
+        "pom.xml",
+        "build.gradle",
+    ]
+
+    for indicator in package_indicators:
+        if (root / indicator).exists():
+            return True
+
+    # Check for common project structure patterns
+    structure_indicators = [
+        "src/",
+        "lib/",
+        "app/",
+        "packages/",
+        "modules/",
+        "components/",
+        "services/",
+        "models/",
+        "controllers/",
+        "utils/",
+        "helpers/",
+    ]
+
+    for indicator in structure_indicators:
+        if (root / indicator).is_dir():
+            return True
+
+    # Default to simple planning for new/empty projects
+    return False
+
+
+def build(root: Path, analyze_codebase: Optional[bool] = None) -> dict:
     ch = utils.read_json(root / ".ai_onboard" / "charter.json", default=None)
     if not ch:
         raise SystemExit("Missing charter. Run: python -m ai_onboard charter")
+
+    # Auto-detect if codebase analysis should be used
+    if analyze_codebase is None:
+        analyze_codebase = _should_use_codebase_analysis(root)
+        if analyze_codebase:
+            print("Existing codebase detected - using intelligent planning")
+            print("   (Use --no-analyze-codebase to skip analysis)")
+        else:
+            print("New project detected - using charter-based planning")
+            print("   (Use --analyze-codebase to force analysis)")
 
     # Optional codebase analysis
     codebase_data = None
