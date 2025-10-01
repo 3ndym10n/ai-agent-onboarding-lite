@@ -6,7 +6,6 @@ project plans from charter data, including WBS, tasks, dependencies,
 and risk analysis.
 """
 
-from pathlib import Path
 from unittest.mock import patch
 
 import pytest

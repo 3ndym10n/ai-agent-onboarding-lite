@@ -7,9 +7,6 @@ system events and operations for debugging and monitoring.
 
 import json
 from pathlib import Path
-from unittest.mock import patch
-
-import pytest
 
 from ai_onboard.core.base.runlog import _path, write_event
 

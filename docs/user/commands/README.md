@@ -8,12 +8,12 @@ AI Onboard provides a comprehensive set of intelligent commands organized by fun
 
 Core commands for project setup, planning, and tracking:
 
-- [`charter`](#charter) - Create and manage project vision and goals
-- [`plan`](#plan) - Generate and manage intelligent project plans
-- [`align`](#align) - Verify alignment between vision and execution
-- [`validate`](#validate) - Comprehensive project health validation
-- [`dashboard`](#dashboard) - Visual project status and progress overview
-- [`project`](#project) - Unified project-management engine (critical path, WBS, prioritization)
+- `charter` - Create and manage project vision and goals
+- `plan` - Generate and manage intelligent project plans
+- `align` - Verify alignment between vision and execution
+- `validate` - Comprehensive project health validation
+- `dashboard` - Visual project status and progress overview
+- `project` - Unified project-management engine (critical path, WBS, prioritization)
 
 ### ⚡ Optimization & Improvement Commands
 
@@ -120,7 +120,7 @@ python -m ai_onboard validate
 
 **Purpose**: Generate, manage, and optimize intelligent project plans with AI-powered insights.
 
-#### Basic Usage
+#### Plan Basic Usage
 
 ```bash
 # Generate project plan
@@ -183,7 +183,7 @@ python -m ai_onboard plan milestone --report M1 --stakeholders
 
 **Purpose**: Visual project status overview with intelligent insights and progress tracking.
 
-#### Basic Usage
+#### Dashboard Basic Usage
 
 ```bash
 # Show project dashboard
@@ -234,7 +234,7 @@ python -m ai_onboard dashboard alerts \
 
 **Purpose**: Access the unified project-management engine for critical path analysis, WBS status, task prioritization, and completion detection.
 
-#### Basic Usage
+#### Project Basic Usage
 
 ```bash
 # Analyze critical path
@@ -271,7 +271,7 @@ python -m ai_onboard project wbs
 
 **Purpose**: Continuous improvement automation with intelligent optimization cycles.
 
-#### Basic Usage
+#### Kaizen Basic Usage
 
 ```bash
 # Run improvement cycle
@@ -312,7 +312,7 @@ python -m ai_onboard kaizen experiment \
 
 **Purpose**: Seamless integration with Cursor AI for enhanced development workflows.
 
-#### Basic Usage
+#### Cursor Basic Usage
 
 ```bash
 # Initialize Cursor integration
@@ -352,7 +352,7 @@ python -m ai_onboard cursor config \
 
 **Purpose**: User experience enhancements, analytics, and satisfaction tracking.
 
-#### Basic Usage
+#### UX Basic Usage
 
 ```bash
 # View UX analytics

@@ -8,8 +8,6 @@ that manages quality gates and policy enforcement.
 from pathlib import Path
 from unittest.mock import patch
 
-import pytest
-
 from ai_onboard.core.quality_safety.policy_engine import _merge, _read_policy_file, load
 
 
@@ -139,6 +137,3 @@ class TestIntegration:
         assert isinstance(result, dict)
         assert "rules" in result
         assert "scoring" in result
-
-
-
