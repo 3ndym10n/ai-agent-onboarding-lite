@@ -252,8 +252,6 @@ jobs:
               body: comment
             });
 
-
-
   performance-alert:
     name: Performance Alert
     runs-on: ubuntu-latest
@@ -290,5 +288,3 @@ jobs:
                 + '- Evaluate whether caching can help expensive operations\n\n'
                 + '**[View Performance Results](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})**'
             });
-
-
