@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from ..core.continuous_improvement.continuous_improvement_validator import (
+from ai_onboard.core.continuous_improvement.continuous_improvement_validator import (  # type: ignore[import-untyped]
     ContinuousImprovementValidator,
     ValidationReport,
 )
@@ -166,7 +166,7 @@ def handle_enhanced_testing_commands(args: argparse.Namespace, root: Path) -> No
         print(f"❌ Unknown enhanced testing command: {args.testing_cmd}")
 
 
-def _handle_run_enhanced_tests(args: argparse.Namespace, root: Path) -> None:
+def _handle_run_enhanced_tests(args: argparse.Namespace, root: Path) -> bool:
     """Handle running enhanced tests with pytest integration."""
     print("🧪 Running Enhanced Tests with Continuous Improvement Validation")
     print("=" * 70)
@@ -234,7 +234,7 @@ def _handle_run_enhanced_tests(args: argparse.Namespace, root: Path) -> None:
         return False
 
 
-def _handle_system_validation(args: argparse.Namespace, root: Path) -> None:
+def _handle_system_validation(args: argparse.Namespace, root: Path) -> bool:
     """Handle system validation using ContinuousImprovementValidator."""
     print("🔍 Running Continuous Improvement System Validation")
     print("=" * 60)
@@ -294,7 +294,7 @@ def _handle_system_validation(args: argparse.Namespace, root: Path) -> None:
         return False
 
 
-def _handle_performance_testing(args: argparse.Namespace, root: Path) -> None:
+def _handle_performance_testing(args: argparse.Namespace, root: Path) -> bool:
     """Handle performance testing with benchmarking."""
     print("⚡ Running Performance Tests with Benchmarking")
     print("=" * 50)
@@ -335,7 +335,7 @@ def _handle_performance_testing(args: argparse.Namespace, root: Path) -> None:
         return False
 
 
-def _handle_integration_testing(args: argparse.Namespace, root: Path) -> None:
+def _handle_integration_testing(args: argparse.Namespace, root: Path) -> bool:
     """Handle integration testing with real systems."""
     print("🔗 Running Integration Tests with Real Systems")
     print("=" * 50)
@@ -514,7 +514,7 @@ def _save_performance_baseline(root: Path, baseline_file: str) -> None:
 
 def _load_validation_history(root: Path, days: int) -> List[Dict[str, Any]]:
     """Load validation report history."""
-    reports = []
+    reports: List[Dict[str, Any]] = []
     validation_file = root / ".ai_onboard" / "validation_reports.jsonl"
 
     if not validation_file.exists():
@@ -554,7 +554,8 @@ def _generate_html_report(
     <style>
         body {{ font - family: Arial, sans - serif; margin: 40px; }}
         .header {{ background - color: #f0f0f0; padding: 20px; border - radius: 5px; }}
-        .metric {{ display: inline - block; margin: 10px; padding: 10px; background - color: #e0e0e0; border - radius: 3px; }}
+        .metric {{ display: inline-block; margin: 10px; padding: 10px;
+                   background-color: #e0e0e0; border-radius: 3px; }}
         .report {{ margin: 20px 0; padding: 15px; border: 1px solid #ddd; border - radius: 5px; }}
     </style>
 </head>
