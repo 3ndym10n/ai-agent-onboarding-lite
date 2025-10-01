@@ -10,8 +10,6 @@ import ast
 from pathlib import Path
 from typing import List
 
-import pytest
-
 from ai_onboard.core.quality_safety.duplicate_detector import (
     CodeBlock,
     DuplicateAnalysisResult,
