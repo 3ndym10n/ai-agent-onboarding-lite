@@ -6,14 +6,54 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "action"],
+        "required": [
+          "id",
+          "action"
+        ],
         "properties": {
-          "id": {"type": "string", "minLength": 1},
-          "action": {"type": "string", "enum": ["allow", "warn", "require_approval", "block"]},
-          "message": {"type": "string"}
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "allow",
+              "warn",
+              "require_approval",
+              "block"
+            ]
+          },
+          "message": {
+            "type": "string"
+          },
+          "conditions": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "severity": {
+            "type": "string"
+          }
         },
         "additionalProperties": true
       }
+    },
+    "terms": {
+      "type": "object",
+      "description": "Policy terms and definitions",
+      "additionalProperties": true
+    },
+    "approvals": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "defaults": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "emergency": {
+      "type": "object",
+      "additionalProperties": true
     }
   },
   "additionalProperties": true

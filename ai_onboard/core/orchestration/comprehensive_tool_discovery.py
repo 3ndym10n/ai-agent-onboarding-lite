@@ -693,10 +693,6 @@ class ComprehensiveToolDiscovery:
 
 def get_comprehensive_tool_discovery(root_path: Path) -> ComprehensiveToolDiscovery:
     """Get singleton instance of comprehensive tool discovery."""
-
     if not hasattr(get_comprehensive_tool_discovery, "_instance"):
-        get_comprehensive_tool_discovery._instance = ComprehensiveToolDiscovery(  # type: ignore[attr-defined]
-            root_path
-        )
-
-    return cast(ComprehensiveToolDiscovery, get_comprehensive_tool_discovery._instance)
+        get_comprehensive_tool_discovery._instance = ComprehensiveToolDiscovery(root_path)  # type: ignore[attr-defined]
+    return cast(ComprehensiveToolDiscovery, get_comprehensive_tool_discovery._instance)  # type: ignore[attr-defined]
