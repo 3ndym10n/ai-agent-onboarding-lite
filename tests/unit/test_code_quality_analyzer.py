@@ -6,11 +6,7 @@ that evaluates codebase health, complexity, unused imports, and dead code.
 """
 
 import ast
-import tempfile
 from pathlib import Path
-from typing import List
-
-import pytest
 
 from ai_onboard.core.quality_safety.code_quality_analyzer import (
     CodeQualityAnalysisResult,

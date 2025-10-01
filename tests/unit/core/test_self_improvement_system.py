@@ -3,13 +3,13 @@ from datetime import datetime, timezone
 
 import pytest
 
-from ai_onboard.core.continuous_improvement_validator import (
+from ai_onboard.core.continuous_improvement_validator import (  # type: ignore[import-untyped]
     ContinuousImprovementValidator,
     ValidationCategory,
     ValidationResult,
     ValidationTestCase,
 )
-from ai_onboard.core.smart_debugger import SmartDebugger
+from ai_onboard.core.smart_debugger import SmartDebugger  # type: ignore[import-untyped]
 
 
 @pytest.fixture

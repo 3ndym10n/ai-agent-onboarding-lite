@@ -737,7 +737,7 @@ class TestPerformanceValidation:
         """Test that memory usage stays within reasonable bounds during validation."""
         import os
 
-        import psutil
+        import psutil  # type: ignore[import-untyped]
 
         process = psutil.Process(os.getpid())
         initial_memory = process.memory_info().rss / 1024 / 1024  # MB
@@ -774,6 +774,8 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers", "ci_validator: marks tests as CI validator integration tests"
     )
+    # Register the validation report plugin
+    config.pluginmanager.register(ValidationReportPlugin(), "validation_report")
 
 
 def pytest_collection_modifyitems(config, items):
@@ -825,12 +827,6 @@ class ValidationReportPlugin:
         print(f"   Passed: {passed_tests}")
         print(f"   Failed: {failed_tests}")
         print(f"   Exit Status: {exitstatus}")
-
-
-# Register the plugin
-def pytest_configure(config):
-    """Register the validation report plugin."""
-    config.pluginmanager.register(ValidationReportPlugin(), "validation_report")
 
 
 # Custom command line options
