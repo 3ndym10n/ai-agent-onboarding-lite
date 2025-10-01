@@ -44,11 +44,14 @@ def add_core_commands(subparsers):
         "charter", parents=[ias_parent], help="Create or update project charter"
     )
     s_ch.add_argument("--interactive", action="store_true")
+    s_ch.add_argument("--interrogate", action="store_true",
+                     help="Use enhanced vision interrogation instead of simple template")
 
     # Plan
     subparsers.add_parser(
         "plan", parents=[ias_parent], help="Build plan.json from charter"
     )
+
 
     # Align
     s_al = subparsers.add_parser(
@@ -758,16 +761,24 @@ def handle_core_commands(args, root: Path):
         from ..core.base import state
         from ..core.legacy_cleanup import charter
 
-        charter.ensure(root, interactive=args.interactive)
+        if args.interrogate:
+            # Use enhanced vision interrogation
+            print("[INFO] Enhanced vision interrogation requested")
+            print("[INFO] Use 'python -m ai_onboard interrogate start' to begin")
+            print("[INFO] Or use 'python -m ai_onboard interrogate check' to see if ready")
+            return  # Don't proceed with charter creation until interrogation is complete
+        else:
+            # Use simple template approach
+            charter.ensure(root, interactive=args.interactive)
 
-        # Mark vision as confirmed if run interactively
-        if args.interactive:
-            charter_data = load_charter(root)
-            charter_data["vision_confirmed"] = True
-            from ..core.base import utils
+            # Mark vision as confirmed if run interactively
+            if args.interactive:
+                charter_data = load_charter(root)
+                charter_data["vision_confirmed"] = True
+                from ..core.base import utils
 
-            utils.write_json(root / ".ai_onboard" / "charter.json", charter_data)
-            print("✅ Vision confirmed in charter")
+                utils.write_json(root / ".ai_onboard" / "charter.json", charter_data)
+                print("✅ Vision confirmed in charter")
 
         state.advance(root, state.load(root), "chartered")
         print("Charter ready at .ai_onboard / charter.json")
