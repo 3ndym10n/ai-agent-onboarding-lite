@@ -1,3 +1,5 @@
+terms: {}
+
 rules:
   - id: risky-env-delete
     conditions:

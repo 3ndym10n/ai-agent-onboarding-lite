@@ -1,3 +1,5 @@
+terms: {}
+
 rules:
   # Core system protection
   - id: protect-core-system
