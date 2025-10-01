@@ -44,14 +44,21 @@ def add_core_commands(subparsers):
         "charter", parents=[ias_parent], help="Create or update project charter"
     )
     s_ch.add_argument("--interactive", action="store_true")
-    s_ch.add_argument("--interrogate", action="store_true",
-                     help="Use enhanced vision interrogation instead of simple template")
-
-    # Plan
-    subparsers.add_parser(
-        "plan", parents=[ias_parent], help="Build plan.json from charter"
+    s_ch.add_argument(
+        "--interrogate",
+        action="store_true",
+        help="Use enhanced vision interrogation instead of simple template",
     )
 
+    # Plan
+    s_plan = subparsers.add_parser(
+        "plan", parents=[ias_parent], help="Build plan.json from charter"
+    )
+    s_plan.add_argument(
+        "--analyze-codebase",
+        action="store_true",
+        help="Analyze existing codebase structure for intelligent planning",
+    )
 
     # Align
     s_al = subparsers.add_parser(
@@ -765,7 +772,9 @@ def handle_core_commands(args, root: Path):
             # Use enhanced vision interrogation
             print("[INFO] Enhanced vision interrogation requested")
             print("[INFO] Use 'python -m ai_onboard interrogate start' to begin")
-            print("[INFO] Or use 'python -m ai_onboard interrogate check' to see if ready")
+            print(
+                "[INFO] Or use 'python -m ai_onboard interrogate check' to see if ready"
+            )
             return  # Don't proceed with charter creation until interrogation is complete
         else:
             # Use simple template approach
@@ -787,7 +796,8 @@ def handle_core_commands(args, root: Path):
         from ..core.base import state
         from ..core.vision.planning import planning
 
-        planning.build(root)
+        analyze_codebase = getattr(args, "analyze_codebase", False)
+        planning.build(root, analyze_codebase)
         state.advance(root, state.load(root), "planned")
         print("Plan ready at .ai_onboard / plan.json")
     elif args.cmd == "roadmap":

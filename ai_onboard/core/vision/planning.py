@@ -1,28 +1,38 @@
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from ..base import utils
 
 
-def build(root: Path) -> dict:
+def build(root: Path, analyze_codebase: bool = False) -> dict:
     ch = utils.read_json(root / ".ai_onboard" / "charter.json", default=None)
     if not ch:
         raise SystemExit("Missing charter. Run: python -m ai_onboard charter")
 
+    # Optional codebase analysis
+    codebase_data = None
+    if analyze_codebase:
+        try:
+            from .codebase_analyzer import analyze_codebase_structure
+
+            codebase_data = analyze_codebase_structure(root)
+        except Exception as e:
+            print(f"[WARNING] Codebase analysis failed: {e}")
+
     # Generate charter - aware work breakdown structure
-    wbs = _generate_charter_aware_wbs(ch)
+    wbs = _generate_charter_aware_wbs(ch, codebase_data)
 
     # Generate charter - aware milestones
-    milestones = _generate_charter_aware_milestones(ch)
+    milestones = _generate_charter_aware_milestones(ch, codebase_data)
 
     # Generate charter - aware risks
-    risks = _generate_charter_aware_risks(ch)
+    risks = _generate_charter_aware_risks(ch, codebase_data)
 
     # Generate detailed project tasks
-    tasks = _generate_detailed_tasks(ch, wbs)
+    tasks = _generate_detailed_tasks(ch, wbs, codebase_data)
 
     # Calculate dependencies and critical path
-    dependency_analysis = _analyze_dependencies(tasks)
+    dependency_analysis = _analyze_dependencies(tasks, codebase_data)
 
     plan = {
         "methodology": ch.get("preferred_methodology", "agile"),
@@ -43,16 +53,120 @@ def build(root: Path) -> dict:
             "artifacts": ["progress.md", "metrics.json"],
         },
     }
+
+    # Include codebase analysis if available
+    if codebase_data:
+        plan["codebase_analysis"] = codebase_data
     utils.write_json(root / ".ai_onboard" / "plan.json", plan)
     return plan
 
 
-def _generate_charter_aware_wbs(charter: dict) -> list:
-    """Generate work breakdown structure based on charter content."""
+def _generate_charter_aware_wbs(
+    charter: dict, codebase_data: Optional[Dict[str, Any]] = None
+) -> list:
+    """Generate work breakdown structure based on charter content and codebase analysis."""
     wbs = []
 
     # Core foundation tasks
     wbs.append({"id": "C1", "name": "Core system foundation", "deps": []})
+
+    # Adapt based on codebase analysis if available
+    if codebase_data:
+        languages = codebase_data.get("languages", [])
+        frameworks = codebase_data.get("frameworks", [])
+        modules = codebase_data.get("modules", [])
+        complexity = codebase_data.get("complexity_score", 0.0)
+
+        # Add language-specific phases
+        if "python" in languages:
+            wbs.append(
+                {"id": "C2", "name": "Python application foundation", "deps": ["C1"]}
+            )
+        elif "javascript" in languages or "typescript" in languages:
+            wbs.append(
+                {"id": "C2", "name": "Web application foundation", "deps": ["C1"]}
+            )
+
+        # Add framework-specific phases
+        if "react" in frameworks:
+            wbs.append(
+                {"id": "C3", "name": "React frontend setup", "deps": ["C1", "C2"]}
+            )
+        elif "django" in frameworks:
+            wbs.append(
+                {"id": "C3", "name": "Django backend setup", "deps": ["C1", "C2"]}
+            )
+
+        # Add module-specific phases based on existing modules
+        if len(modules) > 5:
+            wbs.append(
+                {"id": "C4", "name": "Multi-module architecture", "deps": ["C1"]}
+            )
+
+        # Add testing based on test coverage
+        test_coverage = codebase_data.get("test_coverage", 0.0)
+        if test_coverage < 30:
+            wbs.append(
+                {"id": "C5", "name": "Testing infrastructure setup", "deps": ["C1"]}
+            )
+    else:
+        # Fallback to charter-based WBS
+        vision_text = str(charter.get("vision", "")).lower()
+        objectives = [str(obj).lower() for obj in charter.get("objectives", [])]
+
+        # Vision and alignment tasks
+        if charter.get("vision"):
+            wbs.append({"id": "C2", "name": "Vision alignment system", "deps": ["C1"]})
+
+        # Gate system improvements
+        if any("gate" in obj for obj in objectives):
+            wbs.append(
+                {"id": "C3", "name": "Enhanced gate system", "deps": ["C1", "C2"]}
+            )
+
+        # AI agent collaboration
+        if any("agent" in obj for obj in objectives):
+            wbs.append(
+                {
+                    "id": "C4",
+                    "name": "AI agent collaboration features",
+                    "deps": ["C1", "C2"],
+                }
+            )
+
+        # Continuous improvement
+        if any("improvement" in obj for obj in objectives):
+            wbs.append(
+                {
+                    "id": "C5",
+                    "name": "Continuous improvement system",
+                    "deps": ["C1", "C2"],
+                }
+            )
+
+        # Cursor AI integration
+        if "cursor" in str(charter.get("constraints", {})).lower():
+            wbs.append(
+                {"id": "C6", "name": "Cursor AI integration", "deps": ["C1", "C4"]}
+            )
+
+        # Documentation and usability
+        wbs.append(
+            {
+                "id": "C7",
+                "name": "Documentation and user experience",
+                "deps": ["C1", "C2", "C3"],
+            }
+        )
+
+        # System robustness and self - improvement
+        wbs.append(
+            {
+                "id": "C8",
+                "name": "System robustness and self - improvement",
+                "deps": ["C1", "C2", "C4"],
+            }
+        )
 
     # Vision and alignment tasks
     if charter.get("vision"):
@@ -103,7 +217,9 @@ def _generate_charter_aware_wbs(charter: dict) -> list:
     return wbs
 
 
-def _generate_charter_aware_milestones(charter: dict) -> list:
+def _generate_charter_aware_milestones(
+    charter: dict, codebase_data: Optional[Dict[str, Any]] = None
+) -> list:
     """Generate milestones based on charter content."""
     milestones = [
         {
@@ -137,7 +253,9 @@ def _generate_charter_aware_milestones(charter: dict) -> list:
     return milestones
 
 
-def _generate_charter_aware_risks(charter: dict) -> list:
+def _generate_charter_aware_risks(
+    charter: dict, codebase_data: Optional[Dict[str, Any]] = None
+) -> list:
     """Generate risks based on charter content and constraints."""
     risks = []
 
@@ -177,7 +295,9 @@ def _generate_charter_aware_risks(charter: dict) -> list:
     return risks
 
 
-def _generate_detailed_tasks(charter: dict, wbs: list) -> list:
+def _generate_detailed_tasks(
+    charter: dict, wbs: list, codebase_data: Optional[Dict[str, Any]] = None
+) -> list:
     """Generate detailed project tasks from WBS items."""
     tasks = []
     task_id = 1
@@ -352,7 +472,9 @@ def _generate_detailed_tasks(charter: dict, wbs: list) -> list:
     return tasks
 
 
-def _analyze_dependencies(tasks: list) -> dict:
+def _analyze_dependencies(
+    tasks: list, codebase_data: Optional[Dict[str, Any]] = None
+) -> dict:
     """Analyze task dependencies and identify critical path and parallel work."""
 
     # Define logical dependencies between task types

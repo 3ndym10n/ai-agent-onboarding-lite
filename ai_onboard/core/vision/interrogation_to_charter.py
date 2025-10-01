@@ -12,7 +12,7 @@ from ..base import utils
 
 
 def convert_interrogation_to_charter(
-    interrogation_data: Dict[str, Any]
+    interrogation_data: Dict[str, Any],
 ) -> Dict[str, Any]:
     """
     Convert vision interrogation responses to charter format.
@@ -100,14 +100,16 @@ def _extract_stakeholders(responses: Dict[str, Any]) -> List[Dict[str, Any]]:
     if isinstance(stakeholders_data, str):
         # Parse string format if needed
         stakeholders = []
-        for line in stakeholders_data.split('\n'):
-            if ':' in line:
-                name, role = line.split(':', 1)
-                stakeholders.append({
-                    "name": name.strip(),
-                    "role": role.strip(),
-                    "decider": "decision" in role.lower() or "lead" in role.lower()
-                })
+        for line in stakeholders_data.split("\n"):
+            if ":" in line:
+                name, role = line.split(":", 1)
+                stakeholders.append(
+                    {
+                        "name": name.strip(),
+                        "role": role.strip(),
+                        "decider": "decision" in role.lower() or "lead" in role.lower(),
+                    }
+                )
         return stakeholders
 
     return stakeholders_data if isinstance(stakeholders_data, list) else []
@@ -119,7 +121,7 @@ def _extract_objectives(responses: Dict[str, Any]) -> List[str]:
     objectives_data = phase2.get("objectives", [])
 
     if isinstance(objectives_data, str):
-        return [obj.strip() for obj in objectives_data.split('\n') if obj.strip()]
+        return [obj.strip() for obj in objectives_data.split("\n") if obj.strip()]
 
     return objectives_data if isinstance(objectives_data, list) else []
 
@@ -130,7 +132,7 @@ def _extract_in_scope(responses: Dict[str, Any]) -> List[str]:
     in_scope_data = phase3.get("in_scope", [])
 
     if isinstance(in_scope_data, str):
-        return [item.strip() for item in in_scope_data.split('\n') if item.strip()]
+        return [item.strip() for item in in_scope_data.split("\n") if item.strip()]
 
     return in_scope_data if isinstance(in_scope_data, list) else []
 
@@ -141,7 +143,7 @@ def _extract_out_of_scope(responses: Dict[str, Any]) -> List[str]:
     out_of_scope_data = phase3.get("out_of_scope", [])
 
     if isinstance(out_of_scope_data, str):
-        return [item.strip() for item in out_of_scope_data.split('\n') if item.strip()]
+        return [item.strip() for item in out_of_scope_data.split("\n") if item.strip()]
 
     return out_of_scope_data if isinstance(out_of_scope_data, list) else []
 
@@ -152,7 +154,7 @@ def _extract_non_goals(responses: Dict[str, Any]) -> List[str]:
     non_goals_data = phase3.get("non_goals", [])
 
     if isinstance(non_goals_data, str):
-        return [item.strip() for item in non_goals_data.split('\n') if item.strip()]
+        return [item.strip() for item in non_goals_data.split("\n") if item.strip()]
 
     return non_goals_data if isinstance(non_goals_data, list) else []
 
@@ -165,13 +167,10 @@ def _extract_success_metrics(responses: Dict[str, Any]) -> List[Dict[str, Any]]:
     if isinstance(success_criteria, str):
         # Convert string to structured format
         metrics = []
-        for line in success_criteria.split('\n'):
-            if ':' in line:
-                name, target = line.split(':', 1)
-                metrics.append({
-                    "name": name.strip(),
-                    "target": target.strip()
-                })
+        for line in success_criteria.split("\n"):
+            if ":" in line:
+                name, target = line.split(":", 1)
+                metrics.append({"name": name.strip(), "target": target.strip()})
         return metrics
 
     return success_criteria if isinstance(success_criteria, list) else []
@@ -183,7 +182,7 @@ def _extract_minimum_viable_outcomes(responses: Dict[str, Any]) -> List[str]:
     mvo_data = phase4.get("minimum_viable_outcomes", [])
 
     if isinstance(mvo_data, str):
-        return [item.strip() for item in mvo_data.split('\n') if item.strip()]
+        return [item.strip() for item in mvo_data.split("\n") if item.strip()]
 
     return mvo_data if isinstance(mvo_data, list) else []
 
@@ -222,7 +221,9 @@ def _extract_assumptions(responses: Dict[str, Any]) -> List[str]:
     phase3 = responses.get("phase_3", {})
     if phase3.get("assumptions"):
         if isinstance(phase3["assumptions"], str):
-            assumptions.extend([a.strip() for a in phase3["assumptions"].split('\n') if a.strip()])
+            assumptions.extend(
+                [a.strip() for a in phase3["assumptions"].split("\n") if a.strip()]
+            )
         else:
             assumptions.extend(phase3["assumptions"])
 
@@ -261,7 +262,9 @@ def _extract_methodology(responses: Dict[str, Any]) -> str:
     return phase2.get("preferred_methodology", "auto")
 
 
-def _extract_project_name(responses: Dict[str, Any], interrogation_data: Dict[str, Any]) -> str:
+def _extract_project_name(
+    responses: Dict[str, Any], interrogation_data: Dict[str, Any]
+) -> str:
     """Extract or infer project name from responses."""
     # Look for explicit project name
     phase1 = responses.get("phase_1", {})
@@ -281,7 +284,9 @@ def _extract_project_name(responses: Dict[str, Any], interrogation_data: Dict[st
     return f"Project-{interrogation_data.get('session_id', 'Unknown')[:8]}"
 
 
-def create_charter_from_interrogation(root: Path, interrogation_path: Optional[Path] = None) -> Dict[str, Any]:
+def create_charter_from_interrogation(
+    root: Path, interrogation_path: Optional[Path] = None
+) -> Dict[str, Any]:
     """
     Create a charter from completed interrogation data.
 
