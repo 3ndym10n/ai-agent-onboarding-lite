@@ -105,11 +105,20 @@ class AIAgentCollaborationProtocol:
         self.error_monitor = get_error_monitor(project_root)
         self.vision_interrogator = get_enhanced_vision_interrogator(project_root)
 
+    def _get_session(self, session_id: str) -> Optional[CollaborationSession]:
+        """Get session by ID."""
+        return self.sessions.get(session_id)
+
+    def _get_agent_profile(self, agent_id: str) -> Optional[AgentProfile]:
+        """Get agent profile by ID."""
+        return self.agent_profiles.get(agent_id)
+
     def _load_protocol_config(self) -> Dict[str, Any]:
         """Load protocol configuration."""
         config_path = self.project_root / ".ai_onboard" / "collaboration_config.json"
         if config_path.exists():
-            return utils.read_json(config_path, default={})
+            config_data = utils.read_json(config_path, default={})
+            return config_data if isinstance(config_data, dict) else {}
 
         # Default configuration
         default_config = {
@@ -862,13 +871,13 @@ class AIAgentCollaborationProtocol:
 
             # Create context snapshot
             snapshot_id = mediator.create_context_snapshot(
-                agent_id=session.agent_id,
+                agent_id=session.agent_profile.agent_id,
                 operation="session_handoff",
                 context={
                     "session_id": session_id,
                     "agent_profile": session.agent_profile.__dict__,
-                    "session_history": session.session_history,
-                    "current_operation": getattr(session, "current_operation", None),
+                    "actions_taken": session.actions_taken,
+                    "current_operation": None,  # Not stored in session
                 },
             )
 
@@ -895,15 +904,20 @@ class AIAgentCollaborationProtocol:
                 return handoff_context
 
             # Create new session with loaded context
+            agent_profile = self._get_agent_profile(new_agent_id)
+            if not agent_profile:
+                return {"error": f"Agent profile not found for {new_agent_id}"}
+
             new_session = CollaborationSession(
                 session_id=new_session_id,
-                agent_id=new_agent_id,
-                mode=CollaborationMode.COLLABORATIVE,
-                agent_profile=self._get_agent_profile(new_agent_id),
+                agent_profile=agent_profile,
+                project_root=self.project_root,
+                started_at=datetime.now(),
+                last_activity=datetime.now(),
             )
 
-            # Add handoff context to session
-            new_session.handoff_context = handoff_context
+            # Add handoff context to session context
+            new_session.context.update(handoff_context)
 
             return {
                 "success": True,
@@ -928,14 +942,12 @@ class AIAgentCollaborationProtocol:
 
             context_summary = {
                 "session_id": session_id,
-                "agent_id": session.agent_id,
-                "session_duration": time.time() - session.created_at.timestamp(),
-                "operations_count": len(session.session_history),
+                "agent_id": session.agent_profile.agent_id,
+                "session_duration": time.time() - session.started_at.timestamp(),
+                "operations_count": len(session.actions_taken),
                 "last_activity": session.last_activity.isoformat(),
-                "current_operation": getattr(session, "current_operation", None),
-                "context_snapshot_available": mediator._context_snapshot_exists(
-                    session_id
-                ),
+                "current_operation": None,  # Not stored in session
+                "context_snapshot_available": self._context_snapshot_exists(session_id),
             }
 
             return context_summary
