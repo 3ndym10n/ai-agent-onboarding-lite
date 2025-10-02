@@ -65,12 +65,14 @@ Agents should follow these gates to stay aligned and safe:
 This repository now includes comprehensive AI agent integration:
 
 ### New AI Agent Guidance System
+
 - **Dynamic guidance** that adapts to agent experience and project context
 - **Safety mechanisms** with multiple protection levels
 - **Collaboration protocols** for structured agent interaction
 - **Session management** with limits and monitoring
 
 ### Available AI Agent Commands
+
 - `python -m ai_onboard cursor init` - Initialize Cursor AI integration
 - `python -m ai_onboard cursor session create` - Create collaboration session
 - `python -m ai_onboard intelligent start` - Start intelligent monitoring
@@ -78,6 +80,7 @@ This repository now includes comprehensive AI agent integration:
 - `python -m ai_onboard holistic orchestrate` - Orchestrate tools for requests
 
 ### AI Agent Safety
+
 - **Protected files** are automatically blocked from modification
 - **Dangerous commands** are detected and require approval
 - **Session limits** prevent runaway agent behavior
