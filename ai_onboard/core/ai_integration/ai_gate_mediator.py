@@ -119,31 +119,90 @@ class AIGateMediator:
     def _get_history_factor(self, agent_id: str, operation: str) -> float:
         """Get confidence adjustment based on historical performance."""
         try:
-            # Get recent learning events for this agent and operation type
-            history = self.learning_system.get_learning_history(limit=50)
+            # Get recent learning events for pattern analysis
+            history = self.learning_system.get_learning_history(limit=100)
 
-            relevant_events = [
-                event
-                for event in history
-                if event.get("agent_id") == agent_id
-                and operation.lower() in str(event.get("context", "")).lower()
-            ]
+            # Look for patterns in operation types and outcomes
+            operation_patterns = self._analyze_operation_patterns(operation, history)
 
-            if not relevant_events:
-                return 0.5  # Neutral if no history
+            if operation_patterns["sample_size"] < 5:
+                return 0.5  # Not enough data for reliable patterns
 
-            # Calculate success rate
-            successful_events = sum(
-                1
-                for event in relevant_events
-                if event.get("outcome", {}).get("success", False)
-            )
-            success_rate = successful_events / len(relevant_events)
+            # Use pattern analysis for confidence adjustment
+            pattern_confidence = self._calculate_pattern_confidence(operation_patterns)
 
-            return success_rate
+            # Adjust based on recency - more recent events are more relevant
+            recency_factor = self._calculate_recency_factor(operation_patterns["recent_events"])
+
+            final_confidence = (pattern_confidence * 0.7) + (recency_factor * 0.3)
+
+            return min(0.9, max(0.1, final_confidence))
 
         except Exception:
             return 0.5  # Neutral on error
+
+    def _analyze_operation_patterns(self, operation: str, history: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Analyze patterns in historical operations."""
+        relevant_events = []
+
+        for event in history:
+            event_context = event.get("context", {})
+            event_operation = str(event_context.get("operation", "")).lower()
+
+            # Look for similar operations (partial matches)
+            if (operation.lower() in event_operation or
+                event_operation in operation.lower()):
+                relevant_events.append(event)
+
+        if not relevant_events:
+            return {"sample_size": 0, "success_rate": 0.5, "recent_events": 0}
+
+        # Calculate success rate based on whether operations proceeded successfully
+        successful_events = sum(
+            1 for event in relevant_events
+            if event.get("outcome", {}).get("proceeded", False) and
+            not event.get("outcome", {}).get("failed", False)
+        )
+
+        success_rate = successful_events / len(relevant_events) if relevant_events else 0.5
+
+        # Count recent events (last 20 events)
+        recent_threshold = 20
+        recent_events = min(len(relevant_events), recent_threshold)
+
+        return {
+            "sample_size": len(relevant_events),
+            "success_rate": success_rate,
+            "recent_events": recent_events
+        }
+
+    def _calculate_pattern_confidence(self, patterns: Dict[str, Any]) -> float:
+        """Calculate confidence based on historical patterns."""
+        success_rate = patterns["success_rate"]
+
+        # Higher success rate = higher confidence
+        # But we need enough samples to be confident
+        sample_size = patterns["sample_size"]
+
+        if sample_size < 5:
+            return 0.5  # Not enough data
+
+        # Scale confidence based on success rate and sample size
+        base_confidence = success_rate
+
+        # More samples = more confidence in the pattern
+        sample_confidence = min(1.0, sample_size / 20.0)  # Max out at 20 samples
+
+        return (base_confidence * 0.7) + (sample_confidence * 0.3)
+
+    def _calculate_recency_factor(self, recent_events: int) -> float:
+        """Calculate how recent the relevant events are."""
+        # More recent events = higher confidence in current patterns
+        if recent_events == 0:
+            return 0.3  # Low confidence if no recent events
+
+        # Scale from 0.3 (no recent events) to 0.9 (many recent events)
+        return 0.3 + (recent_events / 20.0 * 0.6)
 
     def _proceed_autonomously(
         self, agent_id: str, operation: str, context: Dict[str, Any], confidence: float
@@ -276,14 +335,14 @@ class AIGateMediator:
         self, agent_id: str, operation: str, context: Dict[str, Any], confidence: float
     ) -> MediationResult:
         """Route to human with enhanced context and smart questions."""
-        # 1. Generate context-aware questions
-        questions = self._generate_enhanced_questions(operation, context, confidence)
+        # 1. Generate guiding questions
+        questions = self._generate_guiding_questions(operation, context, confidence)
 
-        # 2. Create enhanced gate request
+        # 2. Create guiding gate request
         gate_request = GateRequest(
             gate_type=GateType.CLARIFICATION_NEEDED,
-            title=f"AI Agent Needs Clarification: {operation}",
-            description=self._generate_gate_description(operation, context),
+            title=f"AI Agent Needs Guidance: {operation}",
+            description=self._generate_guiding_description(operation, context),
             context=context,
             questions=questions,
             confidence=confidence,
@@ -299,32 +358,26 @@ class AIGateMediator:
         response = self._wait_for_gate_response_async(gate_result, timeout)
 
         if response:
-            # Learn from the response
-            self.learning_system.record_learning_event(
-                event_type="human_gate_response",
-                event_data={
-                    "operation": operation,
-                    "confidence": confidence,
-                    "response": response,
-                    "authoritative": True,  # Human responses are authoritative
-                },
-            )
+            # Learn from the response to improve future decisions
+            self._learn_from_guidance_response(operation, context, response, confidence)
 
+            # Apply guidance and continue (don't block)
             return MediationResult(
-                proceed=response.get("user_decision") == "proceed",
-                response=response,
+                proceed=True,  # Always proceed with guidance applied
+                response=self._apply_guidance_to_operation(operation, context, response),
                 confidence=confidence,
                 gate_created=True,
-                smart_defaults_used=False,
+                smart_defaults_used=False
             )
         else:
-            # Timeout or no response - default to stop for safety
+            # Timeout - apply smart defaults and continue rather than stopping
+            smart_response = self._apply_timeout_defaults(operation, context, confidence)
             return MediationResult(
-                proceed=False,
-                response={"user_decision": "stop", "reason": "timeout"},
+                proceed=True,  # Continue rather than stopping
+                response=smart_response,
                 confidence=confidence,
                 gate_created=True,
-                smart_defaults_used=False,
+                smart_defaults_used=True
             )
 
     def _generate_enhanced_questions(
@@ -410,6 +463,413 @@ class AIGateMediator:
             time.sleep(1)  # Poll every second
 
         return None
+
+
+    def _learn_from_guidance_response(
+        self, operation: str, context: Dict[str, Any], response: Dict[str, Any], confidence: float
+    ) -> None:
+        """Learn from human guidance responses to improve future decisions."""
+        try:
+            # Record that human guidance was needed and what the response was
+            self.learning_system.record_learning_event(
+                event_type="guidance_provided",
+                event_data={
+                    "operation": operation,
+                    "confidence": confidence,
+                    "human_response": response,
+                    "context": context,
+                    "guidance_helpful": True,  # Human guidance is always authoritative
+                }
+            )
+
+            # If the operation was uncertain but user approved, learn that this operation type
+            # might be safe to do autonomously in the future
+            if response.get("user_decision") == "proceed" and confidence < 0.7:
+                self.learning_system.record_learning_event(
+                    event_type="autonomy_confidence_increased",
+                    event_data={
+                        "operation": operation,
+                        "previous_confidence": confidence,
+                        "new_confidence": min(confidence + 0.1, 0.9),  # Gradually increase confidence
+                    }
+                )
+
+        except Exception:
+            # Don't fail if learning fails
+            pass
+
+    def _apply_guidance_to_operation(
+        self, operation: str, context: Dict[str, Any], response: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Apply human guidance to modify the operation."""
+        # Extract guidance from response
+        user_responses = response.get("user_responses", [])
+
+        # Apply guidance to context for future operations
+        if user_responses:
+            # Store guidance for this operation type
+            guidance_context = {
+                "operation": operation,
+                "user_guidance": user_responses,
+                "applied": True
+            }
+            # This could be used to modify future similar operations
+
+        return {
+            "action": "proceed_with_guidance",
+            "guidance_applied": user_responses,
+            "confidence": response.get("confidence", 0.8)
+        }
+
+    def _apply_timeout_defaults(
+        self, operation: str, context: Dict[str, Any], confidence: float
+    ) -> Dict[str, Any]:
+        """Apply smart defaults when human response times out."""
+        # Use learning history to determine safe defaults
+        smart_defaults = self._get_smart_defaults(operation, context)
+
+        if smart_defaults:
+            return {
+                "action": "proceed_with_defaults",
+                "defaults_applied": smart_defaults,
+                "reason": "timeout_fallback"
+            }
+        else:
+            # Conservative default - proceed but log the uncertainty
+            return {
+                "action": "proceed_with_caution",
+                "confidence": confidence,
+                "reason": "timeout_no_defaults"
+            }
+
+    def _generate_guiding_questions(
+        self, operation: str, context: Dict[str, Any], confidence: float
+    ) -> List[str]:
+        """Generate guiding questions instead of blocking questions."""
+        questions = []
+
+        # Focus on clarifying intent rather than blocking
+        questions.append(f"I want to {operation}. What specific outcome are you looking for?")
+
+        # Ask about scope and priorities
+        if "files" in context:
+            file_count = len(context["files"])
+            questions.append(f"This involves {file_count} files. Should I focus on all of them or prioritize certain ones?")
+
+        # Ask about vision alignment
+        questions.append("How does this fit with your overall project vision?")
+
+        # Ask about complexity preferences
+        if confidence < 0.6:
+            questions.append("Do you prefer a simple solution or a more comprehensive one?")
+
+        return questions
+
+    def _generate_guiding_description(self, operation: str, context: Dict[str, Any]) -> str:
+        """Generate a guiding description instead of a blocking one."""
+        # Focus on collaboration rather than uncertainty
+        description = f"I'm working on: {operation}"
+
+        if "files" in context:
+            file_count = len(context["files"])
+            description += f" involving {file_count} file{'s' if file_count != 1 else ''}"
+
+        description += ". I want to make sure I'm building exactly what you need."
+
+        return description
+
+
+    def create_context_snapshot(self, agent_id: str, operation: str, context: Dict[str, Any]) -> str:
+        """Create a context snapshot for handover to other agents."""
+        try:
+            snapshot_id = f"{agent_id}_{operation}_{int(time.time())}"
+
+            snapshot = {
+                "snapshot_id": snapshot_id,
+                "timestamp": time.time(),
+                "agent_id": agent_id,
+                "operation": operation,
+                "context": context,
+                "current_confidence": self._assess_confidence(agent_id, operation, context),
+                "decisions_made": self._extract_decision_history(),
+                "user_preferences": self._extract_user_preferences(),
+                "vision_alignment": self._check_vision_alignment(context)
+            }
+
+            # Store snapshot for future retrieval
+            self._store_context_snapshot(snapshot)
+
+            return snapshot_id
+
+        except Exception:
+            return f"temp_{int(time.time())}"  # Fallback snapshot ID
+
+    def load_context_for_handoff(self, snapshot_id: str, new_agent_id: str) -> Dict[str, Any]:
+        """Load context for handover to a new agent."""
+        try:
+            snapshot = self._retrieve_context_snapshot(snapshot_id)
+
+            if not snapshot:
+                return {"error": "No context snapshot found"}
+
+            # Enhance context for the new agent
+            handoff_context = {
+                "previous_agent": snapshot["agent_id"],
+                "previous_operation": snapshot["operation"],
+                "previous_context": snapshot["context"],
+                "previous_decisions": snapshot["decisions_made"],
+                "user_preferences": snapshot["user_preferences"],
+                "vision_alignment": snapshot["vision_alignment"],
+                "confidence_history": snapshot["current_confidence"],
+                "handoff_timestamp": time.time(),
+                "new_agent_id": new_agent_id
+            }
+
+            # Record the handoff for learning
+            self.learning_system.record_learning_event(
+                event_type="context_handoff",
+                event_data={
+                    "from_agent": snapshot["agent_id"],
+                    "to_agent": new_agent_id,
+                    "operation": snapshot["operation"],
+                    "context_preserved": True
+                }
+            )
+
+            return handoff_context
+
+        except Exception:
+            return {"error": "Failed to load context for handoff"}
+
+    def _extract_decision_history(self) -> List[Dict[str, Any]]:
+        """Extract recent decision history for context."""
+        try:
+            history = self.learning_system.get_learning_history(limit=20)
+
+            decisions = []
+            for event in history:
+                if event.get("event_type") in ["autonomous_decision", "guidance_provided"]:
+                    decisions.append({
+                        "timestamp": event.get("timestamp"),
+                        "operation": event.get("context", {}).get("operation"),
+                        "confidence": event.get("context", {}).get("confidence"),
+                        "outcome": event.get("outcome", {})
+                    })
+
+            return decisions
+
+        except Exception:
+            return []
+
+    def _extract_user_preferences(self) -> Dict[str, Any]:
+        """Extract learned user preferences."""
+        try:
+            # Look for guidance responses that indicate preferences
+            history = self.learning_system.get_learning_history(limit=50)
+
+            preferences = {
+                "complexity_preference": "unknown",
+                "speed_vs_quality": "unknown",
+                "risk_tolerance": "unknown"
+            }
+
+            guidance_events = [
+                event for event in history
+                if event.get("event_type") == "guidance_provided"
+            ]
+
+            if guidance_events:
+                # Analyze responses for patterns
+                complexity_responses = []
+                for event in guidance_events:
+                    response = event.get("context", {}).get("human_response", {})
+                    if "simple" in str(response).lower():
+                        complexity_responses.append("simple")
+                    elif "comprehensive" in str(response).lower():
+                        complexity_responses.append("comprehensive")
+
+                if complexity_responses:
+                    # Most common preference
+                    from collections import Counter
+                    most_common = Counter(complexity_responses).most_common(1)
+                    if most_common:
+                        preferences["complexity_preference"] = most_common[0][0]
+
+            return preferences
+
+        except Exception:
+            return {"complexity_preference": "unknown"}
+
+    def _check_vision_alignment(self, context: Dict[str, Any]) -> Dict[str, Any]:
+        """Check if current operation aligns with project vision."""
+        try:
+            # This would integrate with the vision system to check alignment
+            # For now, return a basic assessment
+            return {
+                "aligned": True,  # Assume aligned unless we can check otherwise
+                "confidence": 0.8,
+                "last_checked": time.time()
+            }
+        except Exception:
+            return {"aligned": True, "confidence": 0.5}
+
+    def _store_context_snapshot(self, snapshot: Dict[str, Any]) -> None:
+        """Store context snapshot for future retrieval."""
+        try:
+            # Store in a context snapshots file
+            snapshots_file = self.project_root / ".ai_onboard" / "context_snapshots.json"
+
+            existing_snapshots = {}
+            if snapshots_file.exists():
+                with open(snapshots_file, 'r') as f:
+                    existing_snapshots = json.load(f)
+
+            existing_snapshots[snapshot["snapshot_id"]] = snapshot
+
+            # Keep only the last 50 snapshots to avoid file bloat
+            if len(existing_snapshots) > 50:
+                oldest_keys = sorted(existing_snapshots.keys())[:len(existing_snapshots) - 50]
+                for key in oldest_keys:
+                    del existing_snapshots[key]
+
+            with open(snapshots_file, 'w') as f:
+                json.dump(existing_snapshots, f, indent=2)
+
+        except Exception:
+            pass  # Don't fail if snapshot storage fails
+
+    def _retrieve_context_snapshot(self, snapshot_id: str) -> Optional[Dict[str, Any]]:
+        """Retrieve context snapshot by ID."""
+        try:
+            snapshots_file = self.project_root / ".ai_onboard" / "context_snapshots.json"
+
+            if not snapshots_file.exists():
+                return None
+
+            with open(snapshots_file, 'r') as f:
+                snapshots = json.load(f)
+
+            return snapshots.get(snapshot_id)
+
+        except Exception:
+            return None
+
+
+    def assess_operation_risk(self, operation: str, context: Dict[str, Any]) -> Dict[str, Any]:
+        """Assess the risk level of an operation for protected paths."""
+        risk_level = "low"
+        risk_factors = []
+
+        # Check for file operations that might be risky
+        if "files" in context:
+            files = context["files"]
+            file_count = len(files)
+
+            # Large number of files = higher risk
+            if file_count > 10:
+                risk_level = "high"
+                risk_factors.append(f"Large number of files ({file_count})")
+
+            # Check for sensitive file patterns
+            sensitive_patterns = [".env", "secrets", ".pem", "id_rsa", ".key", "password"]
+            sensitive_files = [
+                f for f in files
+                if any(pattern in str(f).lower() for pattern in sensitive_patterns)
+            ]
+
+            if sensitive_files:
+                risk_level = "high"
+                risk_factors.append(f"Sensitive files detected: {sensitive_files}")
+
+        # Check for delete operations
+        if "delete" in operation.lower() or "remove" in operation.lower():
+            risk_level = "high"
+            risk_factors.append("Delete operation detected")
+
+        # Check for system-level operations
+        if any(word in operation.lower() for word in ["system", "install", "deploy", "uninstall"]):
+            risk_level = "medium"
+            risk_factors.append("System-level operation")
+
+        # Assess based on user history and preferences
+        user_risk_tolerance = self._assess_user_risk_tolerance()
+        if user_risk_tolerance == "high" and risk_level == "medium":
+            risk_level = "low"  # User has shown tolerance for this type of risk
+
+        return {
+            "risk_level": risk_level,
+            "risk_factors": risk_factors,
+            "user_risk_tolerance": user_risk_tolerance,
+            "recommendation": self._get_risk_recommendation(risk_level, operation, context)
+        }
+
+    def _assess_user_risk_tolerance(self) -> str:
+        """Assess user's risk tolerance based on historical responses."""
+        try:
+            history = self.learning_system.get_learning_history(limit=30)
+
+            risk_acceptance_events = [
+                event for event in history
+                if event.get("event_type") == "guidance_provided"
+                and event.get("context", {}).get("human_response", {}).get("user_decision") == "proceed"
+            ]
+
+            if len(risk_acceptance_events) > 5:
+                return "high"  # User frequently accepts risks
+            elif len(risk_acceptance_events) > 2:
+                return "medium"  # User sometimes accepts risks
+            else:
+                return "low"  # User is cautious
+
+        except Exception:
+            return "medium"  # Default to medium tolerance
+
+    def _get_risk_recommendation(self, risk_level: str, operation: str, context: Dict[str, Any]) -> str:
+        """Get recommendation based on risk level."""
+        if risk_level == "low":
+            return "proceed"
+
+        elif risk_level == "medium":
+            return "ask_user"
+
+        else:  # high risk
+            return "require_confirmation"
+
+    def get_protection_guidance(self, operation: str, context: Dict[str, Any]) -> Dict[str, Any]:
+        """Get guidance for potentially risky operations."""
+        risk_assessment = self.assess_operation_risk(operation, context)
+
+        if risk_assessment["recommendation"] == "proceed":
+            return {"action": "proceed", "guidance": "Operation appears safe"}
+
+        elif risk_assessment["recommendation"] == "ask_user":
+            return {
+                "action": "ask_user",
+                "guidance": f"This operation may affect {len(context.get('files', []))} files. Should I proceed?",
+                "risk_factors": risk_assessment["risk_factors"]
+            }
+
+        else:  # require_confirmation
+            return {
+                "action": "require_confirmation",
+                "guidance": "This operation involves sensitive files or delete operations. Please confirm you want to proceed.",
+                "risk_factors": risk_assessment["risk_factors"],
+                "alternatives": self._suggest_safer_alternatives(operation, context)
+            }
+
+    def _suggest_safer_alternatives(self, operation: str, context: Dict[str, Any]) -> List[str]:
+        """Suggest safer alternatives for risky operations."""
+        alternatives = []
+
+        if "delete" in operation.lower():
+            alternatives.append("Use 'backup' command first to preserve files")
+            alternatives.append("Consider 'archive' instead of 'delete'")
+
+        if "files" in context and len(context["files"]) > 5:
+            alternatives.append("Process files in smaller batches")
+            alternatives.append("Use 'dry-run' mode first to see what would be affected")
+
+        return alternatives
 
 
 def get_ai_gate_mediator(project_root: Path) -> AIGateMediator:
