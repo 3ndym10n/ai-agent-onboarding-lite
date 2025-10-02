@@ -5,10 +5,9 @@ This module scans the existing codebase to inform WBS generation and task planni
 making the planning process more adaptive to the actual project structure.
 """
 
-import ast
 import os
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional
 
 from ..base import utils
 

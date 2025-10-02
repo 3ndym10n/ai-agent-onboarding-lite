@@ -58,7 +58,7 @@ def add_cursor_commands(subparsers):
         "create", help="Create collaboration session"
     )
     create_parser.add_argument(
-        "--user - id", default="cursor_user", help="User ID for session"
+        "--user-id", default="cursor_user", help="User ID for session"
     )
 
     # Session list

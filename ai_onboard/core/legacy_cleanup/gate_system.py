@@ -111,8 +111,8 @@ class GateSystem:
             "'Please read the gate file and ask me the questions'"
         )
 
-        # Wait for initial responses (step 1)
-        initial_response = self._wait_for_response(timeout_seconds=2)
+        # Wait for initial responses (step 1) - increased timeout for AI agents
+        initial_response = self._wait_for_response(timeout_seconds=30)
 
         # If first step timed out or user decided to stop / modify, honor it immediately
         if initial_response.get("user_decision") != "proceed":
@@ -149,7 +149,7 @@ class GateSystem:
 
         print("[INFO] Awaiting explicit USER CONFIRMATION to proceed...")
         confirmation_response = self._wait_for_response(
-            timeout_seconds=2, require_proceed=True
+            timeout_seconds=30, require_proceed=True
         )
 
         # Clean up gate files

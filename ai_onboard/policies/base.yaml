@@ -1,3 +1,11 @@
+terms:
+  - name: file_operations
+    description: Operations that modify files in the codebase
+  - name: large_changes
+    description: Changes affecting more than 10 files or 500 lines
+  - name: sensitive_files
+    description: Files containing secrets, credentials, or environment variables
+
 rules:
   - id: risky-env-delete
     conditions:
