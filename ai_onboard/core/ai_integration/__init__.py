@@ -64,6 +64,14 @@ from .prompt_based_journey_mapper import (
     get_prompt_based_journey_mapper,
 )
 from .ai_gate_mediator import AIGateMediator, get_ai_gate_mediator
+from .decision_enforcer import (
+    DecisionEnforcer,
+    DecisionPoint,
+    get_decision_enforcer,
+    register_common_decisions,
+    require_decision,
+    COMMON_DECISIONS,
+)
 
 __all__ = [
     # AI Agent Systems
@@ -119,4 +127,11 @@ __all__ = [
     "auto_handle_gates",
     "handle_gate_now",
     "submit_gate_response",
+    # Decision Enforcement
+    "DecisionEnforcer",
+    "DecisionPoint",
+    "get_decision_enforcer",
+    "register_common_decisions",
+    "require_decision",
+    "COMMON_DECISIONS",
 ]

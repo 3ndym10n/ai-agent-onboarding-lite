@@ -1,0 +1,103 @@
+{
+  "version": "2.0",
+  "last_updated": "2025-09-16T12:28:34.723450+00:00Z",
+  "patterns": {
+    "import_errors": {
+      "patterns": [
+        "ImportError.*No module named",
+        "ModuleNotFoundError.*No module named"
+      ],
+      "solutions": [
+        "Install missing package: pip install <package_name>",
+        "Check if package is in requirements.txt",
+        "Verify virtual environment is activated",
+        "Check Python path configuration"
+      ],
+      "confidence_base": 0.85,
+      "category": "import"
+    },
+    "attribute_errors": {
+      "patterns": [
+        "AttributeError.*has no attribute",
+        "AttributeError.*object has no attribute"
+      ],
+      "solutions": [
+        "Check object type and available attributes",
+        "Verify method/variable name spelling",
+        "Check if object is properly initialized",
+        "Use hasattr() to check attribute existence"
+      ],
+      "confidence_base": 0.8,
+      "category": "attribute"
+    },
+    "type_errors": {
+      "patterns": [
+        "TypeError.*unsupported operand type",
+        "TypeError.*expected.*got"
+      ],
+      "solutions": [
+        "Check data types of operands",
+        "Use type() or isinstance() for type checking",
+        "Convert types explicitly when needed",
+        "Review function signatures and parameter types"
+      ],
+      "confidence_base": 0.75,
+      "category": "type"
+    },
+    "file_errors": {
+      "patterns": [
+        "FileNotFoundError",
+        "IsADirectoryError",
+        "PermissionError"
+      ],
+      "solutions": [
+        "Check if file/directory exists: os.path.exists()",
+        "Verify file permissions: os.access()",
+        "Check if file is locked by another process",
+        "Use absolute paths when possible",
+        "Handle file operations in try-except blocks"
+      ],
+      "confidence_base": 0.9,
+      "category": "file"
+    },
+    "network_errors": {
+      "patterns": [
+        "ConnectionError",
+        "TimeoutError",
+        "URLError",
+        "requests\\.exceptions"
+      ],
+      "solutions": [
+        "Check network connectivity",
+        "Verify URL/host is accessible",
+        "Implement retry logic with exponential backoff",
+        "Add timeout handling",
+        "Check proxy/firewall settings"
+      ],
+      "confidence_base": 0.7,
+      "category": "network"
+    },
+    "syntax_errors": {
+      "patterns": [
+        "SyntaxError",
+        "IndentationError",
+        "TabError"
+      ],
+      "solutions": [
+        "Check for missing parentheses, brackets, or quotes",
+        "Verify consistent indentation (spaces vs tabs)",
+        "Look for typos in keywords and variable names",
+        "Use a linter to catch syntax errors early",
+        "Review code around the error line"
+      ],
+      "confidence_base": 0.95,
+      "category": "syntax"
+    }
+  },
+  "learning_stats": {
+    "total_patterns_used": 0,
+    "successful_solutions": 0,
+    "failed_solutions": 0,
+    "pattern_effectiveness": {}
+  }
+}

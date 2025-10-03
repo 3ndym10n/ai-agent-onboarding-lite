@@ -102,6 +102,45 @@ def build(root: Path, analyze_codebase: Optional[bool] = None) -> dict:
     if not ch:
         raise SystemExit("Missing charter. Run: python -m ai_onboard charter")
 
+    # Enforce methodology decision if not specified in charter
+    if not ch.get("preferred_methodology"):
+        from ..ai_integration.decision_enforcer import get_decision_enforcer
+
+        enforcer = get_decision_enforcer(root)
+
+        # Create methodology decision point
+        from ..ai_integration.decision_enforcer import DecisionPoint
+
+        methodology_decision = DecisionPoint(
+            name="methodology_choice",
+            question="Which project methodology should I use?",
+            options={
+                "agile": "Agile - Iterative development, flexible scope",
+                "waterfall": "Waterfall - Sequential phases, fixed scope",
+                "kanban": "Kanban - Continuous flow, visual workflow",
+            },
+            default="agile",  # Sensible default
+        )
+        enforcer.register_decision(methodology_decision)
+
+        # Enforce the decision
+        result = enforcer.enforce_decision(
+            decision_name="methodology_choice",
+            context={"project_name": ch.get("project_name", "Unknown")},
+            agent_id="planning_system",
+        )
+
+        if result.proceed and result.response:
+            # Extract user's choice
+            user_responses = result.response.get("user_responses", ["agile"])
+            methodology = user_responses[0] if user_responses else "agile"
+            ch["preferred_methodology"] = methodology
+            print(f"✅ Using {methodology} methodology (from your input)")
+        else:
+            # User stopped - use default
+            ch["preferred_methodology"] = "agile"
+            print("⚠️  Using agile methodology (default)")
+
     # Auto-detect if codebase analysis should be used
     if analyze_codebase is None:
         analyze_codebase = _should_use_codebase_analysis(root)

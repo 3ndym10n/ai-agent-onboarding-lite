@@ -23,6 +23,7 @@ from .commands_ai_agent_collaboration import (
     add_ai_agent_collaboration_parser,
     handle_ai_agent_collaboration_commands,
 )
+from .commands_chat import add_chat_commands, handle_chat_commands
 
 # Removed: commands_automatic_prevention (redundant with cleanup_safety)
 # Removed: commands_background_agents (redundant with ai_agent_collaboration)
@@ -215,7 +216,7 @@ def safe_run_terminal_cmd(
 
     # Check command safety before execution
     prevention_result = prevention_system.prevent_command_execution(
-        command, [], cwd=str(root)
+        command, [], cwd=root
     )
 
     if prevention_result.get("should_block", False):
@@ -297,6 +298,9 @@ def main(argv=None):
 
     # Add core commands
     add_core_commands(sub)
+
+    # Add chat interface (natural language)
+    add_chat_commands(sub)
 
     # Add cleanup safety commands
     add_cleanup_safety_commands(sub)
@@ -516,7 +520,7 @@ def main(argv=None):
         prevention_system = AutomaticErrorPrevention(root, pattern_system)
 
         prevention_result = prevention_system.prevent_command_execution(
-            args.cmd, vars(args), cwd=str(root)
+            command=args.cmd, args=vars(args), cwd=root
         )
 
         # Apply stricter threshold for critical operations
@@ -643,6 +647,14 @@ def main(argv=None):
         ):
             if handle_prompt_commands(args, root):
                 return
+
+    # Handle chat commands (natural language interface)
+    if args.cmd == "chat":
+        with error_monitor.monitor_command_execution(
+            "chat", "foreground", "cli_session"
+        ):
+            handle_chat_commands(args, root)
+            return
 
     # Removed: AI agent commands (redundant with ai_agent_collaboration)
 

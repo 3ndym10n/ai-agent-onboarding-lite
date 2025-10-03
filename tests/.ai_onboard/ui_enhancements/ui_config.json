@@ -1,0 +1,12 @@
+{
+  "default_theme": "modern",
+  "enable_colors": true,
+  "enable_progress_bars": true,
+  "enable_suggestions": true,
+  "enable_tutorials": true,
+  "auto_detect_expertise": true,
+  "suggestion_confidence_threshold": 0.7,
+  "max_suggestions": 3,
+  "command_history_limit": 50,
+  "tutorial_completion_tracking": true
+}

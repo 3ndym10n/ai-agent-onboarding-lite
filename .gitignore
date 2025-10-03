@@ -2,8 +2,10 @@
 # AI Onboard Lite - Comprehensive .gitignore
 # ========================================
 
-# Project artifacts
-.ai_onboard/
+# Project artifacts (but NOT directives - those are system guidance)
+.ai_onboard/*
+!.ai_onboard/directives/
+
 ai_onboard.json
 *.manifest
 .cache/

@@ -350,9 +350,12 @@ Create a JSON file at `.ai_onboard / gates / gate_response.json` with this struc
         return prompt
 
     def _wait_for_response(
-        self, timeout_seconds: int = 30, require_proceed: bool = False, gate_request: Optional[GateRequest] = None
+        self, timeout_seconds: int = 300, require_proceed: bool = False, gate_request: Optional[GateRequest] = None
     ) -> Dict[str, Any]:
         """Wait for AI agent to provide user response.
+
+        Default timeout increased to 5 minutes (300s) to allow vibe coders
+        time to think and respond without pressure.
 
         If require_proceed is True, any non-"proceed" decision
         will be treated as a STOP for safety.

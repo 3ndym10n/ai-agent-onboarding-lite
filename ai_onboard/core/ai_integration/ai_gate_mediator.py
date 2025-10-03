@@ -33,8 +33,10 @@ class MediationResult:
 class AIGateMediator:
     """Intelligent mediator between AI agents and gate system."""
 
-    def __init__(self, project_root: Path, confidence_threshold: float = 0.75):
+    def __init__(self, project_root: Path, confidence_threshold: float = 0.5):
         self.project_root = project_root
+        # Lower threshold (0.5 instead of 0.75) allows more autonomous operation
+        # while still checking in on genuinely uncertain decisions
         self.confidence_threshold = confidence_threshold
 
         # Initialize existing systems
@@ -346,37 +348,52 @@ class AIGateMediator:
     ) -> MediationResult:
         """Route to human with collaborative guidance options."""
         # 1. Generate collaborative guidance options
-        guidance_options = self._generate_collaborative_options(operation, context, confidence)
+        guidance_options = self._generate_collaborative_options(
+            operation, context, confidence
+        )
 
         # 2. Create collaborative gate request
+        options_text = "\n".join(f"{k}) {v}" for k, v in guidance_options.items())
         gate_request = GateRequest(
             gate_type=GateType.CLARIFICATION_NEEDED,
             title=f"AI Agent Collaboration: {operation}",
             description=self._generate_collaborative_description(operation, context),
             context=context,
-            questions=[f"Choose your preferred approach:\n" + "\n".join(f"{k}) {v}" for k, v in guidance_options.items())],
-            confidence=confidence
+            questions=[f"Choose your preferred approach:\n{options_text}"],
+            confidence=confidence,
         )
 
         # 3. Create gate and start AI agent work in parallel
         gate_result = self.gate_system.create_gate(gate_request)
 
         # 4. Start AI agent work while waiting for guidance
-        ai_work_result = self._start_parallel_ai_work(agent_id, operation, context, guidance_options)
+        ai_work_result = self._start_parallel_ai_work(
+            agent_id, operation, context, guidance_options
+        )
 
         # 5. Wait for guidance with shorter timeout (since AI is working)
         timeout = self._calculate_collaborative_timeout(operation, context)
-        response = self.gate_system._wait_for_response(timeout, gate_request=gate_request)
+        response = self.gate_system._wait_for_response(
+            timeout, gate_request=gate_request
+        )
 
         if response:
             # Learn from the collaborative guidance
-            self._learn_from_collaborative_response(operation, context, response, confidence)
+            self._learn_from_collaborative_response(
+                operation, context, response, confidence
+            )
 
             # Combine AI work with user guidance
-            final_result = self._combine_ai_work_with_guidance(ai_work_result, response, guidance_options)
+            final_result = self._combine_ai_work_with_guidance(
+                ai_work_result, response, guidance_options
+            )
             # Handle collaborative gates that should not block
             user_decision = response.get("user_decision", "")
-            should_proceed = user_decision in ["proceed", "proceed_with_guidance", "proceed_with_defaults"]
+            should_proceed = user_decision in [
+                "proceed",
+                "proceed_with_guidance",
+                "proceed_with_defaults",
+            ]
 
             # Mark smart defaults as used if it's a default response
             smart_defaults_used = user_decision == "proceed_with_defaults"
@@ -386,17 +403,19 @@ class AIGateMediator:
                 response=final_result,
                 confidence=confidence,
                 gate_created=True,
-                smart_defaults_used=smart_defaults_used
+                smart_defaults_used=smart_defaults_used,
             )
         else:
             # Timeout - use AI work with smart defaults applied
-            final_result = self._apply_defaults_to_ai_work(ai_work_result, operation, context)
+            final_result = self._apply_defaults_to_ai_work(
+                ai_work_result, operation, context
+            )
             return MediationResult(
                 proceed=True,
                 response=final_result,
                 confidence=confidence,
                 gate_created=True,
-                smart_defaults_used=True
+                smart_defaults_used=True,
             )
 
     def _generate_enhanced_questions(
@@ -428,19 +447,39 @@ class AIGateMediator:
         self, operation: str, context: Dict[str, Any]
     ) -> str:
         """Generate human-friendly description of the gate."""
-        # Simple description generation
-        description = f"Your AI agent wants to perform: {operation}"
+        # Create conversational, vibe-coder friendly description
+        parts = []
 
-        if "files" in context:
+        # Main action in plain English
+        parts.append(f"🤖 **I want to**: {operation}")
+
+        # Add context details
+        if "files" in context and context["files"]:
             file_count = len(context["files"])
-            description += (
-                f" involving {file_count} file{'s' if file_count != 1 else ''}"
-            )
+            if file_count == 1:
+                parts.append(f"📄 **File**: {context['files'][0]}")
+            elif file_count <= 3:
+                parts.append(f"📄 **Files**: {', '.join(context['files'])}")
+            else:
+                parts.append(f"📄 **Files**: {file_count} files")
 
-        if "confidence" in context:
-            description += f" with {context['confidence']:.1%} confidence"
+        if "command" in context:
+            parts.append(f"⚙️  **Command**: `{context['command']}`")
 
-        return description
+        # Add confidence level in friendly terms
+        confidence = context.get("confidence", 0.5)
+        if confidence >= 0.8:
+            parts.append("✅ **Confidence**: High - I'm pretty sure about this")
+        elif confidence >= 0.5:
+            parts.append("🤔 **Confidence**: Medium - I could use your input")
+        else:
+            parts.append("❓ **Confidence**: Low - I need your guidance")
+
+        # Add helpful context
+        if "phase" in context:
+            parts.append(f"📍 **Phase**: {context['phase']}")
+
+        return "\n".join(parts)
 
     def _calculate_optimal_timeout(
         self, operation: str, context: Dict[str, Any]
@@ -953,7 +992,6 @@ class AIGateMediator:
 
         return alternatives
 
-
     def _generate_collaborative_options(
         self, operation: str, context: Dict[str, Any], confidence: float
     ) -> Dict[str, str]:
@@ -986,28 +1024,40 @@ class AIGateMediator:
         if "files" in context:
             file_count = len(context["files"])
             if file_count > 5:
-                options["D"] = f"Process files in batches of 5 (you have {file_count} files)"
+                options["D"] = (
+                    f"Process files in batches of 5 (you have {file_count} files)"
+                )
 
         if confidence < 0.6:
             options["E"] = "I'm not sure - can you explain the options?"
 
         return options
 
-    def _generate_collaborative_description(self, operation: str, context: Dict[str, Any]) -> str:
+    def _generate_collaborative_description(
+        self, operation: str, context: Dict[str, Any]
+    ) -> str:
         """Generate a collaborative description."""
         description = f"I'm working on: {operation}"
 
         if "files" in context:
             file_count = len(context["files"])
-            description += f" involving {file_count} file{'s' if file_count != 1 else ''}"
+            description += (
+                f" involving {file_count} file{'s' if file_count != 1 else ''}"
+            )
 
         description += ". I want to make sure I'm building exactly what you need."
-        description += "\n\nPlease choose your preferred approach from the options below."
+        description += (
+            "\n\nPlease choose your preferred approach from the options below."
+        )
 
         return description
 
     def _start_parallel_ai_work(
-        self, agent_id: str, operation: str, context: Dict[str, Any], guidance_options: Dict[str, str]
+        self,
+        agent_id: str,
+        operation: str,
+        context: Dict[str, Any],
+        guidance_options: Dict[str, str],
     ) -> Dict[str, Any]:
         """Start AI agent work in parallel while waiting for guidance."""
         # For now, return a placeholder that indicates work is in progress
@@ -1018,10 +1068,12 @@ class AIGateMediator:
             "agent_id": agent_id,
             "context": context,
             "guidance_options": guidance_options,
-            "started_at": time.time()
+            "started_at": time.time(),
         }
 
-    def _calculate_collaborative_timeout(self, operation: str, context: Dict[str, Any]) -> int:
+    def _calculate_collaborative_timeout(
+        self, operation: str, context: Dict[str, Any]
+    ) -> int:
         """Calculate shorter timeout since AI agent is working in parallel."""
         base_timeout = 15  # Shorter than before since AI is working
 
@@ -1034,25 +1086,34 @@ class AIGateMediator:
 
         return base_timeout
 
-    def _wait_for_guidance_response(self, gate_result: Dict[str, Any], timeout: int) -> Optional[Dict[str, Any]]:
+    def _wait_for_guidance_response(
+        self, gate_result: Dict[str, Any], timeout: int
+    ) -> Optional[Dict[str, Any]]:
         """Wait for guidance response (same as before but with shorter timeout)."""
         return self._wait_for_gate_response_async(gate_result, timeout)
 
     def _learn_from_collaborative_response(
-        self, operation: str, context: Dict[str, Any], response: Dict[str, Any], confidence: float
+        self,
+        operation: str,
+        context: Dict[str, Any],
+        response: Dict[str, Any],
+        confidence: float,
     ) -> None:
         """Learn from collaborative guidance responses."""
         try:
             # Record that collaborative guidance was provided
+            user_responses = response.get("user_responses", ["unknown"])
+            user_choice = user_responses[0] if user_responses else "unknown"
+
             self.learning_system.record_learning_event(
                 event_type="collaborative_guidance",
                 event_data={
                     "operation": operation,
                     "confidence": confidence,
-                    "user_choice": response.get("user_responses", ["unknown"])[0] if response.get("user_responses") else "unknown",
+                    "user_choice": user_choice,
                     "context": context,
                     "guidance_helpful": True,
-                }
+                },
             )
 
             # Learn which options users prefer for different operation types
@@ -1063,17 +1124,22 @@ class AIGateMediator:
                     self.learning_system.record_learning_event(
                         event_type="user_preference_learned",
                         event_data={
-                            "operation_type": operation.split()[0] if operation.split() else "generic",
+                            "operation_type": (
+                                operation.split()[0] if operation.split() else "generic"
+                            ),
                             "preferred_choice": choice,
-                            "confidence": confidence
-                        }
+                            "confidence": confidence,
+                        },
                     )
 
         except Exception:
             pass
 
     def _combine_ai_work_with_guidance(
-        self, ai_work_result: Dict[str, Any], response: Dict[str, Any], guidance_options: Dict[str, str]
+        self,
+        ai_work_result: Dict[str, Any],
+        response: Dict[str, Any],
+        guidance_options: Dict[str, str],
     ) -> Dict[str, Any]:
         """Combine AI agent work with user guidance."""
         user_responses = response.get("user_responses", [])
@@ -1084,7 +1150,7 @@ class AIGateMediator:
             "ai_work": ai_work_result,
             "user_choice": user_choice,
             "guidance_applied": guidance_options.get(user_choice, "Custom guidance"),
-            "confidence": response.get("confidence", 0.8)
+            "confidence": response.get("confidence", 0.8),
         }
 
     def _apply_defaults_to_ai_work(
@@ -1098,7 +1164,7 @@ class AIGateMediator:
             "action": "proceed_with_smart_defaults",
             "ai_work": ai_work_result,
             "smart_choice": smart_choice,
-            "reason": "timeout_collaborative_fallback"
+            "reason": "timeout_collaborative_fallback",
         }
 
     def _get_most_common_choice(self, operation: str) -> str:
@@ -1106,7 +1172,7 @@ class AIGateMediator:
         try:
             history = self.learning_system.get_learning_history(limit=50)
 
-            choices = {}
+            choices: Dict[str, int] = {}
             for event in history:
                 if event.get("event_type") == "user_preference_learned":
                     op_type = event.get("context", {}).get("operation_type", "")
@@ -1115,7 +1181,8 @@ class AIGateMediator:
                         choices[choice] = choices.get(choice, 0) + 1
 
             if choices:
-                return max(choices.items(), key=lambda x: x[1])[0]
+                most_common = max(choices.items(), key=lambda x: x[1])
+                return str(most_common[0])
 
         except Exception:
             pass

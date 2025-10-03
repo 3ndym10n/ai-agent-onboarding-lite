@@ -1,0 +1,790 @@
+{
+  "pattern_1758117004_4497": {
+    "pattern_id": "pattern_1758117004_4497",
+    "pattern_type": "cli_error",
+    "signature": "ArgumentError: invalid choice: '--invalid-option'",
+    "description": "Automatically detected cli_error pattern",
+    "examples": [
+      {
+        "type": "ArgumentError",
+        "message": "invalid choice: '--invalid-option'",
+        "traceback": "invalid choice: '--invalid-option'"
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1758117004.019077,
+    "last_seen": 1758117004.0190773,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Validate command arguments before execution",
+      "Check CLI syntax"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1758117004_3129": {
+    "pattern_id": "pattern_1758117004_3129",
+    "pattern_type": "import_error",
+    "signature": "ImportError: No module named 'test_module'",
+    "description": "Automatically detected import_error pattern",
+    "examples": [
+      {
+        "type": "ImportError",
+        "message": "No module named 'test_module'",
+        "traceback": "ImportError: No module named 'test_module'"
+      },
+      {
+        "type": "ImportError",
+        "message": "No module named 'nonexistent_module'",
+        "traceback": "ImportError: No module named 'nonexistent_module'"
+      },
+      {
+        "type": "ImportError",
+        "message": "No module named 'test_module'",
+        "traceback": "ImportError: No module named 'test_module'"
+      },
+      {
+        "type": "ImportError",
+        "message": "No module named 'nonexistent_module'",
+        "traceback": "ImportError: No module named 'nonexistent_module'"
+      },
+      {
+        "type": "ImportError",
+        "message": "No module named 'test_module'",
+        "traceback": "ImportError: No module named 'test_module'"
+      },
+      {
+        "type": "ImportError",
+        "message": "No module named 'nonexistent_module'",
+        "traceback": "ImportError: No module named 'nonexistent_module'"
+      },
+      {
+        "type": "ImportError",
+        "message": "No module named 'test_module'",
+        "traceback": "ImportError: No module named 'test_module'"
+      },
+      {
+        "type": "ImportError",
+        "message": "No module named 'nonexistent_module'",
+        "traceback": "ImportError: No module named 'nonexistent_module'"
+      },
+      {
+        "type": "ImportError",
+        "message": "No module named 'test_module'",
+        "traceback": "ImportError: No module named 'test_module'"
+      }
+    ],
+    "frequency": 5,
+    "first_seen": 1758117004.354848,
+    "last_seen": 1759032006.4928412,
+    "confidence": 0.7000000000000002,
+    "prevention_rules": [
+      "Check requirements.txt",
+      "Verify virtual environment"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1758117004_4242": {
+    "pattern_id": "pattern_1758117004_4242",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1758117004.3779955,
+    "last_seen": 1758117004.3779955,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1758288816_7687": {
+    "pattern_id": "pattern_1758288816_7687",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1758288816.208972,
+    "last_seen": 1758288816.2089725,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1758695820_1278": {
+    "pattern_id": "pattern_1758695820_1278",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1758695820.391277,
+    "last_seen": 1758695820.3912773,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1758698471_3420": {
+    "pattern_id": "pattern_1758698471_3420",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1758698471.5886645,
+    "last_seen": 1758698471.5886645,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1758707293_5807": {
+    "pattern_id": "pattern_1758707293_5807",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1758707293.0071597,
+    "last_seen": 1758707293.00716,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1758707340_3471": {
+    "pattern_id": "pattern_1758707340_3471",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1758707340.4543352,
+    "last_seen": 1758707340.4543355,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1758707372_7022": {
+    "pattern_id": "pattern_1758707372_7022",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1758707372.7364988,
+    "last_seen": 1758707372.7364993,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1758708104_1625": {
+    "pattern_id": "pattern_1758708104_1625",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1758708104.5422254,
+    "last_seen": 1758708104.5422254,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1758708260_7490": {
+    "pattern_id": "pattern_1758708260_7490",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1758708260.454909,
+    "last_seen": 1758708260.4549093,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1758708287_8011": {
+    "pattern_id": "pattern_1758708287_8011",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1758708287.555653,
+    "last_seen": 1758708287.555653,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1758708360_155": {
+    "pattern_id": "pattern_1758708360_155",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1758708360.4071553,
+    "last_seen": 1758708360.4071555,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1758709669_5095": {
+    "pattern_id": "pattern_1758709669_5095",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1758709669.8098123,
+    "last_seen": 1758709669.8098128,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1758711405_7108": {
+    "pattern_id": "pattern_1758711405_7108",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1758711405.9049067,
+    "last_seen": 1758711405.9049077,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1758712768_2368": {
+    "pattern_id": "pattern_1758712768_2368",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1758712768.1469204,
+    "last_seen": 1758712768.1469207,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1758713215_7008": {
+    "pattern_id": "pattern_1758713215_7008",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1758713215.3397272,
+    "last_seen": 1758713215.3397272,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1758954684_4875": {
+    "pattern_id": "pattern_1758954684_4875",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1758954684.442545,
+    "last_seen": 1758954684.4425454,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1758955290_616": {
+    "pattern_id": "pattern_1758955290_616",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1758955290.093504,
+    "last_seen": 1758955290.0935047,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1758955883_6622": {
+    "pattern_id": "pattern_1758955883_6622",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1758955883.9686577,
+    "last_seen": 1758955883.9686582,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1758957906_7449": {
+    "pattern_id": "pattern_1758957906_7449",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1758957906.6684847,
+    "last_seen": 1758957906.6684856,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1758958355_6090": {
+    "pattern_id": "pattern_1758958355_6090",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1758958355.1104403,
+    "last_seen": 1758958355.110441,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1758964377_7472": {
+    "pattern_id": "pattern_1758964377_7472",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1758964377.386297,
+    "last_seen": 1758964377.3862977,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1758965467_7281": {
+    "pattern_id": "pattern_1758965467_7281",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1758965467.3661451,
+    "last_seen": 1758965467.3661454,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1758966391_1575": {
+    "pattern_id": "pattern_1758966391_1575",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1758966391.5788457,
+    "last_seen": 1758966391.5788462,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1758967868_2828": {
+    "pattern_id": "pattern_1758967868_2828",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1758967868.7951896,
+    "last_seen": 1758967868.7951896,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1758969386_4319": {
+    "pattern_id": "pattern_1758969386_4319",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1758969386.5329838,
+    "last_seen": 1758969386.5329843,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1758971700_6984": {
+    "pattern_id": "pattern_1758971700_6984",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1758971700.7432778,
+    "last_seen": 1758971700.7432785,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1758972981_1239": {
+    "pattern_id": "pattern_1758972981_1239",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1758972981.7170475,
+    "last_seen": 1758972981.7170477,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1759023514_5416": {
+    "pattern_id": "pattern_1759023514_5416",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1759023514.696439,
+    "last_seen": 1759023514.696439,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1759029512_153": {
+    "pattern_id": "pattern_1759029512_153",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1759029512.7855346,
+    "last_seen": 1759029512.7855349,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1759030531_8847": {
+    "pattern_id": "pattern_1759030531_8847",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1759030531.8265443,
+    "last_seen": 1759030531.826545,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1759030978_3179": {
+    "pattern_id": "pattern_1759030978_3179",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1759030978.140553,
+    "last_seen": 1759030978.140553,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1759032006_15": {
+    "pattern_id": "pattern_1759032006_15",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1759032006.5118282,
+    "last_seen": 1759032006.5118284,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  }
+}

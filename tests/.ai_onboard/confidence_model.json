@@ -1,0 +1,44 @@
+{
+  "version": "2.0",
+  "last_updated": "2025-09-16T12:28:34.727490+00:00Z",
+  "confidence_factors": {
+    "pattern_match_quality": {
+      "exact_match": 1.0,
+      "partial_match": 0.7,
+      "weak_match": 0.4,
+      "no_match": 0.1
+    },
+    "error_type_frequency": {
+      "very_common": 1.0,
+      "common": 0.8,
+      "uncommon": 0.6,
+      "rare": 0.3,
+      "unknown": 0.1
+    },
+    "context_relevance": {
+      "high": 1.0,
+      "medium": 0.7,
+      "low": 0.4,
+      "none": 0.1
+    },
+    "solution_success_history": {
+      "excellent": 1.0,
+      "good": 0.8,
+      "fair": 0.6,
+      "poor": 0.3,
+      "unknown": 0.5
+    }
+  },
+  "learning_weights": {
+    "pattern_match": 0.4,
+    "error_frequency": 0.2,
+    "context_relevance": 0.2,
+    "success_history": 0.2
+  },
+  "adaptation_stats": {
+    "total_predictions": 0,
+    "correct_predictions": 0,
+    "weight_adjustments": 0,
+    "last_adaptation": null
+  }
+}
