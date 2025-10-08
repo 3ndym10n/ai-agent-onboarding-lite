@@ -11,7 +11,7 @@ This module provides command - line interfaces for:
 import argparse
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict
 
 from ..core.ai_integration.cursor_ai_integration import (
     get_cursor_integration,
@@ -19,6 +19,7 @@ from ..core.ai_integration.cursor_ai_integration import (
     initialize_cursor_integration,
     translate_cursor_command,
 )
+from .console import safe_print
 
 
 def add_cursor_commands(subparsers):
@@ -93,6 +94,25 @@ def add_cursor_commands(subparsers):
     set_parser.add_argument("key", help="Configuration key")
     set_parser.add_argument("value", help="Configuration value")
 
+    # Guided setup command
+    guided_parser = cursor_sub.add_parser(
+        "guided-setup",
+        help="Guided flow: initialize integration, show context, create a session",
+    )
+    guided_parser.add_argument(
+        "--user-id", default="cursor_user", help="User ID to assign to the session"
+    )
+    guided_parser.add_argument(
+        "--force-init",
+        action="store_true",
+        help="Force re-initialization even if a session already exists",
+    )
+    guided_parser.add_argument(
+        "--skip-session",
+        action="store_true",
+        help="Skip automatic session creation (init + context only)",
+    )
+
 
 def handle_cursor_commands(args: argparse.Namespace, root: Path) -> None:
     """Handle Cursor AI integration commands."""
@@ -109,13 +129,15 @@ def handle_cursor_commands(args: argparse.Namespace, root: Path) -> None:
         _handle_cursor_translate(args, root)
     elif args.cursor_cmd == "config":
         _handle_cursor_config(args, root)
+    elif args.cursor_cmd == "guided-setup":
+        _handle_cursor_guided_setup(args, root)
     else:
-        print(f"Unknown cursor command: {args.cursor_cmd}")
+        safe_print(f"Unknown cursor command: {args.cursor_cmd}")
 
 
 def _handle_cursor_init(args: argparse.Namespace, root: Path) -> None:
     """Handle cursor init command."""
-    print("🚀 Initializing Cursor AI integration...")
+    safe_print("🚀 Initializing Cursor AI integration...")
 
     try:
         if args.force:
@@ -128,28 +150,28 @@ def _handle_cursor_init(args: argparse.Namespace, root: Path) -> None:
         result = initialize_cursor_integration(root)
 
         if result["success"]:
-            print("✅ Cursor AI integration initialized successfully!")
-            print("\n📊 Integration Status:")
+            safe_print("✅ Cursor AI integration initialized successfully!")
+            safe_print("\n📊 Integration Status:")
             status = result["status"]
-            print(f"  Agent ID: {status['agent_id']}")
-            print(f"  Safety Level: {status['safety_level']}")
-            print(f"  Max Autonomous Actions: {status['max_autonomous_actions']}")
-            print(f"  Session Timeout: {status['session_timeout']}s")
+            safe_print(f"  Agent ID: {status['agent_id']}")
+            safe_print(f"  Safety Level: {status['safety_level']}")
+            safe_print(f"  Max Autonomous Actions: {status['max_autonomous_actions']}")
+            safe_print(f"  Session Timeout: {status['session_timeout']}s")
 
-            print("\n🎯 Next Steps:")
-            print("  1. Install the Cursor AI Onboard extension (when available)")
-            print("  2. Use 'ai_onboard cursor context' to get project context")
-            print(
+            safe_print("\n🎯 Next Steps:")
+            safe_print("  1. Install the Cursor AI Onboard extension (when available)")
+            safe_print("  2. Use 'ai_onboard cursor context' to get project context")
+            safe_print(
                 "  3. Create a collaboration session with 'ai_onboard cursor session create'"
             )
 
         else:
-            print(
+            safe_print(
                 f"❌ Failed to initialize Cursor AI integration: {result.get('error')}"
             )
 
     except Exception as e:
-        print(f"❌ Initialization error: {e}")
+        safe_print(f"❌ Initialization error: {e}")
 
 
 def _handle_cursor_status(args: argparse.Namespace, root: Path) -> None:
@@ -158,20 +180,20 @@ def _handle_cursor_status(args: argparse.Namespace, root: Path) -> None:
         integration = get_cursor_integration(root)
         status = integration.get_integration_status()
 
-        print("📊 Cursor AI Integration Status")
-        print("=" * 40)
-        print(f"Enabled: {'✅' if status['enabled'] else '❌'}")
-        print(f"Agent ID: {status['agent_id']}")
-        print(f"Safety Level: {status['safety_level']}")
-        print(f"Max Autonomous Actions: {status['max_autonomous_actions']}")
-        print(f"Session Timeout: {status['session_timeout']}s")
-        print(f"API Enabled: {'✅' if status['api_enabled'] else '❌'}")
+        safe_print("📊 Cursor AI Integration Status")
+        safe_print("=" * 40)
+        safe_print(f"Enabled: {'✅' if status['enabled'] else '❌'}")
+        safe_print(f"Agent ID: {status['agent_id']}")
+        safe_print(f"Safety Level: {status['safety_level']}")
+        safe_print(f"Max Autonomous Actions: {status['max_autonomous_actions']}")
+        safe_print(f"Session Timeout: {status['session_timeout']}s")
+        safe_print(f"API Enabled: {'✅' if status['api_enabled'] else '❌'}")
         if status["api_enabled"]:
-            print(f"API Port: {status['api_port']}")
-        print(f"Last Initialized: {status['last_initialized']}")
+            safe_print(f"API Port: {status['api_port']}")
+        safe_print(f"Last Initialized: {status['last_initialized']}")
 
     except Exception as e:
-        print(f"❌ Failed to get status: {e}")
+        safe_print(f"❌ Failed to get status: {e}")
 
 
 def _handle_cursor_context(args: argparse.Namespace, root: Path) -> None:
@@ -180,40 +202,89 @@ def _handle_cursor_context(args: argparse.Namespace, root: Path) -> None:
         context = get_cursor_project_context(root)
 
         if args.format == "json":
-            print(json.dumps(context, indent=2, default=str))
+            safe_print(json.dumps(context, indent=2, default=str))
         else:  # summary format
-            print("🏗️  Project Context Summary")
-            print("=" * 40)
-            print(f"Project Root: {context.get('project_root', 'Unknown')}")
+            safe_print("🏗️  Project Context Summary")
+            safe_print("=" * 40)
+            safe_print(f"Project Root: {context.get('project_root', 'Unknown')}")
 
             if "progress" in context:
                 progress = context["progress"]
-                print(f"Overall Progress: {progress.get('overall_progress', 0):.1f}%")
-                print(
+                safe_print(f"Overall Progress: {progress.get('overall_progress', 0):.1f}%")
+                safe_print(
                     f"Completed Tasks: {progress.get('completed_tasks', 0)}/"
                     f"{progress.get('total_tasks', 0)}"
                 )
-                print(f"Current Phase: {progress.get('current_phase', 'Unknown')}")
+                safe_print(f"Current Phase: {progress.get('current_phase', 'Unknown')}")
 
             if "integration_status" in context:
                 integration = context["integration_status"]
-                print(
+                safe_print(
                     f"Integration: {'✅ Active' if integration.get('enabled') else '❌ Disabled'}"
                 )
 
             if "available_commands" in context:
                 commands = context["available_commands"]
-                print(f"Available Commands: {', '.join(commands)}")
+                safe_print(f"Available Commands: {', '.join(commands)}")
 
             if "error" in context:
-                print(f"❌ Error: {context['error']}")
+                safe_print(f"❌ Error: {context['error']}")
 
     except Exception as e:
-        print(f"❌ Failed to get context: {e}")
+        safe_print(f"❌ Failed to get context: {e}")
 
 
-def _handle_cursor_session(args: argparse.Namespace, root: Path) -> None:
-    """Handle cursor session commands."""
+def _handle_cursor_guided_setup(args: argparse.Namespace, root: Path) -> None:
+    """Run a guided setup that strings together init, context, and session creation."""
+
+    safe_print("")
+    safe_print("=== Cursor Guided Setup ===")
+    safe_print("This walkthrough initializes Cursor, shows current status, and spins up a session.")
+
+    # Step 1: initialization (optional force)
+    safe_print("\n[1/4] Initializing Cursor integration...")
+    _handle_cursor_init(argparse.Namespace(force=args.force_init), root)
+
+    # Step 2: current integration status overview
+    safe_print("\n[2/4] Checking integration status...")
+    _handle_cursor_status(argparse.Namespace(), root)
+
+    # Step 3: project context summary
+    safe_print("\n[3/4] Reviewing project context summary...")
+    _handle_cursor_context(argparse.Namespace(format="summary"), root)
+
+    if args.skip_session:
+        safe_print(
+            "\nSkipping session creation (use 'ai_onboard cursor session create' when ready)."
+        )
+        safe_print("Guided setup complete.")
+        return
+
+    # Step 4: create a collaboration session
+    safe_print("\n[4/4] Creating a collaboration session...")
+    create_args = argparse.Namespace(session_action="create", user_id=args.user_id)
+    session_result = _handle_cursor_session(create_args, root)
+
+    session_id = (
+        session_result.get("session_id")
+        if isinstance(session_result, dict)
+        else None
+    )
+
+    if session_id:
+        safe_print("\nSession created successfully. Performing quick status check...")
+        status_args = argparse.Namespace(session_action="status", session_id=session_id)
+        _handle_cursor_session(status_args, root)
+        safe_print("\nGuided setup complete. Happy collaborating!")
+    else:
+        safe_print(
+            "\nGuided setup finished, but session creation reported an issue. "
+            "Run 'ai_onboard cursor session list' or '... session create' for details."
+        )
+
+
+def _handle_cursor_session(args: argparse.Namespace, root: Path) -> Dict[str, Any]:
+    """Handle cursor session commands and return the resulting payload."""
     integration = get_cursor_integration(root)
 
     if args.session_action == "create":
@@ -221,38 +292,41 @@ def _handle_cursor_session(args: argparse.Namespace, root: Path) -> None:
             result = integration.create_collaboration_session(args.user_id)
 
             if result["success"]:
-                print(f"✅ Collaboration session created successfully!")
-                print(f"   Session ID: {result['session_id']}")
-                print(f"   User ID: {args.user_id}")
-                print(f"   Message: {result['message']}")
+                safe_print("✅ Collaboration session created successfully!")
+                safe_print(f"   Session ID: {result['session_id']}")
+                safe_print(f"   User ID: {args.user_id}")
+                safe_print(f"   Message: {result['message']}")
 
                 # Show session details if available
                 if result.get("agent_profile"):
                     profile = result["agent_profile"]
-                    print(f"\n🤖 Agent Profile:")
-                    print(f"   Name: {profile.get('name')}")
-                    print(
+                    safe_print(f"\n🤖 Agent Profile:")
+                    safe_print(f"   Name: {profile.get('name')}")
+                    safe_print(
                         f"   Capabilities: {', '.join(profile.get('capabilities', []))}"
                     )
-                    print(f"   Safety Level: {profile.get('safety_level')}")
+                    safe_print(f"   Safety Level: {profile.get('safety_level')}")
 
                 if result.get("session_limits"):
                     limits = result["session_limits"]
-                    print(f"\n⚙️  Session Limits:")
-                    print(
+                    safe_print(f"\n⚙️  Session Limits:")
+                    safe_print(
                         f"   Max Autonomous Actions: {limits.get('max_autonomous_actions')}"
                     )
-                    print(f"   Session Timeout: {limits.get('session_timeout')}s")
+                    safe_print(f"   Session Timeout: {limits.get('session_timeout')}s")
 
-                print("\n🤝 Session is ready for Cursor AI collaboration!")
-                print(
+                safe_print("\n🤝 Session is ready for Cursor AI collaboration!")
+                safe_print(
                     "Use 'ai_onboard cursor session status <session_id>' to check session status."
                 )
             else:
-                print(f"❌ Failed to create session: {result['error']}")
+                safe_print(f"❌ Failed to create session: {result['error']}")
 
         except Exception as e:
-            print(f"❌ Session creation error: {e}")
+            safe_print(f"❌ Session creation error: {e}")
+            result = {"success": False, "error": str(e)}
+
+        return result
 
     elif args.session_action == "list":
         try:
@@ -260,23 +334,26 @@ def _handle_cursor_session(args: argparse.Namespace, root: Path) -> None:
 
             if result["success"]:
                 sessions = result["sessions"]
-                print(f"📋 Active Cursor AI Sessions ({result['count']})")
-                print("=" * 50)
+                safe_print(f"📋 Active Cursor AI Sessions ({result['count']})")
+                safe_print("=" * 50)
 
                 if sessions:
                     for session in sessions:
-                        print(f"Session ID: {session.get('session_id')}")
-                        print(f"  Status: {session.get('status')}")
-                        print(f"  Started: {session.get('started_at')}")
-                        print(f"  Last Activity: {session.get('last_activity')}")
-                        print()
+                        safe_print(f"Session ID: {session.get('session_id')}")
+                        safe_print(f"  Status: {session.get('status')}")
+                        safe_print(f"  Started: {session.get('started_at')}")
+                        safe_print(f"  Last Activity: {session.get('last_activity')}")
+                        safe_print()
                 else:
-                    print("No active sessions found.")
+                    safe_print("No active sessions found.")
             else:
-                print(f"❌ Failed to list sessions: {result['error']}")
+                safe_print(f"❌ Failed to list sessions: {result['error']}")
 
         except Exception as e:
-            print(f"❌ Session listing error: {e}")
+            safe_print(f"❌ Session listing error: {e}")
+            result = {"success": False, "error": str(e)}
+
+        return result
 
     elif args.session_action == "status":
         try:
@@ -284,38 +361,45 @@ def _handle_cursor_session(args: argparse.Namespace, root: Path) -> None:
 
             if result["success"]:
                 status = result["session_status"]
-                print(f"📊 Session Status: {args.session_id}")
-                print("=" * 40)
-                print(f"Status: {status.get('status')}")
-                print(f"Message: {status.get('message', 'N / A')}")
+                safe_print(f"📊 Session Status: {args.session_id}")
+                safe_print("=" * 40)
+                safe_print(f"Status: {status.get('status')}")
+                safe_print(f"Message: {status.get('message', 'N / A')}")
 
                 if status.get("session_info"):
                     info = status["session_info"]
-                    print(f"Agent ID: {info.get('agent_id')}")
-                    print(f"Started At: {info.get('started_at')}")
-                    print(f"Last Activity: {info.get('last_activity')}")
+                    safe_print(f"Agent ID: {info.get('agent_id')}")
+                    safe_print(f"Started At: {info.get('started_at')}")
+                    safe_print(f"Last Activity: {info.get('last_activity')}")
             else:
-                print(f"❌ Failed to get session status: {result['error']}")
+                safe_print(f"❌ Failed to get session status: {result['error']}")
 
         except Exception as e:
-            print(f"❌ Session status error: {e}")
+            safe_print(f"❌ Session status error: {e}")
+            result = {"success": False, "error": str(e)}
+
+        return result
 
     elif args.session_action == "end":
         try:
             result = integration.end_session(args.session_id)
 
             if result["success"]:
-                print(f"✅ Session ended successfully: {args.session_id}")
-                print(f"   Message: {result['message']}")
+                safe_print(f"✅ Session ended successfully: {args.session_id}")
+                safe_print(f"   Message: {result['message']}")
             else:
-                print(f"❌ Failed to end session: {result['error']}")
+                safe_print(f"❌ Failed to end session: {result['error']}")
 
         except Exception as e:
-            print(f"❌ Session end error: {e}")
+            safe_print(f"❌ Session end error: {e}")
+            result = {"success": False, "error": str(e)}
+
+        return result
 
     else:
-        print(f"Unknown session action: {args.session_action}")
-        print("Available actions: create, list, status, end")
+        safe_print(f"Unknown session action: {args.session_action}")
+        safe_print("Available actions: create, list, status, end")
+        return {"success": False, "error": "unknown_action"}
 
 
 def _handle_cursor_translate(args: argparse.Namespace, root: Path) -> None:
@@ -324,27 +408,27 @@ def _handle_cursor_translate(args: argparse.Namespace, root: Path) -> None:
         result = translate_cursor_command(args.text, root)
 
         if result["success"]:
-            print(f"🔤 Translation Result:")
-            print(f"  Input: '{args.text}'")
-            print(f"  Command: ai_onboard {result['command']}")
-            print(f"  Confidence: {result['confidence']:.1%}")
+            safe_print(f"🔤 Translation Result:")
+            safe_print(f"  Input: '{args.text}'")
+            safe_print(f"  Command: ai_onboard {result['command']}")
+            safe_print(f"  Confidence: {result['confidence']:.1%}")
 
             if result.get("suggested_args"):
                 args_str = " " + " ".join(result["suggested_args"])
-                print(f"  Full Command: ai_onboard {result['command']}{args_str}")
+                safe_print(f"  Full Command: ai_onboard {result['command']}{args_str}")
 
             if args.execute:
-                print(f"\n⚡ Executing: ai_onboard {result['command']}")
+                safe_print(f"\n⚡ Executing: ai_onboard {result['command']}")
                 # Here you would execute the actual command
                 # For now, just show what would be executed
-                print("(Command execution not implemented in this demo)")
+                safe_print("(Command execution not implemented in this demo)")
         else:
-            print(f"❌ Translation failed: {result['error']}")
+            safe_print(f"❌ Translation failed: {result['error']}")
             if "suggestions" in result:
-                print(f"💡 Available commands: {', '.join(result['suggestions'])}")
+                safe_print(f"💡 Available commands: {', '.join(result['suggestions'])}")
 
     except Exception as e:
-        print(f"❌ Translation error: {e}")
+        safe_print(f"❌ Translation error: {e}")
 
 
 def _handle_cursor_config(args: argparse.Namespace, root: Path) -> None:
@@ -354,23 +438,23 @@ def _handle_cursor_config(args: argparse.Namespace, root: Path) -> None:
             integration = get_cursor_integration(root)
             config = integration.config
 
-            print("⚙️  Cursor AI Integration Configuration")
-            print("=" * 45)
-            print(f"Enabled: {config.enabled}")
-            print(f"Auto Analyze: {config.auto_analyze}")
-            print(f"Show Status Bar: {config.show_status_bar}")
-            print(f"Show Sidebar: {config.show_sidebar}")
-            print(f"Agent ID: {config.agent_id}")
-            print(f"Safety Level: {config.safety_level}")
-            print(f"Max Autonomous Actions: {config.max_autonomous_actions}")
-            print(f"Require Confirmation: {', '.join(config.require_confirmation)}")
-            print(f"Session Timeout: {config.session_timeout}s")
-            print(f"API Enabled: {config.api_enabled}")
+            safe_print("⚙️  Cursor AI Integration Configuration")
+            safe_print("=" * 45)
+            safe_print(f"Enabled: {config.enabled}")
+            safe_print(f"Auto Analyze: {config.auto_analyze}")
+            safe_print(f"Show Status Bar: {config.show_status_bar}")
+            safe_print(f"Show Sidebar: {config.show_sidebar}")
+            safe_print(f"Agent ID: {config.agent_id}")
+            safe_print(f"Safety Level: {config.safety_level}")
+            safe_print(f"Max Autonomous Actions: {config.max_autonomous_actions}")
+            safe_print(f"Require Confirmation: {', '.join(config.require_confirmation)}")
+            safe_print(f"Session Timeout: {config.session_timeout}s")
+            safe_print(f"API Enabled: {config.api_enabled}")
             if config.api_enabled:
-                print(f"API Port: {config.api_port}")
+                safe_print(f"API Port: {config.api_port}")
 
         except Exception as e:
-            print(f"❌ Failed to show config: {e}")
+            safe_print(f"❌ Failed to show config: {e}")
 
     elif args.config_action == "set":
         try:
@@ -390,8 +474,8 @@ def _handle_cursor_config(args: argparse.Namespace, root: Path) -> None:
             }
 
             if args.key not in valid_keys:
-                print(f"❌ Invalid configuration key: {args.key}")
-                print(f"Valid keys: {', '.join(valid_keys.keys())}")
+                safe_print(f"❌ Invalid configuration key: {args.key}")
+                safe_print(f"Valid keys: {', '.join(valid_keys.keys())}")
                 return
 
             # Convert value to appropriate type
@@ -408,12 +492,12 @@ def _handle_cursor_config(args: argparse.Namespace, root: Path) -> None:
             setattr(integration.config, args.key, value)
             integration._save_config(integration.config)
 
-            print(f"✅ Configuration updated: {args.key} = {value}")
-            print("💡 Restart may be required for some changes to take effect")
+            safe_print(f"✅ Configuration updated: {args.key} = {value}")
+            safe_print("💡 Restart may be required for some changes to take effect")
 
         except ValueError:
-            print(f"❌ Invalid value for {args.key}: {args.value}")
+            safe_print(f"❌ Invalid value for {args.key}: {args.value}")
         except Exception as e:
-            print(f"❌ Failed to set config: {e}")
+            safe_print(f"❌ Failed to set config: {e}")
     else:
-        print(f"Unknown config action: {args.config_action}")
+        safe_print(f"Unknown config action: {args.config_action}")

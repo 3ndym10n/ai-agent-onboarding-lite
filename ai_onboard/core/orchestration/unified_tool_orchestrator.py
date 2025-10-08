@@ -10,6 +10,7 @@ This unified system provides comprehensive tool orchestration with safety,
 vision alignment, user preferences, and intelligent automation.
 """
 
+import logging
 import os
 import re
 import subprocess
@@ -21,12 +22,31 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
+logger = logging.getLogger(__name__)
+
+
+def _debug_fallbacks_enabled() -> bool:
+    """Return True when fallback logging is enabled via environment variable."""
+    return os.environ.get("AI_ONBOARD_DEBUG_FALLBACKS", "").lower() in {
+        "1",
+        "true",
+        "yes",
+    }
+
+
+def _log_fallback(component: str, fallback: str) -> None:
+    """Log when a fallback implementation is selected (opt-in)."""
+    if _debug_fallbacks_enabled():
+        logger.info(
+            "UnifiedToolOrchestrator using fallback for %s (%s)", component, fallback
+        )
+
 # Core tool imports - using try/except for optional dependencies
 PatternRecognitionSystem: Optional[Any] = None
 try:
     from .pattern_recognition_system import PatternRecognitionSystem
 except ImportError:
-    pass
+    _log_fallback("pattern_recognition_system", "disabled")
 
 
 # Define fallback first, then try to import the real one
@@ -49,13 +69,14 @@ def get_tool_tracker_fallback(root_path: Path) -> Any:
 try:
     from .tool_usage_tracker import get_tool_tracker
 except ImportError:
+    _log_fallback("tool_usage_tracker", "mock")
     get_tool_tracker = get_tool_tracker_fallback  # type: ignore[assignment]
 
 UserPreferenceLearningSystem: Optional[Any] = None
 try:
     from ..ai_integration.user_preference_learning import UserPreferenceLearningSystem
 except ImportError:
-    pass
+    _log_fallback("user_preference_learning_system", "disabled")
 
 
 # Discovery and metadata - define fallback first
@@ -71,6 +92,7 @@ def get_comprehensive_tool_discovery_fallback(root_path: Any) -> Any:
 try:
     from .comprehensive_tool_discovery import get_comprehensive_tool_discovery
 except ImportError:
+    _log_fallback("comprehensive_tool_discovery", "mock")
     get_comprehensive_tool_discovery = get_comprehensive_tool_discovery_fallback
 
 
@@ -79,7 +101,7 @@ SessionStorageManager: Optional[Any] = None
 try:
     from ..base.session_storage import SessionStorageManager
 except ImportError:
-    pass
+    _log_fallback("session_storage_manager", "disabled")
 
 
 # Enhanced context manager - define fallback first
@@ -97,6 +119,7 @@ try:
         get_enhanced_context_manager,
     )
 except ImportError:
+    _log_fallback("enhanced_conversation_context", "mock")
     get_enhanced_context_manager = get_enhanced_context_manager_fallback  # type: ignore[assignment]
 
 
@@ -113,6 +136,7 @@ def get_mandatory_gate_fallback(root_path: Any) -> Any:
 try:
     from .mandatory_tool_consultation_gate import get_mandatory_gate
 except ImportError:
+    _log_fallback("mandatory_tool_consultation_gate", "mock")
     get_mandatory_gate = get_mandatory_gate_fallback
 
 
@@ -123,7 +147,7 @@ try:
         FileOrganizationAnalyzer,
     )
 except ImportError:
-    pass
+    _log_fallback("file_organization_analyzer", "disabled")
 
 StructuralRecommendationEngine: Optional[Any] = None
 try:
@@ -131,25 +155,25 @@ try:
         StructuralRecommendationEngine,
     )
 except ImportError:
-    pass
+    _log_fallback("structural_recommendation_engine", "disabled")
 
 RiskAssessmentFramework: Optional[Any] = None
 try:
     from ..quality_safety.risk_assessment_framework import RiskAssessmentFramework
 except ImportError:
-    pass
+    _log_fallback("risk_assessment_framework", "disabled")
 
 DependencyMapper: Optional[Any] = None
 try:
     from ..quality_safety.dependency_mapper import DependencyMapper
 except ImportError:
-    pass
+    _log_fallback("dependency_mapper", "disabled")
 
 DuplicateDetector: Optional[Any] = None
 try:
     from ..quality_safety.duplicate_detector import DuplicateDetector
 except ImportError:
-    pass
+    _log_fallback("duplicate_detector", "disabled")
 
 
 # IASGuardrails fallback class
@@ -163,6 +187,7 @@ IASGuardrails: Optional[Any] = None
 try:
     from ..ai_integration.ai_agent_wrapper import IASGuardrails
 except ImportError:
+    _log_fallback("IASGuardrails", "fallback")
     IASGuardrails = IASGuardrailsFallback
 
 

@@ -28,109 +28,73 @@ graph LR
 
 ## 🚀 Integration Setup
 
-### Step 1: Initialize Cursor Integration (10 minutes)
+### Step 1: Guided Setup (Recommended • ~5 minutes)
 
-Set up the foundational integration between AI Onboard and Cursor AI.
-
-#### Basic Integration Setup
+Let AI Onboard walk you through initialization, context sharing, and session creation.
 
 ```bash
-# Initialize Cursor AI integration
-python -m ai_onboard cursor init \
-  --integration-level "advanced" \
-  --context-sharing "comprehensive" \
-  --collaboration-mode "pair_programming"
-
-# Verify integration status
-python -m ai_onboard cursor status --comprehensive
-
-# Test basic connectivity
-python -m ai_onboard cursor test-connection
+# End-to-end guided setup
+python -m ai_onboard cursor guided-setup --user-id "cursor_user"
 ```
 
-#### Configure Integration Settings
+The guided flow:
+- Initializes (or re-initializes with `--force-init`) the Cursor integration
+- Shows the current integration status and a summary of project context
+- Creates a collaboration session and confirms it is ready to use
+
+To skip the automated session creation, add `--skip-session`.
+
+### Step 2: Manual Setup (If You Prefer Step-by-Step)
 
 ```bash
-# Configure integration preferences
-python -m ai_onboard config integrations cursor \
-  --enable-context-sharing true \
-  --enable-command-translation true \
-  --enable-progress-sync true \
-  --enable-learning-integration true \
-  --collaboration-style "conversational"
+# Initialize or refresh the integration
+python -m ai_onboard cursor init [--force]
+
+# Review integration health
+python -m ai_onboard cursor status
+
+# Inspect project context (JSON or human-readable summary)
+python -m ai_onboard cursor context --format summary
+python -m ai_onboard cursor context --format json
+
+# Create, list, inspect, or end sessions
+python -m ai_onboard cursor session create --user-id "cursor_user"
+python -m ai_onboard cursor session list
+python -m ai_onboard cursor session status <session_id>
+python -m ai_onboard cursor session end <session_id>
+
+# Translate natural language into ai_onboard commands
+python -m ai_onboard cursor translate "generate project plan"
+
+# View or tweak Cursor integration settings
+python -m ai_onboard cursor config show
+python -m ai_onboard cursor config set safety_level high
 ```
 
-#### Set Up Project Context
+These commands match the CLI exactly—no hidden flags required.
+
+### Step 3: Daily Cursor + AI Onboard Rhythm (5-10 minutes)
 
 ```bash
-# Share comprehensive project context
-python -m ai_onboard cursor context share \
-  --include-charter true \
-  --include-plan true \
-  --include-progress true \
-  --include-dependencies true \
-  --include-team-info true \
-  --context-focus "current_sprint"
+# Summarize current progress before you open Cursor
+python -m ai_onboard cursor context --format summary
+
+# Start a focused collaboration session
+python -m ai_onboard cursor session create --user-id "cursor_user"
+
+# Check on the active session during the day
+python -m ai_onboard cursor session status <session_id>
+
+# Wrap up by ending the session and reviewing overall status
+python -m ai_onboard cursor session end <session_id>
+python -m ai_onboard cursor status
 ```
 
-### Step 2: Optimize Context Sharing (5-10 minutes)
-
-Configure how project context flows between AI Onboard and Cursor AI.
-
-#### Context Configuration
-
-```bash
-# Optimize context sharing settings
-python -m ai_onboard cursor context configure \
-  --update-frequency "real_time" \
-  --context-depth "detailed" \
-  --include-recent-changes true \
-  --include-code-structure true \
-  --include-project-goals true \
-  --privacy-level "team_only"
-```
-
-#### Custom Context Filters
-
-```bash
-# Create context filters for different scenarios
-python -m ai_onboard cursor context filter create \
-  --name "development_focus" \
-  --include "current_sprint,tasks_in_progress,recent_changes,dependencies" \
-  --exclude "historical_data,other_teams_work,personal_notes"
-
-python -m ai_onboard cursor context filter create \
-  --name "planning_focus" \
-  --include "project_charter,upcoming_milestones,team_capacity,risk_factors" \
-  --exclude "detailed_code,current_bugs,personal_preferences"
-```
-
-### Step 3: Enable Command Translation (5 minutes)
-
-Set up natural language command translation between systems.
-
-#### Translation Setup
-
-```bash
-# Enable natural language command translation
-python -m ai_onboard cursor translate enable \
-  --language-model "advanced" \
-  --context-awareness "high" \
-  --confidence-threshold 0.8 \
-  --fallback-behavior "ask_for_clarification"
-```
-
-#### Translation Training
-
-```bash
-# Train translation system with your patterns
-python -m ai_onboard cursor translate train \
-  --sample-commands "charter,plan,dashboard,suggest,validate" \
-  --custom-phrases "start new project,check progress,optimize workflow" \
-  --context-examples "development_sprint,planning_session,review_meeting"
-```
+Use `python -m ai_onboard cursor session list` at any time to see everything Cursor is currently doing.
 
 ## 🤖 Collaborative Development Workflow
+
+> **Coming soon:** The commands in this section describe future automation we are building into the Cursor workflow. Today, rely on the guided setup and manual commands listed above.
 
 ### Step 4: Daily Development Integration (5-10 minutes)
 
