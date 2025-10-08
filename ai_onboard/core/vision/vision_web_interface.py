@@ -170,7 +170,11 @@ class VisionWebInterface:
 
             def _generate_html(self):
                 """Generate the main HTML page."""
-                return """
+                return self._get_html_template()
+
+    def _get_html_template(self) -> str:
+        """Get the HTML template for the vision interrogation interface."""
+        return """
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -804,7 +808,9 @@ class VisionWebInterface:
 </html>
                 """
 
-        return VisionRequestHandler
+        # This should return the web interface instance, not the handler class
+        # The handler is created internally by the VisionWebInterface
+        return None
 
 
 def start_vision_web_interface(root: Path, port: int = 8080) -> Dict[str, Any]:

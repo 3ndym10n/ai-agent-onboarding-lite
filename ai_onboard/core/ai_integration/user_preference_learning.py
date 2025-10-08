@@ -1624,8 +1624,17 @@ class UserPreferenceLearningSystem:
                         }
                     )
 
-        # Sort by confidence
-        recommendations.sort(key=lambda x: x["confidence"], reverse=True)  # type: ignore[return-value]
+        # Sort by confidence (convert to float for consistent comparison)
+        def get_sort_key(item):
+            confidence = item["confidence"]
+            if isinstance(confidence, (int, float)):
+                return float(confidence)
+            elif hasattr(confidence, "value"):
+                return float(confidence.value)
+            else:
+                return 0.0
+
+        recommendations.sort(key=get_sort_key, reverse=True)
 
         return recommendations[:10]  # Return top 10
 
@@ -1656,7 +1665,11 @@ class UserPreferenceLearningSystem:
                 }
                 for pref in sorted(
                     profile.preferences.values(),
-                    key=lambda x: x.confidence,  # type: ignore[arg-type]
+                    key=lambda x: (
+                        float(x.confidence)
+                        if isinstance(x.confidence, (int, float))
+                        else 0.5
+                    ),  # Convert to float for consistent comparison
                     reverse=True,
                 )[:5]
             ],
@@ -1865,7 +1878,7 @@ class UserPreferenceLearningSystem:
             }
 
             # Aggregate command preferences from legacy data
-            all_commands: Dict[str, int] = {}
+            all_commands: Dict[str, List] = {}
             for profile in all_profiles.values():
                 # Extract legacy data from feedback_history
                 legacy_data = None
@@ -1882,7 +1895,7 @@ class UserPreferenceLearningSystem:
                         if cmd not in all_commands:
                             all_commands[cmd] = []
                         if isinstance(prefs, dict) and "usage_history" in prefs:
-                            all_commands[cmd].extend(prefs["usage_history"])
+                            all_commands[cmd].extend(prefs["usage_history"])  # type: ignore[list-item]
 
             system_patterns["command_patterns"] = all_commands
 

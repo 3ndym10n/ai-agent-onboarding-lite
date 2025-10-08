@@ -16,6 +16,12 @@ from .unified_project_management import (
 from .wbs_auto_update_engine import WBSAutoUpdateEngine
 from .wbs_synchronization_engine import WBSSynchronizationEngine
 from .wbs_update_engine import WBSUpdateEngine
+from .automatic_progress_detector import (
+    AutomaticProgressDetector,
+    GitCommitAnalyzer,
+    FileActivityMonitor,
+    run_automatic_progress_detection,
+)
 
 # Import ProjectType from vision module since it's used in the codebase
 from ..vision.enhanced_vision_interrogator import ProjectType
@@ -28,6 +34,11 @@ __all__ = [
     "WBSAutoUpdateEngine",
     "WBSSynchronizationEngine",
     "WBSUpdateEngine",
+    # Automatic Progress Detection
+    "AutomaticProgressDetector",
+    "GitCommitAnalyzer",
+    "FileActivityMonitor",
+    "run_automatic_progress_detection",
     # Approval Workflows
     "ApprovalWorkflow",
     "get_approval_workflow",

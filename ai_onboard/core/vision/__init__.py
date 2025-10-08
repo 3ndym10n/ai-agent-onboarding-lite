@@ -12,12 +12,25 @@ from .enhanced_vision_interrogator import (
     get_enhanced_vision_interrogator,
     ProjectType,
 )
+from .vision_clarity_scorer import (
+    VisionClarityScorer,
+    VisionClarityReport,
+    ClarityScore,
+    ClarityMetric,
+    score_vision_clarity,
+)
 from .vision_web_interface import VisionWebInterface
 
 __all__ = [
     # Vision Interrogation
     "EnhancedVisionInterrogator",
     "get_enhanced_vision_interrogator",
+    # Vision Clarity Scoring
+    "VisionClarityScorer",
+    "VisionClarityReport",
+    "ClarityScore",
+    "ClarityMetric",
+    "score_vision_clarity",
     # Alignment Systems
     # Utilities
     "VisionWebInterface",

@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from ..base import utils
+from .vision_clarity_scorer import score_vision_clarity, VisionClarityReport
 
 
 class QuestionType(Enum):
@@ -297,10 +298,27 @@ class EnhancedVisionInterrogator:
         if follow_up_questions:
             interrogation_data["adaptive_questions"].extend(follow_up_questions)
 
-        # Update vision quality score
-        interrogation_data["vision_quality_score"] = (
-            self._calculate_enhanced_vision_quality(interrogation_data)
-        )
+        # Update vision quality score using new clarity scorer
+        responses = self._collect_responses(interrogation_data)
+        clarity_report = score_vision_clarity(responses)
+
+        interrogation_data["vision_quality_score"] = clarity_report.overall_score
+        interrogation_data["vision_clarity_report"] = {
+            "overall_score": clarity_report.overall_score,
+            "is_ready_for_ai": clarity_report.is_ready_for_ai,
+            "detailed_scores": {
+                metric.value: {
+                    "score": score.score,
+                    "confidence": score.confidence,
+                    "issues": score.issues,
+                    "strengths": score.strengths,
+                    "recommendations": score.recommendations
+                }
+                for metric, score in clarity_report.detailed_scores.items()
+            },
+            "critical_issues": clarity_report.critical_issues,
+            "summary": clarity_report.summary
+        }
 
         # Check phase completion with enhanced logic
         if self._is_enhanced_phase_complete(interrogation_data, phase):
@@ -969,6 +987,24 @@ class EnhancedVisionInterrogator:
             score += confidence_score
 
         return min(score, 1.0)
+
+    def _collect_responses(self, interrogation_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Collect all responses for clarity scoring."""
+        responses = {}
+
+        # Collect responses from all phases
+        all_responses = interrogation_data.get("responses", {})
+
+        # Flatten responses into a simple dictionary for scoring
+        for phase, phase_responses in all_responses.items():
+            for question_id, response_data in phase_responses.items():
+                if isinstance(response_data, dict):
+                    response_text = response_data.get("response", "")
+                else:
+                    response_text = str(response_data)
+                responses[question_id] = response_text
+
+        return responses
 
     def _is_enhanced_phase_complete(
         self, interrogation_data: Dict[str, Any], phase: str

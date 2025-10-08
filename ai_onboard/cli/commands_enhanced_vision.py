@@ -32,6 +32,9 @@ def handle_enhanced_vision_commands(args: argparse.Namespace, root: Path) -> Non
         _handle_export_results(args, root)
     elif args.enhanced_vision_cmd == "templates":
         _handle_manage_templates(args, root)
+    elif args.enhanced_vision_cmd == "clarity":
+        # TODO: Implement clarity scoring handler
+        print("Clarity scoring functionality not yet implemented")
     else:
         print(f"Unknown enhanced vision command: {args.enhanced_vision_cmd}")
 

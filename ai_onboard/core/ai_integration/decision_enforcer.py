@@ -11,6 +11,8 @@ from pathlib import Path
 from typing import Any, Callable, Dict, Optional, TypeVar, cast
 
 from .ai_gate_mediator import MediationResult, get_ai_gate_mediator
+from .hard_gate_enforcer import get_hard_gate_enforcer
+from .hard_limits_enforcer import get_hard_limits_enforcer
 from .user_preference_learning import (
     InteractionType,
     get_user_preference_learning_system,
@@ -64,6 +66,8 @@ class DecisionEnforcer:
         self.confidence_threshold = confidence_threshold
         self.mediator = get_ai_gate_mediator(project_root)
         self.preference_system = get_user_preference_learning_system(project_root)
+        self.hard_enforcer = get_hard_gate_enforcer(project_root)
+        self.limits_enforcer = get_hard_limits_enforcer(project_root)
 
         # Registry of known decision points
         self.decision_points: Dict[str, DecisionPoint] = {}
@@ -71,6 +75,51 @@ class DecisionEnforcer:
     def register_decision(self, decision: DecisionPoint) -> None:
         """Register a decision point that should be enforced."""
         self.decision_points[decision.name] = decision
+
+    def _determine_operation_type(
+        self, decision: DecisionPoint, context: Dict[str, Any]
+    ) -> str:
+        """Determine the type of operation being performed for limits checking."""
+        question_lower = decision.question.lower()
+        context_str = str(context).lower()
+
+        # File operations
+        if any(
+            word in question_lower for word in ["create file", "new file", "add file"]
+        ):
+            return "file_create"
+        elif any(
+            word in question_lower for word in ["delete file", "remove file", "rm file"]
+        ):
+            return "file_delete"
+        elif any(
+            word in question_lower
+            for word in ["modify file", "edit file", "change file"]
+        ):
+            return "file_modify"
+
+        # Refactoring operations
+        elif any(
+            word in question_lower for word in ["refactor", "restructure", "rename"]
+        ):
+            return "refactor"
+
+        # Dependency operations
+        elif any(
+            word in question_lower
+            for word in ["dependency", "package", "install", "add library"]
+        ):
+            return "dependency_add"
+
+        # Bulk operations
+        elif (
+            any(word in question_lower for word in ["bulk", "multiple", "batch"])
+            or "files_affected" in context
+        ):
+            return "bulk_operation"
+
+        # Default to unknown
+        return "unknown"
 
     def _record_user_preference(
         self,
@@ -160,6 +209,83 @@ class DecisionEnforcer:
 
         return None
 
+    def _check_cleanup_preference(
+        self,
+        decision_name: str,
+        context: Dict[str, Any],
+        agent_id: str,
+    ) -> Optional[str]:
+        """Check for user's cleanup preferences."""
+        try:
+            # Get user ID from context or use agent_id
+            user_id = context.get("user_id", agent_id)
+            if user_id == "system":
+                user_id = "vibe_coder"  # Use actual user ID
+
+            # Check for cleanup preferences in preference system
+            if hasattr(self.preference_system, "get_user_preferences"):
+                cleanup_prefs = self.preference_system.get_user_preferences(
+                    user_id, "organization_focus"
+                )
+
+                # Map decision names to preference keys
+                preference_map = {
+                    "temp_file_placement": "root_directory_cleanliness",
+                    "cleanup_frequency": "cleanup_frequency",
+                    "temp_file_retention": "temp_file_retention",
+                }
+
+                pref_key = preference_map.get(decision_name)
+                if pref_key:
+                    for pref_id, pref in cleanup_prefs.items():
+                        if pref.preference_key == pref_key:
+                            # Check confidence level
+                            confidence_value = (
+                                float(pref.confidence)
+                                if isinstance(pref.confidence, (int, float))
+                                else 0.5
+                            )
+                            if confidence_value >= 0.7:
+                                # Strong preference exists
+                                return str(pref.preference_value)
+
+            # Check for explicit cleanup preferences in context
+            if context.get("user_prefers_lean"):
+                if decision_name == "temp_file_placement":
+                    return "cache_dir"  # Use cache directory for lean root
+                elif decision_name == "cleanup_frequency":
+                    return "daily"  # Daily cleanup for lean directory
+                elif decision_name == "temp_file_retention":
+                    return "immediate"  # Delete immediately for lean directory
+
+        except Exception:
+            pass
+
+        return None
+
+    def _log_blocked_action(
+        self,
+        agent_id: str,
+        action_type: str,
+        reason: str,
+        severity: str = "warning",
+        context: Optional[Dict[str, Any]] = None,
+    ) -> None:
+        """Log a blocked action for the oversight dashboard."""
+        try:
+            # Import here to avoid circular imports
+            from .agent_oversight_dashboard import AgentOversightDashboard
+
+            dashboard = AgentOversightDashboard(self.project_root)
+            dashboard.log_blocked_action(
+                agent_id=agent_id,
+                action_type=action_type,
+                reason=reason,
+                severity=severity,
+            )
+        except Exception as e:
+            print(f"[DEBUG] Failed to log blocked action: {e}")
+
     def enforce_decision(
         self,
         decision_name: str,
@@ -202,6 +328,29 @@ class DecisionEnforcer:
                 smart_defaults_used=True,
             )
 
+        # Check for user cleanup preferences for cleanup-related decisions
+        if decision_name in [
+            "temp_file_placement",
+            "cleanup_frequency",
+            "temp_file_retention",
+        ]:
+            cleanup_preference = self._check_cleanup_preference(
+                decision_name, context, agent_id
+            )
+            if cleanup_preference:
+                return MediationResult(
+                    proceed=True,
+                    response={
+                        "user_responses": [cleanup_preference],
+                        "user_decision": "proceed",
+                        "source": "cleanup_preference",
+                        "confidence": 0.9,
+                    },
+                    confidence=0.9,  # High confidence from cleanup preference
+                    gate_created=False,
+                    smart_defaults_used=True,
+                )
+
         # Calculate confidence
         confidence = decision.calculate_confidence(**context)
 
@@ -213,6 +362,58 @@ class DecisionEnforcer:
             "options": decision.options,
             "default": decision.default,
         }
+
+        # Check for hard limits before proceeding
+        operation_type = self._determine_operation_type(decision, full_context)
+        limits_allowed, limits_reason, limit_violation = (
+            self.limits_enforcer.check_operation_allowed(
+                agent_id, operation_type, full_context
+            )
+        )
+
+        if not limits_allowed:
+            # Operation exceeds hard limits - return blocked result
+            return MediationResult(
+                proceed=False,
+                response={
+                    "blocked": True,
+                    "block_type": "hard_limits",
+                    "violation_id": (
+                        limit_violation.violation_id if limit_violation else None
+                    ),
+                    "reason": f"Hard limits: {limits_reason}",
+                    "message": f"Operation '{decision.question}' exceeds safety limits",
+                },
+                gate_created=False,
+                confidence=1.0,
+                smart_defaults_used=False,
+            )
+
+        # Check for hard blocks before proceeding
+        should_block, block_id, block_reason = (
+            self.hard_enforcer.should_block_operation(
+                agent_id, decision.question, full_context
+            )
+        )
+
+        if should_block and block_id:
+            # Operation is blocked - return blocked result
+            return MediationResult(
+                proceed=False,
+                response={
+                    "blocked": True,
+                    "block_id": block_id,
+                    "reason": (
+                        f"Hard enforcement: {block_reason.value}"
+                        if block_reason
+                        else "Operation blocked"
+                    ),
+                    "message": f"Operation '{decision.question}' is blocked pending approval",
+                },
+                confidence=0.0,
+                gate_created=True,
+                smart_defaults_used=False,
+            )
 
         # Use mediator to handle the decision
         result = self.mediator.process_agent_request(
@@ -229,6 +430,16 @@ class DecisionEnforcer:
                 result=result,
                 context=context,
                 agent_id=agent_id,
+            )
+
+        # Log blocked actions when gates are created (agent blocked from proceeding)
+        elif not result.proceed and not result.gate_created:
+            self._log_blocked_action(
+                agent_id=agent_id,
+                action_type=f"Decision enforcement: {decision_name}",
+                reason="Required approval before proceeding",
+                severity="warning",
+                context=context,
             )
 
         return result
@@ -406,6 +617,51 @@ COMMON_DECISIONS = {
             "styled_components": "Styled Components - CSS-in-JS",
             "sass": "Sass/SCSS - CSS preprocessor",
         },
+    ),
+    # Cleanup and organization decisions
+    "temp_file_placement": DecisionPoint(
+        name="temp_file_placement",
+        question="Where should temporary files be created?",
+        options={
+            "root": "Create in root directory (not recommended)",
+            "cache_dir": "Create in .ai_onboard/cache/ (recommended)",
+            "temp_dir": "Create in system temp directory",
+            "skip_creation": "Skip temp file creation if possible",
+        },
+        default="cache_dir",
+        confidence_calculator=lambda **kwargs: (
+            0.8 if kwargs.get("user_prefers_lean") else 0.3
+        ),
+    ),
+    "cleanup_frequency": DecisionPoint(
+        name="cleanup_frequency",
+        question="How often should automatic cleanup run?",
+        options={
+            "never": "Never run automatic cleanup",
+            "hourly": "Clean up every hour",
+            "daily": "Clean up daily",
+            "weekly": "Clean up weekly",
+            "on_demand": "Only clean up when explicitly requested",
+        },
+        default="daily",
+        confidence_calculator=lambda **kwargs: (
+            0.7 if kwargs.get("user_prefers_lean") else 0.4
+        ),
+    ),
+    "temp_file_retention": DecisionPoint(
+        name="temp_file_retention",
+        question="How long should temporary files be kept?",
+        options={
+            "immediate": "Delete immediately after use",
+            "short": "Keep for 1 hour",
+            "medium": "Keep for 24 hours",
+            "long": "Keep for 7 days",
+            "permanent": "Keep permanently",
+        },
+        default="immediate",
+        confidence_calculator=lambda **kwargs: (
+            0.9 if kwargs.get("user_prefers_lean") else 0.5
+        ),
     ),
 }
 

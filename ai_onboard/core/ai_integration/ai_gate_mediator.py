@@ -15,6 +15,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from ..base import utils
 from ..continuous_improvement.learning_persistence import LearningPersistenceManager
 from ..legacy_cleanup.gate_system import GateRequest, GateSystem, GateType
 
@@ -1188,6 +1189,91 @@ class AIGateMediator:
             pass
 
         return "A"  # Default to first option
+
+    def get_pending_gate_requests(self) -> List[Any]:
+        """Get all pending gate requests that need approval."""
+        pending_requests = []
+
+        try:
+            # Check for active gate
+            current_gate_file = (
+                self.project_root / ".ai_onboard" / "gates" / "current_gate.md"
+            )
+            if current_gate_file.exists():
+                gate_status = utils.read_json(
+                    self.project_root / ".ai_onboard" / "gates" / "gate_status.json",
+                    default={},
+                )
+
+                if gate_status.get("status") == "pending":
+                    # Create a simple object with the needed attributes
+                    class SimpleGateRequest:
+                        def __init__(self, gate_data):
+                            self.gate_id = gate_data.get("gate_id", "unknown")
+                            self.title = gate_data.get("question", "Pending decision")
+                            self.agent_id = gate_data.get("agent_id", "unknown")
+                            self.created_at = gate_data.get("created_at", time.time())
+                            self.questions = gate_data.get("options", [])
+                            self.context = gate_data.get("context", {})
+
+                    pending_requests.append(SimpleGateRequest(gate_status))
+
+        except Exception as e:
+            print(f"Warning: Error getting pending gate requests: {e}")
+
+        return pending_requests  # type: ignore[return-value]
+
+    def approve_gate(self, gate_id: str, force: bool = False) -> Dict[str, Any]:
+        """Approve a pending gate by creating a response file."""
+        try:
+            # Check if there's an active gate
+            current_gate_file = (
+                self.project_root / ".ai_onboard" / "gates" / "current_gate.md"
+            )
+            if not current_gate_file.exists():
+                return {"success": False, "error": "No active gate found"}
+
+            # Read gate status
+            gate_status = utils.read_json(
+                self.project_root / ".ai_onboard" / "gates" / "gate_status.json",
+                default={},
+            )
+
+            if gate_status.get("status") != "pending":
+                return {
+                    "success": False,
+                    "error": f"Gate is not pending (status: {gate_status.get('status', 'unknown')})",
+                }
+
+            # Create response file to approve the gate
+            response_file = (
+                self.project_root / ".ai_onboard" / "gates" / "gate_response.json"
+            )
+
+            # Get gate details for response
+            gate_question = gate_status.get("question", "Pending decision")
+            gate_options = gate_status.get("options", [])
+
+            # Create approval response
+            approval_response = {
+                "user_responses": gate_options[:1] if gate_options else ["Approved"],
+                "user_decision": "proceed",
+                "additional_context": f"Approved via CLI command (gate_id: {gate_id})",
+                "timestamp": time.time(),
+            }
+
+            # Write response file
+            utils.write_json(response_file, approval_response)
+
+            return {
+                "success": True,
+                "message": f"Gate '{gate_id}' approved successfully",
+                "gate_question": gate_question,
+                "response_file": str(response_file),
+            }
+
+        except Exception as e:
+            return {"success": False, "error": f"Failed to approve gate: {e}"}
 
 
 def get_ai_gate_mediator(project_root: Path) -> AIGateMediator:

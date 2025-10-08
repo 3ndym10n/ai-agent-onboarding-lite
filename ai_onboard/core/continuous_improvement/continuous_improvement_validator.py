@@ -22,6 +22,7 @@ from typing import Any, Callable, Dict, List, Optional
 
 from ..ai_integration import user_preference_learning
 from ..ai_integration.user_preference_learning import InteractionType
+from ..base import utils
 from ..project_management.phased_implementation_strategy import ValidationStatus
 from . import (
     adaptive_config_manager,
@@ -30,7 +31,6 @@ from . import (
     knowledge_base_evolution,
     performance_optimizer,
     system_health_monitor,
-    utils,
 )
 
 

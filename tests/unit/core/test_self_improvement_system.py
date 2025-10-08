@@ -5,22 +5,22 @@ from pathlib import Path
 
 import pytest
 
-from ai_onboard.core.continuous_improvement.learning_persistence import (
-    LearningPersistenceManager,
-)
-from ai_onboard.core.continuous_improvement_validator import (  # type: ignore[import-untyped]
+from ai_onboard.core.continuous_improvement.continuous_improvement_validator import (  # type: ignore[import-untyped]
     ContinuousImprovementValidator,
     ValidationCategory,
     ValidationResult,
     ValidationTestCase,
 )
+from ai_onboard.core.continuous_improvement.learning_persistence import (
+    LearningPersistenceManager,
+)
+from ai_onboard.core.legacy_cleanup.smart_debugger import SmartDebugger  # type: ignore[import-untyped]
 from ai_onboard.core.orchestration.automatic_error_prevention import (
     AutomaticErrorPrevention,
 )
 from ai_onboard.core.orchestration.pattern_recognition_system import (
     PatternRecognitionSystem,
 )
-from ai_onboard.core.smart_debugger import SmartDebugger  # type: ignore[import-untyped]
 
 
 @pytest.fixture
