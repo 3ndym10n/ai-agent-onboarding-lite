@@ -24,6 +24,9 @@ class SessionContext:
     user_id: str
     session_id: str
     timestamp: datetime = field(default_factory=datetime.now)
+    
+    # Track previous session timestamp for accurate continuation summaries
+    previous_session_timestamp: Optional[datetime] = None
 
     # Conversation history
     conversation: Deque[Dict[str, str]] = field(
@@ -66,20 +69,29 @@ class ContextMemorySystem:
         # Load previous session if exists
         previous_context = self.load_latest_context(user_id)
 
-        # Create new session
+        # Create new session with current timestamp
         session_id = f"session_{int(datetime.now().timestamp())}"
-        self.current_session = SessionContext(user_id=user_id, session_id=session_id)
+        current_time = datetime.now()
+        self.current_session = SessionContext(
+            user_id=user_id, 
+            session_id=session_id,
+            timestamp=current_time
+        )
 
         # If previous session exists, seed with recent context
+        # Store the previous timestamp separately for continuation summary
         if previous_context:
-            self._seed_from_previous(previous_context)
+            self._seed_from_previous(previous_context, previous_timestamp=previous_context.timestamp)
 
         return self.current_session
 
-    def _seed_from_previous(self, previous: SessionContext):
+    def _seed_from_previous(self, previous: SessionContext, previous_timestamp: Optional[datetime] = None):
         """Seed current session with relevant context from previous session."""
         if not self.current_session:
             return
+
+        # Store the previous session's timestamp for accurate time gap calculations
+        self.current_session.previous_session_timestamp = previous_timestamp or previous.timestamp
 
         # Copy project state
         self.current_session.project_name = previous.project_name
@@ -163,6 +175,11 @@ class ContextMemorySystem:
             "user_id": self.current_session.user_id,
             "session_id": self.current_session.session_id,
             "timestamp": self.current_session.timestamp.isoformat(),
+            "previous_session_timestamp": (
+                self.current_session.previous_session_timestamp.isoformat()
+                if self.current_session.previous_session_timestamp
+                else None
+            ),
             "conversation": list(self.current_session.conversation),
             "project_name": self.current_session.project_name,
             "current_phase": self.current_session.current_phase,
@@ -198,6 +215,11 @@ class ContextMemorySystem:
             user_id=data["user_id"],
             session_id=data["session_id"],
             timestamp=datetime.fromisoformat(data["timestamp"]),
+            previous_session_timestamp=(
+                datetime.fromisoformat(data["previous_session_timestamp"])
+                if data.get("previous_session_timestamp")
+                else None
+            ),
         )
 
         # Restore conversation
@@ -229,9 +251,9 @@ class ContextMemorySystem:
 
         summary_parts = []
 
-        # Time since last session
-        if self.current_session.timestamp:
-            time_diff = datetime.now() - self.current_session.timestamp
+        # Time since last session - use previous_session_timestamp for accurate gap
+        if self.current_session.previous_session_timestamp:
+            time_diff = self.current_session.timestamp - self.current_session.previous_session_timestamp
             if time_diff.days > 0:
                 summary_parts.append(f"Last session: {time_diff.days} days ago")
             elif time_diff.seconds > 3600:

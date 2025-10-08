@@ -39,6 +39,12 @@ def generate_id(length: int = 8) -> str:
 def write_json(path: Path, data):
     ensure_dir(path.parent)
     path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf - 8")
+    # Invalidate cache entry to ensure subsequent reads get fresh data
+    cache_key = str(path.resolve())
+    if cache_key in _json_cache:
+        del _json_cache[cache_key]
+    if cache_key in _json_cache_access:
+        del _json_cache_access[cache_key]
 
 
 # Global cache for JSON files
@@ -87,8 +93,13 @@ async def read_json_async(path: Path, default=None) -> Any:
     if not path.exists():
         return default
     try:
-        # Use asyncio.to_thread for the blocking I / O operation
-        content = await asyncio.to_thread(path.read_text, encoding="utf - 8")
+        # Use asyncio.to_thread (Python 3.9+) with fallback for Python 3.8
+        if hasattr(asyncio, 'to_thread'):
+            content = await asyncio.to_thread(path.read_text, encoding="utf - 8")
+        else:
+            # Fallback for Python 3.8: use run_in_executor
+            loop = asyncio.get_event_loop()
+            content = await loop.run_in_executor(None, path.read_text, "utf - 8")
         return json.loads(content)
     except (json.JSONDecodeError, OSError):
         return default
@@ -121,7 +132,9 @@ def read_multiple_json_sync(paths: List[Path], default=None) -> List[Any]:
 
 
 def now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat() + "Z"
+    """Return ISO 8601 timestamp with Z suffix (UTC)."""
+    # Replace +00:00 with Z to avoid mixed-offset format (e.g., +00:00Z)
+    return datetime.now(timezone.utc).isoformat().replace('+00:00', '') + "Z"
 
 
 def dumps_json(data) -> str:
