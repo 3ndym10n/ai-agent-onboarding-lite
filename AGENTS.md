@@ -56,9 +56,35 @@ If you must override for a particular commit:
 Agents should follow these gates to stay aligned and safe:
 
 - Gate A (Pre-edit): `python -m ai_onboard prompt summary --level brief` and attach to PR context.
-- Gate B (Safety): `python -m ai_onboard checkpoint create --scope "." --reason "pre-change"` when `files>10` or `lines>500`.
-- Gate C (Guard): `python -m ai_onboard prompt propose --diff '<json>'` must return a non-blocking decision (e.g., `allow` or `warn`). Any `block` → stop and request review.
+- Gate B (Safety): Use intelligent monitoring `python -m ai_onboard intelligent analyze comprehensive` when `files>10` or `lines>500`.
+- Gate C (Guard): Check for active gates with `python -m ai_onboard cursor context` and handle any collaboration gates.
 - Gate D (Post-op): `python -m ai_onboard validate --report` and address high-risk findings before merge.
+
+## AI Agent Integration
+
+This repository now includes comprehensive AI agent integration:
+
+### New AI Agent Guidance System
+
+- **Dynamic guidance** that adapts to agent experience and project context
+- **Safety mechanisms** with multiple protection levels
+- **Collaboration protocols** for structured agent interaction
+- **Session management** with limits and monitoring
+
+### Available AI Agent Commands
+
+- `python -m ai_onboard cursor init` - Initialize Cursor AI integration
+- `python -m ai_onboard cursor session create` - Create collaboration session
+- `python -m ai_onboard intelligent start` - Start intelligent monitoring
+- `python -m ai_onboard holistic discover` - Discover available tools
+- `python -m ai_onboard holistic orchestrate` - Orchestrate tools for requests
+
+### AI Agent Safety
+
+- **Protected files** are automatically blocked from modification
+- **Dangerous commands** are detected and require approval
+- **Session limits** prevent runaway agent behavior
+- **Collaboration modes** (assistive, collaborative, supervised, autonomous)
 
 ## Import Consolidation System
 

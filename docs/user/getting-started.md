@@ -5,6 +5,7 @@ Welcome to AI Onboard! This guide will get you up and running in **15 minutes** 
 ## 🎯 What You'll Learn
 
 By the end of this guide, you'll know how to:
+
 - ✅ Set up AI Onboard for your project
 - ✅ Create a project charter and vision
 - ✅ Generate an intelligent project plan
@@ -20,6 +21,7 @@ By the end of this guide, you'll know how to:
 ## 🚀 Step 1: Installation (2 minutes)
 
 ### Quick Installation
+
 ```bash
 # Navigate to your project directory
 cd your-project-directory
@@ -34,12 +36,14 @@ python -m ai_onboard --help
 ```
 
 ### Development Installation
+
 ```bash
 # For development with additional tools
 pip install -e ".[dev]"
 ```
 
 ### First Run Welcome
+
 ```bash
 # Your first command - AI Onboard will welcome you!
 python -m ai_onboard dashboard
@@ -52,6 +56,7 @@ You'll see a personalized welcome message and quick start guidance.
 Every successful project starts with a clear vision. AI Onboard's **charter** command helps you define this foundation.
 
 ### Interactive Charter Creation
+
 ```bash
 python -m ai_onboard charter
 ```
@@ -59,6 +64,7 @@ python -m ai_onboard charter
 This interactive process will guide you through:
 
 #### Vision Core Questions
+
 - **What problem does your project solve?**
   - Example: "Create a user-friendly task management app for remote teams"
 
@@ -69,6 +75,7 @@ This interactive process will guide you through:
   - Example: "Remote development teams of 5-20 people"
 
 #### Success Criteria
+
 - **How will you measure success?**
   - Example: "User satisfaction >4.5/5, 80% feature adoption rate"
 
@@ -76,6 +83,7 @@ This interactive process will guide you through:
   - Example: "6-month timeline, mobile-first design, GDPR compliance"
 
 ### Charter Example Output
+
 ```yaml
 project_name: "TeamFlow - Remote Task Management"
 vision_statement: "Empower remote teams with intuitive, collaborative task management"
@@ -95,6 +103,7 @@ stakeholders:
 With your vision defined, AI Onboard can generate an intelligent project plan.
 
 ### Create Your Plan
+
 ```bash
 python -m ai_onboard plan
 ```
@@ -102,12 +111,14 @@ python -m ai_onboard plan
 ### What You'll Get
 
 #### Intelligent Work Breakdown Structure
+
 - **Phases**: Logical project phases (Foundation, Development, Testing, Deployment)
 - **Tasks**: Specific, actionable tasks with effort estimates
 - **Dependencies**: Clear task relationships and prerequisites
 - **Milestones**: Key deliverables and checkpoints
 
 #### Example Plan Output
+
 ```
 📋 Project Plan: TeamFlow - Remote Task Management
 
@@ -144,6 +155,7 @@ python -m ai_onboard plan
 AI Onboard provides intelligent progress tracking and visual dashboards.
 
 ### View Your Dashboard
+
 ```bash
 python -m ai_onboard dashboard
 ```
@@ -151,6 +163,7 @@ python -m ai_onboard dashboard
 ### Dashboard Features
 
 #### Visual Progress Tracking
+
 ```
 🎯 TeamFlow Progress Overview
 
@@ -172,12 +185,14 @@ Overall Progress: █████████░░░░░░░░░░░ 4
 ```
 
 #### Key Metrics
+
 - **Completion Percentage**: Real-time progress calculation
 - **Velocity Tracking**: Task completion rate and trends
 - **Risk Assessment**: Potential blockers and mitigation suggestions
 - **Resource Utilization**: Team capacity and workload balance
 
 ### Quick Progress Check
+
 ```bash
 # Quick progress summary
 python -m ai_onboard prompt progress
@@ -191,6 +206,7 @@ python -m ai_onboard plan milestone --status
 AI Onboard learns from your patterns and provides intelligent recommendations.
 
 ### Get Smart Suggestions
+
 ```bash
 python -m ai_onboard suggest
 ```
@@ -198,6 +214,7 @@ python -m ai_onboard suggest
 ### Types of Suggestions
 
 #### Workflow Optimization
+
 ```
 🚀 Workflow Suggestions for you:
 
@@ -220,6 +237,7 @@ Based on your usage patterns, here are personalized recommendations:
 ```
 
 #### Feature Discovery
+
 ```
 🔍 New Features You Might Like:
 
@@ -237,6 +255,7 @@ Based on your usage patterns, here are personalized recommendations:
 ```
 
 ### Context-Aware Help
+
 ```bash
 # Get help based on your current context
 python -m ai_onboard help
@@ -251,16 +270,19 @@ python -m ai_onboard discover
 ## 🎓 Next Steps: Your Learning Journey
 
 ### Immediate Next Steps (This Week)
+
 1. **Explore Core Workflows**: [Project Setup Workflow](workflows/project-setup.md)
 2. **Learn Command Basics**: [Command Reference](commands/README.md)
 3. **Set Up Progress Monitoring**: [Progress Tracking Guide](workflows/progress-monitoring.md)
 
 ### Week 2: Intermediate Features
+
 1. **Optimization & Improvement**: [Kaizen Workflows](workflows/optimization.md)
 2. **AI Collaboration**: [Cursor Integration](workflows/cursor-integration.md)
 3. **Advanced Planning**: [Advanced Project Management](advanced/project-management.md)
 
 ### Week 3+: Advanced Mastery
+
 1. **Custom Workflows**: [Workflow Customization](advanced/custom-workflows.md)
 2. **API Integration**: [API Reference](api/README.md)
 3. **Team Collaboration**: [Multi-User Setup](advanced/team-collaboration.md)
@@ -268,6 +290,7 @@ python -m ai_onboard discover
 ## 🎯 Common First-Week Workflows
 
 ### The "New Project" Flow (15 minutes)
+
 ```bash
 # 1. Define your vision
 python -m ai_onboard charter
@@ -286,6 +309,7 @@ python -m ai_onboard dashboard
 ```
 
 ### The "Daily Check-in" Flow (2 minutes)
+
 ```bash
 # Quick project status
 python -m ai_onboard dashboard
@@ -298,6 +322,7 @@ python -m ai_onboard status
 ```
 
 ### The "Weekly Review" Flow (10 minutes)
+
 ```bash
 # Comprehensive progress review
 python -m ai_onboard prompt progress
@@ -315,6 +340,7 @@ python -m ai_onboard plan milestone --next
 ## 🆘 Getting Help
 
 ### Built-in Help System
+
 ```bash
 # Context-aware help (learns from your usage)
 python -m ai_onboard help
@@ -327,12 +353,14 @@ python -m ai_onboard help --tutorial
 ```
 
 ### Smart Assistance Features
+
 - **Error Recovery**: Automatic guidance when commands fail
 - **Workflow Suggestions**: Proactive recommendations based on your patterns
 - **Feature Discovery**: Gentle introduction to new capabilities
 - **Progress Insights**: Understanding of your project health and trajectory
 
 ### Self-Service Troubleshooting
+
 ```bash
 # Diagnose system issues
 python -m ai_onboard debug analyze
@@ -349,6 +377,7 @@ python -m ai_onboard validate --report
 You'll know you're successful when:
 
 ### Week 1 Goals ✅
+
 - [ ] Project charter created with clear vision
 - [ ] Intelligent project plan generated
 - [ ] Dashboard shows meaningful progress tracking
@@ -356,12 +385,14 @@ You'll know you're successful when:
 - [ ] Basic workflows feel natural and efficient
 
 ### Week 2 Goals ✅
+
 - [ ] Using optimization features (kaizen, experiments)
 - [ ] AI collaboration features integrated into workflow
 - [ ] Custom configuration adapted to your preferences
 - [ ] Team members onboarded and collaborative
 
 ### Long-term Success ✅
+
 - [ ] 40%+ improvement in project delivery speed
 - [ ] Reduced scope creep and better alignment
 - [ ] Higher team satisfaction and collaboration
@@ -371,29 +402,35 @@ You'll know you're successful when:
 ## 💡 Pro Tips for Success
 
 ### 1. Start Small, Think Big
+
 - Begin with basic workflows (charter → plan → dashboard)
 - Gradually explore advanced features as you become comfortable
 - Let AI Onboard learn your patterns before heavy customization
 
 ### 2. Embrace the Intelligence
+
 - Trust the suggestions - they're based on successful patterns
 - Provide feedback through `python -m ai_onboard ux feedback`
 - Let the system adapt to your working style over time
 
 ### 3. Use the Learning Features
+
 - Check `python -m ai_onboard ux analytics user` weekly
 - Review workflow optimization suggestions regularly
 - Participate in the continuous improvement cycle
 
 ### 4. Leverage Community Patterns
+
 - Learn from the built-in workflow templates
 - Adapt successful patterns to your specific needs
 - Contribute your successful patterns back to the community
 
 ---
 
-**🎯 Ready for the next level?** → [Core Workflows Guide](workflows/README.md)
+**🎯 Ready for daily workflows?** → [Progress Monitoring Workflow](workflows/progress-monitoring.md)
 
-**❓ Need help with specific commands?** → [Command Reference](commands/README.md)
+**❓ Need help with specific commands?** → [Command Reference](commands/README.md) or [CLI Quick Reference](cli-reference.md)
 
-**🚀 Want to explore advanced features?** → [Advanced Features](advanced/README.md)
+**🚀 Want to explore advanced features?** → [Advanced Features Guide](advanced/README.md)
+
+**⚡ Ready for weekly optimization?** → [Optimization Workflow](workflows/optimization.md)

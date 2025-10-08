@@ -1,16 +1,31 @@
-# AI Onboard - AI Agent Alignment Tool
+# AI Onboard - Agent Oversight & Guardrails
 
-**AI Onboard** is a drop-in tool that helps developers create real working projects more efficiently by providing AI agent alignment, vision tracking, and continuous improvement capabilities.
+**Keep chaotic AI agents on track and aligned with your vision.**
 
-## 🎯 What It Does
+AI Onboard is an oversight and guardrail system that gives vibe coders (non-technical users) control over AI coding agents, preventing chaos, bloat, and drift while maintaining systematic progress toward project goals.
 
-AI Onboard prevents AI agent drift and maintains alignment with your vision through:
+## 🎯 The Problem
 
-- **Vision Alignment**: Keeps AI agents focused on your project goals
-- **Smart Validation**: Pre-flight checks before making changes
-- **Continuous Improvement**: Self-correcting system that gets better over time
-- **Safe Operations**: Protected paths and rollback capabilities
-- **Agent Collaboration**: Structured workflow for AI agents working together
+AI agents are brilliant but chaotic. They:
+
+- 🌀 Go down rabbit holes and build unnecessary features
+- 📦 Create bloat and technical debt
+- 🎯 Lose sight of original project goals
+- 🔄 Build endlessly without finishing
+- 🚫 Make you lose control of your own project
+
+**You end up micromanaging instead of building.**
+
+## ✅ The Solution
+
+AI Onboard provides **systematic oversight** - the middle ground between "no control" and "micromanagement":
+
+- 📊 **Real-Time Monitoring** - See exactly what your AI agent is doing
+- 🚦 **Mandatory Gates** - Agent must ask before major decisions
+- 🛡️ **Chaos Prevention** - Detect and block off-track behavior
+- 🎯 **Vision Alignment** - Keep agents focused on your goals
+- ⏸️ **Emergency Controls** - Pause, stop, or redirect agents
+- 📈 **Progress Tracking** - Systematic execution, not chaos
 
 ## 🚀 Quick Start
 
@@ -28,257 +43,249 @@ pip install -e .
 pip install -e ".[dev]"
 ```
 
-### Essential Commands
+### Monitor Your Agent
 
 ```bash
-# Core workflow commands
-python -m ai_onboard analyze      # Analyze current project state
-python -m ai_onboard charter      # Create or update project charter
-python -m ai_onboard plan         # Generate development roadmap
-python -m ai_onboard align        # Check alignment with project vision
-python -m ai_onboard validate     # Pre-flight validation of changes
-python -m ai_onboard kaizen       # Continuous improvement cycle
-python -m ai_onboard metrics      # View project metrics and progress
+# Start monitoring dashboard
+python -m ai_onboard monitor
 
-# Safe cleanup
-python -m ai_onboard cleanup --dry-run  # See what would be cleaned
+# View current agent activity
+python -m ai_onboard status
 
-# Import consolidation (NEW)
-python -m ai_onboard consolidate analyze  # Analyze import consolidation opportunities
-python -m ai_onboard consolidate plan     # Create migration plan
-python -m ai_onboard consolidate execute  # Execute consolidation with safety checks
-python -m ai_onboard consolidate validate # Validate import equivalence
+# Approve a pending gate
+python -m ai_onboard approve <gate-id>
 
-# Agent-facing commands (feature-flagged)
-python -m ai_onboard prompt state|rules|summary|propose
-python -m ai_onboard checkpoint create|list|restore
+# Reject a gate decision
+python -m ai_onboard reject <gate-id> --reason "Not aligned with vision"
+
+# Check vision alignment
+python -m ai_onboard align
 ```
 
-## 📋 Core Commands
+## 🎮 Core Commands
 
-### Project Management
-- `analyze` - Analyze current project state
-- `charter` - Create or update project charter
-- `plan` - Generate development roadmap
-- `align` - Check alignment with project vision
-- `dashboard` - Visual project status overview
+### Oversight & Control
 
-### Development Workflow
+- `monitor` - Real-time dashboard of agent activity
+- `status` - Quick status check of what agent is doing
+- `approve` - Approve a pending gate decision
+- `reject` - Reject a gate decision with reason
+- `pause` - Pause agent without losing context
+- `stop` - Emergency stop for runaway agents
+
+### Vision & Planning
+
+- `charter` - Define your project vision
+- `plan` - Create systematic execution plan
+- `align` - Check alignment with vision
+- `dashboard` - Visual project overview
+
+### Safety & Guardrails
+
 - `validate` - Pre-flight validation of changes
-- `kaizen` - Continuous improvement cycle
-- `metrics` - View project metrics and progress
-- `cleanup` - Safe cleanup of non-critical files
+- `cleanup` - Safe cleanup of agent-created bloat
+- `gate` - Manage approval gates
 
-### Import Consolidation (NEW)
-- `consolidate analyze` - Analyze import consolidation opportunities
-- `consolidate plan` - Create migration plan with safety checks
-- `consolidate execute` - Execute consolidation with rollback protection
-- `consolidate validate` - Validate import equivalence after changes
+## 📊 How It Works
 
-### AI Agent Features
-- `prompt` - Get state, rules, and summaries for AI agents
-- `checkpoint` - Create and manage project checkpoints
-- `ai-agent` - AI agent collaboration tools
-- `enhanced-vision` - Advanced vision interrogation
-- `cursor` - Cursor AI integration commands
-
-## 🤖 AI Agent Integration
-
-AI Onboard is designed to work seamlessly with AI coding agents like Cursor, providing shared context, safety rails, and structured improvement loops.
-
-### Prompt Bridge
-```bash
-# Get current project state for AI agents
-python -m ai_onboard prompt state
-
-# Check rules for a specific path
-python -m ai_onboard prompt rules --path src/
-
-# Propose an action and get decision
-python -m ai_onboard prompt propose --diff '{"files_changed":["a.py","b.py"]}'
-
-# Get project summary
-python -m ai_onboard prompt summary
-```
-
-### Checkpoints
-```bash
-# Create a checkpoint before major changes
-python -m ai_onboard checkpoint create --scope "src/**/*.py" --reason "pre-refactor"
-
-# List available checkpoints
-python -m ai_onboard checkpoint list
-
-# Restore from checkpoint
-python -m ai_onboard checkpoint restore <checkpoint-id>
-```
-
-### Natural Language Mode
-
-For Cursor/LLM agents, use the prompt-first workflow with no CLI required:
-
-**Key Components:**
-- `ai_onboard/core/cursor_rules.py` - System prompt + logging helpers
-- `.ai_onboard/agent_profile.json` - Focus include/exclude for the agent
-- Logs: `.ai_onboard/conversation.jsonl`, `.ai_onboard/decisions.jsonl`, `.ai_onboard/obs/*.md`
-
-**Quick Start:**
-```bash
-# 1. Print system prompt for your agent
-python examples/cursor_prompt_loop.py --print-prompt
-
-# 2. Log observations and decisions
-python examples/cursor_prompt_loop.py --observe "Found README with goals A/B" --rule readme
-python examples/cursor_prompt_loop.py --decide allow --why "docs sufficient to proceed"
-
-# 3. Check status/checklist
-python examples/cursor_prompt_loop.py --status
-```
-
-**Agent Profile (Optional):**
-- Edit `.ai_onboard/agent_profile.json` to constrain what the agent reads
-- The system prompt embeds Include/Exclude lists to reduce distraction
-
-**Safety:**
-- The NL system only writes under `.ai_onboard/`
-- Use `AGENTS.md` for repo rules/guardrails
-
-## 🔧 Import Consolidation System
-
-The new import consolidation system helps optimize Python code by consolidating frequently used imports into shared modules, reducing verbosity and improving maintainability.
-
-### Features
-
-- **Smart Analysis**: Identifies consolidation opportunities based on import patterns
-- **Safety-First**: Multiple validation layers and automatic rollback capabilities
-- **Phased Migration**: Executes changes in phases with validation at each step
-- **Real-time Monitoring**: Tracks progress and validates equivalence
-
-### Usage
+### 1. Define Your Vision
 
 ```bash
-# Analyze current import patterns
-python -m ai_onboard consolidate analyze
-
-# Create a migration plan
-python -m ai_onboard consolidate plan --target common_imports
-
-# Execute consolidation with safety checks
-python -m ai_onboard consolidate execute --plan .ai_onboard/consolidation_plan.json
-
-# Validate import equivalence
-python -m ai_onboard consolidate validate --before .ai_onboard/backup_before/ --after .ai_onboard/after/
+python -m ai_onboard charter
 ```
 
-### Safety Features
+Tell AI Onboard what you want to build. This becomes the north star that keeps agents aligned.
 
-- **Automatic Backups**: Creates full project backups before changes
-- **Rollback Protection**: Automatic rollback on any failure
-- **Import Validation**: Validates that consolidated imports work correctly
-- **Progress Monitoring**: Real-time tracking of consolidation progress
-- **Risk Assessment**: Analyzes and mitigates potential risks
+### 2. Monitor Agent Activity
 
-For detailed documentation, see [IMPORT_CONSOLIDATION_SYSTEM.md](docs/IMPORT_CONSOLIDATION_SYSTEM.md).
+```bash
+python -m ai_onboard monitor
+```
+
+See in real-time:
+
+- What agent is currently working on
+- Pending decisions waiting for approval
+- Actions the system blocked
+- Progress toward your vision
+
+### 3. Approve or Reject Decisions
+
+When an agent wants to make a major decision, you get a gate:
+
+```
+🚦 GATE: Agent wants to add OAuth authentication
+   Vision alignment: 40% (Off-track)
+   Reason: Original vision was "simple todo app"
+   
+   [APPROVE] [REJECT] [MODIFY]
+```
+
+### 4. Stay in Control
+
+- ✅ Agent stays aligned with your vision
+- ✅ No bloat or technical debt
+- ✅ Systematic progress, not chaos
+- ✅ You have final say on all major decisions
 
 ## 🛡️ Safety Features
 
 ### Protected Paths
-The system automatically protects critical files and directories:
-- `ai_onboard/` - The system itself
-- `.ai_onboard/` - Project data
+
+Critical files are automatically protected:
+
+- `ai_onboard/` - The oversight system itself
+- `.ai_onboard/` - Project data and history
 - `.git/` - Version control
-- Configuration files (`pyproject.toml`, `requirements.txt`)
-- Documentation (`README*`, `AGENTS.md`)
-- CI/CD files (`.github/`)
+- Configuration files
+- Documentation
 
-### Safe Cleanup
-```bash
-# See what would be deleted (safe)
-python -m ai_onboard cleanup --dry-run
+### Mandatory Gates
 
-# Actually clean up (with confirmation)
-python -m ai_onboard cleanup
+Agents **must** get approval for:
 
-# Force cleanup without confirmation
-python -m ai_onboard cleanup --force
+- Creating new files/modules
+- Refactoring existing code
+- Adding dependencies
+- Building features not in plan
+- Any action that deviates from vision
 
-# Create backup before cleanup
-python -m ai_onboard cleanup --backup
+### Chaos Detection
+
+System automatically detects and blocks:
+
+- Duplicate utilities
+- Unnecessary refactoring
+- Off-track features
+- Technical debt creation
+- Bloat and complexity
+
+### Audit Trail
+
+Complete log of:
+
+- Every agent action
+- Every gate decision
+- Every blocked attempt
+- Full project history
+
+## 🎯 For Vibe Coders
+
+**You don't need to be technical.** AI Onboard gives you simple controls:
+
+### Dashboard View
+
+```
+┌─ AGENT OVERSIGHT DASHBOARD ───────────────────────────┐
+│ 🤖 Agent: Cursor AI                                   │
+│ 📊 Project: Todo App                                  │
+│ 🎯 Vision: Simple todo app with auth                  │
+│                                                        │
+│ ✅ ALIGNED: 85% on track                              │
+│                                                        │
+│ 🔄 Currently: Building login form                     │
+│    Progress: 47% complete (7/15 tasks)                │
+│                                                        │
+│ ⚠️  PENDING: 2 gates waiting for approval             │
+│    1. Add password reset feature                      │
+│    2. Implement OAuth providers                       │
+│                                                        │
+│ 🚫 BLOCKED: Agent tried to:                           │
+│    • Add 15 new dependencies ← BLOCKED (bloat)        │
+│    • Refactor 20 files ← BLOCKED (off-track)          │
+│                                                        │
+│ [APPROVE GATES] [VIEW DETAILS] [PAUSE AGENT]          │
+└────────────────────────────────────────────────────────┘
 ```
 
-## 📊 Alignment System
+### Simple Actions
 
-### Preview Changes
-Use the intelligent alignment preview to assess confidence before executing:
+- **Green** = Everything aligned, agent working well
+- **Yellow** = Gate waiting, review and approve/reject
+- **Red** = Agent blocked, check what was prevented
 
-```bash
-python -m ai_onboard align --preview
-# -> prints JSON and writes .ai_onboard/alignment_report.json
-```
+## 🤖 Works With Your Favorite AI Agents
 
-This generates a report with:
-- `confidence` (0-1 scale)
-- `decision` (proceed|quick_confirm|clarify)
-- Component scores
-- Detected ambiguities
+- ✅ **Cursor AI** - Full integration
+- ✅ **GitHub Copilot** - Compatible
+- ✅ **Claude Code** - Supported
+- ✅ **GPT-based agents** - Works seamlessly
 
-Thresholds are configured in `ai_onboard/policies/alignment_rules.yaml`.
+## 📈 What You Get
 
-### Configuration
-Set feature flags in `ai_onboard.json`:
-```json
-{
-  "features": {
-    "prompt_bridge": true,
-    "intent_checks": true,
-    "checkpoints": true
-  },
-  "metaPolicies": {
-    "MAX_DELETE_LINES": 200,
-    "MAX_REFACTOR_FILES": 12,
-    "REQUIRES_TEST_COVERAGE": true
-  }
-}
-```
+### Before AI Onboard
+
+- ❌ Agent builds 50 files you didn't ask for
+- ❌ Lost track of original goal
+- ❌ Massive technical debt
+- ❌ Project never finishes
+- ❌ You're exhausted from micromanaging
+
+### After AI Onboard
+
+- ✅ Agent stays focused on your vision
+- ✅ Clear progress toward goals
+- ✅ No bloat or technical debt
+- ✅ Projects finish on vision
+- ✅ Strategic oversight, not micromanagement
+
+## 🏗️ Current Status
+
+### ✅ Working Now
+
+- Gate system (mandatory approvals)
+- Decision enforcement
+- Protected paths
+- Vision tracking
+- Progress monitoring
+- Preference learning
+
+### 🚧 In Development (MVP - 4 weeks)
+
+- Real-time monitoring dashboard
+- Pending gates UI
+- Blocked actions log
+- Quick approve/reject workflow
+
+### 🔮 Coming Soon (9 weeks)
+
+- Chaos detection system
+- Vision drift alerting
+- Emergency controls
+- Cursor AI integration
+- Full documentation
 
 ## 📁 Project Structure
 
 ```
 ai-agent-onboarding-lite/
-├── ai_onboard/           # Core system
+├── ai_onboard/           # Core oversight system
 │   ├── cli/             # Command-line interface
-│   ├── core/            # Core functionality
-│   ├── plugins/         # Extensible plugins
-│   ├── policies/        # Configuration policies
+│   ├── core/            # Gate system, enforcement, monitoring
+│   │   ├── ai_integration/      # Agent integration
+│   │   ├── legacy_cleanup/      # Gate system
+│   │   └── project_management/  # Vision & planning
+│   ├── policies/        # Safety rules and policies
 │   └── schemas/         # Data schemas
 ├── .ai_onboard/         # Project data (auto-generated)
-├── config/              # Configuration files
-│   ├── dev-config.yaml  # Development settings
-│   ├── mypy.ini         # Type checking config
-│   └── tox.ini          # Testing config
-├── docs/                # Documentation (organized by audience)
-│   ├── user/            # User documentation
-│   ├── developer/       # Developer documentation
-│   ├── design/          # Architecture & research
-│   └── project/         # Project management
-├── examples/            # Usage examples
-├── scripts/             # Utility scripts
+│   ├── charter.json     # Your project vision
+│   ├── plan.json        # Systematic execution plan
+│   ├── wbs.json         # Work breakdown structure
+│   └── gates/           # Active gates
+├── docs/                # Documentation
 └── tests/               # Test suite
 ```
 
 ## 🔧 Development
 
-### Setup Development Environment
+### For Contributors
+
 ```bash
 # Install development dependencies
 pip install -e ".[dev]"
 
 # Run tests
 pytest
-
-# Code formatting
-black ai_onboard/
-isort ai_onboard/
 
 # Type checking
 mypy ai_onboard/
@@ -287,68 +294,48 @@ mypy ai_onboard/
 flake8 ai_onboard/
 ```
 
-### Running Tests
-```bash
-# Run all tests
-pytest
+### For AI Agent Developers
 
-# Run with coverage
-pytest --cov=ai_onboard
+See `AGENTS.md` for:
 
-# Run specific test categories
-pytest -m "not slow"  # Skip slow tests
-pytest -m integration  # Only integration tests
-```
+- How to integrate your agent
+- Gate system API
+- Safety requirements
+- Contribution guidelines
 
-## 🚀 AI Agent Capabilities
+## 🎯 Roadmap
 
-This project acts as a meta-tool for AI coding agents (Cursor, Codex, GPTs, etc.) by providing:
+### Phase 1: Core Oversight MVP (Weeks 1-4)
 
-**Where it fits well:**
-- **Memory**: `ai_onboard.json` + JSONL telemetry gives agents persistent state across runs
-- **Safety**: Protected paths + safe cleanup reduce destructive actions
-- **Guardrails**: Policy engine + validation runtime enforce pre-flight sanity checks
-- **Kaizen**: Plan/Do/Check/Act loop scaffolds self-correction instead of blind retries
+- [x] Gate system
+- [x] Protected paths
+- [x] Vision tracking
+- [ ] Real-time monitoring dashboard
+- [ ] Gate approval UI
 
-**Advanced Features:**
-- **Intent checks**: Meta-policy for "should the agent do this task now?"
-- **Prompt feedback**: Feed telemetry/state back into agent prompts, not just logs
-- **Nonlinear work**: Lightweight checkpoints/rollback and branch comparison for approaches
-- **Cross-model context**: Shared memory usable by different models/context windows
+### Phase 2: Enforcement & Detection (Weeks 5-7)
 
-**PowerShell Tip:**
-```powershell
-# Assign JSON to variable to avoid quoting issues
-$diff = '{"files_changed":["a.py","b.py"],"lines_deleted":200,"has_tests":false,"subsystems":["core","ui"]}'
-python -m ai_onboard prompt propose --diff $diff
-```
+- [ ] Mandatory gate enforcement
+- [ ] Chaos detection
+- [ ] Vision drift alerting
+- [ ] Comprehensive logging
 
-## 📈 Roadmap
+### Phase 3: Integration & Polish (Weeks 8-9)
 
-### Current Version (v0.2.0)
-- ✅ Prompt bridge for AI agents
-- ✅ Intent checks and meta-policy thresholds
-- ✅ Checkpoint system
-- ✅ Cross-agent telemetry
-- ✅ Model-aware summarization
-
-### Upcoming Features
-- Enhanced vision interrogation system
-- Advanced AI agent collaboration protocols
-- Continuous improvement analytics
-- UI/UX enhancements
-- Background agent integration
+- [ ] Emergency controls
+- [ ] Cursor AI integration
+- [ ] Documentation
+- [ ] Early user launch
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Run the test suite
-6. Submit a pull request
+We welcome contributions! Please:
 
-See `AGENTS.md` for guidance on AI agent contributions.
+1. Read `AGENTS.md` for guidelines
+2. Check existing issues and PRs
+3. Keep changes focused on oversight/control
+4. Add tests for new features
+5. Update documentation
 
 ## 📄 License
 
@@ -356,11 +343,25 @@ MIT License - see LICENSE file for details.
 
 ## 🆘 Support
 
-- Check the documentation in `docs/`
-- Review examples in `examples/`
-- Open an issue for bugs or feature requests
-- See `AGENTS.md` for AI agent integration guidance
+- 📚 Check `docs/` for detailed documentation
+- 💬 Open an issue for bugs or features
+- 🤖 See `AGENTS.md` for agent integration
 
 ---
 
-**AI Onboard** - Making AI agents work better, together. 🚀
+## 💡 Philosophy
+
+**AI agents should be powerful assistants, not chaotic wildcards.**
+
+AI Onboard gives you the tools to harness agent power while maintaining control, ensuring your projects:
+
+- Stay aligned with your vision
+- Finish on time and on goal
+- Avoid bloat and technical debt
+- Give you strategic oversight, not micromanagement
+
+**Because you should control your project, not fight to keep up with it.**
+
+---
+
+**AI Onboard** - Keep AI agents aligned, focused, and productive. 🎯

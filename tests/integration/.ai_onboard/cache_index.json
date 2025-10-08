@@ -1,0 +1,33 @@
+{
+  "rules": {},
+  "map": {},
+  "snapshot": {
+    "C:\\Users\\bacon\\Dev\\TradingProjects\\ai-agent-onboarding\\ai-agent-onboarding-lite\\tests\\integration\\ai_onboard.json": 1758117004.267943,
+    "C:\\Users\\bacon\\Dev\\TradingProjects\\ai-agent-onboarding\\ai-agent-onboarding-lite\\tests\\integration\\test_ci_validator_integration.py": 1757832575.680097,
+    "C:\\Users\\bacon\\Dev\\TradingProjects\\ai-agent-onboarding\\ai-agent-onboarding-lite\\tests\\integration\\test_cleanup_safety_gates.py": 1757832575.7103128,
+    "C:\\Users\\bacon\\Dev\\TradingProjects\\ai-agent-onboarding\\ai-agent-onboarding-lite\\tests\\integration\\test_cursor_integration.py": 1757849123.1646788,
+    "C:\\Users\\bacon\\Dev\\TradingProjects\\ai-agent-onboarding\\ai-agent-onboarding-lite\\tests\\integration\\test_error_monitoring_integration.py": 1758085604.3788443,
+    "C:\\Users\\bacon\\Dev\\TradingProjects\\ai-agent-onboarding\\ai-agent-onboarding-lite\\tests\\integration\\test_gate_looping.py": 1758075021.7766602,
+    "C:\\Users\\bacon\\Dev\\TradingProjects\\ai-agent-onboarding\\ai-agent-onboarding-lite\\tests\\integration\\test_self_improvement_integration.py": 1758075021.8475263,
+    "C:\\Users\\bacon\\Dev\\TradingProjects\\ai-agent-onboarding\\ai-agent-onboarding-lite\\tests\\integration\\test_system_integration.py": 1758085613.2789228,
+    "C:\\Users\\bacon\\Dev\\TradingProjects\\ai-agent-onboarding\\ai-agent-onboarding-lite\\tests\\integration\\__init__.py": 1757747328.9239228,
+    "C:\\Users\\bacon\\Dev\\TradingProjects\\ai-agent-onboarding\\ai-agent-onboarding-lite\\tests\\integration\\__pycache__\\test_ci_validator_integration.cpython-313-pytest-8.4.1.pyc": 1757833386.9781127,
+    "C:\\Users\\bacon\\Dev\\TradingProjects\\ai-agent-onboarding\\ai-agent-onboarding-lite\\tests\\integration\\__pycache__\\test_ci_validator_integration.cpython-313-pytest-8.4.2.pyc": 1757835143.8451133,
+    "C:\\Users\\bacon\\Dev\\TradingProjects\\ai-agent-onboarding\\ai-agent-onboarding-lite\\tests\\integration\\__pycache__\\test_cleanup_safety_gates.cpython-313-pytest-8.4.1.pyc": 1757833386.9935944,
+    "C:\\Users\\bacon\\Dev\\TradingProjects\\ai-agent-onboarding\\ai-agent-onboarding-lite\\tests\\integration\\__pycache__\\test_cleanup_safety_gates.cpython-313-pytest-8.4.2.pyc": 1757835143.874073,
+    "C:\\Users\\bacon\\Dev\\TradingProjects\\ai-agent-onboarding\\ai-agent-onboarding-lite\\tests\\integration\\__pycache__\\test_cursor_integration.cpython-313-pytest-8.4.1.pyc": 1757850649.873064,
+    "C:\\Users\\bacon\\Dev\\TradingProjects\\ai-agent-onboarding\\ai-agent-onboarding-lite\\tests\\integration\\__pycache__\\test_cursor_integration.cpython-313-pytest-8.4.2.pyc": 1757849124.7224102,
+    "C:\\Users\\bacon\\Dev\\TradingProjects\\ai-agent-onboarding\\ai-agent-onboarding-lite\\tests\\integration\\__pycache__\\test_cursor_integration.cpython-313.pyc": 1757847193.3910553,
+    "C:\\Users\\bacon\\Dev\\TradingProjects\\ai-agent-onboarding\\ai-agent-onboarding-lite\\tests\\integration\\__pycache__\\test_error_monitoring_integration.cpython-313-pytest-8.4.1.pyc": 1758116911.1289296,
+    "C:\\Users\\bacon\\Dev\\TradingProjects\\ai-agent-onboarding\\ai-agent-onboarding-lite\\tests\\integration\\__pycache__\\test_error_monitoring_integration.cpython-313-pytest-8.4.2.pyc": 1758085647.5013065,
+    "C:\\Users\\bacon\\Dev\\TradingProjects\\ai-agent-onboarding\\ai-agent-onboarding-lite\\tests\\integration\\__pycache__\\test_gate_looping.cpython-313-pytest-8.4.1.pyc": 1758078832.7342217,
+    "C:\\Users\\bacon\\Dev\\TradingProjects\\ai-agent-onboarding\\ai-agent-onboarding-lite\\tests\\integration\\__pycache__\\test_gate_looping.cpython-313-pytest-8.4.2.pyc": 1758080630.8328674,
+    "C:\\Users\\bacon\\Dev\\TradingProjects\\ai-agent-onboarding\\ai-agent-onboarding-lite\\tests\\integration\\__pycache__\\test_gate_looping.cpython-313.pyc": 1758078742.99561,
+    "C:\\Users\\bacon\\Dev\\TradingProjects\\ai-agent-onboarding\\ai-agent-onboarding-lite\\tests\\integration\\__pycache__\\test_self_improvement_integration.cpython-313-pytest-8.4.1.pyc": 1758116911.1611354,
+    "C:\\Users\\bacon\\Dev\\TradingProjects\\ai-agent-onboarding\\ai-agent-onboarding-lite\\tests\\integration\\__pycache__\\test_self_improvement_integration.cpython-313-pytest-8.4.2.pyc": 1758080630.8576188,
+    "C:\\Users\\bacon\\Dev\\TradingProjects\\ai-agent-onboarding\\ai-agent-onboarding-lite\\tests\\integration\\__pycache__\\test_self_improvement_integration.cpython-313.pyc": 1758078764.657166,
+    "C:\\Users\\bacon\\Dev\\TradingProjects\\ai-agent-onboarding\\ai-agent-onboarding-lite\\tests\\integration\\__pycache__\\test_system_integration.cpython-313-pytest-8.4.1.pyc": 1758116911.2001965,
+    "C:\\Users\\bacon\\Dev\\TradingProjects\\ai-agent-onboarding\\ai-agent-onboarding-lite\\tests\\integration\\__pycache__\\test_system_integration.cpython-313-pytest-8.4.2.pyc": 1758085647.6035354,
+    "C:\\Users\\bacon\\Dev\\TradingProjects\\ai-agent-onboarding\\ai-agent-onboarding-lite\\tests\\integration\\__pycache__\\__init__.cpython-313.pyc": 1757747589.7124667
+  }
+}

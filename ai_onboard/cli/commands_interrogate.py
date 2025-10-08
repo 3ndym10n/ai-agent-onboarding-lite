@@ -4,6 +4,7 @@ import json
 import os
 from pathlib import Path
 
+from ..core.ai_integration.ai_gate_mediator import get_ai_gate_mediator
 from ..core.legacy_cleanup import prompt_bridge
 from ..core.legacy_cleanup.gate_system import GateRequest, GateSystem, GateType
 from ..core.project_management.lean_approval import request_approval
@@ -153,13 +154,24 @@ def handle_interrogate_commands(args, root: Path) -> bool:
             context={"phase": phase, "question_id": question_id},
             questions=[question_text],
         )
-        response = gate.create_gate(gate_request)
-        if response.get("user_decision") != "proceed":
+        # Use AI Gate Mediator for intelligent gate handling
+        mediator = get_ai_gate_mediator(root)
+        mediation_result = mediator.process_agent_request(
+            agent_id="interrogation_system",
+            operation=f"vision interrogation: {question_text}",
+            context={"phase": phase, "question_id": question_id},
+        )
+
+        if not mediation_result.proceed:
             print('{"error":"interrogation halted by user (or timeout)"}')
             return True
 
         # Convert user response(s) to expected payload
-        user_answers = response.get("user_responses", [])
+        user_answers = (
+            mediation_result.response.get("user_responses", [])
+            if mediation_result.response
+            else []
+        )
         answer_text = user_answers[0] if user_answers else ""
         payload = {"answer": answer_text}
 

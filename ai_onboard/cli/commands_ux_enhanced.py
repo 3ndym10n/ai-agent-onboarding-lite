@@ -31,13 +31,7 @@ def add_ux_enhanced_commands(subparsers):
         "--examples", action="store_true", help="Show usage examples"
     )
 
-    # Project dashboard
-    dashboard_parser = subparsers.add_parser(
-        "dashboard", help="Project status dashboard"
-    )
-    dashboard_parser.add_argument(
-        "--compact", action="store_true", help="Compact display"
-    )
+    # Project dashboard removed - replaced with agent oversight dashboard in core commands
 
     # Smart suggestions
     suggest_parser = subparsers.add_parser(
@@ -85,8 +79,6 @@ def handle_ux_enhanced_commands(args: argparse.Namespace, root: Path) -> None:
 
     if args.cmd == "help":
         _handle_smart_help(args, ux_system, user_id)
-    elif args.cmd == "dashboard":
-        _handle_dashboard(args, ux_system, user_id)
     elif args.cmd == "suggest":
         _handle_suggestions(args, ux_system, user_id)
     elif args.cmd == "design":
@@ -157,40 +149,7 @@ def _handle_smart_help(args: argparse.Namespace, ux_system, user_id: str) -> Non
                     print(f"    → {suggestion.next_steps[0]}")
 
 
-def _handle_dashboard(args: argparse.Namespace, ux_system, user_id: str) -> None:
-    """Handle project dashboard."""
-    ensure_unicode_safe("📊 Project Dashboard")
-    print("=" * 50)
-
-    status = ux_system.get_project_status(user_id)
-
-    ensure_unicode_safe("\n🏗️  Project Setup:")
-    print(f"  Charter: {status['project_setup']['charter']}")
-    print(f"  Plan: {status['project_setup']['plan']}")
-
-    if status["recent_activity"]:
-        ensure_unicode_safe(f"\n📈 Recent Activity:")
-        for cmd in status["recent_activity"]:
-            print(f"  • {cmd}")
-
-    print(f"\n👤 Your Expertise Level: {status['expertise_level'].title()}")
-
-    if status["suggestions"]:
-        print(f"\n� Suggestions:")
-        for suggestion in status["suggestions"]:
-            confidence_bar = "█" * int(suggestion.confidence * 10)
-            print(f"  • {suggestion.command}: {suggestion.reason}")
-            print(f"    Confidence: {confidence_bar} ({suggestion.confidence:.1f})")
-
-    if not args.compact:
-        ensure_unicode_safe(f"\n🎯 Next Steps:")
-        if not status["project_setup"]["charter"] == "✅":
-            print("  1. Create a project charter: python -m ai_onboard charter")
-        elif not status["project_setup"]["plan"] == "✅":
-            print("  2. Generate a project plan: python -m ai_onboard plan")
-        else:
-            print("  • Run validation: python -m ai_onboard validate")
-            print("  • Check alignment: python -m ai_onboard align")
+# Dashboard functionality moved to core commands (agent oversight dashboard)
 
 
 def _handle_suggestions(args: argparse.Namespace, ux_system, user_id: str) -> None:

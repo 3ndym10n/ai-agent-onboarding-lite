@@ -56,6 +56,14 @@ def add_project_management_commands(subparsers):
     )
     completion_parser.set_defaults(func=handle_task_completion)
 
+    # Automatic progress detection
+    auto_detect_parser = pm_subparsers.add_parser(
+        "auto-detect",
+        help="Automatically detect completed work from git and file activity",
+        description="Scan git commits and file changes to automatically detect completed tasks.",
+    )
+    auto_detect_parser.set_defaults(func=handle_auto_detect_progress)
+
     # Task prioritization
     priority_parser = pm_subparsers.add_parser(
         "prioritize",
@@ -238,6 +246,72 @@ def handle_task_completion(args):
 
     except Exception as e:
         print_status(f"Task completion detection failed: {e}", "error")
+
+
+def handle_auto_detect_progress(args):
+    """Handle automatic progress detection from git and file activity."""
+    print_header("AUTOMATIC PROGRESS DETECTION")
+
+    try:
+        print_activity("Scanning git commits and file changes...")
+
+        from pathlib import Path
+
+        from ..core.project_management.automatic_progress_detector import (
+            run_automatic_progress_detection,
+        )
+
+        result = run_automatic_progress_detection(Path("."))
+
+        if not result.get("success", False):
+            print_status(
+                f"Auto-detection failed: {result.get('error', 'Unknown error')}",
+                "error",
+            )
+            return
+
+        detection_results = result.get("detection_results", {})
+
+        print_header("DETECTION RESULTS")
+
+        commits_analyzed = detection_results.get("commits_analyzed", 0)
+        files_changed = detection_results.get("files_changed", 0)
+        active_tasks = detection_results.get("active_tasks", [])
+        likely_completed = detection_results.get("likely_completed", [])
+        updated_tasks = result.get("updated_tasks", [])
+
+        print(f"📊 Commits Analyzed: {commits_analyzed}")
+        print(f"📁 Files Changed: {files_changed}")
+        print(f"🎯 Active Tasks Detected: {len(active_tasks)}")
+        print(f"✅ Likely Completed: {len(likely_completed)}")
+        print(f"🔄 Tasks Updated: {len(updated_tasks)}")
+
+        if active_tasks:
+            print_header("ACTIVE TASKS")
+            for task_id in active_tasks[:5]:  # Show first 5
+                print(f"  🎯 {task_id}")
+
+        if likely_completed:
+            print_header("LIKELY COMPLETED TASKS")
+            for task_id in likely_completed[:5]:  # Show first 5
+                print(f"  ✅ {task_id}")
+
+        if updated_tasks:
+            print_header("UPDATED TASKS")
+            for task_id in updated_tasks:
+                print(f"  🔄 {task_id} → Status: completed")
+
+        # Show what was detected
+        if commits_analyzed > 0 or files_changed > 0:
+            print_status(
+                f"Successfully analyzed {commits_analyzed} commits and {files_changed} file changes",
+                "success",
+            )
+        else:
+            print_status("No recent activity detected", "info")
+
+    except Exception as e:
+        print_status(f"Auto-detection failed: {e}", "error")
 
 
 def handle_task_prioritization(args):

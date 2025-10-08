@@ -111,15 +111,29 @@ class GateSystem:
             "'Please read the gate file and ask me the questions'"
         )
 
-        # Wait for initial responses (step 1)
-        initial_response = self._wait_for_response(timeout_seconds=2)
+        # Wait for initial responses (step 1) - increased timeout for AI agents
+        initial_response = self._wait_for_response(timeout_seconds=30, gate_request=gate_request)
 
-        # If first step timed out or user decided to stop / modify, honor it immediately
-        if initial_response.get("user_decision") != "proceed":
-            # Don't cleanup on timeout - let agent read the gate file
-            if initial_response.get("user_decision") != "stop":
+        # Check if this is a collaborative gate (should not block)
+        is_collaborative = gate_request.title.startswith("AI Agent Collaboration:")
+
+        if is_collaborative:
+            # Collaborative gates should not block - always proceed with guidance
+            if initial_response.get("user_decision") == "proceed":
                 self._cleanup_gate()
-            return initial_response
+                return initial_response
+            else:
+                # For collaborative gates, modify response to indicate guidance needed
+                modified_response = initial_response.copy()
+                modified_response["user_decision"] = "proceed_with_guidance"
+                return modified_response
+        else:
+            # Original blocking behavior for non-collaborative gates
+            if initial_response.get("user_decision") != "proceed":
+                # Don't cleanup on timeout - let agent read the gate file
+                if initial_response.get("user_decision") != "stop":
+                    self._cleanup_gate()
+                return initial_response
 
         # Step 2: Confirmation gate (no code)
         confirm_prompt = self._generate_confirmation_prompt(
@@ -149,7 +163,7 @@ class GateSystem:
 
         print("[INFO] Awaiting explicit USER CONFIRMATION to proceed...")
         confirmation_response = self._wait_for_response(
-            timeout_seconds=2, require_proceed=True
+            timeout_seconds=30, require_proceed=True, gate_request=gate_request
         )
 
         # Clean up gate files
@@ -336,9 +350,12 @@ Create a JSON file at `.ai_onboard / gates / gate_response.json` with this struc
         return prompt
 
     def _wait_for_response(
-        self, timeout_seconds: int = 30, require_proceed: bool = False
+        self, timeout_seconds: int = 300, require_proceed: bool = False, gate_request: Optional[GateRequest] = None
     ) -> Dict[str, Any]:
         """Wait for AI agent to provide user response.
+
+        Default timeout increased to 5 minutes (300s) to allow vibe coders
+        time to think and respond without pressure.
 
         If require_proceed is True, any non-"proceed" decision
         will be treated as a STOP for safety.
@@ -385,19 +402,35 @@ Create a JSON file at `.ai_onboard / gates / gate_response.json` with this struc
 
             time.sleep(1)  # Check every second
 
-        # Timeout - return safe default response
-        print(f"\n[ALARM] Gate timeout after {timeout_seconds} seconds")
-        print("[WARNING] The AI agent did not handle the gate properly")
-        print(f"[INFO] Gate file is still available at: {self.current_gate_file}")
-        print(f"[INFO] To manually respond, create: {self.response_file}")
-        print(
-            "[WARNING] Safety: Defaulting to STOP due to timeout - user input required"
-        )
-        return {
-            "user_responses": ["timeout"],
-            "user_decision": "stop",
-            "additional_context": "Gate timed out - no user response received",
-            "timestamp": time.time(),
+        # Timeout - handle differently for collaborative gates
+        is_collaborative = hasattr(gate_request, 'title') and gate_request.title.startswith("AI Agent Collaboration:")
+
+        if is_collaborative:
+            # Collaborative gates should not block - provide guidance and continue
+            print(f"\n[ALARM] Collaborative gate timeout after {timeout_seconds} seconds")
+            print("[INFO] AI agent will proceed with smart defaults")
+            print(f"[INFO] Gate file still available at: {self.current_gate_file}")
+            print(f"[INFO] To provide guidance later, create: {self.response_file}")
+            return {
+                "user_responses": ["timeout_collaborative"],
+                "user_decision": "proceed_with_defaults",
+                "additional_context": "Collaborative gate timed out - proceeding with smart defaults",
+                "timestamp": time.time(),
+            }
+        else:
+            # Original blocking behavior for non-collaborative gates
+            print(f"\n[ALARM] Gate timeout after {timeout_seconds} seconds")
+            print("[WARNING] The AI agent did not handle the gate properly")
+            print(f"[INFO] Gate file is still available at: {self.current_gate_file}")
+            print(f"[INFO] To manually respond, create: {self.response_file}")
+            print(
+                "[WARNING] Safety: Defaulting to STOP due to timeout - user input required"
+            )
+            return {
+                "user_responses": ["timeout"],
+                "user_decision": "stop",
+                "additional_context": "Gate timed out - no user response received",
+                "timestamp": time.time(),
         }
 
     def _validate_response(self, response: Dict[str, Any]) -> bool:

@@ -198,34 +198,30 @@ class ContinuousImprovementSystem:
 
     def _load_adaptive_config(self) -> Dict[str, Any]:
         """Load adaptive configuration from storage."""
-        return utils.read_json(
-            self.adaptive_config_path,
-            default={
-                "gate_timeouts": {"default": 2, "adaptive": True},
-                "safety_levels": {"default": "medium", "adaptive": True},
-                "collaboration_modes": {"default": "collaborative", "adaptive": True},
-                "vision_interrogation": {
-                    "adaptive_questions": True,
-                    "smart_followup": True,
-                },
-                "error_handling": {"auto_recovery": True, "learning_enabled": True},
-                "performance": {"auto_optimization": True, "resource_monitoring": True},
+        default_config = {
+            "gate_timeouts": {"default": 2, "adaptive": True},
+            "safety_levels": {"default": "medium", "adaptive": True},
+            "collaboration_modes": {"default": "collaborative", "adaptive": True},
+            "vision_interrogation": {
+                "adaptive_questions": True,
+                "smart_followup": True,
             },
-        )
+            "error_handling": {"auto_recovery": True, "learning_enabled": True},
+            "performance": {"auto_optimization": True, "resource_monitoring": True},
+        }
+        return utils.read_json(self.adaptive_config_path, default=default_config)  # type: ignore[no-any-return]
 
     def _load_knowledge_base(self) -> Dict[str, Any]:
         """Load knowledge base from storage."""
-        return utils.read_json(
-            self.knowledge_base_path,
-            default={
-                "project_types": {},
-                "common_patterns": {},
-                "best_practices": {},
-                "error_solutions": {},
-                "user_preferences": {},
-                "performance_optimizations": {},
-            },
-        )
+        default_knowledge: Dict[str, Any] = {
+            "project_types": {},
+            "common_patterns": {},
+            "best_practices": {},
+            "error_solutions": {},
+            "user_preferences": {},
+            "performance_optimizations": {},
+        }
+        return utils.read_json(self.knowledge_base_path, default=default_knowledge)  # type: ignore[no-any-return]
 
     def record_learning_event(
         self,
@@ -461,7 +457,7 @@ class ContinuousImprovementSystem:
 
         # Update knowledge base with project type insights
         if "project_types" not in self.knowledge_base:
-            self.knowledge_base["project_types"]: dict[str, Any] = {}
+            self.knowledge_base["project_types"] = {}
 
         if project_type not in self.knowledge_base["project_types"]:
             self.knowledge_base["project_types"][project_type] = {
@@ -483,7 +479,8 @@ class ContinuousImprovementSystem:
         )
 
         # Generate project - specific recommendations
-        self._generate_project_specific_recommendations(project_type, event)
+        if project_type:
+            self._generate_project_specific_recommendations(project_type, event)
 
     def _process_system_health_learning(self, event: LearningEvent):
         """Process system health learning events."""
@@ -886,7 +883,7 @@ class ContinuousImprovementSystem:
         self, learning_events: List[Dict[str, Any]]
     ) -> List[Dict[str, Any]]:
         """Get top sources of learning events."""
-        source_counts: dict[str, Any] = {}
+        source_counts: Dict[str, Any] = {}
         for event in learning_events:
             source = event.get("source", "unknown")
             if source not in source_counts:

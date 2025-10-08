@@ -6,6 +6,7 @@ the ai - onboard system, including communication standards, safety mechanisms,
 integration points, and best practices.
 """
 
+import json
 import time
 import uuid
 from dataclasses import dataclass, field
@@ -104,11 +105,20 @@ class AIAgentCollaborationProtocol:
         self.error_monitor = get_error_monitor(project_root)
         self.vision_interrogator = get_enhanced_vision_interrogator(project_root)
 
+    def _get_session(self, session_id: str) -> Optional[CollaborationSession]:
+        """Get session by ID."""
+        return self.sessions.get(session_id)
+
+    def _get_agent_profile(self, agent_id: str) -> Optional[AgentProfile]:
+        """Get agent profile by ID."""
+        return self.agent_profiles.get(agent_id)
+
     def _load_protocol_config(self) -> Dict[str, Any]:
         """Load protocol configuration."""
         config_path = self.project_root / ".ai_onboard" / "collaboration_config.json"
         if config_path.exists():
-            return utils.read_json(config_path, default={})
+            config_data = utils.read_json(config_path, default={})
+            return config_data if isinstance(config_data, dict) else {}
 
         # Default configuration
         default_config = {
@@ -846,6 +856,120 @@ class AIAgentCollaborationProtocol:
             }
 
         utils.write_json(profiles_path, profiles_data)
+
+    def create_session_context_snapshot(self, session_id: str) -> str:
+        """Create context snapshot for session handover."""
+        try:
+            from .ai_gate_mediator import get_ai_gate_mediator
+
+            mediator = get_ai_gate_mediator(self.project_root)
+
+            # Get session context
+            session = self._get_session(session_id)
+            if not session:
+                return f"error_no_session_{session_id}"
+
+            # Create context snapshot
+            snapshot_id = mediator.create_context_snapshot(
+                agent_id=session.agent_profile.agent_id,
+                operation="session_handoff",
+                context={
+                    "session_id": session_id,
+                    "agent_profile": session.agent_profile.__dict__,
+                    "actions_taken": session.actions_taken,
+                    "current_operation": None,  # Not stored in session
+                },
+            )
+
+            return snapshot_id
+
+        except Exception:
+            return f"error_snapshot_{session_id}"
+
+    def load_context_for_session_handoff(
+        self, snapshot_id: str, new_session_id: str, new_agent_id: str
+    ) -> Dict[str, Any]:
+        """Load context for session handoff to new agent."""
+        try:
+            from .ai_gate_mediator import get_ai_gate_mediator
+
+            mediator = get_ai_gate_mediator(self.project_root)
+
+            # Load context for handoff
+            handoff_context = mediator.load_context_for_handoff(
+                snapshot_id, new_agent_id
+            )
+
+            if "error" in handoff_context:
+                return handoff_context
+
+            # Create new session with loaded context
+            agent_profile = self._get_agent_profile(new_agent_id)
+            if not agent_profile:
+                return {"error": f"Agent profile not found for {new_agent_id}"}
+
+            new_session = CollaborationSession(
+                session_id=new_session_id,
+                agent_profile=agent_profile,
+                project_root=self.project_root,
+                started_at=datetime.now(),
+                last_activity=datetime.now(),
+            )
+
+            # Add handoff context to session context
+            new_session.context.update(handoff_context)
+
+            return {
+                "success": True,
+                "session_id": new_session_id,
+                "handoff_context": handoff_context,
+            }
+
+        except Exception as e:
+            return {"error": f"Failed to load context: {e}"}
+
+    def get_session_context_summary(self, session_id: str) -> Dict[str, Any]:
+        """Get a summary of session context for handovers."""
+        try:
+            session = self._get_session(session_id)
+            if not session:
+                return {"error": "Session not found"}
+
+            # Get context summary from mediator
+            from .ai_gate_mediator import get_ai_gate_mediator
+
+            mediator = get_ai_gate_mediator(self.project_root)
+
+            context_summary = {
+                "session_id": session_id,
+                "agent_id": session.agent_profile.agent_id,
+                "session_duration": time.time() - session.started_at.timestamp(),
+                "operations_count": len(session.actions_taken),
+                "last_activity": session.last_activity.isoformat(),
+                "current_operation": None,  # Not stored in session
+                "context_snapshot_available": self._context_snapshot_exists(session_id),
+            }
+
+            return context_summary
+
+        except Exception as e:
+            return {"error": f"Failed to get context summary: {e}"}
+
+    def _context_snapshot_exists(self, session_id: str) -> bool:
+        """Check if context snapshot exists for session."""
+        try:
+            snapshots_file = (
+                self.project_root / ".ai_onboard" / "context_snapshots.json"
+            )
+            if snapshots_file.exists():
+                with open(snapshots_file, "r") as f:
+                    snapshots = json.load(f)
+                return any(
+                    session_id in snapshot_id for snapshot_id in snapshots.keys()
+                )
+            return False
+        except Exception:
+            return False
 
 
 def get_collaboration_protocol(project_root: Path) -> AIAgentCollaborationProtocol:

@@ -7,7 +7,6 @@ by benchmarking critical operations and comparing against baseline performance.
 
 import tempfile
 from pathlib import Path
-from unittest.mock import MagicMock
 
 import pytest
 
@@ -257,7 +256,14 @@ def calculate_average(items):
         # Create multiple files with duplicated code
         for i in range(5):
             file_path = root / f"module_{i}.py"
-            content = f'"""Module {i}"""\n\n{duplicated_function}\n\n{unique_function}\n\n# Unique code for module {i}\ndef module_{i}_specific():\n    return "module_{i}"\n'
+            content = (
+                f'"""Module {i}"""\n\n'
+                f"{duplicated_function}\n\n"
+                f"{unique_function}\n\n"
+                f"# Unique code for module {i}\n"
+                f"def module_{i}_specific():\n"
+                f'    return "module_{i}"\n'
+            )
             file_path.write_text(content)
 
         def run_duplicate_detection():

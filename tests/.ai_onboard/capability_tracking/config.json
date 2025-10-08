@@ -1,0 +1,12 @@
+{
+  "tracking_enabled": true,
+  "detailed_tracking": true,
+  "performance_tracking": true,
+  "max_events_in_memory": 1000,
+  "metrics_update_interval": 300,
+  "report_generation_interval": 86400,
+  "retention_days": 90,
+  "privacy_mode": false,
+  "excluded_capabilities": [],
+  "user_anonymization": false
+}

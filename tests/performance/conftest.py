@@ -54,24 +54,7 @@ def performance_workspace():
         yield workspace
 
 
-def pytest_benchmark_update_machine_info(config, machine_info):
-    """Add custom machine information for performance tracking."""
-    machine_info.update(
-        {
-            "python_implementation": "CPython",
-            "performance_test": True,
-            "ai_onboard_version": "lite",
-        }
-    )
-
-
-def pytest_benchmark_update_json(config, benchmarks, output_json):
-    """Update benchmark JSON with additional metadata."""
-    output_json["metadata"] = {
-        "test_type": "performance_regression",
-        "ai_onboard_system": True,
-        "benchmark_version": "1.0",
-    }
+# Performance testing hooks removed - using custom performance metrics instead
 
 
 @pytest.fixture(autouse=True)
@@ -80,7 +63,7 @@ def performance_monitoring(request):
     import os
     import time
 
-    import psutil
+    import psutil  # type: ignore[import-untyped]
 
     start_time = time.time()
     process = psutil.Process(os.getpid())

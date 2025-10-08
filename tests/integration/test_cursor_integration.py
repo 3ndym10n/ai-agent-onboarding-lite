@@ -112,7 +112,7 @@ class TestUXSystemIntegration:
     @pytest.fixture
     def ux_system(self):
         """Get UX enhancement system for testing."""
-        from ai_onboard.core.user_experience_enhancements import (
+        from ai_onboard.core.user_experience_enhancements import (  # type: ignore[import-untyped]
             get_ux_enhancement_system,
         )
 
@@ -486,7 +486,7 @@ class TestAPIServerFunctionality:
     def test_api_server_configuration(self):
         """Test API server configuration and setup."""
         try:
-            from ai_onboard.api.server import create_app
+            from ai_onboard.api.server import create_app  # type: ignore[import-untyped]
 
             app = create_app(Path.cwd())
 
@@ -500,7 +500,7 @@ class TestAPIServerFunctionality:
     def test_api_server_health_check(self):
         """Test API server health endpoint if server is running."""
         try:
-            import requests
+            import requests  # type: ignore[import-untyped]
 
             # Check if API server is running
             response = requests.get("http://127.0.0.1:8000 / health", timeout=2)

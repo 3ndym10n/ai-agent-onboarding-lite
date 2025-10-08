@@ -1,0 +1,21 @@
+{
+  "ts": "2025-09-07T11:34:33.140269Z",
+  "confidence": 0.23,
+  "decision": "clarify",
+  "components": {
+    "vision_completeness": 0.0,
+    "prior_confirmations": 0.0,
+    "benchmark_fit": 0.4,
+    "ambiguity_inverse": 0.5,
+    "change_impact_inverse": 0.5
+  },
+  "ambiguities": [
+    "missing_top_outcomes"
+  ],
+  "policy": {
+    "thresholds": {
+      "proceed": 0.9,
+      "quick_confirm": 0.75
+    }
+  }
+}

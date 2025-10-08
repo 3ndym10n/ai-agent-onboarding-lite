@@ -23,6 +23,7 @@ from .commands_ai_agent_collaboration import (
     add_ai_agent_collaboration_parser,
     handle_ai_agent_collaboration_commands,
 )
+from .commands_chat import add_chat_commands, handle_chat_commands
 
 # Removed: commands_automatic_prevention (redundant with cleanup_safety)
 # Removed: commands_background_agents (redundant with ai_agent_collaboration)
@@ -215,7 +216,7 @@ def safe_run_terminal_cmd(
 
     # Check command safety before execution
     prevention_result = prevention_system.prevent_command_execution(
-        command, [], cwd=str(root)
+        command, [], cwd=root
     )
 
     if prevention_result.get("should_block", False):
@@ -297,6 +298,9 @@ def main(argv=None):
 
     # Add core commands
     add_core_commands(sub)
+
+    # Add chat interface (natural language)
+    add_chat_commands(sub)
 
     # Add cleanup safety commands
     add_cleanup_safety_commands(sub)
@@ -438,22 +442,39 @@ def main(argv=None):
     if significant_args:
         command_description += f" {' '.join(significant_args)}"
 
-    # ENFORCE mandatory tool consultation
-    consultation_result = enforce_tool_consultation(
-        user_request=command_description,
-        context={
-            "command_type": "cli",
-            "command": args.cmd,
-            "subcommand": getattr(args, "subcmd", None),
-            "contexts": ["command_execution", "cli_usage"],
-        },
-        root_path=root,
-    )
+    # Skip tool consultation for simple informational commands to reduce overhead
+    simple_commands = [
+        "dashboard",
+        "monitor",
+        "status",
+        "help",
+        "version",
+        "suggest",
+        "tools",
+        "metrics",
+        "wbs",
+        "roadmap",
+    ]
 
-    # Check if gate passed
-    if not consultation_result.gate_passed:
-        print(f"🚫 Command execution blocked: {consultation_result.blocking_reason}")
-        return 1
+    # ENFORCE mandatory tool consultation for complex commands only
+    if args.cmd not in simple_commands:
+        consultation_result = enforce_tool_consultation(
+            user_request=command_description,
+            context={
+                "command_type": "cli",
+                "command": args.cmd,
+                "subcommand": getattr(args, "subcmd", None),
+                "contexts": ["command_execution", "cli_usage"],
+            },
+            root_path=root,
+        )
+
+        # Check if gate passed
+        if not consultation_result.gate_passed:
+            print(
+                f"🚫 Command execution blocked: {consultation_result.blocking_reason}"
+            )
+            return 1
 
     # Initialize UX middleware only for interactive commands
     if args.cmd not in ["status"]:
@@ -516,7 +537,7 @@ def main(argv=None):
         prevention_system = AutomaticErrorPrevention(root, pattern_system)
 
         prevention_result = prevention_system.prevent_command_execution(
-            args.cmd, vars(args), cwd=str(root)
+            command=args.cmd, args=vars(args), cwd=root
         )
 
         # Apply stricter threshold for critical operations
@@ -644,6 +665,14 @@ def main(argv=None):
             if handle_prompt_commands(args, root):
                 return
 
+    # Handle chat commands (natural language interface)
+    if args.cmd == "chat":
+        with error_monitor.monitor_command_execution(
+            "chat", "foreground", "cli_session"
+        ):
+            handle_chat_commands(args, root)
+            return
+
     # Removed: AI agent commands (redundant with ai_agent_collaboration)
 
     # Handle AAOL commands with error monitoring
@@ -750,10 +779,65 @@ def main(argv=None):
 
     # Removed: pattern analysis commands (redundant with holistic_orchestration)
 
+    # Handle dashboard command with core commands
+    if args.cmd == "dashboard":
+        with error_monitor.monitor_command_execution(
+            args.cmd, "foreground", "cli_session"
+        ):
+            handle_core_commands(args, root)
+            return
+
+    # Handle monitor command with core commands
+    if args.cmd == "monitor":
+        with error_monitor.monitor_command_execution(
+            args.cmd, "foreground", "cli_session"
+        ):
+            handle_core_commands(args, root)
+            return
+
+    # Handle approve command with core commands
+    if args.cmd == "approve":
+        with error_monitor.monitor_command_execution(
+            args.cmd, "foreground", "cli_session"
+        ):
+            handle_core_commands(args, root)
+            return
+
+    # Handle blocks command with core commands
+    if args.cmd == "blocks":
+        with error_monitor.monitor_command_execution(
+            args.cmd, "foreground", "cli_session"
+        ):
+            handle_core_commands(args, root)
+            return
+
+    # Handle limits command with core commands
+    if args.cmd == "limits":
+        with error_monitor.monitor_command_execution(
+            args.cmd, "foreground", "cli_session"
+        ):
+            handle_core_commands(args, root)
+            return
+
+    # Handle emergency command with core commands
+    if args.cmd == "emergency":
+        with error_monitor.monitor_command_execution(
+            args.cmd, "foreground", "cli_session"
+        ):
+            handle_core_commands(args, root)
+            return
+
+    # Handle integrator command with core commands
+    if args.cmd == "integrator":
+        with error_monitor.monitor_command_execution(
+            args.cmd, "foreground", "cli_session"
+        ):
+            handle_core_commands(args, root)
+            return
+
     # Handle UX - enhanced commands with error monitoring (simplified)
     if args.cmd in [
         "help",
-        "dashboard",
         "suggest",
         "design",
         "status",
@@ -831,8 +915,9 @@ def main(argv=None):
 
     # Show completion celebration for milestones
     # Only show completion celebration for interactive commands
-    if ux_middleware is not None:
-        ux_middleware.show_completion_celebration(user_id)
+    # TODO: Implement show_completion_celebration method in UXMiddleware
+    # if ux_middleware is not None:
+    #     ux_middleware.show_completion_celebration(user_id)
 
 
 if __name__ == "__main__":

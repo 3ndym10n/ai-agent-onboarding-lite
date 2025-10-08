@@ -312,22 +312,33 @@ class ProgressAnalyticsService:
 
     def get_project_status(self) -> Dict[str, Any]:
         start = time.time()
-        snapshot = self.gateway.load_project_plan()
+
+        # Run automatic progress detection before computing status
+        auto_detection_result = self._run_automatic_progress_detection()
+
+        # Reload plan after potential updates from auto-detection (force reload to clear cache)
+        snapshot = self.gateway.load_project_plan(force_reload=True)
         plan = snapshot.raw
+
         overall = progress_utils.compute_overall_progress(plan)
         milestone_progress = progress_utils.compute_milestone_progress(plan, width=20)
         recent = self._recent_activity()
         duration = time.time() - start
+
         track_tool_usage(
             "unified_project_management",
             "analytics_service",
             {
                 "action": "project_status",
                 "milestones": len(milestone_progress),
+                "auto_detection_updated": len(
+                    auto_detection_result.get("updated_tasks", [])
+                ),
                 "duration": duration,
             },
             "success",
         )
+
         return {
             "project_name": plan.get("project_name", "Unknown Project"),
             "completion_percentage": overall.get("completion_percentage", 0),
@@ -336,6 +347,7 @@ class ProgressAnalyticsService:
             "milestones": milestone_progress,
             "critical_path": plan.get("critical_path", []),
             "recent_activity": recent,
+            "auto_detection_result": auto_detection_result,
             "duration_seconds": duration,
         }
 
@@ -343,6 +355,21 @@ class ProgressAnalyticsService:
         events = self.gateway.load_learning_events()
         latest = sorted(events, key=lambda e: e.get("timestamp", ""), reverse=True)
         return latest[:5]
+
+    def _run_automatic_progress_detection(self) -> Dict[str, Any]:
+        """Run automatic progress detection and update plan if needed."""
+        try:
+            from pathlib import Path
+
+            from .automatic_progress_detector import run_automatic_progress_detection
+
+            # Get the root directory (assuming the engine has access to it)
+            # For now, we'll use current working directory
+            root = Path.cwd()
+            return run_automatic_progress_detection(root)
+        except Exception as e:
+            # Return empty result if auto-detection fails
+            return {"success": False, "error": str(e), "updated_tasks": []}
 
 
 class UnifiedProjectManagementEngine:

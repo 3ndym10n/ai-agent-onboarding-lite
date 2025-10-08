@@ -21,13 +21,13 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from ai_onboard.core.base.common_imports import json, sys
+from ai_onboard.core.base.utils import ensure_dir, read_json, write_json
 
 # Add project root to path for imports
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 # from ai_onboard.core.base.telemetry import TelemetryCollector  # Not available
-from ai_onboard.core.base.utils import ensure_dir, read_json, write_json
 
 
 class ChangeType(Enum):
@@ -151,7 +151,7 @@ class ImportChangeMonitor:
         }
 
         config_file = self.root / ".ai_onboard" / "monitoring_config.json"
-        return read_json(config_file, default_config)
+        return read_json(config_file, default_config)  # type: ignore[no-any-return]
 
     def _load_existing_data(self):
         """Load existing monitoring data."""
@@ -280,7 +280,7 @@ class ImportChangeMonitor:
         new_complexity = len(new.split("."))
 
         # Base score on complexity difference
-        complexity_diff = abs(original_complexity - new_complexity)
+        complexity_diff = float(abs(original_complexity - new_complexity))
 
         # Add bonus for consolidation
         if "consolidated" in new.lower() or "common" in new.lower():
@@ -532,7 +532,7 @@ class ImportChangeMonitor:
         recent_avg = sum(recent) / len(recent)
         older_avg = sum(older) / len(older)
 
-        return (older_avg - recent_avg) / older_avg if older_avg > 0 else 0.0
+        return float((older_avg - recent_avg) / older_avg if older_avg > 0 else 0.0)
 
     def _save_metrics(self, metrics: Optional[MonitoringMetrics] = None):
         """Save monitoring metrics to file."""
@@ -556,6 +556,9 @@ class ImportChangeMonitor:
                     )
 
         # Convert to dict for JSON serialization
+        if not metrics:
+            return {}
+
         metrics_data = {
             "total_changes": metrics.total_changes,
             "changes_by_type": metrics.changes_by_type,

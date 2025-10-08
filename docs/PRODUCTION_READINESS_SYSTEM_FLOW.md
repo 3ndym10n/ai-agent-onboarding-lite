@@ -328,3 +328,5 @@ The system has **well-designed components** that aren't fully connected. You hav
 3. How much setup time is acceptable? (5 min vs. 30 min)
 4. What's the "wow" moment? (Quick start vs. Deep insight)
 
+
+
