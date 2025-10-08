@@ -9,6 +9,9 @@ keeping output readable for vibe coders on older setups.
 import os
 from typing import Dict
 
+
+_BUILTIN_PRINT = print
+
 # Map common emoji (explicit unicode escapes) to readable ASCII fallbacks.
 _ASCII_FALLBACKS: Dict[str, str] = {
     "\U0001F680": "[INIT]",
@@ -68,7 +71,7 @@ def safe_print(message: str = "", *args, **kwargs) -> None:
         text = _apply_fallbacks(text)
 
     try:
-        print(text, *args, **kwargs)
+        _BUILTIN_PRINT(text, *args, **kwargs)
         return
     except UnicodeEncodeError:
         pass
@@ -76,4 +79,4 @@ def safe_print(message: str = "", *args, **kwargs) -> None:
     # Terminal still refused. Force ASCII-safe output to avoid crashing.
     fallback = _apply_fallbacks(text)
     fallback = fallback.encode("ascii", "replace").decode("ascii")
-    print(fallback, *args, **kwargs)
+    _BUILTIN_PRINT(fallback, *args, **kwargs)

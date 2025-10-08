@@ -33,6 +33,22 @@ Advanced AI integration and collaboration features:
 - [`cursor`](#cursor) - Cursor AI integration and workflow
 - [`enhanced-context`](#enhanced-context) - Advanced conversation context management
 - [`decision-pipeline`](#decision-pipeline) - Multi-stage decision processes
+- [`chat`](#chat) - Natural-language assistant with vision guardrails
+
+### `chat`
+
+**Purpose**: Converse with AI Onboard using natural language instead of direct CLI flags.
+
+#### Automatic Alignment Guardrails
+- Every chat request runs the project's vision alignment detector automatically.
+- Requests flagged as `block` are stopped with the detected guardrail reasons.
+- `review` results post a heads-up before the assistant continues with the response.
+
+#### Basic Usage
+
+```bash
+python -m ai_onboard chat "Add email validation to the contact form"
+```
 
 ### 🛠️ Development & Integration Commands
 
