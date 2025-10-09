@@ -30,8 +30,21 @@ class BootstrapGuard:
 
     _ALWAYS_ALLOWED: Set[str] = {"help", "version", "quickstart", "doctor"}
     _STAGE_ALLOWED: Dict[OnboardingStage, Set[str]] = {
-        OnboardingStage.UNINITIALIZED: {"charter", "prompt", "interrogate", "quickstart", "doctor"},
-        OnboardingStage.NEEDS_STATE: {"analyze", "charter", "prompt", "interrogate", "quickstart", "doctor"},
+        OnboardingStage.UNINITIALIZED: {
+            "charter",
+            "prompt",
+            "interrogate",
+            "quickstart",
+            "doctor",
+        },
+        OnboardingStage.NEEDS_STATE: {
+            "analyze",
+            "charter",
+            "prompt",
+            "interrogate",
+            "quickstart",
+            "doctor",
+        },
         OnboardingStage.NEEDS_PLAN: {
             "plan",
             "analyze",
@@ -48,12 +61,16 @@ class BootstrapGuard:
         OnboardingStage.UNINITIALIZED: StageGuidance(
             message=(
                 "Project onboarding blocked: no charter found. "
-                "Run `ai_onboard charter --interrogate` or `ai_onboard quickstart` first."
+                "Run `ai_onboard charter --interrogate` or "
+                "`ai_onboard quickstart` first."
             ),
             next_command="ai_onboard charter --interrogate",
         ),
         OnboardingStage.NEEDS_STATE: StageGuidance(
-            message="Project onboarding blocked: run `ai_onboard analyze` to capture the current state.",
+            message=(
+                "Project onboarding blocked: run `ai_onboard analyze` to "
+                "capture the current state."
+            ),
             next_command="ai_onboard analyze",
         ),
         OnboardingStage.NEEDS_PLAN: StageGuidance(
@@ -112,12 +129,15 @@ class BootstrapGuard:
         """Return guidance for the given stage (defaults to current stage)."""
         return self._GUIDANCE[stage or self.get_stage()]
 
-    def check_command(self, command: Optional[str]) -> Tuple[bool, str, OnboardingStage]:
+    def check_command(
+        self, command: Optional[str]
+    ) -> Tuple[bool, str, OnboardingStage]:
         """
         Determine whether the supplied command is allowed in the current stage.
 
         Returns:
-            Tuple of (allowed, message, stage). ``message`` is an empty string when allowed.
+            Tuple of (allowed, message, stage). ``message`` is an empty string
+            when allowed.
         """
         stage = self.get_stage()
         if stage is OnboardingStage.READY:

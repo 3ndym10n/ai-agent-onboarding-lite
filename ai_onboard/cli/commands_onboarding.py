@@ -17,7 +17,10 @@ def add_onboarding_commands(subparsers) -> None:
     p_quick = subparsers.add_parser(
         "quickstart",
         help="Bootstrap a minimal .ai_onboard/ setup (charter, state, plan).",
-        description="Create starter charter/state/plan files so you can begin aligning work immediately.",
+        description=(
+            "Create starter charter/state/plan files so you can begin "
+            "aligning work immediately."
+        ),
     )
     p_quick.add_argument(
         "--force",
@@ -28,7 +31,10 @@ def add_onboarding_commands(subparsers) -> None:
     p_doc = subparsers.add_parser(
         "doctor",
         help="Inspect onboarding status and recommended next steps.",
-        description="Report which onboarding artifacts exist and the next recommended command.",
+        description=(
+            "Report which onboarding artifacts exist and the next "
+            "recommended command."
+        ),
     )
     p_doc.add_argument(
         "--json",
@@ -99,22 +105,31 @@ def quickstart_project(project_root: Path, *, force: bool = False) -> Dict[str, 
                         {
                             "id": "planning",
                             "name": "Planning",
-                            "description": "Refine requirements and confirm feasibility.",
+                            "description": (
+                                "Refine requirements and confirm feasibility."
+                            ),
                         }
                     ],
                 },
                 "work_breakdown_structure": {
                     "planning": {
                         "name": "Planning",
-                        "description": "Capture requirements and produce initial backlog.",
+                        "description": (
+                            "Capture requirements and produce initial backlog."
+                        ),
                         "subtasks": {
                             "charter_review": {
                                 "name": "Review charter",
-                                "description": "Confirm the project vision before proceeding.",
+                                "description": (
+                                    "Confirm the project vision before proceeding."
+                                ),
                             },
                             "state_analysis": {
                                 "name": "Run project analyze",
-                                "description": "Capture repository state and existing artifacts.",
+                                "description": (
+                                    "Capture repository state and existing "
+                                    "artifacts."
+                                ),
                             },
                         },
                     }
@@ -163,7 +178,9 @@ def handle_onboarding_commands(args, root: Path) -> None:
             return
 
         ensure_unicode_safe(f"Onboarding stage: {report['stage']}")
-        for requirement, present in report["requirements"].items():
+        requirements = report["requirements"]
+        assert isinstance(requirements, dict)
+        for requirement, present in requirements.items():
             mark = "[ok]" if present else "[missing]"
             ensure_unicode_safe(f"  {mark} {requirement}")
         if report["message"]:

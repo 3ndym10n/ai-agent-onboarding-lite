@@ -3,4 +3,3 @@
 from .bootstrap_guard import BootstrapGuard, OnboardingStage
 
 __all__ = ["BootstrapGuard", "OnboardingStage"]
-

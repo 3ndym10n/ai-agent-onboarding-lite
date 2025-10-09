@@ -11,8 +11,6 @@ from ..vision.vision_alignment_detector import AlignmentAssessment
 from .decision_enforcer import get_decision_enforcer
 from .user_preference_learning import (
     InteractionType,
-    PreferenceCategory,
-    PreferenceType,
     UserPreference,
     get_user_preference_learning_system,
 )
@@ -87,9 +85,9 @@ class AIOnboardAgentAdapter:
             message, metadata=metadata_payload
         )
 
-        updated_preferences: List[Dict[str, Any]] = []
+        preferences: List[Dict[str, Any]] = []
         if record_preferences:
-            updated_preferences = self._record_alignment_interaction(
+            preferences = self._record_alignment_interaction(
                 user_id=user_id,
                 message=message,
                 assessment=assessment,
@@ -98,7 +96,7 @@ class AIOnboardAgentAdapter:
 
         return {
             "assessment": assessment,
-            "updated_preferences": updated_preferences,
+            "updated_preferences": preferences,
         }
 
     # ------------------------------------------------------------------
@@ -211,7 +209,9 @@ class AIOnboardAgentAdapter:
         )
 
     @staticmethod
-    def _serialize_preferences(preferences: Optional[Iterable[UserPreference]]) -> List[Dict[str, Any]]:
+    def _serialize_preferences(
+        preferences: Optional[Iterable[UserPreference]]
+    ) -> List[Dict[str, Any]]:
         if not preferences:
             return []
         serialised: List[Dict[str, Any]] = []

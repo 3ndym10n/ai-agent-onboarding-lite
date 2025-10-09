@@ -72,12 +72,16 @@ class DecisionEnforcer:
 
         # Registry of known decision points
         self.decision_points: Dict[str, DecisionPoint] = {}
-        self._alignment_detector = None
+        self._alignment_detector: Any = None
 
-    def assess_alignment_for_message(self, message: str, *, metadata: Optional[Dict[str, Any]] = None):
+    def assess_alignment_for_message(
+        self, message: str, *, metadata: Optional[Dict[str, Any]] = None
+    ) -> Any:
         """Assess a natural language message against project vision."""
         if self._alignment_detector is None:
-            self._alignment_detector = get_vision_alignment_detector(self.project_root)
+            self._alignment_detector = get_vision_alignment_detector(
+                self.project_root
+            )
         return self._alignment_detector.assess(message, metadata=metadata)
 
     def register_decision(self, decision: DecisionPoint) -> None:
@@ -416,7 +420,10 @@ class DecisionEnforcer:
                         if block_reason
                         else "Operation blocked"
                     ),
-                    "message": f"Operation '{decision.question}' is blocked pending approval",
+                    "message": (
+                        f"Operation '{decision.question}' is blocked "
+                        "pending approval"
+                    ),
                 },
                 confidence=0.0,
                 gate_created=True,
