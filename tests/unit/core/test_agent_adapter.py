@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 
 import pytest
@@ -45,12 +44,16 @@ def temp_project(tmp_path: Path) -> Path:
 def test_assess_message_records_preferences(temp_project: Path) -> None:
     adapter = AIOnboardAgentAdapter(temp_project)
 
-    result = adapter.assess_message("Add validation to the contact form", user_id="tester")
+    result = adapter.assess_message(
+        "Add validation to the contact form", user_id="tester"
+    )
 
     assert "assessment" in result
     assessment = result["assessment"]
     assert hasattr(assessment, "decision")
-    assert result["updated_preferences"] == [] or isinstance(result["updated_preferences"], list)
+    assert result["updated_preferences"] == [] or isinstance(
+        result["updated_preferences"], list
+    )
 
     stored_prefs = adapter._preference_system.get_user_preferences("tester")
     assert isinstance(stored_prefs, dict)
