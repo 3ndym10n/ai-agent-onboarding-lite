@@ -15,7 +15,7 @@ from unittest.mock import Mock, patch
 import pytest
 
 # Test backward compatibility
-from ai_onboard.core.orchestration_compatibility import (
+from ai_onboard.core.orchestration.orchestration_compatibility import (
     AIAgentOrchestrationLayer,
     AutoApplicableTools,
     HolisticToolOrchestrator,
@@ -26,7 +26,7 @@ from ai_onboard.core.orchestration_compatibility import (
 )
 
 # Test the unified system
-from ai_onboard.core.unified_tool_orchestrator import (
+from ai_onboard.core.orchestration.unified_tool_orchestrator import (
     ToolExecutionContext,
     UnifiedOrchestrationResult,
     UnifiedOrchestrationStrategy,
@@ -109,8 +109,8 @@ class TestUnifiedToolOrchestrator:
         assert context.user_id == "default"
         assert context.rollback_enabled is True
 
-    @patch("ai_onboard.core.unified_tool_orchestrator.get_tool_tracker")
-    @patch("ai_onboard.core.unified_tool_orchestrator.get_comprehensive_tool_discovery")
+    @patch("ai_onboard.core.orchestration.unified_tool_orchestrator.get_tool_tracker")
+    @patch("ai_onboard.core.orchestration.unified_tool_orchestrator.get_comprehensive_tool_discovery")
     def test_orchestrate_tools_adaptive(self, mock_discovery, mock_tracker, temp_root):
         """Test adaptive orchestration strategy."""
         # Mock the dependencies
@@ -186,7 +186,7 @@ class TestBackwardCompatibility:
         with tempfile.TemporaryDirectory() as temp_dir:
             yield Path(temp_dir)
 
-    @patch("ai_onboard.core.orchestration_compatibility.get_unified_tool_orchestrator")
+    @patch("ai_onboard.core.orchestration.orchestration_compatibility.get_unified_tool_orchestrator")
     def test_intelligent_orchestrator_compatibility(self, mock_get_unified, temp_root):
         """Test IntelligentToolOrchestrator backward compatibility."""
         mock_unified = Mock()
@@ -223,7 +223,7 @@ class TestBackwardCompatibility:
         assert result["tool"] == "test_tool"
         assert result["executed"] is True
 
-    @patch("ai_onboard.core.orchestration_compatibility.get_unified_tool_orchestrator")
+    @patch("ai_onboard.core.orchestration.orchestration_compatibility.get_unified_tool_orchestrator")
     def test_holistic_orchestrator_compatibility(self, mock_get_unified, temp_root):
         """Test HolisticToolOrchestrator backward compatibility."""
         mock_unified = Mock()
@@ -244,7 +244,7 @@ class TestBackwardCompatibility:
         assert hasattr(result, "user_preference_compliance")
         assert hasattr(result, "safety_compliance")
 
-    @patch("ai_onboard.core.orchestration_compatibility.get_unified_tool_orchestrator")
+    @patch("ai_onboard.core.orchestration.orchestration_compatibility.get_unified_tool_orchestrator")
     def test_ai_agent_orchestrator_compatibility(self, mock_get_unified, temp_root):
         """Test AIAgentOrchestrationLayer backward compatibility."""
         mock_unified = Mock()
@@ -282,7 +282,7 @@ class TestBackwardCompatibility:
         assert OrchestrationStrategy.SAFETY_FIRST == "safety_first"
         assert OrchestrationStrategy.ADAPTIVE == "adaptive"
 
-    @patch("ai_onboard.core.orchestration_compatibility.get_unified_tool_orchestrator")
+    @patch("ai_onboard.core.orchestration.orchestration_compatibility.get_unified_tool_orchestrator")
     def test_migration_helpers(self, mock_get_unified, temp_root):
         """Test migration helper functions."""
         mock_unified = Mock(spec=UnifiedToolOrchestrator)
@@ -343,7 +343,7 @@ class TestErrorHandling:
             "insights": ["stub"],
         }
 
-    @patch("ai_onboard.core.unified_tool_orchestrator.get_tool_tracker")
+    @patch("ai_onboard.core.orchestration.unified_tool_orchestrator.get_tool_tracker")
     def test_orchestration_error_handling(self, mock_tracker, temp_root):
         """Test that orchestration errors are handled gracefully."""
         mock_tracker.return_value = Mock()
@@ -391,10 +391,10 @@ class TestIntegration:
         with tempfile.TemporaryDirectory() as temp_dir:
             yield Path(temp_dir)
 
-    @patch("ai_onboard.core.unified_tool_orchestrator.PatternRecognitionSystem")
-    @patch("ai_onboard.core.unified_tool_orchestrator.UserPreferenceLearningSystem")
-    @patch("ai_onboard.core.unified_tool_orchestrator.get_tool_tracker")
-    @patch("ai_onboard.core.unified_tool_orchestrator.get_comprehensive_tool_discovery")
+    @patch("ai_onboard.core.orchestration.unified_tool_orchestrator.PatternRecognitionSystem")
+    @patch("ai_onboard.core.orchestration.unified_tool_orchestrator.UserPreferenceLearningSystem")
+    @patch("ai_onboard.core.orchestration.unified_tool_orchestrator.get_tool_tracker")
+    @patch("ai_onboard.core.orchestration.unified_tool_orchestrator.get_comprehensive_tool_discovery")
     def test_full_orchestration_flow(
         self, mock_discovery, mock_tracker, mock_user_prefs, mock_pattern, temp_root
     ):

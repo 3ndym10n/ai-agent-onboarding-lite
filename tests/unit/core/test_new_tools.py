@@ -4,7 +4,7 @@ from pathlib import Path
 
 sys.path.insert(0, ".")
 
-from ai_onboard.core.unified_tool_orchestrator import UnifiedToolOrchestrator
+from ai_onboard.core.orchestration.unified_tool_orchestrator import UnifiedToolOrchestrator
 
 root_path = Path(".")
 orchestrator = UnifiedToolOrchestrator(root_path)
