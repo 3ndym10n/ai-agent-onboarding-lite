@@ -4,6 +4,7 @@ import argparse
 from pathlib import Path
 from typing import Optional
 
+from ..core.onboarding import BootstrapGuard
 from ..core.orchestration.automatic_error_prevention import AutomaticErrorPrevention
 from ..core.orchestration.mandatory_tool_consultation_gate import (
     enforce_tool_consultation,
@@ -87,6 +88,8 @@ from .commands_ux_enhanced import add_ux_enhanced_commands, handle_ux_enhanced_c
 
 # Removed: commands_ux_enhancements (redundant with ui_enhanced)
 from .ux_middleware import get_ux_middleware
+from .commands_onboarding import add_onboarding_commands, handle_onboarding_commands
+from ..core.utilities.unicode_utils import ensure_unicode_safe
 
 
 def validate_and_execute_python(
@@ -299,6 +302,9 @@ def main(argv=None):
     # Add core commands
     add_core_commands(sub)
 
+    # Add onboarding helpers (quickstart, doctor)
+    add_onboarding_commands(sub)
+
     # Add chat interface (natural language)
     add_chat_commands(sub)
 
@@ -388,6 +394,16 @@ def main(argv=None):
     args = p.parse_args(argv)
     root = Path.cwd()
 
+    guard = BootstrapGuard(root)
+    allowed, block_message, stage = guard.check_command(args.cmd)
+    if not allowed:
+        ensure_unicode_safe(block_message)
+        ensure_unicode_safe(f"Current onboarding stage: {stage.value}")
+        guidance = guard.get_guidance(stage)
+        if guidance.next_command:
+            ensure_unicode_safe(f"Next step: {guidance.next_command}")
+        return 1
+
     # Fast path for simple commands - avoid heavy initialization
     if args.cmd in ["version", "help"]:
         # Handle these directly without middleware overhead
@@ -450,6 +466,8 @@ def main(argv=None):
         "help",
         "version",
         "suggest",
+        "quickstart",
+        "doctor",
         "tools",
         "metrics",
         "wbs",
@@ -486,6 +504,14 @@ def main(argv=None):
 
     # Initialize error monitor for command execution monitoring
     error_monitor = get_error_monitor(root)
+
+    # Handle onboarding helper commands
+    if args.cmd in ["quickstart", "doctor"]:
+        with error_monitor.monitor_command_execution(
+            args.cmd, "foreground", "cli_session"
+        ):
+            handle_onboarding_commands(args, root)
+        return
 
     # Handle core commands with error monitoring and tool tracking
     if args.cmd in [

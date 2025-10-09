@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from ..base import utils
+from ..onboarding import BootstrapGuard, OnboardingStage
 from .agent_activity_monitor import AgentActivityMonitor, get_agent_activity_monitor
 from .chaos_detection_system import ChaosDetectionSystem, get_chaos_detection_system
 from .decision_enforcer import DecisionEnforcer, get_decision_enforcer
@@ -85,6 +86,7 @@ class SystemIntegrator:
     def __init__(self, project_root: Path):
         self.project_root = project_root
         self.ai_onboard_dir = project_root / ".ai_onboard"
+        self.bootstrap_guard = BootstrapGuard(self.project_root)
 
         # Core oversight systems
         self.activity_monitor: Optional[AgentActivityMonitor] = None
@@ -149,6 +151,19 @@ class SystemIntegrator:
             context=context,
             timestamp=time.time(),
         )
+
+        # Pre-flight onboarding gate: require charter → state → plan before proceeds
+        stage = self.bootstrap_guard.get_stage()
+        if stage is not OnboardingStage.READY:
+            guidance = self.bootstrap_guard.get_guidance(stage)
+            oversight_context.approved = False
+            oversight_context.gate_status = "pending_onboarding"
+            oversight_context.blocking_reasons.append(guidance.message)
+            if guidance.next_command:
+                oversight_context.corrective_actions.append(
+                    f"Run `{guidance.next_command}`"
+                )
+            return oversight_context
 
         # Step 1: Check emergency status first
         if self.emergency_control:

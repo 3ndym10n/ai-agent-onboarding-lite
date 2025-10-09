@@ -17,6 +17,7 @@ from .user_preference_learning import (
     InteractionType,
     get_user_preference_learning_system,
 )
+from ..vision.vision_alignment_detector import get_vision_alignment_detector
 
 # Type variable for decorated functions
 F = TypeVar("F", bound=Callable[..., Any])
@@ -71,6 +72,13 @@ class DecisionEnforcer:
 
         # Registry of known decision points
         self.decision_points: Dict[str, DecisionPoint] = {}
+        self._alignment_detector = None
+
+    def assess_alignment_for_message(self, message: str, *, metadata: Optional[Dict[str, Any]] = None):
+        """Assess a natural language message against project vision."""
+        if self._alignment_detector is None:
+            self._alignment_detector = get_vision_alignment_detector(self.project_root)
+        return self._alignment_detector.assess(message, metadata=metadata)
 
     def register_decision(self, decision: DecisionPoint) -> None:
         """Register a decision point that should be enforced."""
