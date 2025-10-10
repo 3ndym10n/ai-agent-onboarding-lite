@@ -18,6 +18,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 
 from ..base import utils
 from .agent_activity_monitor import AgentActivityMonitor
+from .user_preference_learning import PreferenceCategory, get_user_preference_learning_system
 
 
 class LimitType(Enum):
@@ -223,14 +224,12 @@ class HardLimitsEnforcer:
     def _check_cleanup_preferences(self, context: Dict[str, Any]) -> Tuple[bool, str]:
         """Check if operation violates user's cleanup preferences."""
         try:
-            from .user_preference_learning import get_user_preference_learning_system
-
             preference_system = get_user_preference_learning_system(self.project_root)
             user_id = context.get("user_id", "vibe_coder")
 
             # Check for organization focus preferences
             org_prefs = preference_system.get_user_preferences(
-                user_id, "organization_focus"
+                user_id=user_id, category=PreferenceCategory.ORGANIZATION_PREFERENCE
             )
 
             # Look for lean directory preferences

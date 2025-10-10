@@ -16,6 +16,7 @@ from .hard_gate_enforcer import get_hard_gate_enforcer
 from .hard_limits_enforcer import get_hard_limits_enforcer
 from .user_preference_learning import (
     InteractionType,
+    PreferenceCategory,
     get_user_preference_learning_system,
 )
 
@@ -199,7 +200,7 @@ class DecisionEnforcer:
                 user_id = "vibe_coder"
 
             # Get all user preferences
-            preferences = self.preference_system.get_user_preferences(user_id=user_id)
+            preferences = self.preference_system.get_user_preferences(user_id=user_id, category=None)
 
             # Look for a preference matching this decision
             for pref_key, pref in preferences.items():
@@ -235,7 +236,7 @@ class DecisionEnforcer:
             # Check for cleanup preferences in preference system
             if hasattr(self.preference_system, "get_user_preferences"):
                 cleanup_prefs = self.preference_system.get_user_preferences(
-                    user_id, "organization_focus"
+                    user_id=user_id, category=PreferenceCategory.ORGANIZATION_PREFERENCE
                 )
 
                 # Map decision names to preference keys
