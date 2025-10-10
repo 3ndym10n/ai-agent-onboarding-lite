@@ -182,7 +182,22 @@ class IntentKeywordLibrary:
     FEATURE_KEYWORDS = {
         "user_management": ["user", "login", "authentication", "profile", "account"],
         "content": ["content", "blog", "articles", "posts", "media", "images"],
-        "commerce": ["payment", "checkout", "cart", "buying", "selling", "orders"],
+        "commerce": [
+            "payment",
+            "checkout",
+            "cart",
+            "buying",
+            "selling",
+            "orders",
+            "buy",
+            "sell",
+            "purchase",
+            "shop",
+            "store",
+            "marketplace",
+            "handmade",
+            "artwork",
+        ],
         "communication": ["chat", "messages", "email", "notifications", "comments"],
         "data": ["database", "storage", "analytics", "reports", "tracking"],
         "integration": ["api", "webhook", "integration", "sync", "connect"],
@@ -387,16 +402,57 @@ class NaturalLanguageIntentParser:
 
     def _extract_features(self, request: str) -> Tuple[List[str], List[str]]:
         """Extract primary and secondary features from the request."""
-        primary_features = []
-        secondary_features = []
+        primary_features: List[str] = []
+        secondary_features: List[str] = []
 
+        request_lower = request.lower()
+
+        def add_features(features: List[str]) -> None:
+            for feature in features:
+                if feature not in primary_features:
+                    primary_features.append(feature)
+
+        # Ecommerce style requests
+        if any(
+            word in request_lower
+            for word in ["buy", "sell", "shop", "store", "cart", "checkout", "payment", "marketplace"]
+        ):
+            base_features = ["product catalog", "shopping cart", "payment"]
+            if "art" in request_lower or "handmade" in request_lower:
+                base_features = ["artwork gallery", "online sales", "payment"]
+            add_features(base_features)
+
+        # Customer tracking / CRM
+        if any(
+            word in request_lower for word in ["customer", "clients", "track", "crm", "database"]
+        ):
+            add_features(["customer database", "contact management"])
+
+        # Collaboration signals
+        if any(
+            phrase in request_lower
+            for phrase in ["share", "documents", "team", "collaborate", "work together", "communication"]
+        ):
+            add_features(["document sharing", "communication", "team coordination"])
+
+        # Event / club organization
+        if any(word in request_lower for word in ["event", "organize", "club", "schedule", "calendar"]):
+            add_features(["event calendar", "member communication", "organization tools"])
+
+        # Fallback: use keyword categories for additional hints
         for category, keywords in self.keyword_library.FEATURE_KEYWORDS.items():
-            matches = [keyword for keyword in keywords if keyword in request]
-            if matches:
-                # First match is primary, others are secondary
-                primary_features.append(category.replace("_", " "))
-                if len(matches) > 1:
-                    secondary_features.extend(matches[1:])
+            matches = [keyword for keyword in keywords if keyword in request_lower]
+            if not matches:
+                continue
+
+            if category == "commerce" and not primary_features:
+                add_features(["product catalog", "shopping cart", "payment"])
+            elif category == "data":
+                secondary_features.extend([m for m in matches if m not in primary_features])
+            else:
+                label = category.replace("_", " ")
+                if label not in primary_features:
+                    primary_features.append(label)
 
         return primary_features, secondary_features
 

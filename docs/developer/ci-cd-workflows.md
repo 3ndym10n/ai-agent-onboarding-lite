@@ -6,52 +6,34 @@ This document describes the comprehensive CI/CD (Continuous Integration/Continuo
 
 ## Workflow Structure
 
-### 1. CI/CD Pipeline (`.github/workflows/ci.yml`)
+### 1. CI Pipeline (`.github/workflows/ci.yml`)
 
-The main CI/CD pipeline runs on multiple triggers and includes several jobs:
+The CI workflow focuses on quick feedback and safety checks during development.
 
 #### Triggers
-- **Push events**: All feature branches (`feature/*`, `feat/*`, `bugfix/*`, `hotfix/*`, `release/*`, `fix/*`)
-- **Pull requests**: To `main` and `develop` branches
-- **Manual dispatch**: Via GitHub Actions UI
+- **Push events**: `main`, `develop`, and feature branches (`feature/*`, `feat/*`, `bugfix/*`, `hotfix/*`, `release/*`, `fix/*`)
+- **Pull requests**: Targeting `main` or `develop`
+- **Manual dispatch**: via GitHub Actions UI
 
 #### Jobs
 
-##### Test Job
-- **Matrix testing**: Python 3.8, 3.9, 3.10, 3.11, 3.12
-- **Dependencies**: Installs project and development dependencies
-- **Pre-commit hooks**: Runs all pre-commit checks
-- **System tests**: Comprehensive system integration tests
-- **Unit tests**: Pytest with coverage reporting
-- **AI Agent tests**: Tests the AI Agent Collaboration Protocol
-- **Vision system tests**: Tests the Enhanced Vision Interrogation System
-- **Environment validation**: Validates development environment setup
+##### Lint & Format
+- Runs on Python 3.11
+- Executes Black, isort, and Flake8 against the repository
+- Uses `pip install .[dev]`
 
-##### Quality Job
-- **Code formatting**: Black and isort checks
-- **Linting**: Flake8 with docstring checks
-- **Type checking**: MyPy type validation
-- **Code complexity**: Radon complexity and maintainability checks
-- **Security scanning**: Bandit and Safety checks
+##### Static Analysis
+- Runs MyPy (targeting Python 3.8 APIs)
+- Shares the same dependency bootstrap as the lint job
 
-##### Security Job
-- **Dependency scanning**: Safety check for known vulnerabilities
-- **Code security**: Bandit security analysis
-- **Report generation**: JSON reports for security findings
+##### Unit & Integration Tests
+- Matrix on Python 3.8 and 3.11
+- Installs the `test` extra and executes `pytest -m "not performance"`
+- Fast-fails after the first failure while preserving detailed logs
 
-##### Build Job
-- **Package building**: Creates distribution packages
-- **Package validation**: Twine check for package integrity
-- **Artifact upload**: Stores build artifacts
-
-##### Deploy Job
-- **PyPI publishing**: Automatically publishes to PyPI on main branch
-- **Release creation**: Creates GitHub releases with changelog
-
-##### Release Job
-- **Changelog generation**: Automated changelog from git commits
-- **Release tagging**: Creates version tags
-- **Release notes**: Generates release notes
+##### Security & Dependency Scan
+- Installs the `prod` extra plus `pip-audit`
+- Runs Bandit, Safety, and pip-audit (soft-failing the latter two so results are logged even if advisories exist)
 
 ## Quality Gates
 

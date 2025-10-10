@@ -12,7 +12,7 @@ from typing import Any, Dict
 
 import pytest
 
-from ai_onboard.core.unified_project_management import (
+from ai_onboard.core.project_management.unified_project_management import (
     get_unified_project_management_engine,
 )
 

@@ -330,3 +330,18 @@ The system has **well-designed components** that aren't fully connected. You hav
 
 
 
+---
+
+## Production Readiness Additions (Current)
+
+- Automatic Alignment Guardrails
+  - Chat flow auto-checks vision alignment for every message (no CLI required)
+  - Blocks on hard guardrail hits; warns on review-tier results
+
+- Local Quality Checklist
+  - Run `python scripts/run_checks.py` to execute tests, mypy (if installed), and pip-audit (if installed)
+  - Keep Python 3.8+ compatibility when making changes
+
+- Threshold Calibration
+  - Vision alignment proceed threshold set to 0.60 by default
+  - Token-overlap bonus slightly increased to better recognize in-scope enhancements
