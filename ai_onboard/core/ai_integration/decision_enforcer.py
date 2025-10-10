@@ -10,6 +10,7 @@ from functools import wraps
 from pathlib import Path
 from typing import Any, Callable, Dict, Optional, TypeVar, cast
 
+from ..vision.vision_alignment_detector import get_vision_alignment_detector
 from .ai_gate_mediator import MediationResult, get_ai_gate_mediator
 from .hard_gate_enforcer import get_hard_gate_enforcer
 from .hard_limits_enforcer import get_hard_limits_enforcer
@@ -17,7 +18,6 @@ from .user_preference_learning import (
     InteractionType,
     get_user_preference_learning_system,
 )
-from ..vision.vision_alignment_detector import get_vision_alignment_detector
 
 # Type variable for decorated functions
 F = TypeVar("F", bound=Callable[..., Any])
@@ -79,9 +79,7 @@ class DecisionEnforcer:
     ) -> Any:
         """Assess a natural language message against project vision."""
         if self._alignment_detector is None:
-            self._alignment_detector = get_vision_alignment_detector(
-                self.project_root
-            )
+            self._alignment_detector = get_vision_alignment_detector(self.project_root)
         return self._alignment_detector.assess(message, metadata=metadata)
 
     def register_decision(self, decision: DecisionPoint) -> None:

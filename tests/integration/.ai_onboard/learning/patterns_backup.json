@@ -1,6 +1,6 @@
 {
-  "timestamp": 1759032006.5118945,
-  "pattern_count": 34,
+  "timestamp": 1760055820.4492567,
+  "pattern_count": 44,
   "cli_pattern_count": 0,
   "behavior_pattern_count": 0,
   "patterns": {
@@ -58,10 +58,10 @@
           "traceback": "ImportError: No module named 'test_module'"
         }
       ],
-      "frequency": 5,
+      "frequency": 9,
       "first_seen": 1758117004.354848,
-      "last_seen": 1759032006.4928412,
-      "confidence": 0.7000000000000002,
+      "last_seen": 1760055820.2630548,
+      "confidence": 0.9000000000000004,
       "prevention_rules": [
         "Check requirements.txt",
         "Verify virtual environment"
@@ -771,17 +771,250 @@
         "Review error and implement appropriate fixes"
       ],
       "related_patterns": []
+    },
+    "pattern_1759982755_7859": {
+      "pattern_id": "pattern_1759982755_7859",
+      "pattern_type": "cli_error",
+      "signature": "ArgumentError: invalid choice: '--invalid-option'",
+      "description": "Automatically detected cli_error pattern",
+      "examples": [
+        {
+          "type": "ArgumentError",
+          "message": "invalid choice: '--invalid-option'",
+          "traceback": "invalid choice: '--invalid-option'"
+        }
+      ],
+      "frequency": 1,
+      "first_seen": 1759982755.0345976,
+      "last_seen": 1759982755.034598,
+      "confidence": 0.5,
+      "prevention_rules": [
+        "Validate command arguments before execution",
+        "Check CLI syntax"
+      ],
+      "related_patterns": []
+    },
+    "pattern_1759982755_141": {
+      "pattern_id": "pattern_1759982755_141",
+      "pattern_type": "styling_error",
+      "signature": "StyleError: trailing whitespace found",
+      "description": "Automatically detected styling_error pattern",
+      "examples": [
+        {
+          "type": "StyleError",
+          "message": "trailing whitespace found",
+          "traceback": "line has trailing whitespace"
+        },
+        {
+          "type": "StyleError",
+          "message": "trailing whitespace found",
+          "traceback": "line has trailing whitespace"
+        }
+      ],
+      "frequency": 2,
+      "first_seen": 1759982755.1422753,
+      "last_seen": 1760055818.0001388,
+      "confidence": 0.55,
+      "prevention_rules": [
+        "Run code formatting tools",
+        "Configure editor auto-format"
+      ],
+      "related_patterns": []
+    },
+    "pattern_1759982755_2648": {
+      "pattern_id": "pattern_1759982755_2648",
+      "pattern_type": "cli_error",
+      "signature": "prevention_check_command: Analyzing command for potential issues",
+      "description": "Automatically detected cli_error pattern",
+      "examples": [
+        {
+          "type": "prevention_check_command",
+          "message": "Analyzing command for potential issues",
+          "content": "python -m ai_onboard --invalid-option ",
+          "context": {
+            "command": "python -m ai_onboard --invalid-option",
+            "args": []
+          }
+        }
+      ],
+      "frequency": 1,
+      "first_seen": 1759982755.8725636,
+      "last_seen": 1759982755.872564,
+      "confidence": 0.5,
+      "prevention_rules": [
+        "Validate command arguments before execution",
+        "Check CLI syntax"
+      ],
+      "related_patterns": []
+    },
+    "pattern_1759982756_5758": {
+      "pattern_id": "pattern_1759982756_5758",
+      "pattern_type": "unknown_error",
+      "signature": "prevention_check_code: Analyzing code for potential issues",
+      "description": "Automatically detected unknown_error pattern",
+      "examples": [
+        {
+          "type": "prevention_check_code",
+          "message": "Analyzing code for potential issues",
+          "content": "def bad_function():  \nprint('hello')   \n",
+          "context": {}
+        }
+      ],
+      "frequency": 1,
+      "first_seen": 1759982756.1966655,
+      "last_seen": 1759982756.196666,
+      "confidence": 0.5,
+      "prevention_rules": [
+        "Review error and implement appropriate fixes"
+      ],
+      "related_patterns": []
+    },
+    "pattern_1759982757_5758": {
+      "pattern_id": "pattern_1759982757_5758",
+      "pattern_type": "unknown_error",
+      "signature": "prevention_check_code: Analyzing code for potential issues",
+      "description": "Automatically detected unknown_error pattern",
+      "examples": [
+        {
+          "type": "prevention_check_code",
+          "message": "Analyzing code for potential issues",
+          "content": "import another_missing_module\nprint('test')",
+          "context": {}
+        }
+      ],
+      "frequency": 1,
+      "first_seen": 1759982757.8586133,
+      "last_seen": 1759982757.8586135,
+      "confidence": 0.5,
+      "prevention_rules": [
+        "Review error and implement appropriate fixes"
+      ],
+      "related_patterns": []
+    },
+    "pattern_1760055817_5855": {
+      "pattern_id": "pattern_1760055817_5855",
+      "pattern_type": "cli_error",
+      "signature": "ArgumentError: invalid choice: '--invalid-option'",
+      "description": "Automatically detected cli_error pattern",
+      "examples": [
+        {
+          "type": "ArgumentError",
+          "message": "invalid choice: '--invalid-option'",
+          "traceback": "invalid choice: '--invalid-option'"
+        }
+      ],
+      "frequency": 1,
+      "first_seen": 1760055817.8868718,
+      "last_seen": 1760055817.8868723,
+      "confidence": 0.5,
+      "prevention_rules": [
+        "Validate command arguments before execution",
+        "Check CLI syntax"
+      ],
+      "related_patterns": []
+    },
+    "pattern_1760055818_659": {
+      "pattern_id": "pattern_1760055818_659",
+      "pattern_type": "cli_error",
+      "signature": "prevention_check_command: Analyzing command for potential issues",
+      "description": "Automatically detected cli_error pattern",
+      "examples": [
+        {
+          "type": "prevention_check_command",
+          "message": "Analyzing command for potential issues",
+          "content": "python -m ai_onboard --invalid-option ",
+          "context": {
+            "command": "python -m ai_onboard --invalid-option",
+            "args": []
+          }
+        }
+      ],
+      "frequency": 1,
+      "first_seen": 1760055818.7556975,
+      "last_seen": 1760055818.755698,
+      "confidence": 0.5,
+      "prevention_rules": [
+        "Validate command arguments before execution",
+        "Check CLI syntax"
+      ],
+      "related_patterns": []
+    },
+    "pattern_1760055818_3070": {
+      "pattern_id": "pattern_1760055818_3070",
+      "pattern_type": "unknown_error",
+      "signature": "prevention_check_code: Analyzing code for potential issues",
+      "description": "Automatically detected unknown_error pattern",
+      "examples": [
+        {
+          "type": "prevention_check_code",
+          "message": "Analyzing code for potential issues",
+          "content": "import nonexistent_module\nprint('hello')",
+          "context": {}
+        }
+      ],
+      "frequency": 1,
+      "first_seen": 1760055818.8726935,
+      "last_seen": 1760055818.872694,
+      "confidence": 0.5,
+      "prevention_rules": [
+        "Review error and implement appropriate fixes"
+      ],
+      "related_patterns": []
+    },
+    "pattern_1760055819_3070": {
+      "pattern_id": "pattern_1760055819_3070",
+      "pattern_type": "unknown_error",
+      "signature": "prevention_check_code: Analyzing code for potential issues",
+      "description": "Automatically detected unknown_error pattern",
+      "examples": [
+        {
+          "type": "prevention_check_code",
+          "message": "Analyzing code for potential issues",
+          "content": "def bad_function():  \nprint('hello')   \n",
+          "context": {}
+        }
+      ],
+      "frequency": 1,
+      "first_seen": 1760055819.053616,
+      "last_seen": 1760055819.0536163,
+      "confidence": 0.5,
+      "prevention_rules": [
+        "Review error and implement appropriate fixes"
+      ],
+      "related_patterns": []
+    },
+    "pattern_1760055820_3070": {
+      "pattern_id": "pattern_1760055820_3070",
+      "pattern_type": "unknown_error",
+      "signature": "prevention_check_code: Analyzing code for potential issues",
+      "description": "Automatically detected unknown_error pattern",
+      "examples": [
+        {
+          "type": "prevention_check_code",
+          "message": "Analyzing code for potential issues",
+          "content": "import another_missing_module\nprint('test')",
+          "context": {}
+        }
+      ],
+      "frequency": 1,
+      "first_seen": 1760055820.4489021,
+      "last_seen": 1760055820.4489028,
+      "confidence": 0.5,
+      "prevention_rules": [
+        "Review error and implement appropriate fixes"
+      ],
+      "related_patterns": []
     }
   },
   "cli_patterns": {},
   "behavior_patterns": {},
   "command_history": [],
   "stats": {
-    "patterns_learned": 28,
-    "patterns_applied": 118,
-    "errors_prevented": 0,
-    "learning_sessions": 33,
-    "last_learning_update": 1759032006.4941685,
-    "total_learning_events": 150
+    "patterns_learned": 41,
+    "patterns_applied": 150,
+    "errors_prevented": 2,
+    "learning_sessions": 43,
+    "last_learning_update": 1760055820.2704678,
+    "total_learning_events": 202
   }
 }

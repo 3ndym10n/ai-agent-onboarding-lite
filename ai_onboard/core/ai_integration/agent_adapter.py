@@ -210,7 +210,7 @@ class AIOnboardAgentAdapter:
 
     @staticmethod
     def _serialize_preferences(
-        preferences: Optional[Iterable[UserPreference]]
+        preferences: Optional[Iterable[UserPreference]],
     ) -> List[Dict[str, Any]]:
         if not preferences:
             return []

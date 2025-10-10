@@ -118,3 +118,11 @@
 {'timestamp': 1759032006.4305117, 'event_type': 'analysis_completed', 'event_data': {'content_type': 'code', 'preventions_applied': 1, 'recommendations': 1, 'risk_level': 'high', 'confidence': 0.9}}
 {'timestamp': 1759032006.4445124, 'event_type': 'analysis_completed', 'event_data': {'content_type': 'code', 'preventions_applied': 2, 'recommendations': 1, 'risk_level': 'high', 'confidence': 0.95}}
 {'timestamp': 1759032006.5220888, 'event_type': 'analysis_completed', 'event_data': {'content_type': 'code', 'preventions_applied': 1, 'recommendations': 1, 'risk_level': 'high', 'confidence': 0.9}}
+{'timestamp': 1759982755.9491446, 'event_type': 'analysis_completed', 'event_data': {'content_type': 'command', 'preventions_applied': 3, 'recommendations': 2, 'risk_level': 'high', 'confidence': 0.95}}
+{'timestamp': 1759982756.0694287, 'event_type': 'analysis_completed', 'event_data': {'content_type': 'code', 'preventions_applied': 1, 'recommendations': 1, 'risk_level': 'high', 'confidence': 0.9}}
+{'timestamp': 1759982756.2349927, 'event_type': 'analysis_completed', 'event_data': {'content_type': 'code', 'preventions_applied': 2, 'recommendations': 1, 'risk_level': 'high', 'confidence': 0.95}}
+{'timestamp': 1759982757.9032354, 'event_type': 'analysis_completed', 'event_data': {'content_type': 'code', 'preventions_applied': 1, 'recommendations': 1, 'risk_level': 'high', 'confidence': 0.9}}
+{'timestamp': 1760055818.8148854, 'event_type': 'analysis_completed', 'event_data': {'content_type': 'command', 'preventions_applied': 3, 'recommendations': 2, 'risk_level': 'high', 'confidence': 0.95}}
+{'timestamp': 1760055818.9308312, 'event_type': 'analysis_completed', 'event_data': {'content_type': 'code', 'preventions_applied': 1, 'recommendations': 1, 'risk_level': 'high', 'confidence': 0.9}}
+{'timestamp': 1760055819.1105354, 'event_type': 'analysis_completed', 'event_data': {'content_type': 'code', 'preventions_applied': 2, 'recommendations': 1, 'risk_level': 'high', 'confidence': 0.95}}
+{'timestamp': 1760055820.5074797, 'event_type': 'analysis_completed', 'event_data': {'content_type': 'code', 'preventions_applied': 1, 'recommendations': 1, 'risk_level': 'high', 'confidence': 0.9}}
