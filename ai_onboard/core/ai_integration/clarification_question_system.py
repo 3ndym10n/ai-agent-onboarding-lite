@@ -290,7 +290,7 @@ class ClarificationQuestionEngine:
         self, info_type: str, user_request: str, user_expertise: UserExpertiseLevel
     ) -> List[ClarificationQuestion]:
         """Get questions for a specific type of missing information."""
-        questions = []
+        questions: List[ClarificationQuestion] = []
 
         question_templates = {
             "scope": [
@@ -454,7 +454,7 @@ class ClarificationQuestionEngine:
         self, indicator: str, current_action: str, user_expertise: UserExpertiseLevel
     ) -> List[ClarificationQuestion]:
         """Get questions for a specific difficulty indicator."""
-        questions = []
+        questions: List[ClarificationQuestion] = []
 
         difficulty_question_map = {
             "too_many_options": [

@@ -415,7 +415,16 @@ class NaturalLanguageIntentParser:
         # Ecommerce style requests
         if any(
             word in request_lower
-            for word in ["buy", "sell", "shop", "store", "cart", "checkout", "payment", "marketplace"]
+            for word in [
+                "buy",
+                "sell",
+                "shop",
+                "store",
+                "cart",
+                "checkout",
+                "payment",
+                "marketplace",
+            ]
         ):
             base_features = ["product catalog", "shopping cart", "payment"]
             if "art" in request_lower or "handmade" in request_lower:
@@ -424,20 +433,33 @@ class NaturalLanguageIntentParser:
 
         # Customer tracking / CRM
         if any(
-            word in request_lower for word in ["customer", "clients", "track", "crm", "database"]
+            word in request_lower
+            for word in ["customer", "clients", "track", "crm", "database"]
         ):
             add_features(["customer database", "contact management"])
 
         # Collaboration signals
         if any(
             phrase in request_lower
-            for phrase in ["share", "documents", "team", "collaborate", "work together", "communication"]
+            for phrase in [
+                "share",
+                "documents",
+                "team",
+                "collaborate",
+                "work together",
+                "communication",
+            ]
         ):
             add_features(["document sharing", "communication", "team coordination"])
 
         # Event / club organization
-        if any(word in request_lower for word in ["event", "organize", "club", "schedule", "calendar"]):
-            add_features(["event calendar", "member communication", "organization tools"])
+        if any(
+            word in request_lower
+            for word in ["event", "organize", "club", "schedule", "calendar"]
+        ):
+            add_features(
+                ["event calendar", "member communication", "organization tools"]
+            )
 
         # Fallback: use keyword categories for additional hints
         for category, keywords in self.keyword_library.FEATURE_KEYWORDS.items():
@@ -448,7 +470,9 @@ class NaturalLanguageIntentParser:
             if category == "commerce" and not primary_features:
                 add_features(["product catalog", "shopping cart", "payment"])
             elif category == "data":
-                secondary_features.extend([m for m in matches if m not in primary_features])
+                secondary_features.extend(
+                    [m for m in matches if m not in primary_features]
+                )
             else:
                 label = category.replace("_", " ")
                 if label not in primary_features:
@@ -488,7 +512,11 @@ class NaturalLanguageIntentParser:
         try:
             user_prefs = self.user_preferences.get_user_preferences(user_id)
             if user_prefs and "expertise_level" in user_prefs:
-                return user_prefs["expertise_level"]
+                expertise_pref = user_prefs["expertise_level"]
+                if hasattr(expertise_pref, "preference_value"):
+                    return str(expertise_pref.preference_value)
+                else:
+                    return str(expertise_pref)
         except (FileNotFoundError, PermissionError, OSError):
             # Handle common file system errors
             pass

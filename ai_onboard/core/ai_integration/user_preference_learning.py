@@ -1348,11 +1348,15 @@ class UserPreferenceLearningSystem:
             self.user_profiles[user_id].preferences[preference_id] = preference
 
         # Log preference learning (convert enum to float for JSON)
-        confidence_for_json = confidence
+        confidence_for_json: float
         if hasattr(confidence, "value"):  # Enum-like object
             confidence_for_json = 0.5  # Use a default float for JSON
-        elif not isinstance(confidence, (int, float)):
-            confidence_for_json = 0.5  # Default fallback
+        else:
+            # Handle both numeric and non-numeric types
+            if isinstance(confidence, (int, float)):
+                confidence_for_json = confidence  # Keep as is
+            else:
+                confidence_for_json = 0.5  # Default fallback
 
         self._log_preference_learning(
             user_id, category, key, value, float(confidence_for_json), evidence  # type: ignore[arg-type]
@@ -1586,12 +1590,8 @@ class UserPreferenceLearningSystem:
     def get_user_preferences_list(self, user_id: str) -> List[UserPreference]:
         """Get user preferences as a list (backward compatibility)."""
         preferences = self.get_user_preferences(user_id)
-        if isinstance(preferences, list):
-            return preferences
-        elif isinstance(preferences, dict):
-            return list(preferences.values())
-        else:
-            return []
+        # Since get_user_preferences always returns a dict, just return the values
+        return list(preferences.values())
 
     def get_user_recommendations(self, user_id: str) -> List[Dict[str, Any]]:
         """Get personalized recommendations for a user."""

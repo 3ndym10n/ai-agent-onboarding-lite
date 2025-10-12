@@ -13,7 +13,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional, Union
 
 from ..orchestration.tool_usage_tracker import get_tool_tracker
 from ..quality_safety.risk_assessment_framework import RiskAssessmentResult, RiskLevel
@@ -234,7 +234,7 @@ class PhasedImplementationStrategy:
                 risk_level = assessment.risk_level
             else:
                 # Handle dictionary format from tests
-                risk_level_str = assessment.get("risk_level", "medium")
+                risk_level_str = assessment.get("risk_level", "medium")  # type: ignore[attr-defined]
                 risk_level = getattr(
                     RiskLevel, risk_level_str.upper(), RiskLevel.MEDIUM
                 )
@@ -272,7 +272,7 @@ class PhasedImplementationStrategy:
                     risk_score = assessment.overall_risk_score
                 else:
                     # Handle dictionary format from tests
-                    risk_score = assessment.get("overall_risk_score", 1.0)
+                    risk_score = assessment.get("overall_risk_score", 1.0)  # type: ignore[attr-defined]
 
                 if risk_score <= criteria.max_risk_score:
                     # Handle both RiskAssessmentResult objects and dictionaries
@@ -281,8 +281,8 @@ class PhasedImplementationStrategy:
                         change_description = assessment.change.description
                     else:
                         # Handle dictionary format from tests
-                        change_type = assessment.get("change_type", "unknown")
-                        change_description = assessment.get(
+                        change_type = assessment.get("change_type", "unknown")  # type: ignore[attr-defined]
+                        change_description = assessment.get(  # type: ignore[attr-defined]
                             "description", "Unknown change"
                         )
 
@@ -290,7 +290,7 @@ class PhasedImplementationStrategy:
                         step_id=f"{phase.value}_{step_counter}",
                         phase=phase,
                         description=f"Implement {change_type}: {change_description}",
-                        risk_assessment=assessment,
+                        risk_assessment=assessment if hasattr(assessment, "risk_level") else None,  # type: ignore[arg-type]
                         rollback_available=True,
                     )
                     steps.append(step)

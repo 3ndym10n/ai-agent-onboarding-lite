@@ -793,7 +793,9 @@ class KnowledgeBaseEvolution:
 
         return None
 
-    def _trigger_knowledge_evolution(self, trigger: str, context: Any = None) -> None:
+    def _trigger_knowledge_evolution(
+        self, trigger: str, context: Optional[KnowledgeItem] = None
+    ) -> None:
         """Trigger knowledge evolution based on events."""
         if trigger not in self.evolution_config["evolution_triggers"]:
             return
@@ -828,8 +830,13 @@ class KnowledgeBaseEvolution:
         elif trigger == "usage_pattern_change":
             self._adapt_knowledge_relevance()
 
-    def _evolve_knowledge_relationships(self, new_knowledge: KnowledgeItem) -> None:
+    def _evolve_knowledge_relationships(
+        self, new_knowledge: Optional[KnowledgeItem]
+    ) -> None:
         """Evolve knowledge relationships when new knowledge is added."""
+        if not new_knowledge:
+            return
+
         # Find and update related knowledge
         for existing_id, existing_item in self.knowledge_items.items():
             if existing_id == new_knowledge.knowledge_id:

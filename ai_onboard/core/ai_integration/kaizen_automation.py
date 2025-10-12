@@ -747,7 +747,7 @@ class KaizenAutomationEngine:
 
     def _orient_and_analyze(self, observations: Dict[str, Any]) -> Dict[str, Any]:
         """Analyze observations and identify improvement opportunities."""
-        analysis = {
+        analysis: Dict[str, Any] = {
             "timestamp": datetime.now().isoformat(),
             "identified_opportunities": [],
             "priority_areas": [],

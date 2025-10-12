@@ -141,7 +141,7 @@ class ContinuousImprovementValidator:
         self, category: ValidationCategory, root: Path
     ) -> Dict[str, Any]:
         """Validate continuous improvement for a specific category."""
-        results = {
+        results: Dict[str, Any] = {
             "category": category.value,
             "status": "passed",
             "tests_run": 0,
@@ -179,10 +179,10 @@ class ContinuousImprovementValidator:
                 integration_tests = self._run_integration_tests()
                 results["tests_run"] = len(integration_tests)
                 results["tests_passed"] = sum(
-                    1 for t in integration_tests if t.status == ValidationStatus.PASS
+                    1 for t in integration_tests if t.result == ValidationResult.PASS
                 )
                 results["tests_failed"] = sum(
-                    1 for t in integration_tests if t.status == ValidationStatus.FAIL
+                    1 for t in integration_tests if t.result == ValidationResult.FAIL
                 )
 
             # Add similar logic for other categories...

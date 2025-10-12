@@ -808,10 +808,6 @@ class VisionWebInterface:
 </html>
                 """
 
-        # This should return the web interface instance, not the handler class
-        # The handler is created internally by the VisionWebInterface
-        return None
-
 
 def start_vision_web_interface(root: Path, port: int = 8080) -> Dict[str, Any]:
     """Start the vision interrogation web interface."""

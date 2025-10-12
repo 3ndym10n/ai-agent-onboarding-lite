@@ -76,7 +76,7 @@ class PromptBasedJourneyMapper:
         return journey
 
     def _create_journey_analysis_prompt(
-        self, user_request: str, user_id: str, context: Dict[str, Any]
+        self, user_request: str, user_id: str, context: Optional[Dict[str, Any]]
     ) -> str:
         """Create a prompt for analyzing appropriate development journey."""
 

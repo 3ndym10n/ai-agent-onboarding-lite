@@ -112,7 +112,9 @@ class GateSystem:
         )
 
         # Wait for initial responses (step 1) - increased timeout for AI agents
-        initial_response = self._wait_for_response(timeout_seconds=30, gate_request=gate_request)
+        initial_response = self._wait_for_response(
+            timeout_seconds=30, gate_request=gate_request
+        )
 
         # Check if this is a collaborative gate (should not block)
         is_collaborative = gate_request.title.startswith("AI Agent Collaboration:")
@@ -350,7 +352,10 @@ Create a JSON file at `.ai_onboard / gates / gate_response.json` with this struc
         return prompt
 
     def _wait_for_response(
-        self, timeout_seconds: int = 300, require_proceed: bool = False, gate_request: Optional[GateRequest] = None
+        self,
+        timeout_seconds: int = 300,
+        require_proceed: bool = False,
+        gate_request: Optional[GateRequest] = None,
     ) -> Dict[str, Any]:
         """Wait for AI agent to provide user response.
 
@@ -403,11 +408,17 @@ Create a JSON file at `.ai_onboard / gates / gate_response.json` with this struc
             time.sleep(1)  # Check every second
 
         # Timeout - handle differently for collaborative gates
-        is_collaborative = hasattr(gate_request, 'title') and gate_request.title.startswith("AI Agent Collaboration:")
+        is_collaborative = (
+            gate_request is not None
+            and hasattr(gate_request, "title")
+            and gate_request.title.startswith("AI Agent Collaboration:")
+        )
 
         if is_collaborative:
             # Collaborative gates should not block - provide guidance and continue
-            print(f"\n[ALARM] Collaborative gate timeout after {timeout_seconds} seconds")
+            print(
+                f"\n[ALARM] Collaborative gate timeout after {timeout_seconds} seconds"
+            )
             print("[INFO] AI agent will proceed with smart defaults")
             print(f"[INFO] Gate file still available at: {self.current_gate_file}")
             print(f"[INFO] To provide guidance later, create: {self.response_file}")
@@ -431,7 +442,7 @@ Create a JSON file at `.ai_onboard / gates / gate_response.json` with this struc
                 "user_decision": "stop",
                 "additional_context": "Gate timed out - no user response received",
                 "timestamp": time.time(),
-        }
+            }
 
     def _validate_response(self, response: Dict[str, Any]) -> bool:
         """Validate the structure of the AI agent response and detect fake responses."""

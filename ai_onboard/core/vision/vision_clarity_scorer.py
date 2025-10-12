@@ -122,9 +122,9 @@ class VisionClarityScorer:
         """Evaluate clarity of problem definition."""
         score = 0.0
         confidence = 0.0
-        issues = []
-        strengths = []
-        recommendations = []
+        issues: List[str] = []
+        strengths: List[str] = []
+        recommendations: List[str] = []
 
         # Get relevant responses
         core_problem = responses.get("vc_01", "").lower()
@@ -216,9 +216,9 @@ class VisionClarityScorer:
         """Evaluate clarity of vision statement."""
         score = 0.0
         confidence = 0.0
-        issues = []
-        strengths = []
-        recommendations = []
+        issues: List[str] = []
+        strengths: List[str] = []
+        recommendations: List[str] = []
 
         # Get relevant responses
         vision_statement = responses.get("vc_02", "").lower()
@@ -329,9 +329,9 @@ class VisionClarityScorer:
         """Evaluate clarity of user/beneficiary identification."""
         score = 0.0
         confidence = 0.0
-        issues = []
-        strengths = []
-        recommendations = []
+        issues: List[str] = []
+        strengths: List[str] = []
+        recommendations: List[str] = []
 
         # Get relevant responses
         user_statement = responses.get("vc_03", "").lower()
@@ -435,9 +435,9 @@ class VisionClarityScorer:
         """Evaluate clarity of objective definition."""
         score = 0.0
         confidence = 0.0
-        issues = []
-        strengths = []
-        recommendations = []
+        issues: List[str] = []
+        strengths: List[str] = []
+        recommendations: List[str] = []
 
         # Get relevant responses from success criteria phase
         success_criteria = responses.get("sc_01", "").lower()
@@ -557,9 +557,9 @@ class VisionClarityScorer:
         """Evaluate clarity of scope boundaries."""
         score = 0.0
         confidence = 0.0
-        issues = []
-        strengths = []
-        recommendations = []
+        issues: List[str] = []
+        strengths: List[str] = []
+        recommendations: List[str] = []
 
         # Get relevant responses from scope phase
         in_scope = responses.get("sb_01", "").lower()

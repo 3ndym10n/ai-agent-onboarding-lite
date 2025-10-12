@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from .utils import PolicyError
 
@@ -11,7 +11,7 @@ def _is_str(x: Any) -> bool:
     return isinstance(x, str) and len(x) >= 1
 
 
-def validate_policy(policy: Dict[str, Any]) -> None:
+def validate_policy(policy: Optional[Dict[str, Any]]) -> None:
     """Lightweight policy validator aligned to policy.schema.json.
 
     - rules: optional list of objects with required id:str and action in ALLOWED_ACTIONS

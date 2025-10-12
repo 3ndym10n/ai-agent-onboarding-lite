@@ -419,14 +419,14 @@ class UserExperienceSystem:
                 continue
 
             suggestion = SmartSuggestion(
-                command=command,
-                reason=pattern["reason"],
+                command=str(command),
+                reason=str(pattern["reason"]),
                 confidence=0.82,
-                category=pattern["category"],
-                next_steps=pattern["next_steps"],
+                category=str(pattern["category"]),
+                next_steps=list(pattern["next_steps"]),
             )
             suggestions.append(suggestion)
-            suggestion_map[command] = suggestion
+            suggestion_map[str(command)] = suggestion
 
         suggestions.sort(key=lambda s: (-s.confidence, s.command))
 
@@ -583,9 +583,7 @@ class UserExperienceSystem:
 
             teammate_label = "teammates" if mentor_count > 1 else "teammate"
             verb = "recommend" if mentor_count > 1 else "recommends"
-            reason = (
-                f"{mentor_count} {teammate_label} {verb} '{command}' based on shared workflows"
-            )
+            reason = f"{mentor_count} {teammate_label} {verb} '{command}' based on shared workflows"
             category = self._infer_command_category(command)
             next_steps = [
                 "Follow up with your mentor to practice this command together."

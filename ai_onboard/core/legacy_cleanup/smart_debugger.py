@@ -951,9 +951,7 @@ class SmartDebugger:
                 )
 
         # Return top 3 most likely root causes
-        return sorted(root_causes, key=lambda x: x["confidence"], reverse=True)[
-            :3
-        ]  # type: ignore[arg-type,return-value]
+        return sorted(root_causes, key=lambda x: x["confidence"], reverse=True)[:3]  # type: ignore[arg-type,return-value]
 
     def _generate_alternative_solutions(
         self, error_data: Dict[str, Any], primary_solution: Dict[str, Any]
@@ -1038,9 +1036,7 @@ class SmartDebugger:
             )
 
         # Return top 2 alternatives
-        return sorted(alternatives, key=lambda x: x["confidence"], reverse=True)[
-            :2
-        ]  # type: ignore[arg-type,return-value]
+        return sorted(alternatives, key=lambda x: x["confidence"], reverse=True)[:2]  # type: ignore[arg-type,return-value]
 
     def _extract_contextual_insights(
         self, error_data: Dict[str, Any]

@@ -373,7 +373,7 @@ class ProgressiveDisclosureEngine:
         self, element: UIElement, user_expertise: UserExpertiseLevel
     ) -> Dict[str, Any]:
         """Simplify UI element presentation for the user's expertise level."""
-        simplified = {
+        simplified: Dict[str, Any] = {
             "id": element.element_id,
             "name": element.display_name,
             "description": element.description,

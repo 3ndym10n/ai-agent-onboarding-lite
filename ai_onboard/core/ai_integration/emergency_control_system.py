@@ -278,7 +278,7 @@ class EmergencyControlSystem:
 
     def get_emergency_status(self, agent_id: Optional[str] = None) -> Dict[str, Any]:
         """Get current emergency control status."""
-        status = {
+        status: Dict[str, Any] = {
             "monitoring_active": self.monitoring_active,
             "total_emergency_events": len(self.emergency_events),
             "agents_in_emergency": len(
@@ -452,7 +452,7 @@ class EmergencyControlSystem:
     def _save_emergency_state(self) -> None:
         """Save emergency state to storage."""
         try:
-            state_data = {"agent_states": [], "emergency_events": []}
+            state_data: Dict[str, Any] = {"agent_states": [], "emergency_events": []}
 
             for state in self.agent_states.values():
                 state_dict = {

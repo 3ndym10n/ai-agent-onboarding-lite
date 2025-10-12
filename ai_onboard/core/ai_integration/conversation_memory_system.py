@@ -48,6 +48,9 @@ class ConversationContext:
     # Performance tracking
     message_count: int = 0
     context_switches: int = 0
+
+    # Stage transitions tracking
+    stage_transitions: List[Dict[str, Any]] = field(default_factory=list)
     memory_accesses: int = 0
 
 
@@ -303,7 +306,7 @@ class ConversationMemoryManager:
         current_time = time.time()
 
         # Remove expired segments
-        active_segments = []
+        active_segments: List[MemorySegment] = []
         for segment in conversation.memory_segments:
             if segment.expires_at and current_time > segment.expires_at:
                 continue  # Expired, don't retain
