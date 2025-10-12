@@ -293,7 +293,9 @@ class UserJourneyMapper:
         request_lower = user_request.lower()
 
         # Simple keyword-based journey mapping
-        if any(word in request_lower for word in ["website", "web app", "webpage"]):
+        if any(word in request_lower for word in ["shop", "store", "sell", "buy", "e-commerce", "commerce"]):
+            return "web_development"
+        elif any(word in request_lower for word in ["website", "web app", "webpage"]):
             return "web_development"
         elif any(word in request_lower for word in ["mobile", "app", "phone"]):
             return "mobile_development"
@@ -301,10 +303,8 @@ class UserJourneyMapper:
             return "data_application"
         elif any(word in request_lower for word in ["learn", "tutorial", "education"]):
             return "learning_platform"
-        elif any(word in request_lower for word in ["shop", "store", "sell", "buy"]):
-            return "ecommerce"
         else:
-            return "general_development"
+            return "simple_project"
 
     def _customize_journey_for_user(
         self, journey: UserJourney, user_expertise: UserExpertiseLevel, user_id: str

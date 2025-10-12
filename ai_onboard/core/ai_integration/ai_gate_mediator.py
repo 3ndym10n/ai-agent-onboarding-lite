@@ -34,10 +34,9 @@ class MediationResult:
 class AIGateMediator:
     """Intelligent mediator between AI agents and gate system."""
 
-    def __init__(self, project_root: Path, confidence_threshold: float = 0.5):
+    def __init__(self, project_root: Path, confidence_threshold: float = 0.75):
         self.project_root = project_root
-        # Lower threshold (0.5 instead of 0.75) allows more autonomous operation
-        # while still checking in on genuinely uncertain decisions
+        # Confidence threshold controls when operations can proceed without a gate
         self.confidence_threshold = confidence_threshold
 
         # Initialize existing systems
@@ -374,9 +373,7 @@ class AIGateMediator:
 
         # 5. Wait for guidance with shorter timeout (since AI is working)
         timeout = self._calculate_collaborative_timeout(operation, context)
-        response = self.gate_system._wait_for_response(
-            timeout, gate_request=gate_request
-        )
+        response = self._wait_for_gate_response_async(gate_result, timeout)
 
         if response:
             # Learn from the collaborative guidance
@@ -412,7 +409,7 @@ class AIGateMediator:
                 ai_work_result, operation, context
             )
             return MediationResult(
-                proceed=True,
+                proceed=False,
                 response=final_result,
                 confidence=confidence,
                 gate_created=True,
@@ -444,44 +441,53 @@ class AIGateMediator:
 
         return questions
 
+
+
     def _generate_gate_description(
         self, operation: str, context: Dict[str, Any]
     ) -> str:
-        """Generate human-friendly description of the gate."""
-        # Create conversational, vibe-coder friendly description
-        parts = []
+        '''Generate human-friendly description of the gate.'''
+        robot = "\U0001F916"
+        document = "\U0001F4C4"
+        tools = "\U0001F6E0"
+        thinking = "\U0001F914"
+        question = "\u2753"
+        check = "\u2705"
+        folder = "\U0001F5C2"
 
-        # Main action in plain English
-        parts.append(f"🤖 **I want to**: {operation}")
+        parts = [f"{robot} **I want to**: {operation}"]
 
-        # Add context details
         if "files" in context and context["files"]:
             file_count = len(context["files"])
             if file_count == 1:
-                parts.append(f"📄 **File**: {context['files'][0]}")
+                parts.append(f"{document} **File**: {context['files'][0]}")
             elif file_count <= 3:
-                parts.append(f"📄 **Files**: {', '.join(context['files'])}")
+                suffix = "s" if file_count != 1 else ""
+                file_list = ", ".join(context["files"])
+                parts.append(
+                    f"{document} **Files** ({file_count} file{suffix}): {file_list}"
+                )
             else:
-                parts.append(f"📄 **Files**: {file_count} files")
+                parts.append(f"{document} **Files**: {file_count} files")
 
         if "command" in context:
-            parts.append(f"⚙️  **Command**: `{context['command']}`")
+            parts.append(f"{tools} **Command**: `{context['command']}`")
 
-        # Add confidence level in friendly terms
-        confidence = context.get("confidence", 0.5)
+        confidence = float(context.get("confidence", 0.5))
+        percent = max(0, min(100, int(round(confidence * 100))))
         if confidence >= 0.8:
-            parts.append("✅ **Confidence**: High - I'm pretty sure about this")
+            parts.append(f"{check} **Confidence**: High ({percent}%) - I'm pretty sure about this")
         elif confidence >= 0.5:
-            parts.append("🤔 **Confidence**: Medium - I could use your input")
+            parts.append(
+                f"{thinking} **Confidence**: Medium ({percent}%) - I could use your input"
+            )
         else:
-            parts.append("❓ **Confidence**: Low - I need your guidance")
+            parts.append(f"{question} **Confidence**: Low ({percent}%) - I need your guidance")
 
-        # Add helpful context
         if "phase" in context:
-            parts.append(f"📍 **Phase**: {context['phase']}")
+            parts.append(f"{folder} **Phase**: {context['phase']}")
 
         return "\n".join(parts)
-
     def _calculate_optimal_timeout(
         self, operation: str, context: Dict[str, Any]
     ) -> int:
@@ -1162,10 +1168,12 @@ class AIGateMediator:
         smart_choice = self._get_most_common_choice(operation)
 
         return {
-            "action": "proceed_with_smart_defaults",
+            "action": "stop_due_to_timeout",
             "ai_work": ai_work_result,
             "smart_choice": smart_choice,
-            "reason": "timeout_collaborative_fallback",
+            "user_decision": "stop",
+            "reason": "timeout",
+            "details": "timeout_collaborative_fallback",
         }
 
     def _get_most_common_choice(self, operation: str) -> str:

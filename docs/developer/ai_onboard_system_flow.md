@@ -148,3 +148,8 @@
 │  └─────────────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────────┘
 ```
+
+
+**Agent Integration Shortcut**
+
+Use `AIOnboardAgentAdapter` (ai_onboard.core.ai_integration.agent_adapter) when wiring GPT-style agents: `assess_message()` returns the alignment assessment and auto-records preferences, while `record_gate_decision()` / `record_command_execution()` capture follow-up outcomes.

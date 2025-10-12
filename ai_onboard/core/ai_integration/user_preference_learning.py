@@ -267,10 +267,12 @@ class UserPreferenceLearningSystem:
                 self._trigger_preference_learning(profile, interaction)
         return []  # Return empty list for backward compatibility
 
-    def learn_preferences_from_interactions(self, user_id: str) -> None:
-        """Alias for backward compatibility."""
+    def learn_preferences_from_interactions(self, user_id: str) -> List[UserPreference]:
+        """Learn preferences from recorded interactions and return updated preferences."""
+        learned_preferences: List[UserPreference] = []
         if user_id in self.user_profiles:
             profile = self.user_profiles[user_id]
+            before_keys = set(profile.preferences.keys())
             # Use the most recent interaction if available
             if profile.interaction_history:
                 interaction = profile.interaction_history[-1]
@@ -289,6 +291,13 @@ class UserPreferenceLearningSystem:
                     duration=1.0,
                 )
                 self._trigger_preference_learning(profile, dummy_interaction)
+            after_keys = set(profile.preferences.keys())
+            new_keys = [key for key in after_keys if key not in before_keys]
+            if new_keys:
+                learned_preferences = [profile.preferences[key] for key in new_keys]
+            else:
+                learned_preferences = list(profile.preferences.values())
+        return learned_preferences
 
     def predict_user_preference(
         self,

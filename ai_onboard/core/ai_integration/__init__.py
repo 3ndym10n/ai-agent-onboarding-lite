@@ -64,6 +64,7 @@ from .prompt_based_journey_mapper import (
     get_prompt_based_journey_mapper,
 )
 from .ai_gate_mediator import AIGateMediator, get_ai_gate_mediator
+from .agent_adapter import AIOnboardAgentAdapter
 from .decision_enforcer import (
     DecisionEnforcer,
     DecisionPoint,
@@ -134,4 +135,5 @@ __all__ = [
     "register_common_decisions",
     "require_decision",
     "COMMON_DECISIONS",
+    "AIOnboardAgentAdapter",
 ]

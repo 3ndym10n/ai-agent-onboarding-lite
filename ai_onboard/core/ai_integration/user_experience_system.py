@@ -277,6 +277,64 @@ class UserExperienceSystem:
                 )
             )
 
+        suggestion_map = {s.command: s for s in suggestions}
+        shared_usage = self._collect_shared_command_usage()
+
+        for command, usage in shared_usage.items():
+            unique_users: Set[str] = usage["users"]
+            if len(unique_users) < 2:
+                continue
+
+            total_count: int = usage["total_count"]
+            confidence = min(
+                0.95,
+                0.5 + 0.1 * len(unique_users) + 0.03 * total_count,
+            )
+
+            if confidence < self.config["suggestion_confidence_threshold"]:
+                continue
+
+            reason = (
+                f"{len(unique_users)} teammates rely on '{command}' regularly"
+                if user_id in unique_users
+                else f"{len(unique_users)} teammates recently adopted '{command}'"
+            )
+            category = self._infer_command_category(command)
+            next_steps = [
+                "Coordinate with your team to run this command when optimizing workflows."
+            ]
+
+            if command in suggestion_map:
+                existing = suggestion_map[command]
+                if confidence > existing.confidence:
+                    existing.confidence = confidence
+                if "team" not in existing.reason.lower():
+                    existing.reason = (
+                        f"{existing.reason} (reinforced by team adoption)"
+                    ).strip()
+                if not existing.next_steps:
+                    existing.next_steps = next_steps
+            else:
+                suggestion = SmartSuggestion(
+                    command=command,
+                    reason=reason,
+                    confidence=confidence,
+                    category=category,
+                    next_steps=next_steps,
+                )
+                suggestions.append(suggestion)
+                suggestion_map[command] = suggestion
+
+        user_command_sets = self._collect_user_command_sets()
+        self._apply_knowledge_sharing_suggestions(
+            user_id, user_command_sets, suggestion_map, suggestions
+        )
+        self._apply_role_based_suggestions(
+            user_id, user_command_sets, suggestion_map, suggestions
+        )
+
+        suggestions.sort(key=lambda s: (-s.confidence, s.command))
+
         # Filter by confidence threshold and limit
         suggestions = [
             s
@@ -284,6 +342,275 @@ class UserExperienceSystem:
             if s.confidence >= self.config["suggestion_confidence_threshold"]
         ]
         return suggestions[: self.config["max_suggestions"]]
+
+    def _apply_role_based_suggestions(
+        self,
+        user_id: str,
+        user_command_sets: Dict[str, Set[str]],
+        suggestion_map: Dict[str, SmartSuggestion],
+        suggestions: List[SmartSuggestion],
+    ) -> None:
+        """Add heuristic suggestions based on a user's recent workflow focus."""
+        user_commands = user_command_sets.get(user_id, set())
+        if not user_commands:
+            return
+
+        combined = " ".join(user_commands).lower()
+
+        role_patterns = [
+            {
+                "keywords": {"requirement", "user_story", "planning"},
+                "command": "planning_alignment_review",
+                "category": CommandCategory.PROJECT.value,
+                "reason": "Share planning outcomes with the team to maintain alignment.",
+                "next_steps": [
+                    "Schedule a planning alignment review with stakeholders.",
+                    "Document key requirements in the shared knowledge base.",
+                ],
+            },
+            {
+                "keywords": {"architectural", "technical_spec", "design"},
+                "command": "architecture_review_session",
+                "category": CommandCategory.ADVANCED.value,
+                "reason": "Coordinate an architecture review to validate design decisions.",
+                "next_steps": [
+                    "Prepare diagrams for the architecture review session.",
+                    "Invite cross-functional leads to contribute feedback.",
+                ],
+            },
+            {
+                "keywords": {"api", "database", "backend"},
+                "command": "backend_resilience_check",
+                "category": CommandCategory.DEVELOPMENT.value,
+                "reason": "Run a backend resilience review to protect critical services.",
+                "next_steps": [
+                    "Evaluate API error handling paths together.",
+                    "Review database migration plans before deployment.",
+                ],
+            },
+            {
+                "keywords": {"ui", "frontend", "integration"},
+                "command": "frontend_accessibility_audit",
+                "category": CommandCategory.DEVELOPMENT.value,
+                "reason": "Lead a UI accessibility audit to polish the user experience.",
+                "next_steps": [
+                    "Review recent UI components with accessibility tools.",
+                    "Coordinate with design to close any accessibility gaps.",
+                ],
+            },
+            {
+                "keywords": {"test", "quality", "validation"},
+                "command": "quality_regression_suite",
+                "category": CommandCategory.QUALITY.value,
+                "reason": "Execute a regression suite to validate collaborative changes.",
+                "next_steps": [
+                    "Prioritize high-risk test cases for the regression run.",
+                    "Share findings with the broader team to accelerate fixes.",
+                ],
+            },
+        ]
+
+        for pattern in role_patterns:
+            if not any(keyword in combined for keyword in pattern["keywords"]):
+                continue
+
+            command = pattern["command"]
+            if command in suggestion_map:
+                continue
+
+            suggestion = SmartSuggestion(
+                command=command,
+                reason=pattern["reason"],
+                confidence=0.82,
+                category=pattern["category"],
+                next_steps=pattern["next_steps"],
+            )
+            suggestions.append(suggestion)
+            suggestion_map[command] = suggestion
+
+        suggestions.sort(key=lambda s: (-s.confidence, s.command))
+
+        # Filter by confidence threshold and limit
+        suggestions = [
+            s
+            for s in suggestions
+            if s.confidence >= self.config["suggestion_confidence_threshold"]
+        ]
+        return suggestions[: self.config["max_suggestions"]]
+
+    def _collect_shared_command_usage(self) -> Dict[str, Dict[str, Any]]:
+        """Aggregate successful command usage across users."""
+        from .user_preference_learning import InteractionType
+
+        command_usage: Dict[str, Dict[str, Any]] = {}
+
+        for profile_user_id, profile in self.preference_system.user_profiles.items():
+            if not getattr(profile, "interaction_history", None):
+                continue
+
+            recent_interactions = list(profile.interaction_history)[-50:]
+            command_counts: Dict[str, int] = {}
+
+            for interaction in recent_interactions:
+                if (
+                    not hasattr(interaction, "interaction_type")
+                    or interaction.interaction_type != InteractionType.COMMAND_EXECUTION
+                ):
+                    continue
+
+                context = getattr(interaction, "context", {})
+                if not isinstance(context, dict):
+                    continue
+
+                command = context.get("command")
+                if not command:
+                    continue
+
+                if context.get("success") is False:
+                    continue
+
+                command_counts[command] = command_counts.get(command, 0) + 1
+
+            for command, count in command_counts.items():
+                entry = command_usage.setdefault(
+                    command,
+                    {"users": set(), "total_count": 0},
+                )
+                entry["users"].add(profile_user_id)
+                entry["total_count"] += count
+
+        return command_usage
+
+    def _collect_user_command_sets(self) -> Dict[str, Set[str]]:
+        """Collect sets of successful commands executed by each user."""
+        from .user_preference_learning import InteractionType
+
+        user_commands: Dict[str, Set[str]] = {}
+
+        for profile_user_id, profile in self.preference_system.user_profiles.items():
+            if not getattr(profile, "interaction_history", None):
+                continue
+
+            recent_interactions = list(profile.interaction_history)[-50:]
+            commands: Set[str] = set()
+
+            for interaction in recent_interactions:
+                if (
+                    not hasattr(interaction, "interaction_type")
+                    or interaction.interaction_type != InteractionType.COMMAND_EXECUTION
+                ):
+                    continue
+
+                context = getattr(interaction, "context", {})
+                if not isinstance(context, dict):
+                    continue
+
+                if context.get("success") is False:
+                    continue
+
+                command = context.get("command")
+                if command:
+                    commands.add(command)
+
+            if commands:
+                user_commands[profile_user_id] = commands
+
+        return user_commands
+
+    def _infer_command_category(self, command: str) -> str:
+        """Infer a suggestion category for commands outside the registry."""
+        cmd_info = self.command_registry.get(command)
+        if cmd_info:
+            category_value = getattr(cmd_info.category, "value", cmd_info.category)
+            if isinstance(category_value, str):
+                return category_value
+
+        lowered = command.lower()
+        if "optimize" in lowered or "performance" in lowered:
+            return CommandCategory.OPTIMIZATION.value
+        if "validate" in lowered or "quality" in lowered:
+            return CommandCategory.QUALITY.value
+        if "plan" in lowered or "charter" in lowered:
+            return CommandCategory.PROJECT.value
+
+        return CommandCategory.LEARNING.value
+
+    def _apply_knowledge_sharing_suggestions(
+        self,
+        user_id: str,
+        user_command_sets: Dict[str, Set[str]],
+        suggestion_map: Dict[str, SmartSuggestion],
+        suggestions: List[SmartSuggestion],
+    ) -> None:
+        """Promote advanced commands learned by mentors to similar teammates."""
+        target_commands = user_command_sets.get(user_id, set())
+        if not target_commands:
+            return
+
+        mentor_scores: Dict[str, Dict[str, int]] = {}
+
+        for mentor_id, mentor_commands in user_command_sets.items():
+            if mentor_id == user_id:
+                continue
+
+            shared = target_commands.intersection(mentor_commands)
+            if len(shared) < 2:
+                continue
+
+            missing_commands = mentor_commands - target_commands
+            if not missing_commands:
+                continue
+
+            for command in missing_commands:
+                entry = mentor_scores.setdefault(
+                    command,
+                    {"mentor_count": 0, "shared_total": 0},
+                )
+                entry["mentor_count"] += 1
+                entry["shared_total"] += len(shared)
+
+        for command, score in mentor_scores.items():
+            mentor_count = score["mentor_count"]
+            shared_total = score["shared_total"]
+
+            confidence = min(
+                0.95,
+                0.62 + 0.12 * mentor_count + 0.06 * shared_total,
+            )
+
+            if confidence < self.config["suggestion_confidence_threshold"]:
+                continue
+
+            teammate_label = "teammates" if mentor_count > 1 else "teammate"
+            verb = "recommend" if mentor_count > 1 else "recommends"
+            reason = (
+                f"{mentor_count} {teammate_label} {verb} '{command}' based on shared workflows"
+            )
+            category = self._infer_command_category(command)
+            next_steps = [
+                "Follow up with your mentor to practice this command together."
+            ]
+
+            if command in suggestion_map:
+                existing = suggestion_map[command]
+                if confidence > existing.confidence:
+                    existing.confidence = confidence
+                if "workflow" not in existing.reason.lower():
+                    existing.reason = (
+                        f"{existing.reason} (shared workflow recommendation)"
+                    ).strip()
+                if not existing.next_steps:
+                    existing.next_steps = next_steps
+            else:
+                suggestion = SmartSuggestion(
+                    command=command,
+                    reason=reason,
+                    confidence=confidence,
+                    category=category,
+                    next_steps=next_steps,
+                )
+                suggestions.append(suggestion)
+                suggestion_map[command] = suggestion
 
     def get_adaptive_help(self, command: str, user_id: str) -> Dict[str, Any]:
         """Get adaptive help content based on user expertise."""

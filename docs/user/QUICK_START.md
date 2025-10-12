@@ -30,6 +30,13 @@ ai_onboard wbs create
 ai_onboard dashboard
 ```
 
+### Step 5: Run Quick Quality Checks
+```bash
+python scripts/run_checks.py
+```
+Runs unit tests, type checks, and dependency scans using whatever tooling is
+available in your environment (skips steps when tools are missing).
+
 ## 🎯 What You Get
 
 **Real-time oversight** of your AI agents:
@@ -146,5 +153,8 @@ ai_onboard gates reject "gate_id"  # Redirect to correct work
 4. Use emergency controls if the agent goes off-track
 
 **That's all you need!** AI Onboard handles the complexity while you maintain control and visibility. 🚀
+
+
+
 
 
