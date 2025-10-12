@@ -72,6 +72,7 @@ Is this an existing project with code?
 ### How to Detect "Existing Project"
 
 Check for:
+
 - More than 10 source files (.py, .js, .ts, etc.)
 - Existing package files (requirements.txt, package.json, pyproject.toml)
 - Directory structure (src/, lib/, tests/)
@@ -89,6 +90,7 @@ python -m ai_onboard plan --analyze-codebase
 ### Intelligent Planning Benefits
 
 When using `--analyze-codebase`, the system:
+
 - ✅ Detects languages and frameworks
 - ✅ Analyzes test coverage gaps
 - ✅ Identifies architectural complexity
@@ -172,6 +174,7 @@ python -m ai_onboard validate --report alignment_report.json
 ## 🔄 Typical Workflow
 
 ### New Project
+
 ```
 1. python -m ai_onboard interrogate start    # Intelligent charter
 2. python -m ai_onboard plan                  # Generate initial plan
@@ -179,6 +182,7 @@ python -m ai_onboard validate --report alignment_report.json
 ```
 
 ### Existing Project
+
 ```
 1. python -m ai_onboard charter --interactive # Update/create charter
 2. python -m ai_onboard plan --analyze-codebase # Intelligent planning
@@ -186,6 +190,7 @@ python -m ai_onboard validate --report alignment_report.json
 ```
 
 ### Major Change
+
 ```
 1. python -m ai_onboard align                 # Checkpoint before change
 2. [Make changes]
@@ -210,6 +215,7 @@ python -m ai_onboard validate --report alignment_report.json
 ### Detect Opportunities
 
 When you see:
+
 - Low test coverage → Suggest test infrastructure in plan
 - Missing charter → Suggest vision interrogation
 - Outdated plan → Suggest re-planning with codebase analysis
@@ -221,13 +227,13 @@ When you see:
 
 1. **Using simple plan for existing projects**
    - Always check if codebase exists first
-   
+
 2. **Skipping vision interrogation for new production projects**
    - Simple charter is for prototypes, not production
-   
+
 3. **Not explaining why you chose a specific command**
    - Users should understand your reasoning
-   
+
 4. **Forgetting to validate after major changes**
    - Always suggest validation after significant work
 
@@ -238,6 +244,11 @@ When you see:
 - See `planning_workflow.md` for detailed planning guidance
 - See `vision_interrogation.md` for interrogation best practices
 - See `gate_system.md` for handling system gates
+
+
+
+
+
 
 
 

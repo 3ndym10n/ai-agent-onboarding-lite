@@ -9,13 +9,12 @@ This module provides automatic detection of completed work through:
 """
 
 import json
-import os
 import re
 import subprocess
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List
 
 from ..base.utils import now_iso
 from ..orchestration.tool_usage_tracker import track_tool_usage

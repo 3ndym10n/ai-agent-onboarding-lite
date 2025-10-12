@@ -441,12 +441,10 @@ class AIGateMediator:
 
         return questions
 
-
-
     def _generate_gate_description(
         self, operation: str, context: Dict[str, Any]
     ) -> str:
-        '''Generate human-friendly description of the gate.'''
+        """Generate human-friendly description of the gate."""
         robot = "\U0001F916"
         document = "\U0001F4C4"
         tools = "\U0001F6E0"
@@ -488,6 +486,7 @@ class AIGateMediator:
             parts.append(f"{folder} **Phase**: {context['phase']}")
 
         return "\n".join(parts)
+
     def _calculate_optimal_timeout(
         self, operation: str, context: Dict[str, Any]
     ) -> int:

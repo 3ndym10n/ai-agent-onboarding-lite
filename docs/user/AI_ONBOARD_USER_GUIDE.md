@@ -72,19 +72,23 @@ That's it! The system now monitors your agents and provides oversight.
 ### Dashboard Sections Explained
 
 **🔄 Current Activity**
+
 - Shows what your AI agent is currently working on
 - Displays progress and vision alignment
 
 **🚫 Blocked Actions**
+
 - Lists operations the system prevented
 - Helps you understand what the agent tried to do
 
 **📊 Progress Tracking**
+
 - Real-time progress based on your WBS
 - Current phase and next tasks
 - ETA calculations
 
 **🚨 Emergency Controls**
+
 - **PAUSE AGENT**: Temporarily stop agent for review
 - **STOP AGENT**: Completely halt agent operations
 - **EMERGENCY BLOCK**: Block specific dangerous operations
@@ -128,6 +132,7 @@ Keeps agents aligned with your project vision:
 ## 🔧 Common Commands
 
 ### Project Management
+
 ```bash
 # Set project vision
 ai_onboard charter create "Build amazing product"
@@ -143,6 +148,7 @@ ai_onboard wbs update "1.1.1" --status completed
 ```
 
 ### Agent Control
+
 ```bash
 # Check current status
 ai_onboard dashboard
@@ -158,6 +164,7 @@ ai_onboard emergency block "agent_name" "dangerous_operation" "Too risky"
 ```
 
 ### System Management
+
 ```bash
 # Check system health
 ai_onboard limits status
@@ -176,12 +183,14 @@ ai_onboard blocks approve "block_id"
 **Scenario**: Your AI agent starts creating hundreds of files and dependencies.
 
 **What happens**:
+
 1. **Hard Limits** block excessive file creation
 2. **Chaos Detection** identifies rapid file creation pattern
 3. **Emergency Controls** pause the agent automatically
 4. **Dashboard** shows what happened and why
 
 **Your response**:
+
 ```bash
 # Review what happened
 ai_onboard dashboard
@@ -198,11 +207,13 @@ ai_onboard emergency resume "agent_name"  # Or keep paused
 **Scenario**: Agent starts implementing features not in your project scope.
 
 **What happens**:
+
 1. **Vision Drift Detection** identifies off-track work
 2. **Gate System** requires approval for major changes
 3. **Dashboard** shows alignment percentage
 
 **Your response**:
+
 ```bash
 # Check vision alignment
 ai_onboard vision status
@@ -219,11 +230,13 @@ ai_onboard gates approve "gate_id"  # or reject
 **Scenario**: Agent starts deleting important files or making breaking changes.
 
 **What happens**:
+
 1. **Emergency Controls** detect dangerous patterns
 2. **System** automatically pauses agent
 3. **Dashboard** shows emergency status
 
 **Your response**:
+
 ```bash
 # Immediate response
 ai_onboard dashboard  # See what's happening
@@ -241,6 +254,7 @@ ai_onboard emergency resume "agent_name"
 ## 🎛️ Configuration
 
 ### Project Setup
+
 ```bash
 # Initialize project
 ai_onboard init
@@ -253,6 +267,7 @@ ai_onboard limits config --max-files-per-hour 50
 ```
 
 ### Agent Integration
+
 ```bash
 # Add to your .cursorrules
 # MANDATORY OVERSIGHT CHECKS (HARD LIMITS)
@@ -264,16 +279,19 @@ ai_onboard limits config --max-files-per-hour 50
 ## 🚨 When Things Go Wrong
 
 ### Dashboard Shows Problems
+
 1. **Check System Health**: `ai_onboard limits status`
 2. **Review Recent Activity**: `ai_onboard dashboard`
 3. **Check for Chaos Events**: `ai_onboard chaos status`
 
 ### Agent Won't Respond
+
 1. **Check Emergency Status**: `ai_onboard emergency status`
 2. **Resume if Paused**: `ai_onboard emergency resume "agent_name"`
 3. **Check System Integration**: `ai_onboard integrator status`
 
 ### Performance Issues
+
 1. **Monitor Resource Usage**: `ai_onboard limits status`
 2. **Check Background Tasks**: `ai_onboard dashboard`
 3. **Review Operation History**: Look for patterns
@@ -281,18 +299,21 @@ ai_onboard limits config --max-files-per-hour 50
 ## 📈 Best Practices
 
 ### For Daily Use
+
 1. **Check dashboard** at least once per development session
 2. **Review blocked actions** to understand agent behavior
 3. **Monitor progress** against your WBS
 4. **Address chaos alerts** promptly
 
 ### For Project Management
+
 1. **Keep WBS updated** with completed work
 2. **Set realistic limits** based on your project scale
 3. **Review vision alignment** regularly
 4. **Use emergency controls** proactively, not reactively
 
 ### For Agent Integration
+
 1. **Follow the mandatory checks** in `.cursorrules`
 2. **Provide clear context** for operations
 3. **Respond to gates** promptly
@@ -301,11 +322,13 @@ ai_onboard limits config --max-files-per-hour 50
 ## 🆘 Getting Help
 
 ### Common Issues
+
 - **Dashboard not updating**: Check system integration status
 - **Operations always blocked**: Review your limits configuration
 - **Performance slow**: Check resource monitoring
 
 ### Support Commands
+
 ```bash
 # System status
 ai_onboard status
@@ -330,5 +353,8 @@ When AI Onboard is working well, you should see:
 ---
 
 **AI Onboard transforms chaotic AI development into systematic, controlled progress.** Use the dashboard, respond to alerts, and maintain oversight - that's all you need for successful AI-driven development! 🚀
+
+
+
 
 

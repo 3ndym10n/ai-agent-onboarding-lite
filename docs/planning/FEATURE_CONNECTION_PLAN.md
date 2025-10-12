@@ -1,11 +1,13 @@
 # Feature Connection Plan: Vision Interrogation → Charter → Planning → WBS
 
 ## 🎯 Goal
+
 Connect the existing vision interrogation and intelligent planning features to the main workflow, making them actually work together.
 
 ## 📊 Current State (Main Branch)
 
 **Committed & Stable:**
+
 - ✅ All linting errors fixed
 - ✅ Clean working tree  
 - ✅ Production readiness documentation
@@ -13,6 +15,7 @@ Connect the existing vision interrogation and intelligent planning features to t
 - ✅ Commit: `f85e4e4`
 
 **What Exists But Isn't Connected:**
+
 1. **Vision Interrogation System** (`ai_onboard/core/vision/enhanced_vision_interrogator.py`)
    - Adaptive questioning
    - Ambiguity detection
@@ -31,15 +34,18 @@ Connect the existing vision interrogation and intelligent planning features to t
 ### **Phase 1: Connect Vision Interrogation to Charter** (2-3 days)
 
 #### Task 1.1: Update Charter Command
+
 **File**: `ai_onboard/cli/commands_core.py`
 
 **Current**:
+
 ```python
 charter.ensure(root, interactive=args.interactive)
 # Creates simple template
 ```
 
 **Target**:
+
 ```python
 if args.interrogate:
     # Use enhanced vision interrogation
@@ -55,17 +61,20 @@ else:
 ```
 
 **Changes Needed**:
+
 - Add `--interrogate` flag to charter command
 - Create interrogation flow handler
 - Convert interrogation responses to charter format
 - Add progress tracking
 
 #### Task 1.2: Create Interrogation to Charter Converter
+
 **New File**: `ai_onboard/core/vision/interrogation_to_charter.py`
 
 **Purpose**: Convert interrogation responses into charter.json format
 
 **Functions**:
+
 ```python
 def convert_interrogation_to_charter(
     interrogation_data: Dict[str, Any]
@@ -79,9 +88,11 @@ def convert_interrogation_to_charter(
 ```
 
 #### Task 1.3: Test Interrogation Flow
+
 **New File**: `tests/integration/test_vision_interrogation_flow.py`
 
 **Tests**:
+
 - Start interrogation creates proper state
 - Submit responses updates interrogation
 - Complete interrogation generates valid charter
@@ -90,11 +101,13 @@ def convert_interrogation_to_charter(
 ### **Phase 2: Enhance Planning with Codebase Analysis** (2-3 days)
 
 #### Task 2.1: Add Codebase Scanner
+
 **New File**: `ai_onboard/core/vision/codebase_analyzer.py`
 
 **Purpose**: Scan existing project to inform WBS generation
 
 **Functions**:
+
 ```python
 def analyze_codebase_structure(root: Path) -> Dict[str, Any]:
     """Analyze existing codebase to inform planning."""
@@ -108,11 +121,13 @@ def analyze_codebase_structure(root: Path) -> Dict[str, Any]:
 ```
 
 #### Task 2.2: Update Planning to Use Analysis
+
 **File**: `ai_onboard/core/vision/planning.py`
 
 **Current**: Keyword-based WBS generation
 
 **Target**: Hybrid approach
+
 ```python
 def build(root: Path, analyze_codebase: bool = False) -> dict:
     ch = utils.read_json(root / ".ai_onboard" / "charter.json", default=None)
@@ -133,9 +148,11 @@ def build(root: Path, analyze_codebase: bool = False) -> dict:
 ```
 
 #### Task 2.3: Add `--analyze-codebase` Flag
+
 **File**: `ai_onboard/cli/commands_core.py`
 
 **Changes**:
+
 ```python
 # Plan command
 s_plan = subparsers.add_parser("plan", help="Build plan from charter")
@@ -146,21 +163,26 @@ s_plan.add_argument("--analyze-codebase", action="store_true",
 ### **Phase 3: Integration & Testing** (1-2 days)
 
 #### Task 3.1: End-to-End Integration Test
+
 **New File**: `tests/integration/test_vision_to_plan_flow.py`
 
 **Tests**:
+
 - Complete flow: interrogate → charter → plan
 - Charter with interrogation produces better plan
 - Codebase analysis enhances WBS
 - All intermediate files are valid
 
 #### Task 3.2: Update Documentation
+
 **Files to Update**:
+
 - `docs/user/getting-started.md` - Add interrogation option
 - `docs/user/commands/README.md` - Document new flags
 - `README.md` - Update quick start with options
 
 **New Content**:
+
 ```markdown
 ## Quick Start Options
 
@@ -171,12 +193,14 @@ python -m ai_onboard plan
 ```
 
 ### Intelligent Path (15 minutes)
+
 ```bash
 python -m ai_onboard charter --interrogate
 python -m ai_onboard plan --analyze-codebase
 ```
 
 #### Task 3.3: Regression Testing
+
 - Ensure simple flow still works
 - Verify no breaking changes to existing behavior
 - Test both paths independently
@@ -184,6 +208,7 @@ python -m ai_onboard plan --analyze-codebase
 ## 📋 Task Breakdown
 
 ### Week 1: Vision Interrogation Integration
+
 - [ ] Add `--interrogate` flag to charter command
 - [ ] Create `interrogation_to_charter.py` converter
 - [ ] Build interactive interrogation flow
@@ -191,6 +216,7 @@ python -m ai_onboard plan --analyze-codebase
 - [ ] Update charter command handler
 
 ### Week 2: Intelligent Planning Integration  
+
 - [ ] Create `codebase_analyzer.py` scanner
 - [ ] Add `--analyze-codebase` flag to plan command
 - [ ] Enhance WBS generation with codebase data
@@ -198,6 +224,7 @@ python -m ai_onboard plan --analyze-codebase
 - [ ] Test planning with/without analysis
 
 ### Week 3: Testing & Documentation
+
 - [ ] Write end-to-end integration tests
 - [ ] Test both fast and intelligent paths
 - [ ] Update all user documentation
@@ -207,6 +234,7 @@ python -m ai_onboard plan --analyze-codebase
 ## 🎯 Success Criteria
 
 ### Feature Complete
+
 - ✅ `charter --interrogate` runs full vision interrogation
 - ✅ Interrogation responses convert to valid charter
 - ✅ `plan --analyze-codebase` scans project structure
@@ -214,12 +242,14 @@ python -m ai_onboard plan --analyze-codebase
 - ✅ All tests pass (unit + integration)
 
 ### Backward Compatible
+
 - ✅ Simple `charter` command still works
 - ✅ Simple `plan` command still works
 - ✅ No breaking changes to existing workflows
 - ✅ Existing charter files still valid
 
 ### Well Documented
+
 - ✅ Clear explanation of both paths
 - ✅ When to use simple vs intelligent
 - ✅ Examples of each workflow
@@ -228,6 +258,7 @@ python -m ai_onboard plan --analyze-codebase
 ## 🚦 Risk Mitigation
 
 ### Technical Risks
+
 - **Risk**: Breaking existing workflows
   - **Mitigation**: Feature flags, backward compatibility tests
   
@@ -238,6 +269,7 @@ python -m ai_onboard plan --analyze-codebase
   - **Mitigation**: Make it optional, cache results
 
 ### User Experience Risks
+
 - **Risk**: Confusion about which path to use
   - **Mitigation**: Clear documentation, smart defaults
 
@@ -247,21 +279,25 @@ python -m ai_onboard plan --analyze-codebase
 ## 📈 Rollout Strategy
 
 ### Stage 1: Feature Branch Development
+
 1. Implement features on `feature/connect-vision-planning-wbs`
 2. Test thoroughly
 3. Get feedback on implementation
 
 ### Stage 2: Internal Testing
+
 1. Test on real projects
 2. Gather metrics on usage
 3. Refine based on findings
 
 ### Stage 3: Merge to Main
+
 1. All tests passing
 2. Documentation complete
 3. No regressions in simple path
 
 ### Stage 4: Production Release
+
 1. Tag release version
 2. Update README with new capabilities
 3. Create migration guide
@@ -269,11 +305,13 @@ python -m ai_onboard plan --analyze-codebase
 ## 💡 Quick Wins
 
 ### Can Ship Immediately (Low-Hanging Fruit)
+
 1. **Add `--interrogate` flag** - Even if flow is basic
 2. **Add `--analyze-codebase` flag** - Even with simple scanning
 3. **Document both paths** - Set clear expectations
 
 ### Can Add Later (Nice-to-Have)
+
 1. Web interface for interrogation
 2. Advanced codebase analysis
 3. AI-powered charter suggestions
@@ -292,6 +330,11 @@ python -m ai_onboard plan --analyze-codebase
 **Base Commit**: `f85e4e4` (stable main branch)
 **Target Completion**: 2-3 weeks
 **MVP**: Simple interrogation flow + basic codebase scanning
+
+
+
+
+
 
 
 

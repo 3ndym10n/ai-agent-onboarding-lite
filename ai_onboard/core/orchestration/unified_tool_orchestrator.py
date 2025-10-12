@@ -41,6 +41,7 @@ def _log_fallback(component: str, fallback: str) -> None:
             "UnifiedToolOrchestrator using fallback for %s (%s)", component, fallback
         )
 
+
 # Core tool imports - using try/except for optional dependencies
 PatternRecognitionSystem: Optional[Any] = None
 try:

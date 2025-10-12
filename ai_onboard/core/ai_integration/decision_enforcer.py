@@ -200,7 +200,9 @@ class DecisionEnforcer:
                 user_id = "vibe_coder"
 
             # Get all user preferences
-            preferences = self.preference_system.get_user_preferences(user_id=user_id, category=None)
+            preferences = self.preference_system.get_user_preferences(
+                user_id=user_id, category=None
+            )
 
             # Look for a preference matching this decision
             for pref_key, pref in preferences.items():

@@ -17,12 +17,14 @@ Vision interrogation is an **intelligent guided process** that helps users defin
 **Command**: `python -m ai_onboard charter`
 
 **When to use:**
+
 - Quick prototypes
 - Internal tools
 - User knows exactly what they want
 - Time-constrained situations
 
 **What you get:**
+
 - Basic charter.json with minimal fields
 - User fills in blanks manually
 - Fast but potentially incomplete
@@ -34,6 +36,7 @@ Vision interrogation is an **intelligent guided process** that helps users defin
 **Command**: `python -m ai_onboard interrogate start`
 
 **When to use:**
+
 - Production projects
 - Projects with multiple stakeholders
 - Unclear or evolving vision
@@ -41,6 +44,7 @@ Vision interrogation is an **intelligent guided process** that helps users defin
 - **RECOMMENDED for serious projects**
 
 **What you get:**
+
 - Rich, detailed charter.json
 - Structured through guided questions
 - Covers scope, boundaries, success metrics
@@ -52,13 +56,16 @@ Vision interrogation is an **intelligent guided process** that helps users defin
 ## 📋 The Interrogation Flow
 
 ### Phase 1: Core Vision & Problem
+
 Questions about:
+
 - Core problem being solved
 - Primary users/beneficiaries
 - Vision statement
 - Project name
 
 **Example:**
+
 ```
 Q: "What core problem are you trying to solve?"
 Q: "Who are the primary users or beneficiaries?"
@@ -66,7 +73,9 @@ Q: "What is your vision statement for this project?"
 ```
 
 ### Phase 2: Stakeholders & Goals
+
 Questions about:
+
 - Key stakeholders and their roles
 - Project objectives
 - Risk appetite
@@ -75,6 +84,7 @@ Questions about:
 - Methodology preferences
 
 **Example:**
+
 ```
 Q: "Who are the key stakeholders and their roles?"
 Q: "What are your main project objectives?"
@@ -82,7 +92,9 @@ Q: "What is your risk appetite? (low/medium/high)"
 ```
 
 ### Phase 3: Scope & Boundaries
+
 Questions about:
+
 - What's in scope
 - What's explicitly out of scope
 - Non-goals (what you won't do)
@@ -91,6 +103,7 @@ Questions about:
 - Compliance requirements
 
 **Example:**
+
 ```
 Q: "What is explicitly IN scope for this project?"
 Q: "What is explicitly OUT of scope?"
@@ -98,13 +111,16 @@ Q: "What are you NOT trying to achieve?"
 ```
 
 ### Phase 4: Success Criteria
+
 Questions about:
+
 - How success will be measured
 - Specific metrics and targets
 - Minimum viable outcomes
 - Definition of done
 
 **Example:**
+
 ```
 Q: "How will you measure success?"
 Q: "What are the minimum viable outcomes?"
@@ -128,6 +144,7 @@ if user_wants_charter():
 ### Step 2: Suggest Appropriately
 
 **Good suggestion:**
+
 ```
 "I can create a charter in two ways:
 
@@ -150,11 +167,13 @@ Which would you prefer?"
 **Not Your Job**: Don't answer the questions yourself!
 
 The interrogation system will:
+
 1. Ask questions to the user
 2. Collect responses
 3. Generate charter from responses
 
-**Your Job**: 
+**Your Job**:
+
 - Guide the user to start the process
 - Explain what interrogation does
 - Help if they get stuck
@@ -180,6 +199,7 @@ python -m ai_onboard interrogate check
 ```
 
 **Shows:**
+
 - Current interrogation state
 - Vision quality score
 - Whether ready to generate charter
@@ -191,6 +211,7 @@ python -m ai_onboard interrogate start
 ```
 
 **Begins:**
+
 - Interactive question flow
 - Phase-by-phase vision definition
 - Automatic charter generation on completion
@@ -202,6 +223,7 @@ python -m ai_onboard interrogate questions
 ```
 
 **Returns:**
+
 - All questions for current phase
 - Question types (text, choice, boolean)
 - Help text for each question
@@ -213,6 +235,7 @@ python -m ai_onboard interrogate summary
 ```
 
 **Shows:**
+
 - Collected responses so far
 - Vision quality assessment
 - Completeness metrics
@@ -222,12 +245,14 @@ python -m ai_onboard interrogate summary
 ## 🎯 Vision Quality Score
 
 The system calculates a quality score (0.0 - 1.0) based on:
+
 - **Completeness**: All required fields filled
 - **Clarity**: Specific, unambiguous responses
 - **Scope Definition**: Clear boundaries set
 - **Success Metrics**: Measurable outcomes defined
 
 **Interpretation:**
+
 - `0.9 - 1.0`: Excellent vision, ready for complex planning
 - `0.7 - 0.9`: Good vision, minor gaps
 - `0.5 - 0.7`: Adequate vision, could be more specific
@@ -420,6 +445,11 @@ User responses
 - See `core_commands.md` for charter command basics
 - See `planning_workflow.md` for using charter in planning
 - See `best_practices.md` for overall workflow guidance
+
+
+
+
+
 
 
 

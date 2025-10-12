@@ -18,7 +18,10 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 
 from ..base import utils
 from .agent_activity_monitor import AgentActivityMonitor
-from .user_preference_learning import PreferenceCategory, get_user_preference_learning_system
+from .user_preference_learning import (
+    PreferenceCategory,
+    get_user_preference_learning_system,
+)
 
 
 class LimitType(Enum):

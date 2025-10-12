@@ -18,6 +18,7 @@ python -m ai_onboard charter
 ```
 
 **Current Implementation:**
+
 1. **Charter Creation** (`charter.py`)
    - Creates `.ai_onboard/charter.json` with a minimal template
    - Sets project name to directory name
@@ -25,6 +26,7 @@ python -m ai_onboard charter
    - Template includes: vision, objectives, stakeholders, constraints
 
 **What the Charter Template Includes:**
+
 ```json
 {
   "version": 1,
@@ -81,11 +83,13 @@ python -m ai_onboard validate
 ```
 
 **Alignment** (`ai_onboard/core/vision/alignment.py`):
+
 - Checks if current work aligns with charter vision
 - Scores alignment based on objectives matching
 - Reports drift if work doesn't match goals
 
 **Validation** (`validation_runtime.py`):
+
 - Runs comprehensive health checks
 - Checks charter, plan, and project status
 - Requires vision to be "confirmed" first
@@ -118,17 +122,20 @@ python -m ai_onboard validate
 **Location**: `ai_onboard/core/vision/enhanced_vision_interrogator.py`
 
 **The Problem**:
+
 - **Designed** to be interactive and comprehensive
 - **Built** with adaptive questioning, ambiguity detection, quality scoring
 - **But**: NOT actually used by default `charter` command
 - **Gap**: Charter uses simple template, not the sophisticated interrogation
 
 **Why This Matters**:
+
 - Vision interrogation was meant to **force** clear project definition
 - Without it, charters can be vague or incomplete
 - This defeats the "halt AI agents until vision is clear" goal
 
 **Current Status**:
+
 ```python
 # What happens now:
 charter.ensure(root, interactive=args.interactive)
@@ -140,6 +147,7 @@ EnhancedVisionInterrogator.start_enhanced_interrogation()
 ```
 
 **Production Recommendation**:
+
 - Either: Make vision interrogation the default for new projects
 - Or: Remove the unused interrogation code to reduce complexity
 - **Don't**: Ship with the expectation that it "forces clear vision" when it doesn't
@@ -151,11 +159,13 @@ EnhancedVisionInterrogator.start_enhanced_interrogation()
 **Location**: `ai_onboard/core/vision/planning.py`
 
 **The Problem**:
+
 - WBS generation is **keyword-based**
 - Looks for words like "gate", "agent", "improvement" in charter
 - If charter is vague (which it often is), WBS is generic
 
 **Example**:
+
 ```python
 # If charter says "Build a web app":
 # → Generic C1, C2, C3 phases
@@ -167,12 +177,14 @@ EnhancedVisionInterrogator.start_enhanced_interrogation()
 ```
 
 **Why This is Fragile**:
+
 - **Depends entirely on charter quality**
 - With simple template charter → generic WBS
 - WBS doesn't adapt to actual project structure
 - No analysis of existing codebase
 
 **Production Recommendation**:
+
 - Combine charter data with codebase analysis
 - Make WBS more adaptive to project reality
 - Or: Keep it simple and market it as "template-based" not "intelligent"
@@ -182,6 +194,7 @@ EnhancedVisionInterrogator.start_enhanced_interrogation()
 #### **3. The Gap Between Design and Implementation**
 
 **Designed Flow** (in documentation):
+
 ```mermaid
 graph LR
     A[Drop In] --> B[Vision Interrogation]
@@ -191,6 +204,7 @@ graph LR
 ```
 
 **Actual Flow** (in code):
+
 ```mermaid
 graph LR
     A[Drop In] --> B[Simple Template Charter]
@@ -203,40 +217,48 @@ graph LR
 ## 🎯 Production Readiness Recommendations
 
 ### **Option 1: Simplify & Be Honest**
+
 **Status**: Production-ready with caveats
 
 **Changes Needed**:
+
 1. Document that charter is a **template**, not interrogation
 2. Explain WBS is **keyword-driven**, requires good charter input
 3. Remove or clearly mark unused vision interrogation code
 4. Set expectations: "Provides structure" not "Provides intelligence"
 
 **Pros**:
+
 - System works as-is
 - No major code changes
 - Clear user expectations
 
 **Cons**:
+
 - Doesn't deliver on "intelligent" promise
 - Less differentiation
 
 ---
 
 ### **Option 2: Connect the Dots**
+
 **Status**: 2-4 weeks to production-ready
 
 **Changes Needed**:
+
 1. Make `charter --interactive` use vision interrogation by default
 2. Connect interrogation results to planning system
 3. Add codebase analysis to WBS generation
 4. Test end-to-end flow extensively
 
 **Pros**:
+
 - Delivers on the vision
 - Actually "intelligent"
 - Strong differentiation
 
 **Cons**:
+
 - Requires significant integration work
 - More testing needed
 - Higher complexity
@@ -244,15 +266,18 @@ graph LR
 ---
 
 ### **Option 3: Hybrid Approach** (RECOMMENDED)
+
 **Status**: 1 week to production-ready
 
 **Changes Needed**:
+
 1. Keep simple charter as default (fast path)
 2. Add `--interrogate` flag for comprehensive flow
 3. Enhance WBS with basic codebase scanning
 4. Clear docs on when to use each approach
 
 **Implementation**:
+
 ```bash
 # Fast path (works now)
 python -m ai_onboard charter
@@ -264,6 +289,7 @@ python -m ai_onboard plan --analyze-codebase
 ```
 
 **Pros**:
+
 - Works for both use cases
 - Progressive enhancement
 - Clear value proposition
@@ -272,20 +298,23 @@ python -m ai_onboard plan --analyze-codebase
 
 ## 🚦 Current Production Status
 
-### **Ready for Production**:
+### **Ready for Production**
+
 - ✅ Basic charter/plan workflow
 - ✅ State management
 - ✅ Alignment checking
 - ✅ Policy system
 - ✅ Self-preservation rules
 
-### **Needs Work**:
+### **Needs Work**
+
 - ⚠️ Vision interrogation integration
 - ⚠️ WBS intelligence vs. templates
 - ⚠️ Documentation of actual vs. designed behavior
 - ⚠️ User expectations management
 
-### **Should Consider Removing**:
+### **Should Consider Removing**
+
 - 🤔 Unused vision interrogation code (if not integrating)
 - 🤔 Web interface for interrogation (incomplete)
 - 🤔 Complex adaptive questioning (if going simple)
@@ -323,6 +352,7 @@ The system has **well-designed components** that aren't fully connected. You hav
 ---
 
 **Questions to Answer**:
+
 1. What's the target user? (Developer vs. PM vs. AI Agent)
 2. What's the primary value prop? (Structure vs. Intelligence)
 3. How much setup time is acceptable? (5 min vs. 30 min)
@@ -330,18 +360,8 @@ The system has **well-designed components** that aren't fully connected. You hav
 
 
 
----
 
-## Production Readiness Additions (Current)
 
-- Automatic Alignment Guardrails
-  - Chat flow auto-checks vision alignment for every message (no CLI required)
-  - Blocks on hard guardrail hits; warns on review-tier results
 
-- Local Quality Checklist
-  - Run `python scripts/run_checks.py` to execute tests, mypy (if installed), and pip-audit (if installed)
-  - Keep Python 3.8+ compatibility when making changes
 
-- Threshold Calibration
-  - Vision alignment proceed threshold set to 0.60 by default
-  - Token-overlap bonus slightly increased to better recognize in-scope enhancements
+

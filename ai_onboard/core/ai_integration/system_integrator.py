@@ -18,7 +18,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from ..base import utils
 from ..onboarding import BootstrapGuard, OnboardingStage
 from .agent_activity_monitor import AgentActivityMonitor, get_agent_activity_monitor
 from .chaos_detection_system import ChaosDetectionSystem, get_chaos_detection_system
@@ -243,6 +242,8 @@ class SystemIntegrator:
                         decision_result.response.get(
                             "message", "Decision requires approval"
                         )
+                        if decision_result.response
+                        else "Decision requires approval"
                     )
                     oversight_context.corrective_actions.append(
                         "Wait for gate approval or provide guidance"
@@ -261,7 +262,7 @@ class SystemIntegrator:
                     event
                     for event in chaos_events
                     if event.agent_id == agent_id
-                    and (time.time() - event.timestamp) < 3600  # Last hour
+                    and (time.time() - event.detected_at) < 3600  # Last hour
                 ]
 
                 if len(recent_chaos) >= 3:  # Multiple chaos events
@@ -327,7 +328,7 @@ class SystemIntegrator:
         if current_time - self.last_health_check > self.health_check_interval:
             self._perform_health_check()
 
-        status = {
+        status: Dict[str, Any] = {
             "integrated_mode": self.integrated_mode,
             "health_monitoring_active": self.health_monitor_active,
             "last_health_check": self.last_health_check,
@@ -337,8 +338,9 @@ class SystemIntegrator:
         }
 
         # System health details
+        system_health_dict = status["system_health"]
         for system_name, health in self.system_health.items():
-            status["system_health"][system_name] = {
+            system_health_dict[system_name] = {
                 "active": health.is_active,
                 "health_score": health.health_score,
                 "issues": health.issues,
@@ -364,7 +366,8 @@ class SystemIntegrator:
                     ),
                 }
             except Exception as e:
-                status["recent_activity"]["error"] = str(e)
+                recent_activity_dict = status["recent_activity"]
+                recent_activity_dict["error"] = str(e)
 
         # Emergency status
         if self.emergency_control:

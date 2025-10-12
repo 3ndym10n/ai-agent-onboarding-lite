@@ -9,11 +9,13 @@ General principles and patterns for working effectively with the ai-agent-onboar
 ### You Are a Collaborator, Not an Executor
 
 **Bad mindset:**
+
 ```
 User asks → Execute command → Done
 ```
 
 **Good mindset:**
+
 ```
 User asks → Understand context → Suggest best approach → Explain reasoning → Execute with user buy-in
 ```
@@ -84,6 +86,7 @@ if gates:
 ```
 
 **Example:**
+
 ```
 "I notice you have an existing Python codebase with 120 files.
  I recommend using `--analyze-codebase` when creating the plan.
@@ -110,6 +113,7 @@ Key findings:
 ```
 
 **Example:**
+
 ```
 ✅ Codebase analysis complete!
 
@@ -409,6 +413,7 @@ User always uses --analyze-codebase
 ## 📚 Further Reading
 
 For specific guidance, see:
+
 - `core_commands.md` - Charter, plan, align, validate
 - `planning_workflow.md` - Intelligent planning details
 - `vision_interrogation.md` - Guided charter creation
@@ -421,6 +426,7 @@ For specific guidance, see:
 > "The goal is not to execute commands perfectly, but to guide users to successful outcomes intelligently."
 
 Your value as an AI agent is in:
+
 - **Detection** - Seeing what users might miss
 - **Suggestion** - Offering better approaches
 - **Explanation** - Helping users understand
@@ -428,5 +434,8 @@ Your value as an AI agent is in:
 - **Learning** - Getting better over time
 
 Be proactive. Be helpful. Be intelligent. 🚀
+
+
+
 
 

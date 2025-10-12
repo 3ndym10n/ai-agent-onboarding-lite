@@ -7,6 +7,7 @@ Detailed guidance for intelligent project planning with codebase analysis.
 ## 🎯 Goal
 
 Create project plans that bridge the gap between:
+
 - **Vision** (what user wants to build)
 - **Current State** (what actually exists in the codebase)
 - **Action Plan** (how to get from current state to vision)
@@ -18,23 +19,27 @@ Create project plans that bridge the gap between:
 ### Simple Planning (Charter-Only)
 
 **When to use:**
+
 - New projects with no existing code
 - Quick prototypes
 - Projects with < 10 files
 - User explicitly requests simple mode
 
 **Command:**
+
 ```bash
 python -m ai_onboard plan
 ```
 
 **What it does:**
+
 - Reads charter.json
 - Generates WBS based on objectives and constraints
 - Creates generic task structure
 - No code analysis
 
 **Output:**
+
 - Basic plan.json with:
   - Methodology
   - WBS
@@ -47,6 +52,7 @@ python -m ai_onboard plan
 ### Intelligent Planning (Charter + Codebase)
 
 **When to use:**
+
 - Existing projects with code
 - Projects with > 10 source files
 - When tech stack matters
@@ -54,11 +60,13 @@ python -m ai_onboard plan
 - **DEFAULT for any existing codebase**
 
 **Command:**
+
 ```bash
 python -m ai_onboard plan --analyze-codebase
 ```
 
 **What it does:**
+
 - Reads charter.json
 - **Scans the codebase** for:
   - Languages (Python, JavaScript, TypeScript, etc.)
@@ -71,6 +79,7 @@ python -m ai_onboard plan --analyze-codebase
 - **Creates intelligent tasks** matching tech stack
 
 **Output:**
+
 - Enhanced plan.json with:
   - All simple plan content
   - **codebase_analysis** section with detected characteristics
@@ -86,7 +95,9 @@ python -m ai_onboard plan --analyze-codebase
 ### What Gets Detected
 
 #### Languages
+
 Checks file extensions:
+
 - `.py` → Python
 - `.js`, `.jsx` → JavaScript
 - `.ts`, `.tsx` → TypeScript
@@ -96,19 +107,25 @@ Checks file extensions:
 - And 10+ more
 
 #### Frameworks
+
 Checks for:
+
 - `requirements.txt` → Flask, Django, FastAPI
 - `package.json` → React, Vue, Angular
 - Project structure patterns
 
 #### Test Coverage
+
 Counts test files vs total files:
+
 - Files matching: `test_*`, `*_test`, `*.test.*`, `*.spec.*`
 - Calculates percentage
 - Flags if < 30%
 
 #### Complexity Score (0.0 - 1.0)
+
 Based on:
+
 - Number of languages
 - Number of frameworks
 - Module count
@@ -116,7 +133,9 @@ Based on:
 - Higher = more complex
 
 #### Dependencies
+
 Reads from:
+
 - `requirements.txt` (Python)
 - `package.json` (Node)
 - Lists top 20 dependencies
@@ -128,11 +147,13 @@ Reads from:
 ### Example: Python Project with Low Tests
 
 **Detected:**
+
 - Language: Python
 - Test coverage: 3.9%
 - Modules: 50+
 
 **WBS Additions:**
+
 ```
 C2: Python application foundation
 C4: Multi-module architecture
@@ -142,10 +163,12 @@ C5: Testing infrastructure setup
 ### Example: React + Django Full-Stack
 
 **Detected:**
+
 - Languages: Python, JavaScript, TypeScript
 - Frameworks: Django, React
 
 **WBS Additions:**
+
 ```
 C2: Python application foundation
 C3: Django backend setup
@@ -156,9 +179,11 @@ C5: Full-stack integration
 ### Example: New Empty Project
 
 **Detected:**
+
 - No significant codebase
 
 **WBS:**
+
 ```
 C1: Core system foundation
 C2: Vision alignment system
@@ -406,6 +431,11 @@ User: ❌ Misses opportunity for test coverage insights
 - **Planning Module**: `ai_onboard/core/vision/planning.py`
 - **Core Commands**: See `core_commands.md`
 - **Vision System**: See `vision_interrogation.md`
+
+
+
+
+
 
 
 

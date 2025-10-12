@@ -10,7 +10,6 @@ Tests the full workflow of agent oversight, including:
 - Vision alignment tracking
 """
 
-import json
 import time
 from pathlib import Path
 from typing import Any, Dict
@@ -116,6 +115,7 @@ class TestSystemIntegrator:
     def test_process_paused_agent(self, integrator: SystemIntegrator):
         """Test that paused agents are blocked."""
         # Pause the agent
+        assert integrator.emergency_control is not None
         integrator.emergency_control.pause_agent(
             "test_agent", "Testing pause", "system"
         )
@@ -134,6 +134,7 @@ class TestSystemIntegrator:
     def test_process_stopped_agent(self, integrator: SystemIntegrator):
         """Test that stopped agents are blocked."""
         # Stop the agent
+        assert integrator.emergency_control is not None
         integrator.emergency_control.stop_agent("test_agent", "Testing stop", "system")
 
         # Try to process operation
@@ -150,6 +151,7 @@ class TestSystemIntegrator:
     def test_corrective_actions_provided(self, integrator: SystemIntegrator):
         """Test that corrective actions are provided when blocked."""
         # Pause the agent
+        assert integrator.emergency_control is not None
         integrator.emergency_control.pause_agent("test_agent", "Testing", "system")
 
         result = integrator.process_agent_operation(
@@ -170,6 +172,7 @@ class TestSystemIntegrator:
         )
 
         # Activity should be logged
+        assert integrator.activity_monitor is not None
         activity_summary = integrator.activity_monitor.get_activity_summary(hours=1)
         assert activity_summary["total_events"] >= 1
 
@@ -201,6 +204,7 @@ class TestIntegrationWorkflows:
         assert result.emergency_triggered is False
 
         # Step 3: Verify logging
+        assert integrator.activity_monitor is not None
         activity_summary = integrator.activity_monitor.get_activity_summary(hours=1)
         assert activity_summary["total_events"] >= 1
 
@@ -209,11 +213,13 @@ class TestIntegrationWorkflows:
         agent_id = "chaotic_agent"
 
         # Step 1: Pause agent due to chaos
+        assert integrator.emergency_control is not None
         integrator.emergency_control.pause_agent(
             agent_id, "Chaotic behavior detected", "system"
         )
 
         # Step 2: Verify agent is paused
+        assert integrator.emergency_control is not None
         assert integrator.emergency_control.is_agent_paused(agent_id)
 
         # Step 3: Try operation - should be blocked
@@ -225,9 +231,11 @@ class TestIntegrationWorkflows:
         assert result.emergency_triggered is True
 
         # Step 4: Resume agent
+        assert integrator.emergency_control is not None
         integrator.emergency_control.resume_agent(agent_id, "user")
 
         # Step 5: Verify agent is resumed
+        assert integrator.emergency_control is not None
         assert not integrator.emergency_control.is_agent_paused(agent_id)
 
         # Step 6: Try operation again - should be approved
@@ -318,6 +326,7 @@ class TestEmergencyIntegration:
         agent_id = "test_agent"
 
         # Pause agent
+        assert integrator.emergency_control is not None
         integrator.emergency_control.pause_agent(agent_id, "Testing", "system")
 
         # Check status
@@ -329,6 +338,7 @@ class TestEmergencyIntegration:
         agent_id = "test_agent"
 
         # Stop agent
+        assert integrator.emergency_control is not None
         integrator.emergency_control.stop_agent(agent_id, "Testing", "system")
 
         # Check status

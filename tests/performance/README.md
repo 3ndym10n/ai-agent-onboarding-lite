@@ -117,6 +117,7 @@ Add to your CI pipeline:
 ```
 
 **Good indicators:**
+
 - RPS > 10 for basic operations
 - Error rate < 5%
 - Response time < 2 seconds for complex operations
@@ -134,6 +135,7 @@ test_file_organization_analysis_performance
 ```
 
 **Performance thresholds:**
+
 - 🟢 **Improvement**: > 5% faster
 - 🟡 **Acceptable**: ±5% change
 - 🔴 **Regression**: > 5% slower
@@ -206,6 +208,9 @@ When adding new performance tests:
 - **Concurrent Users**: Support 50+ simultaneous users
 - **Memory Usage**: < 100MB increase during normal operations
 - **Error Rate**: < 1% under normal load
+
+
+
 
 
 

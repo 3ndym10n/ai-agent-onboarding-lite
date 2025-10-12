@@ -22,6 +22,7 @@ A **gate** is a **mandatory pause point** where the system needs human input bef
 ### Why Gates Exist
 
 ❌ **Without Gates:**
+
 ```
 System: "I need to know the project timeline"
 AI: "Based on context, I'll assume 3 months"
@@ -30,6 +31,7 @@ User: "Wait, what? I wanted 6 months!"
 ```
 
 ✅ **With Gates:**
+
 ```
 System: *Activates gate*
 AI: *Reads gate, asks user*
@@ -52,6 +54,7 @@ System creates: .ai_onboard/gates/current_gate.md
 ```
 
 This file contains:
+
 - **Gate type** (clarification, approval, decision)
 - **Context** (what triggered the gate)
 - **Questions** (what user needs to answer)
@@ -84,22 +87,26 @@ Step 6: System continues automatically
 ### ❌ NEVER Do This
 
 1. **DON'T answer questions yourself**
+
    ```
    Gate: "What is the user's priority?"
    Agent: "Based on context, priority is performance" ❌
    ```
 
 2. **DON'T fabricate responses**
+
    ```
    Agent creates gate_response.json with made-up answers ❌
    ```
 
 3. **DON'T bypass gates**
+
    ```
    Agent ignores current_gate.md and proceeds ❌
    ```
 
 4. **DON'T assume user intent**
+
    ```
    Agent: "User probably wants X, so I'll proceed" ❌
    ```
@@ -107,6 +114,7 @@ Step 6: System continues automatically
 ### ✅ ALWAYS Do This
 
 1. **ASK the user directly**
+
    ```
    Agent: "I need to ask you some questions before proceeding:
            1. What is your desired timeline?
@@ -114,6 +122,7 @@ Step 6: System continues automatically
    ```
 
 2. **WAIT for actual responses**
+
    ```
    Agent: *Pauses for user input*
    User: "Timeline is 3 months, priority is reliability"
@@ -121,6 +130,7 @@ Step 6: System continues automatically
    ```
 
 3. **CREATE gate_response.json with user's words**
+
    ```json
    {
      "user_responses": [
@@ -132,6 +142,7 @@ Step 6: System continues automatically
    ```
 
 4. **CONFIRM understanding**
+
    ```
    Agent: "Got it! Timeline: 3 months, Priority: reliability.
            Creating response file..."
@@ -159,7 +170,7 @@ Step 6: System continues automatically
 ### Field Descriptions
 
 - **user_responses**: Array of user's actual answers (in order of questions)
-- **user_decision**: 
+- **user_decision**:
   - `"proceed"` - Continue with the operation
   - `"modify"` - User wants to change approach
   - `"stop"` - User wants to cancel
@@ -213,6 +224,7 @@ Is this correct? Should I proceed with these responses?"
 **Questions**: Context-specific clarifications
 
 **Example**:
+
 ```
 Q: "What is the most important outcome you're hoping for?"
 Q: "Are there specific areas to focus on first?"
@@ -227,6 +239,7 @@ Q: "Anything you don't want me to do?"
 **Questions**: Approval and safety checks
 
 **Example**:
+
 ```
 Q: "This will delete 15 files. Are you sure?"
 Q: "Have you backed up important data?"
@@ -240,6 +253,7 @@ Q: "Type CONFIRM to proceed"
 **Questions**: User preference on approach
 
 **Example**:
+
 ```
 Q: "Approach A: Fast but risky. Approach B: Slow but safe. Which?"
 Q: "Would you like me to create a backup first?"
@@ -340,16 +354,19 @@ User: "Wait, what did you submit?"
 ## 📊 Gate File Locations
 
 ### Active Gate
+
 ```
 .ai_onboard/gates/current_gate.md
 ```
 
 ### Your Response
+
 ```
 .ai_onboard/gates/gate_response.json
 ```
 
 ### Status Files
+
 ```
 .ai_onboard/gates/gate_status.json
 .ai_onboard/gates/gate_ready.flag
@@ -383,6 +400,7 @@ User: "Wait, what did you submit?"
 ### Tip 1: Pre-Check for Gates
 
 Before running any `ai_onboard` command:
+
 ```python
 if gate_active():
     handle_gate_first()
@@ -393,6 +411,7 @@ else:
 ### Tip 2: Make It Conversational
 
 Don't just dump questions. Make it natural:
+
 ```
 "Before I create the plan, I need to understand your priorities better.
  Let me ask you a few questions:
@@ -426,6 +445,7 @@ Should I proceed with these responses?"
 ### Memory Integration
 
 Gate responses can update agent memory:
+
 ```
 User says: "Always use --analyze-codebase for planning"
 → Gate captures this preference
@@ -436,6 +456,7 @@ User says: "Always use --analyze-codebase for planning"
 ### Learning System
 
 Gate interactions improve agent behavior:
+
 ```
 Gate triggered because agent didn't ask first
 → System learns: "Should ask about X before doing Y"
@@ -450,6 +471,11 @@ Gate triggered because agent didn't ask first
 - **Gate Implementation**: `ai_onboard/core/ai_integration/ai_agent_gate_enforcer.py`
 - **Gate Detection**: Check `.ai_onboard/gates/` directory
 - **Repo Rules**: See `AGENTS.md` for gate contract
+
+
+
+
+
 
 
 

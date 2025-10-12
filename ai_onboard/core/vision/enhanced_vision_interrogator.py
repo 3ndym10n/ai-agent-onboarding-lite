@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from ..base import utils
-from .vision_clarity_scorer import score_vision_clarity, VisionClarityReport
+from .vision_clarity_scorer import score_vision_clarity
 
 
 class QuestionType(Enum):
@@ -312,12 +312,12 @@ class EnhancedVisionInterrogator:
                     "confidence": score.confidence,
                     "issues": score.issues,
                     "strengths": score.strengths,
-                    "recommendations": score.recommendations
+                    "recommendations": score.recommendations,
                 }
                 for metric, score in clarity_report.detailed_scores.items()
             },
             "critical_issues": clarity_report.critical_issues,
-            "summary": clarity_report.summary
+            "summary": clarity_report.summary,
         }
 
         # Check phase completion with enhanced logic

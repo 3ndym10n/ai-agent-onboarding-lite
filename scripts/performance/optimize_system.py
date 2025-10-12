@@ -33,10 +33,13 @@ def analyze_performance_bottlenecks() -> Dict[str, Any]:
     for op_name, context in operation_types:
         print(f"   Testing {op_name} operations...")
 
+        # Ensure context is properly typed as Dict[str, Any]
+        typed_context: Dict[str, Any] = context  # type: ignore
+
         # Warm up
         for _ in range(5):
             integrator.process_agent_operation(
-                "warmup_agent", f"{op_name}_warmup", context
+                "warmup_agent", f"{op_name}_warmup", typed_context
             )
 
         # Measure performance
@@ -44,7 +47,7 @@ def analyze_performance_bottlenecks() -> Dict[str, Any]:
         for i in range(20):
             start_time = time.time()
             result = integrator.process_agent_operation(
-                "benchmark_agent", f"{op_name}_op_{i}", context
+                "benchmark_agent", f"{op_name}_op_{i}", typed_context
             )
             duration = time.time() - start_time
             times.append(duration)
@@ -89,7 +92,7 @@ def check_memory_usage() -> Dict[str, Any]:
         }
 
         integrator.process_agent_operation(
-            f"memory_agent_{i}", "memory_test_operation", large_context
+            f"memory_agent_{i}", "memory_test_operation", large_context  # type: ignore
         )
 
     # Force garbage collection
@@ -106,7 +109,7 @@ def check_memory_usage() -> Dict[str, Any]:
     }
 
 
-def analyze_concurrent_performance() -> Dict[str, Any]:
+def analyze_concurrent_performance() -> Dict[int, Any]:
     """Analyze performance under concurrent load."""
     print("⚡ Testing concurrent performance...")
 
@@ -117,11 +120,11 @@ def analyze_concurrent_performance() -> Dict[str, Any]:
     def run_agent_operations(agent_id: str, operation_count: int) -> List[float]:
         """Run operations for a single agent."""
         times = []
+        context = {"agent_id": agent_id, "op_num": 0}  # type: ignore
         for i in range(operation_count):
             start_time = time.time()
-            integrator.process_agent_operation(
-                agent_id, f"concurrent_op_{i}", {"agent_id": agent_id, "op_num": i}
-            )
+            context["op_num"] = i  # Update operation number
+            integrator.process_agent_operation(agent_id, f"concurrent_op_{i}", context)
             duration = time.time() - start_time
             times.append(duration)
         return times
