@@ -13,7 +13,7 @@ This module provides persistent storage for learned patterns that:
 import json
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, cast
 
 from ..base import utils
 from ..orchestration.tool_usage_tracker import track_tool_usage
@@ -30,6 +30,7 @@ class LearningPersistenceManager:
         self.patterns_backup_file = self.learning_dir / "patterns_backup.json"
         self.learning_history_file = self.learning_dir / "learning_history.jsonl"
         self.learning_stats_file = self.learning_dir / "learning_stats.json"
+        self.stored_patterns_file = self.learning_dir / "stored_patterns.json"
 
         # Learning statistics
         self.stats: Dict[str, Union[int, float]] = {
@@ -47,6 +48,8 @@ class LearningPersistenceManager:
     def _ensure_directories(self) -> None:
         """Ensure learning directories exist."""
         self.learning_dir.mkdir(parents=True, exist_ok=True)
+        if not self.stored_patterns_file.exists():
+            utils.write_json(self.stored_patterns_file, {})
 
     def _load_stats(self) -> None:
         """Load learning statistics from disk."""
@@ -414,6 +417,52 @@ class LearningPersistenceManager:
         )  # Last 24h
 
         return stats
+
+    # ------------------------------------------------------------------
+    # High-level pattern storage APIs used by integration tests
+    # ------------------------------------------------------------------
+
+    def _load_stored_patterns(self) -> Dict[str, Any]:
+        """Load stored patterns from disk."""
+        try:
+            return utils.read_json(self.stored_patterns_file, default={})
+        except Exception:
+            return {}
+
+    def store_pattern(self, pattern_data: Dict[str, Any]) -> str:
+        """
+        Persist an individual learned pattern and return its identifier.
+        """
+        patterns = self._load_stored_patterns()
+        base_id = pattern_data.get("pattern_id") or "pattern"
+        suffix = int(time.time() * 1000)
+        pattern_id = f"{base_id}_{suffix}"
+        while pattern_id in patterns:
+            suffix += 1
+            pattern_id = f"{base_id}_{suffix}"
+
+        stored_record = dict(pattern_data)
+        stored_record["pattern_id"] = pattern_id
+        stored_record["stored_at"] = utils.now_iso()
+        patterns[pattern_id] = stored_record
+        utils.write_json(self.stored_patterns_file, patterns)
+
+        self.stats["patterns_learned"] += 1
+        self.record_learning_event(
+            "pattern_learned",
+            {"pattern_id": pattern_id, "metadata": pattern_data},
+        )
+        return pattern_id
+
+    def retrieve_pattern(self, pattern_id: str) -> Dict[str, Any]:
+        """Fetch a stored pattern by identifier."""
+        patterns = self._load_stored_patterns()
+        return cast(Dict[str, Any], patterns.get(pattern_id, {}))
+
+    def list_stored_patterns(self) -> List[Dict[str, Any]]:
+        """Return all stored patterns."""
+        patterns = self._load_stored_patterns()
+        return [cast(Dict[str, Any], value) for value in patterns.values()]
 
     def export_learning_data(self, export_path: Path) -> bool:
         """

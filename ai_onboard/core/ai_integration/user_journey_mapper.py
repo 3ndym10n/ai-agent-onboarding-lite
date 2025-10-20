@@ -293,7 +293,10 @@ class UserJourneyMapper:
         request_lower = user_request.lower()
 
         # Simple keyword-based journey mapping
-        if any(word in request_lower for word in ["shop", "store", "sell", "buy", "e-commerce", "commerce"]):
+        if any(
+            word in request_lower
+            for word in ["shop", "store", "sell", "buy", "e-commerce", "commerce"]
+        ):
             return "web_development"
         elif any(word in request_lower for word in ["website", "web app", "webpage"]):
             return "web_development"

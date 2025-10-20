@@ -335,12 +335,9 @@ class UniversalErrorMonitor:
                 try:
                     error = json.loads(line.strip())
                     timestamp_str = error.get("timestamp", "")
-                    # Handle timezone suffix 'Z' which fromisoformat doesn't support
-                    if timestamp_str.endswith("Z"):
-                        timestamp_str = timestamp_str[:-1]  # Just remove the 'Z'
-                    elif not timestamp_str:
+                    error_time = self._parse_timestamp(timestamp_str)
+                    if error_time is None:
                         continue  # Skip if no timestamp
-                    error_time = datetime.fromisoformat(timestamp_str)
                     if error_time >= cutoff_time:
                         errors.append(error)
                 except (json.JSONDecodeError, ValueError):
@@ -397,10 +394,9 @@ class UniversalErrorMonitor:
         for error in errors:
             try:
                 timestamp_str = error.get("timestamp", "")
-                # Handle timezone suffix 'Z' which fromisoformat doesn't support
-                if timestamp_str.endswith("Z"):
-                    timestamp_str = timestamp_str[:-1]  # Just remove the 'Z'
-                error_time = datetime.fromisoformat(timestamp_str)
+                error_time = self._parse_timestamp(timestamp_str)
+                if error_time is None:
+                    continue
                 hour = error_time.hour
                 patterns["time_distribution"][hour] = (
                     patterns["time_distribution"].get(hour, 0) + 1
@@ -416,6 +412,24 @@ class UniversalErrorMonitor:
                 )
 
         return patterns
+
+    def _parse_timestamp(self, timestamp_str: str) -> Optional[datetime]:
+        """Convert stored timestamp strings into timezone-aware datetimes."""
+        if not timestamp_str:
+            return None
+
+        normalized = timestamp_str.strip()
+        if normalized.endswith("Z"):
+            normalized = normalized[:-1] + "+00:00"
+
+        try:
+            parsed = datetime.fromisoformat(normalized)
+        except ValueError:
+            return None
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=timezone.utc)
+
+        return parsed
 
     def _generate_error_insights(
         self, patterns: Dict[str, Any], errors: List[Dict[str, Any]]

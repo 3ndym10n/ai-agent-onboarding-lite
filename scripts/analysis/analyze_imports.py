@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import Dict, List
 
 
-
 class ImportAnalyzer:
     """Analyze imports in Python codebase."""
 

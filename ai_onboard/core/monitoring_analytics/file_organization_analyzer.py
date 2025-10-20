@@ -55,6 +55,15 @@ class FileOrganizationResult:
     organization_issues: List[FileOrganizationIssue] = field(default_factory=list)
     consolidation_candidates: List[List[str]] = field(default_factory=list)
     restructuring_recommendations: List[Dict[str, Any]] = field(default_factory=list)
+    organization_score: float = 0.0
+
+    def __contains__(self, key: object) -> bool:
+        return isinstance(key, str) and hasattr(self, key)
+
+    def __getitem__(self, key: str) -> Any:
+        if hasattr(self, key):
+            return getattr(self, key)
+        raise KeyError(key)
 
 
 class FileOrganizationAnalyzer:
@@ -106,14 +115,33 @@ class FileOrganizationAnalyzer:
         self.file_exports: Dict[str, Set[str]] = defaultdict(set)
         self.file_sizes: Dict[str, int] = {}
         self.file_complexity: Dict[str, float] = {}
+        self.directory_analysis: Dict[str, DirectoryAnalysis] = {}
 
-    def analyze_organization(self) -> FileOrganizationResult:
+    def _reset_analysis_state(self) -> None:
+        """Reset cached state between analysis runs."""
+        self.all_files = []
+        self.file_imports = defaultdict(set)
+        self.file_exports = defaultdict(set)
+        self.file_sizes = {}
+        self.file_complexity = {}
+        self.directory_analysis = {}
+
+    def analyze_organization(
+        self, project_root: Optional[Path] = None
+    ) -> FileOrganizationResult:
         """
         Perform comprehensive file organization analysis.
 
         Returns:
             FileOrganizationResult with complete analysis
         """
+        override_root: Optional[Path] = Path(project_root) if project_root else None
+        original_root = self.root_path
+        if override_root is not None:
+            self.root_path = override_root
+
+        self._reset_analysis_state()
+
         print("📁 Starting comprehensive file organization analysis...")
 
         # Phase 1: Discover and categorize all files
@@ -217,7 +245,24 @@ class FileOrganizationAnalyzer:
                 result.issues_by_severity.get(issue.severity, 0) + 1
             )
 
-        print("✅ File organization analysis complete!")
+        print("? File organization analysis complete!")
+        total_dirs = max(1, result.directories_analyzed)
+        issue_penalty = min(100.0, result.total_issues * 5.0)
+        cohesion_avg = 0.0
+        if result.directory_analysis:
+            cohesion_avg = (
+                sum(
+                    entry.cohesion_score for entry in result.directory_analysis.values()
+                )
+                / total_dirs
+            )
+        result.organization_score = max(
+            0.0, 100.0 - issue_penalty + cohesion_avg * 0.01
+        )
+
+        if override_root is not None:
+            self.root_path = original_root
+
         return result
 
     def _discover_files(self) -> None:

@@ -1,5 +1,3 @@
-
-
 class AgentsGuidancePlugin:
     name = "repo.agents_guidance_present"
 

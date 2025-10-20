@@ -103,13 +103,28 @@ class DuplicateDetector:
         self.hash_to_blocks: Dict[str, List[CodeBlock]] = defaultdict(list)
         self.ast_hash_to_blocks: Dict[str, List[CodeBlock]] = defaultdict(list)
 
-    def analyze_duplicates(self) -> DuplicateAnalysisResult:
+    def _reset_analysis_state(self) -> None:
+        """Reset duplicate detection state between runs."""
+        self.code_blocks = []
+        self.hash_to_blocks = defaultdict(list)
+        self.ast_hash_to_blocks = defaultdict(list)
+
+    def analyze_duplicates(
+        self, project_root: Optional[Path] = None
+    ) -> DuplicateAnalysisResult:
         """
         Perform comprehensive duplicate code analysis.
 
         Returns:
             DuplicateAnalysisResult with complete analysis
         """
+        override_root: Optional[Path] = Path(project_root) if project_root else None
+        original_root = self.root_path
+        if override_root is not None:
+            self.root_path = override_root
+
+        self._reset_analysis_state()
+
         print("🔍 Starting comprehensive duplicate code analysis...")
 
         # Phase 1: Extract code blocks
@@ -163,7 +178,11 @@ class DuplicateDetector:
             result.duplicate_groups
         )
 
-        print("✅ Duplicate code analysis complete!")
+        print("? Duplicate code analysis complete!")
+
+        if override_root is not None:
+            self.root_path = original_root
+
         return result
 
     def _find_python_files(self) -> List[str]:

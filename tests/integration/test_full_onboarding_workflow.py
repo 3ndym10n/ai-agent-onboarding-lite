@@ -24,6 +24,7 @@ from ai_onboard.core.project_management.phased_implementation_strategy import (
 from ai_onboard.core.vision.enhanced_vision_interrogator import (
     get_enhanced_vision_interrogator,
 )
+from ai_onboard.core.quality_safety.cleanup_safety_gates import create_safety_framework
 
 
 class TestFullOnboardingWorkflow:

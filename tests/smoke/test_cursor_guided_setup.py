@@ -12,7 +12,9 @@ def test_cursor_guided_setup_creates_session(tmp_path, capsys):
     cursor_module._cursor_integration = None
     root: Path = tmp_path
 
-    args = argparse.Namespace(user_id="smoke_user", force_init=False, skip_session=False)
+    args = argparse.Namespace(
+        user_id="smoke_user", force_init=False, skip_session=False
+    )
 
     commands_cursor._handle_cursor_guided_setup(args, root)
 

@@ -80,6 +80,20 @@ class PatternMatch:
     prevention_suggestions: List[str]
     timestamp: float
 
+    def to_dict(self) -> Dict[str, Any]:
+        """Convenience representation for dict-style access."""
+        return {
+            "pattern_id": self.pattern_id,
+            "confidence": self.confidence,
+            "matched_elements": self.matched_elements,
+            "prevention_suggestions": self.prevention_suggestions,
+            "timestamp": self.timestamp,
+        }
+
+    def __getitem__(self, key: str) -> Any:
+        """Allow legacy dict-style lookups used by tests."""
+        return self.to_dict()[key]
+
 
 class PatternRecognitionSystem:
     """Advanced pattern recognition for error analysis and prevention."""

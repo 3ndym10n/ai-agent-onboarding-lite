@@ -119,13 +119,32 @@ class CodeQualityAnalyzer:
             set
         )  # var_name -> files_using_it
 
-    def analyze_codebase(self) -> CodeQualityAnalysisResult:
+    def _reset_analysis_state(self) -> None:
+        """Reset cached analysis state between runs."""
+        self.import_usage = defaultdict(set)
+        self.function_definitions = defaultdict(set)
+        self.function_usage = defaultdict(set)
+        self.class_definitions = defaultdict(set)
+        self.class_usage = defaultdict(set)
+        self.variable_definitions = defaultdict(set)
+        self.variable_usage = defaultdict(set)
+
+    def analyze_codebase(
+        self, codebase_root: Optional[Path] = None
+    ) -> CodeQualityAnalysisResult:
         """
         Perform complete codebase analysis.
 
         Returns:
             CodeQualityAnalysisResult with comprehensive analysis
         """
+        override_root: Optional[Path] = Path(codebase_root) if codebase_root else None
+        original_root = self.root_path
+        if override_root is not None:
+            self.root_path = override_root
+
+        self._reset_analysis_state()
+
         print("🔍 Starting comprehensive code quality analysis...")
 
         # Track tool usage
@@ -222,6 +241,9 @@ class CodeQualityAnalyzer:
             },
             result="completed",
         )
+
+        if override_root is not None:
+            self.root_path = original_root
 
         return result
 

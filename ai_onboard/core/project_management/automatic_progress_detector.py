@@ -244,21 +244,22 @@ class AutomaticProgressDetector:
 
         duration = time.time() - start_time
 
-        track_tool_usage(
-            "automatic_progress_detector",
-            "detect_completed_work",
-            {
-                "action": "detect_completed_work",
-                "hours": hours,
-                "commits_analyzed": len(commits),
-                "files_changed": len(file_changes),
-                "commit_completions": len(commit_completions),
-                "active_tasks": len(active_tasks),
-                "likely_completed": len(likely_completed),
-                "duration": duration,
-            },
-            "success",
-        )
+        if commit_completions or active_tasks or likely_completed:
+            track_tool_usage(
+                "automatic_progress_detector",
+                "detect_completed_work",
+                {
+                    "action": "detect_completed_work",
+                    "hours": hours,
+                    "commits_analyzed": len(commits),
+                    "files_changed": len(file_changes),
+                    "commit_completions": len(commit_completions),
+                    "active_tasks": len(active_tasks),
+                    "likely_completed": len(likely_completed),
+                    "duration": duration,
+                },
+                "success",
+            )
 
         return {
             "commits_analyzed": len(commits),

@@ -518,7 +518,12 @@ class TestContextWindowDriftPrevention:
         preserved_elements = 0
         alias_map = {
             "project objectives": ["project objectives", "objectives"],
-            "scope limitations": ["scope limitations", "non_features", "scope", "scope_limitations"],
+            "scope limitations": [
+                "scope limitations",
+                "non_features",
+                "scope",
+                "scope_limitations",
+            ],
         }
 
         found_elements = set()
@@ -790,7 +795,10 @@ class TestUserIntentUnderstanding:
         }
 
         # Ecommerce-style requests
-        if any(word in request_lower for word in ["buy", "sell", "purchase", "shop", "store"]):
+        if any(
+            word in request_lower
+            for word in ["buy", "sell", "purchase", "shop", "store"]
+        ):
             interpretation["project_type"] = "ecommerce"
             interpretation["target_audience"] = "small business owner"
             interpretation["features"] = ["product catalog", "shopping cart", "payment"]
@@ -804,7 +812,10 @@ class TestUserIntentUnderstanding:
                 interpretation["target_audience"] = "artist"
 
         # Business management / CRM-style needs
-        if any(word in request_lower for word in ["track", "manage", "customers", "crm", "database"]):
+        if any(
+            word in request_lower
+            for word in ["track", "manage", "customers", "crm", "database"]
+        ):
             interpretation["project_type"] = "business_management"
             interpretation["features"] = ["customer database", "contact management"]
             interpretation["target_audience"] = "small business owner"
@@ -1034,9 +1045,7 @@ def run_anti_drift_test_suite(temp_project_root: Path) -> Dict[str, Any]:
                 )
             except Exception as e:
                 ensure_unicode_safe(f"    Failed: {e}")
-                report_results[category_key].append(
-                    {"success": False, "metrics": {}}
-                )
+                report_results[category_key].append({"success": False, "metrics": {}})
 
     # Generate summary report
     summary = generate_anti_drift_report(report_results)
@@ -1076,7 +1085,6 @@ def run_anti_drift_test_suite(temp_project_root: Path) -> Dict[str, Any]:
         )
 
     return summary
-
 
 
 def generate_anti_drift_report(test_results: Dict[str, List]) -> Dict[str, Any]:

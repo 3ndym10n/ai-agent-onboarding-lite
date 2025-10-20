@@ -365,6 +365,7 @@ class UnifiedToolOrchestrator:
 
         # Tool execution cache and triggers
         self._analyzer_cache: Dict[str, Any] = {}
+        self._analyzer_cache_lock = threading.Lock()
         self.tool_triggers: Dict[str, List[ToolExecutionTrigger]] = {}
 
         # Configuration
@@ -844,6 +845,7 @@ class UnifiedToolOrchestrator:
     def get_orchestrator_status(self) -> Dict[str, Any]:
         """Get current orchestrator status and statistics."""
         return {
+            "initialized": True,
             "status": "active",
             "tools_available": (
                 len(self.tool_registry) if hasattr(self, "tool_registry") else 0

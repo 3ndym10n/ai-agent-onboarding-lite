@@ -10,7 +10,6 @@ from pathlib import Path
 from typing import List
 
 
-
 def find_files_with_bad_imports() -> List[Path]:
     """Find all Python files that have the problematic utils import."""
     core_dir = Path("ai_onboard/core")

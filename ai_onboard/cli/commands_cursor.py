@@ -210,7 +210,9 @@ def _handle_cursor_context(args: argparse.Namespace, root: Path) -> None:
 
             if "progress" in context:
                 progress = context["progress"]
-                safe_print(f"Overall Progress: {progress.get('overall_progress', 0):.1f}%")
+                safe_print(
+                    f"Overall Progress: {progress.get('overall_progress', 0):.1f}%"
+                )
                 safe_print(
                     f"Completed Tasks: {progress.get('completed_tasks', 0)}/"
                     f"{progress.get('total_tasks', 0)}"
@@ -239,7 +241,9 @@ def _handle_cursor_guided_setup(args: argparse.Namespace, root: Path) -> None:
 
     safe_print("")
     safe_print("=== Cursor Guided Setup ===")
-    safe_print("This walkthrough initializes Cursor, shows current status, and spins up a session.")
+    safe_print(
+        "This walkthrough initializes Cursor, shows current status, and spins up a session."
+    )
 
     # Step 1: initialization (optional force)
     safe_print("\n[1/4] Initializing Cursor integration...")
@@ -266,9 +270,7 @@ def _handle_cursor_guided_setup(args: argparse.Namespace, root: Path) -> None:
     session_result = _handle_cursor_session(create_args, root)
 
     session_id = (
-        session_result.get("session_id")
-        if isinstance(session_result, dict)
-        else None
+        session_result.get("session_id") if isinstance(session_result, dict) else None
     )
 
     if session_id:
@@ -447,7 +449,9 @@ def _handle_cursor_config(args: argparse.Namespace, root: Path) -> None:
             safe_print(f"Agent ID: {config.agent_id}")
             safe_print(f"Safety Level: {config.safety_level}")
             safe_print(f"Max Autonomous Actions: {config.max_autonomous_actions}")
-            safe_print(f"Require Confirmation: {', '.join(config.require_confirmation)}")
+            safe_print(
+                f"Require Confirmation: {', '.join(config.require_confirmation)}"
+            )
             safe_print(f"Session Timeout: {config.session_timeout}s")
             safe_print(f"API Enabled: {config.api_enabled}")
             if config.api_enabled:

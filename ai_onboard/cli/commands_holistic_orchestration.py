@@ -252,10 +252,8 @@ def handle_orchestration_status(args, root: Path):
 
     # Show vision context
     print(f"\n🎯 Vision Context:")
-    print(
-        f"   • Project goals: {len(orchestrator.vision_context.get('project_goals',
-                               []))}"
-    )
+    project_goals = len(orchestrator.vision_context.get("project_goals", []))
+    print(f"   • Project goals: {project_goals}")
     print(f"   • Non-goals: {len(orchestrator.vision_context.get('non_goals', []))}")
     print(
         f"   • Risk appetite: {orchestrator.vision_context.get('risk_appetite', 'unknown')}"

@@ -65,42 +65,44 @@ def _show_project_context(root: Path):
         # Get unified view
         unified_view = get_unified_project_view(root)
         dashboard = unified_view.get_dashboard()
-        
+
         print("\n📊 **Project Dashboard**")
         print("═" * 60)
-        
+
         # Project info
         print(f"\n**Project**: {dashboard.project_name}")
         print(f"**Vision**: {dashboard.vision[:100]}...")
-        
+
         # Progress
         print(f"\n**Progress**: {dashboard.progress_percentage:.1f}% complete")
         print(f"   Phase: {dashboard.current_phase}")
-        print(f"   Tasks: {dashboard.completed_tasks}/{dashboard.total_tasks} completed")
-        
+        print(
+            f"   Tasks: {dashboard.completed_tasks}/{dashboard.total_tasks} completed"
+        )
+
         # Current work
         if dashboard.in_progress_task:
             task = dashboard.in_progress_task
             print(f"\n🔄 **Currently Working On**:")
             print(f"   {task['name']}")
-            if task.get('description'):
+            if task.get("description"):
                 print(f"   └─ {task['description']}")
-        
+
         # Next steps
         if dashboard.next_tasks:
             print(f"\n📝 **Next Steps**:")
             for i, task in enumerate(dashboard.next_tasks, 1):
                 print(f"   {i}. {task['name']}")
-        
+
         # Recent completions
         if dashboard.recent_completions:
             print(f"\n✅ **Recently Completed**:")
             for completion in dashboard.recent_completions:
                 print(f"   • {completion}")
-        
+
         print("\n" + "═" * 60)
         print("💬 Ready to continue! Tell me what you'd like to do.\n")
-        
+
     except Exception as e:
         # Fallback to basic context if unified view fails
         print(f"\n[DEBUG] Unified view error: {e}")
@@ -149,30 +151,30 @@ def _show_next_steps(root: Path):
     try:
         unified_view = get_unified_project_view(root)
         dashboard = unified_view.get_dashboard()
-        
+
         print("\n📝 **Next Steps**")
         print("━" * 60)
-        
+
         # Current task
         if dashboard.in_progress_task:
             task = dashboard.in_progress_task
             print(f"\n🔄 **Finish Current Task**:")
             print(f"   {task['name']}")
-            if task.get('description'):
+            if task.get("description"):
                 print(f"   └─ {task['description']}")
-        
+
         # Next tasks
         if dashboard.next_tasks:
             print(f"\n📋 **Then Continue With** (in order):")
             for i, task in enumerate(dashboard.next_tasks, 1):
                 print(f"   {i}. {task['name']}")
-                if task.get('description'):
+                if task.get("description"):
                     print(f"      └─ {task['description']}")
         elif not dashboard.in_progress_task:
             print("\n✅ All tasks complete! Time to celebrate! 🎉")
-        
+
         print("\n" + "━" * 60 + "\n")
-        
+
     except Exception as e:
         print(f"\n❌ Couldn't load next steps: {e}")
         print("Try creating a plan first: 'I want to build...\n")
@@ -183,33 +185,35 @@ def _show_progress_summary(root: Path):
     try:
         unified_view = get_unified_project_view(root)
         dashboard = unified_view.get_dashboard()
-        
+
         print("\n📊 **Progress Summary**")
         print("━" * 60)
-        
+
         print(f"\n**Project**: {dashboard.project_name}")
         print(f"**Phase**: {dashboard.current_phase}")
         print(f"\n**Overall Progress**: {dashboard.progress_percentage:.1f}%")
-        
+
         # Progress bar
         total_bars = 20
         filled_bars = int((dashboard.progress_percentage / 100) * total_bars)
         empty_bars = total_bars - filled_bars
         progress_bar = "█" * filled_bars + "░" * empty_bars
-        print(f"[{progress_bar}] {dashboard.completed_tasks}/{dashboard.total_tasks} tasks")
-        
+        print(
+            f"[{progress_bar}] {dashboard.completed_tasks}/{dashboard.total_tasks} tasks"
+        )
+
         # Current work
         if dashboard.in_progress_task:
             print(f"\n🔄 Currently: {dashboard.in_progress_task['name']}")
-        
+
         # Recent completions
         if dashboard.recent_completions:
             print(f"\n✅ Recently completed:")
             for completion in dashboard.recent_completions:
                 print(f"   • {completion}")
-        
+
         print("\n" + "━" * 60 + "\n")
-        
+
     except Exception as e:
         print(f"\n❌ Couldn't load progress: {e}\n")
 
@@ -218,11 +222,11 @@ def _run_interactive_chat(root: Path):
     """Run interactive chat session with context memory."""
     print("\n🤖 **AI Onboard Chat**")
     print("━" * 60)
-    
+
     # Initialize context memory
     context_memory = get_context_memory_system(root)
     session = context_memory.start_session(user_id="vibe_coder")
-    
+
     # Show continuation message if resuming
     continuation = context_memory.get_continuation_summary()
     if "Starting fresh" not in continuation:
@@ -232,7 +236,7 @@ def _run_interactive_chat(root: Path):
     else:
         print("Hi! I'm here to help you build your project.")
         print("Tell me what you want to build, and I'll guide you through it.")
-    
+
     print("\n**Commands:**")
     print("  • 'exit' or 'quit' - End the conversation")
     print("  • 'context' - See your current project status")
@@ -271,7 +275,7 @@ def _run_interactive_chat(root: Path):
 
             # Save user message to context
             context_memory.add_message("user", user_input)
-            
+
             # Check for special commands
             if user_input.lower() in ["exit", "quit", "bye"]:
                 # Save context before exiting
@@ -286,7 +290,7 @@ def _run_interactive_chat(root: Path):
             if user_input.lower() in ["next", "what's next", "whats next"]:
                 _show_next_steps(root)
                 continue
-            
+
             if user_input.lower() in ["progress", "status"]:
                 _show_progress_summary(root)
                 continue

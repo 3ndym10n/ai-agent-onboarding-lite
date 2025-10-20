@@ -445,13 +445,13 @@ class AIGateMediator:
         self, operation: str, context: Dict[str, Any]
     ) -> str:
         """Generate human-friendly description of the gate."""
-        robot = "\U0001F916"
-        document = "\U0001F4C4"
-        tools = "\U0001F6E0"
-        thinking = "\U0001F914"
+        robot = "\U0001f916"
+        document = "\U0001f4c4"
+        tools = "\U0001f6e0"
+        thinking = "\U0001f914"
         question = "\u2753"
         check = "\u2705"
-        folder = "\U0001F5C2"
+        folder = "\U0001f5c2"
 
         parts = [f"{robot} **I want to**: {operation}"]
 
@@ -474,13 +474,17 @@ class AIGateMediator:
         confidence = float(context.get("confidence", 0.5))
         percent = max(0, min(100, int(round(confidence * 100))))
         if confidence >= 0.8:
-            parts.append(f"{check} **Confidence**: High ({percent}%) - I'm pretty sure about this")
+            parts.append(
+                f"{check} **Confidence**: High ({percent}%) - I'm pretty sure about this"
+            )
         elif confidence >= 0.5:
             parts.append(
                 f"{thinking} **Confidence**: Medium ({percent}%) - I could use your input"
             )
         else:
-            parts.append(f"{question} **Confidence**: Low ({percent}%) - I need your guidance")
+            parts.append(
+                f"{question} **Confidence**: Low ({percent}%) - I need your guidance"
+            )
 
         if "phase" in context:
             parts.append(f"{folder} **Phase**: {context['phase']}")

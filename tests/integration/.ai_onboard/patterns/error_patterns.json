@@ -78,10 +78,10 @@
         "traceback": "ImportError: No module named 'test_module'"
       }
     ],
-    "frequency": 9,
+    "frequency": 11,
     "first_seen": 1758117004.354848,
-    "last_seen": 1760055820.2630548,
-    "confidence": 0.9000000000000004,
+    "last_seen": 1760914700.576451,
+    "confidence": 0.95,
     "prevention_rules": [
       "Check requirements.txt",
       "Verify virtual environment"
@@ -829,12 +829,17 @@
         "type": "StyleError",
         "message": "trailing whitespace found",
         "traceback": "line has trailing whitespace"
+      },
+      {
+        "type": "StyleError",
+        "message": "trailing whitespace found",
+        "traceback": "line has trailing whitespace"
       }
     ],
-    "frequency": 2,
+    "frequency": 3,
     "first_seen": 1759982755.1422753,
-    "last_seen": 1760055818.0001388,
-    "confidence": 0.55,
+    "last_seen": 1760914699.5082874,
+    "confidence": 0.6000000000000001,
     "prevention_rules": [
       "Run code formatting tools",
       "Configure editor auto-format"
@@ -1019,6 +1024,98 @@
     "frequency": 1,
     "first_seen": 1760055820.4489021,
     "last_seen": 1760055820.4489028,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1760914699_7639": {
+    "pattern_id": "pattern_1760914699_7639",
+    "pattern_type": "cli_error",
+    "signature": "ArgumentError: invalid choice: '--invalid-option'",
+    "description": "Automatically detected cli_error pattern",
+    "examples": [
+      {
+        "type": "ArgumentError",
+        "message": "invalid choice: '--invalid-option'",
+        "traceback": "invalid choice: '--invalid-option'"
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1760914699.4562354,
+    "last_seen": 1760914699.456236,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Validate command arguments before execution",
+      "Check CLI syntax"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1760914699_4864": {
+    "pattern_id": "pattern_1760914699_4864",
+    "pattern_type": "cli_error",
+    "signature": "prevention_check_command: Analyzing command for potential issues",
+    "description": "Automatically detected cli_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_command",
+        "message": "Analyzing command for potential issues",
+        "content": "python -m ai_onboard --invalid-option ",
+        "context": {
+          "command": "python -m ai_onboard --invalid-option",
+          "args": []
+        }
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1760914699.8432913,
+    "last_seen": 1760914699.8432918,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Validate command arguments before execution",
+      "Check CLI syntax"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1760914699_5170": {
+    "pattern_id": "pattern_1760914699_5170",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "def bad_function():  \nprint('hello')   \n",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1760914699.9667,
+    "last_seen": 1760914699.9667003,
+    "confidence": 0.5,
+    "prevention_rules": [
+      "Review error and implement appropriate fixes"
+    ],
+    "related_patterns": []
+  },
+  "pattern_1760914700_5170": {
+    "pattern_id": "pattern_1760914700_5170",
+    "pattern_type": "unknown_error",
+    "signature": "prevention_check_code: Analyzing code for potential issues",
+    "description": "Automatically detected unknown_error pattern",
+    "examples": [
+      {
+        "type": "prevention_check_code",
+        "message": "Analyzing code for potential issues",
+        "content": "import another_missing_module\nprint('test')",
+        "context": {}
+      }
+    ],
+    "frequency": 1,
+    "first_seen": 1760914700.7056723,
+    "last_seen": 1760914700.7056727,
     "confidence": 0.5,
     "prevention_rules": [
       "Review error and implement appropriate fixes"

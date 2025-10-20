@@ -5,6 +5,7 @@ Shared fixtures and configuration for performance tests.
 """
 
 import tempfile
+import time
 from pathlib import Path
 
 import pytest
@@ -52,6 +53,38 @@ def performance_workspace():
         )
 
         yield workspace
+
+
+# Only register a fallback when pytest-benchmark isn't installed.
+try:
+    import pytest_benchmark.plugin  # type: ignore[import-untyped]
+
+    _BENCHMARK_PLUGIN_AVAILABLE = True
+except Exception:
+    _BENCHMARK_PLUGIN_AVAILABLE = False
+
+
+if not _BENCHMARK_PLUGIN_AVAILABLE:
+
+    @pytest.fixture
+    def benchmark():
+        """Lightweight benchmark fallback when pytest-benchmark is unavailable."""
+
+        class BenchmarkResult:
+            def __init__(self):
+                self.last_run_duration = 0.0
+
+            def __call__(self, func, *args, **kwargs):
+                start = time.perf_counter()
+                result = func(*args, **kwargs)
+                self.last_run_duration = time.perf_counter() - start
+                return result
+
+            @property
+            def stats(self):
+                return {"last_run_duration": self.last_run_duration}
+
+        return BenchmarkResult()
 
 
 # Performance testing hooks removed - using custom performance metrics instead

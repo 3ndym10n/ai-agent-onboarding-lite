@@ -24,7 +24,7 @@ class SessionContext:
     user_id: str
     session_id: str
     timestamp: datetime = field(default_factory=datetime.now)
-    
+
     # Track previous session timestamp for accurate continuation summaries
     previous_session_timestamp: Optional[datetime] = None
 
@@ -73,25 +73,29 @@ class ContextMemorySystem:
         session_id = f"session_{int(datetime.now().timestamp())}"
         current_time = datetime.now()
         self.current_session = SessionContext(
-            user_id=user_id, 
-            session_id=session_id,
-            timestamp=current_time
+            user_id=user_id, session_id=session_id, timestamp=current_time
         )
 
         # If previous session exists, seed with recent context
         # Store the previous timestamp separately for continuation summary
         if previous_context:
-            self._seed_from_previous(previous_context, previous_timestamp=previous_context.timestamp)
+            self._seed_from_previous(
+                previous_context, previous_timestamp=previous_context.timestamp
+            )
 
         return self.current_session
 
-    def _seed_from_previous(self, previous: SessionContext, previous_timestamp: Optional[datetime] = None):
+    def _seed_from_previous(
+        self, previous: SessionContext, previous_timestamp: Optional[datetime] = None
+    ):
         """Seed current session with relevant context from previous session."""
         if not self.current_session:
             return
 
         # Store the previous session's timestamp for accurate time gap calculations
-        self.current_session.previous_session_timestamp = previous_timestamp or previous.timestamp
+        self.current_session.previous_session_timestamp = (
+            previous_timestamp or previous.timestamp
+        )
 
         # Copy project state
         self.current_session.project_name = previous.project_name
@@ -253,7 +257,10 @@ class ContextMemorySystem:
 
         # Time since last session - use previous_session_timestamp for accurate gap
         if self.current_session.previous_session_timestamp:
-            time_diff = self.current_session.timestamp - self.current_session.previous_session_timestamp
+            time_diff = (
+                self.current_session.timestamp
+                - self.current_session.previous_session_timestamp
+            )
             if time_diff.days > 0:
                 summary_parts.append(f"Last session: {time_diff.days} days ago")
             elif time_diff.seconds > 3600:

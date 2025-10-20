@@ -44,8 +44,7 @@ class AlignmentAssessment:
 class SimilarityScorer(Protocol):
     """Protocol for pluggable similarity scorers."""
 
-    def score(self, lhs: str, rhs: str) -> float:
-        ...
+    def score(self, lhs: str, rhs: str) -> float: ...
 
 
 class TfCosineSimilarityScorer:
@@ -130,7 +129,9 @@ class VisionAlignmentDetector:
     # Public API
     # ------------------------------------------------------------------ #
 
-    def assess(self, suggestion: str, *, metadata: Optional[Dict[str, str]] = None) -> AlignmentAssessment:
+    def assess(
+        self, suggestion: str, *, metadata: Optional[Dict[str, str]] = None
+    ) -> AlignmentAssessment:
         """Return an alignment assessment for the supplied suggestion."""
         text = suggestion.strip()
         metadata = metadata or {}
@@ -153,7 +154,9 @@ class VisionAlignmentDetector:
             )
             return assessment
 
-        charter_matches = self._score_candidates(text, self._charter_candidates, top_k=3)
+        charter_matches = self._score_candidates(
+            text, self._charter_candidates, top_k=3
+        )
         if charter_matches:
             reasons.append(
                 f"Strongest objective match: '{charter_matches[0].label}' (similarity {charter_matches[0].similarity:.2f})"
@@ -257,9 +260,15 @@ class VisionAlignmentDetector:
         self.current_phase = self._resolve_current_phase()
         self.max_complexity = str(self.charter.get("max_complexity", "")).lower()
         self.allowed_technologies = {
-            str(t).lower() for t in self.charter.get("technologies", []) if isinstance(t, str)
+            str(t).lower()
+            for t in self.charter.get("technologies", [])
+            if isinstance(t, str)
         }
-        self.non_features = [str(x).lower() for x in self.charter.get("non_features", []) if isinstance(x, str)]
+        self.non_features = [
+            str(x).lower()
+            for x in self.charter.get("non_features", [])
+            if isinstance(x, str)
+        ]
 
         self._charter_candidates = list(self._iter_charter_candidates())
         self._wbs_candidates = list(self._iter_wbs_candidates())
@@ -329,7 +338,10 @@ class VisionAlignmentDetector:
                         yield _Candidate(
                             label=task_name,
                             text=task_desc,
-                            metadata={"phase": phase_name.lower(), "task_id": str(task_id)},
+                            metadata={
+                                "phase": phase_name.lower(),
+                                "task_id": str(task_id),
+                            },
                         )
         # Legacy plan.json format may have a flat "tasks" list.
         tasks = plan.get("tasks")
@@ -337,9 +349,13 @@ class VisionAlignmentDetector:
             for task in tasks:
                 if not isinstance(task, dict):
                     continue
-                task_name = str(task.get("name") or task.get("title") or task.get("id") or "task")
+                task_name = str(
+                    task.get("name") or task.get("title") or task.get("id") or "task"
+                )
                 task_desc = str(task.get("description") or task_name)
-                phase = str(task.get("phase") or task.get("category") or "").lower() or None
+                phase = (
+                    str(task.get("phase") or task.get("category") or "").lower() or None
+                )
                 yield _Candidate(
                     label=task_name,
                     text=task_desc,
@@ -359,7 +375,9 @@ class VisionAlignmentDetector:
         scope = str(self.charter.get("scope", "")).lower()
         if scope in {"minimal", "simple"}:
             if "enterprise" in text or "multi-tenant" in text:
-                hits.append("Suggestion exceeds declared scope (minimal/simple project)")
+                hits.append(
+                    "Suggestion exceeds declared scope (minimal/simple project)"
+                )
 
         return hits
 
@@ -374,12 +392,16 @@ class VisionAlignmentDetector:
             results.append((similarity, candidate))
         results.sort(key=lambda pair: pair[0], reverse=True)
         matches = [
-            AlignmentMatch(label=cand.label, similarity=round(sim, 3), metadata=cand.metadata)
+            AlignmentMatch(
+                label=cand.label, similarity=round(sim, 3), metadata=cand.metadata
+            )
             for sim, cand in results[:top_k]
         ]
         return matches
 
-    def _phase_component(self, best_task: Optional[AlignmentMatch]) -> Tuple[float, Optional[str], Optional[str]]:
+    def _phase_component(
+        self, best_task: Optional[AlignmentMatch]
+    ) -> Tuple[float, Optional[str], Optional[str]]:
         """
         Return (component score, reason, matched_phase).
 
@@ -405,7 +427,11 @@ class VisionAlignmentDetector:
         matched_norm = self._normalize_phase(matched_phase)
 
         if current_norm and matched_norm and current_norm == matched_norm:
-            return 1.0, f"Phase alignment confirmed for '{matched_phase}'.", matched_phase
+            return (
+                1.0,
+                f"Phase alignment confirmed for '{matched_phase}'.",
+                matched_phase,
+            )
 
         return (
             0.1,
@@ -436,8 +462,19 @@ class VisionAlignmentDetector:
 
         if self.allowed_technologies:
             tokens = set(self._tokenize(suggestion))
-            unknown = {token for token in tokens if token.isalpha() and token not in self.allowed_technologies}
-            suspicious = unknown & {"kubernetes", "kafka", "spark", "redis", "graphql", "rust"}
+            unknown = {
+                token
+                for token in tokens
+                if token.isalpha() and token not in self.allowed_technologies
+            }
+            suspicious = unknown & {
+                "kubernetes",
+                "kafka",
+                "spark",
+                "redis",
+                "graphql",
+                "rust",
+            }
             if suspicious and self.max_complexity in {"simple", "minimal"}:
                 penalty += 0.2
                 reason_parts.append(
@@ -462,7 +499,11 @@ class VisionAlignmentDetector:
         tokens = set(normalized.split())
         if "build" in tokens or "build" in normalized:
             return "build"
-        if "implement" in tokens or "implementation" in normalized or "develop" in normalized:
+        if (
+            "implement" in tokens
+            or "implementation" in normalized
+            or "develop" in normalized
+        ):
             return "development"
         if "test" in tokens or "qa" in tokens or "testing" in normalized:
             return "testing"

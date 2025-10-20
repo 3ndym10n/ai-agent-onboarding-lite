@@ -51,7 +51,11 @@ def main() -> int:
     # pip-audit
     if shutil.which("pip-audit"):
         print("\n[SEC] Running pip-audit...")
-        rc |= run(["pip-audit", "-r", str(root / "requirements.txt")]) if (root / "requirements.txt").exists() else run(["pip-audit"]) 
+        rc |= (
+            run(["pip-audit", "-r", str(root / "requirements.txt")])
+            if (root / "requirements.txt").exists()
+            else run(["pip-audit"])
+        )
     else:
         print("[SKIP] pip-audit not installed")
 
@@ -61,4 +65,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

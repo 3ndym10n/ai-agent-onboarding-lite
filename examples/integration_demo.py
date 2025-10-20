@@ -19,6 +19,7 @@ from ai_onboard.core.ai_integration import (
     get_user_experience_system,  # Existing UX system
 )
 
+
 def main():
     """Run the integration demonstration."""
     print("AI ONBOARD INTEGRATION DEMONSTRATION")
@@ -38,7 +39,9 @@ def main():
         ux_system = get_user_experience_system(root)  # Existing system
 
         user_id = "integration_demo_user"
-        user_request = "I want to make a website where people can buy my handmade crafts"
+        user_request = (
+            "I want to make a website where people can buy my handmade crafts"
+        )
 
         print("STEP 1: User Request Processing")
         print("-" * 40)
@@ -54,7 +57,9 @@ def main():
         # 2. New anti-drift components process the request
         print("ANTI-DRIFT PROCESSING:")
         intent_result = intent_parser.parse_user_intent(user_request, user_id)
-        print(f"  -> Intent Parser: {intent_result.project_type} ({intent_result.confidence_score:.1%} confidence)")
+        print(
+            f"  -> Intent Parser: {intent_result.project_type} ({intent_result.confidence_score:.1%} confidence)"
+        )
         print(f"  -> Primary Features: {', '.join(intent_result.primary_features)}")
         print()
 
@@ -80,13 +85,17 @@ def main():
         if journey:
             print(f"  -> Recommended Journey: {journey.name}")
             print(f"  -> Steps: {len(journey.steps)}")
-            total_time = sum(step.estimated_time_minutes for step in journey.steps.values())
+            total_time = sum(
+                step.estimated_time_minutes for step in journey.steps.values()
+            )
             print(f"  -> Estimated Time: {total_time}min")
         print()
 
         # 6. Clarification questions for missing info
         print("CLARIFICATION SYSTEM:")
-        questions = question_engine.generate_clarification_questions(user_request, user_id, {})
+        questions = question_engine.generate_clarification_questions(
+            user_request, user_id, {}
+        )
         print(f"  -> Questions Generated: {len(questions)}")
         if questions:
             print(f"  -> Sample: {questions[0].question_text}")
@@ -97,7 +106,9 @@ def main():
         smart_suggestions = ux_system.get_smart_suggestions(user_id, "project_setup")
         print(f"  -> Smart Suggestions: {len(smart_suggestions)} commands")
         if smart_suggestions:
-            print(f"  -> Sample: {smart_suggestions[0].command} - {smart_suggestions[0].reason}")
+            print(
+                f"  -> Sample: {smart_suggestions[0].command} - {smart_suggestions[0].reason}"
+            )
         print()
 
         # 8. Project planning integration
@@ -129,6 +140,7 @@ def main():
         print("INTEGRATION SUCCESSFUL!")
         print("Anti-drift system enhances existing AI Onboard architecture")
         print("without disrupting proven functionality.")
+
 
 if __name__ == "__main__":
     main()

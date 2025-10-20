@@ -39,9 +39,13 @@ class PreventionRule:
 class AutomaticErrorPrevention:
     """System for automatically preventing errors based on learned patterns."""
 
-    def __init__(self, root: Path, pattern_system: PatternRecognitionSystem):
+    def __init__(
+        self,
+        root: Path,
+        pattern_system: Optional[PatternRecognitionSystem] = None,
+    ):
         self.root = root
-        self.pattern_system = pattern_system
+        self.pattern_system = pattern_system or PatternRecognitionSystem(root)
         self.prevention_dir = root / ".ai_onboard" / "prevention"
         self.prevention_log = self.prevention_dir / "prevention_log.jsonl"
 
@@ -452,6 +456,7 @@ class AutomaticErrorPrevention:
             "recommendations": [],
             "risk_level": "low",
             "confidence": 0.0,
+            "risk_score": 0.0,
         }
 
         # Apply built-in prevention rules
@@ -521,6 +526,7 @@ class AutomaticErrorPrevention:
             result["risk_level"] = "high"
         elif result["confidence"] > 0.6:
             result["risk_level"] = "medium"
+        result["risk_score"] = result["confidence"]
 
         # Log the prevention analysis
         self._log_prevention_event(
@@ -535,6 +541,12 @@ class AutomaticErrorPrevention:
         )
 
         return result
+
+    def analyze_code_risk(
+        self, code_content: str, context: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """Compatibility wrapper expected by integration tests."""
+        return self.analyze_and_prevent(code_content, "code", context)
 
     def _apply_learned_prevention(
         self, content: str, content_type: str, context: Dict[str, Any]

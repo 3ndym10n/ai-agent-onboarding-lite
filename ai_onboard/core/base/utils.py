@@ -94,7 +94,7 @@ async def read_json_async(path: Path, default=None) -> Any:
         return default
     try:
         # Use asyncio.to_thread (Python 3.9+) with fallback for Python 3.8
-        if hasattr(asyncio, 'to_thread'):
+        if hasattr(asyncio, "to_thread"):
             content = await asyncio.to_thread(path.read_text, encoding="utf - 8")
         else:
             # Fallback for Python 3.8: use run_in_executor
@@ -134,7 +134,7 @@ def read_multiple_json_sync(paths: List[Path], default=None) -> List[Any]:
 def now_iso() -> str:
     """Return ISO 8601 timestamp with Z suffix (UTC)."""
     # Replace +00:00 with Z to avoid mixed-offset format (e.g., +00:00Z)
-    return datetime.now(timezone.utc).isoformat().replace('+00:00', '') + "Z"
+    return datetime.now(timezone.utc).isoformat().replace("+00:00", "") + "Z"
 
 
 def dumps_json(data) -> str:

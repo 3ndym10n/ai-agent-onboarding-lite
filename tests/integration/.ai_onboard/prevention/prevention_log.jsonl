@@ -126,3 +126,7 @@
 {'timestamp': 1760055818.9308312, 'event_type': 'analysis_completed', 'event_data': {'content_type': 'code', 'preventions_applied': 1, 'recommendations': 1, 'risk_level': 'high', 'confidence': 0.9}}
 {'timestamp': 1760055819.1105354, 'event_type': 'analysis_completed', 'event_data': {'content_type': 'code', 'preventions_applied': 2, 'recommendations': 1, 'risk_level': 'high', 'confidence': 0.95}}
 {'timestamp': 1760055820.5074797, 'event_type': 'analysis_completed', 'event_data': {'content_type': 'code', 'preventions_applied': 1, 'recommendations': 1, 'risk_level': 'high', 'confidence': 0.9}}
+{'timestamp': 1760914699.8650408, 'event_type': 'analysis_completed', 'event_data': {'content_type': 'command', 'preventions_applied': 3, 'recommendations': 2, 'risk_level': 'high', 'confidence': 0.95}}
+{'timestamp': 1760914699.9138463, 'event_type': 'analysis_completed', 'event_data': {'content_type': 'code', 'preventions_applied': 1, 'recommendations': 1, 'risk_level': 'high', 'confidence': 0.9}}
+{'timestamp': 1760914699.9859743, 'event_type': 'analysis_completed', 'event_data': {'content_type': 'code', 'preventions_applied': 2, 'recommendations': 1, 'risk_level': 'high', 'confidence': 0.95}}
+{'timestamp': 1760914700.7436287, 'event_type': 'analysis_completed', 'event_data': {'content_type': 'code', 'preventions_applied': 1, 'recommendations': 1, 'risk_level': 'high', 'confidence': 0.9}}

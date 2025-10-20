@@ -250,10 +250,22 @@ class WBSSynchronizationService:
         snapshot = self.gateway.load_project_plan()
         plan = snapshot.raw
         wbs = plan.get("work_breakdown_structure", {})
-        total = len(wbs)
-        completed = len(
-            [1 for pdata in wbs.values() if pdata.get("status") == "completed"]
-        )
+        total = 0
+        for phase_data in wbs.values():
+            total += 1
+            total += len(phase_data.get("subtasks", {}))
+        completed = 0
+        for phase_data in wbs.values():
+            if phase_data.get("status") == "completed":
+                completed += 1
+            subtasks = phase_data.get("subtasks", {})
+            completed += len(
+                [
+                    1
+                    for subtask in subtasks.values()
+                    if subtask.get("status") == "completed"
+                ]
+            )
         result = {
             "total_elements": total,
             "completed": completed,
@@ -289,7 +301,16 @@ class WBSSynchronizationService:
                 subtasks[task_id]["status"] = status
                 self.gateway.write_project_plan(plan)
                 return {"success": True, "updated_task": task_id}
-        return {"success": False, "error": "task_not_found"}
+        # Task not found; create a new auto-generated task entry
+        new_task = {
+            "name": task_id.replace("_", " ").title(),
+            "status": status,
+            "auto_generated": True,
+            "last_updated": utils.now_iso(),
+        }
+        wbs[task_id] = new_task
+        self.gateway.write_project_plan(plan)
+        return {"success": True, "updated_task": task_id, "created": True}
 
     def _calculate_consistency(self, plan: Dict[str, Any]) -> float:
         milestones = plan.get("milestones", [])

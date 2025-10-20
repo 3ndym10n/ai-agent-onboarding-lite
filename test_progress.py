@@ -25,8 +25,3 @@ print("Progress calculation:")
 print(f'Total tasks: {progress["total_tasks"]}')
 print(f'Completed tasks: {progress["completed_tasks"]}')
 print(f'Completion percentage: {progress["completion_percentage"]}%')
-
-
-
-
-

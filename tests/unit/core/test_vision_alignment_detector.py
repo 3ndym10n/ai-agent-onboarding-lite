@@ -74,7 +74,9 @@ def test_proceeds_for_in_scope_enhancement(tmp_path):
     _write_json(tmp_path, ".ai_onboard/project_plan.json", _basic_plan())
     detector = VisionAlignmentDetector(tmp_path)
 
-    suggestion = "Add email validation to ensure contact requests include a valid address."
+    suggestion = (
+        "Add email validation to ensure contact requests include a valid address."
+    )
     assessment = detector.assess(suggestion)
 
     assert assessment.decision == "proceed"

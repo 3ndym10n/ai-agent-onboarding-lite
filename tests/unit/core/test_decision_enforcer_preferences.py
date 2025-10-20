@@ -40,8 +40,7 @@ def test_decision_enforcer_reuses_learned_preference(tmp_path):
 
     prefs = enforcer.preference_system.get_user_preferences("user123")
     assert any(
-        pref.preference_key == "framework_choice"
-        and pref.preference_value == "fastapi"
+        pref.preference_key == "framework_choice" and pref.preference_value == "fastapi"
         for pref in prefs.values()
     )
 
