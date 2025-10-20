@@ -18,6 +18,13 @@ jobs:
         shell: pwsh
         run: |
           python -m pip install --upgrade pip pyyaml
+      - name: Install package & requirements
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          if (Test-Path 'requirements.txt') { python -m pip install -r requirements.txt }
+          # Editable install so python -m ai_onboard works and imports resolve
+          python -m pip install -e .
       - name: Protected paths check (diff)
         shell: pwsh
         run: |
