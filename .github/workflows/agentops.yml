@@ -2,7 +2,7 @@ name: AgentOps Gates
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   gates:
@@ -13,7 +13,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.8'
+          python-version: "3.8"
       - name: Install minimal deps
         shell: pwsh
         run: |
@@ -25,6 +25,10 @@ jobs:
           if (Test-Path 'requirements.txt') { python -m pip install -r requirements.txt }
           # Editable install so python -m ai_onboard works and imports resolve
           python -m pip install -e .
+      - name: Smoke test imports
+        shell: pwsh
+        run: |
+          python -c "import psutil, ai_onboard; print('✓ All critical imports successful')"
       - name: Protected paths check (diff)
         shell: pwsh
         run: |
